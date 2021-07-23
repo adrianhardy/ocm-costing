@@ -1,0 +1,7 @@
+parameters:
+    ignoreErrors:
+        - '#Call to static method channel\(\) on an unknown class Log#'
+        - '#Call to static method id\(\) on an unknown class Auth#'
+        - '#Call to static method user\(\) on an unknown class Auth#'
+        - '#Call to static method check\(\) on an unknown class Auth#'
+        - '#Call to static method (channel|get|middleware|command)\(\) on an unknown class (Broadcast|Route|Artisan).#'

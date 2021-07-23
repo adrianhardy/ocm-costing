@@ -1,0 +1,27 @@
+{
+    "author": "HardyFinch Ltd",
+    "name": "StoreRoom 1.1.2-beta",
+    "short_name": "StoreRoom",
+
+    "description": "Simple template for a chrome WebAPK.",
+    "orientation": "portrait",
+    "start_url": "/app/demo",
+    "scope": "/app/demo",
+    "display": "standalone",
+    "background_color": "grey",
+    "theme_color": "black",
+    "icons": [
+        {
+            "src": "/images/logo.png",
+            "sizes": "48x48 72x72 96x96 128x128 192x192 256x256 512x512",
+            "type": "image/png"
+        }
+    ],
+    "manifest_version": 7,
+    "version": "0.1.1",
+    "applications": {
+        "gecko": {
+            "id": "storeroom@orchardcrownmall.co.uk"
+        }
+    }
+}

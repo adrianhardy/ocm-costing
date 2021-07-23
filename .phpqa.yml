@@ -1,0 +1,17 @@
+phpqa:
+  ignoredDirs: vendor,node_modules,storage,public,build,bootstrap
+  tools:
+    - phpmetrics
+    - phploc
+    - phpcs
+    - phpmd
+    - phpstan
+    - phpunit
+  buildDir: ./ci/build
+  report: true
+phpcs:
+  standard: PSR2
+  ignoreWarnings: false
+phpcpd:
+  minLines: 5
+  minTokens: 70

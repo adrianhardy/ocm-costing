@@ -1,0 +1,60 @@
+$font-family-sans-serif: "Source Sans Pro";
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+
+$enable-gradients: true;
+$enable-shadows: true;
+
+@import "~bootstrap/scss/bootstrap";
+@import "~bootstrap-vue/src/index";
+@import "~vue-select/src/scss/vue-select";
+@import "./bootstrap/modal";
+@import "./bootstrap/cards";
+@import "./bootstrap/tables";
+@import "./bootstrap/buttons";
+@import "./bootstrap/stamps";
+@import "./bootstrap/layout";
+
+.page-enter-active, .page-leave-active,
+.page-back-enter-active, .page-back-leave-active {
+    transition: opacity 0.25s, transform 0.25s;
+}
+
+.page-enter {
+    opacity: 0;
+}
+
+.page-leave-to, .page-back-enter, .page-back-leave-to {
+    opacity: 0;
+    transform: translateX(-30%);
+}
+
+.page-back-leave-to {
+    transform: translateX(30%);
+}
+
+
+
+label.form-label {
+    display: block;
+    margin-bottom: .375rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+
+body {
+    background-color: #f5f7fb;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.navbar {
+    background: white;
+}
+
+.dropdown-toggle::after {
+    vertical-align: middle;
+}
+

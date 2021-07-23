@@ -1,0 +1,49 @@
+td.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 1px;
+}
+
+td .has-tooltip, th.has-tooltip {
+    position: relative;
+    &::after {
+        position: absolute;
+        content:" ";
+        top: 0.1em;
+        left: 100%;
+        width: 1em;
+        height: 1em;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">  <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/> </svg>');
+        background-repeat: no-repeat;
+    }
+}
+
+
+th.w-1, td.w-1 {
+    width: 1%;
+}
+
+th.w-10, td.w-10 {
+    width: 10%;
+}
+
+th.w-15, td.w-15 {
+    width: 15%;
+}
+
+th.w-20, td.w-20 {
+    width: 20%;
+}
+
+th.w-25, td.w-25 {
+    width: 25%;
+}
+
+th.w-5, td.w-5 {
+    width: 5%;
+}
+
+th.w-30, td.w-30 {
+    width: 30%;
+}

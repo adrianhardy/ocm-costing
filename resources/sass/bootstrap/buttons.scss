@@ -1,0 +1,11 @@
+
+.btn-white {
+    @include button-variant(#fafafa, #fafafa);
+}
+
+.btn {
+    font-weight: 600;
+    letter-spacing: .03em;
+    font-size: 0.8125rem;
+    min-width: 2.375rem;
+}

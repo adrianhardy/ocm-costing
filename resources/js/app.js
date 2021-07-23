@@ -1,0 +1,50 @@
+// import App from "./mobile/App";
+
+require('./bootstrap');
+require('jquery');
+require('popper.js');
+require('bootstrap');
+
+import Vue from 'vue';
+import VueDateFns from "vue-date-fns";
+import VueSelect from 'vue-select';
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+import PaginationPlugin from "./plugins/PaginationPlugin";
+import HandleExceptionResponse from "./plugins/HandleExceptionResponse";
+import VuePapaParse from 'vue-papa-parse';
+import vueDebounce from 'vue-debounce';
+import VueSmoothScroll from 'vue2-smooth-scroll';
+
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
+Vue.prototype.$http = window.axios;
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
+Vue.use(VuePapaParse);
+Vue.use(VueDateFns);
+Vue.use(PaginationPlugin);
+Vue.use(HandleExceptionResponse);
+Vue.use(vueDebounce);
+Vue.use(Loading);
+Vue.use(VueSmoothScroll, {
+    offset: -100
+});
+
+Vue.component('vue-select', VueSelect);
+Vue.component('auto-toast', require('./components/AutoToast.vue').default);
+Vue.component('create-import', require('./modules/imports/Importer.vue').default);
+Vue.component('products-list', require('./modules/products/ProductsList.vue').default);
+
+
+// make available to the footer scripts which are used
+// for raising toasts, etc
+window.Vue = Vue;
+
+new Vue().$mount('#app');
+
+document.querySelectorAll('.custom-file-input').forEach(element => {
+    element.addEventListener('change',function(e){
+        e.target.previousElementSibling.innerText = e.target.files[0].name;
+    });
+});

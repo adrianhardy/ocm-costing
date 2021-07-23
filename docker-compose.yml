@@ -1,0 +1,14 @@
+services:
+  db:
+    user: "1000"
+    image: percona:5.7.23
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=issuelab
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+    volumes:
+      - /home/adrianhardy/projects/DockerShared/percona:/var/lib/mysql:z
+    ports:
+      - "33060:3306"

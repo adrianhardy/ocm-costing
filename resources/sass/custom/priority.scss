@@ -1,0 +1,14 @@
+.priority {
+    &.priority-low {
+        color: $gray-200;
+    }
+    &.priority-medium {
+        color: $warning;
+    }
+    &.priority-high {
+        color: $danger;
+    }
+    &.priority-urgent {
+        color: black;
+    }
+}
