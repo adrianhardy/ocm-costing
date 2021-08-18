@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <h5>Images</h5>
-                    <edit-product-media :product="product" @updated="refresh()"/>
+                    <edit-product-media :disabled="disabled" :product="product" @updated="refresh()"/>
                 </div>
                 <div class="col-12 col-md-6">
                     <b-tabs content-class="pt-3">
@@ -86,9 +86,7 @@
                                     <span v-else>0 / 500</span>
                                 </template>
                             </b-form-group>
-
-
-                            <b-button variant="outline-primary float-right" @click="save()">Update Product</b-button>
+                            <b-button variant="outline-primary float-right" @click="save()">{{ this.productId?'Update':'Create' }} Product</b-button>
                         </b-tab>
                         <b-tab title="Notes">
                             <b-table-simple small>
@@ -139,24 +137,35 @@ export default {
         date: dateFilter
     },
     mounted() {
-        this.refresh();
+        if (this.productId) {
+            this.refresh();
+        }
     },
     computed: {
+        disabled() {
+            return !(this.productId > 0);
+        },
         include() {
             return 'supplier,comments,comments.commentator,media';
         }
     },
     methods: {
         save() {
-            const url = `/api/products/${this.product.id}`;
-            const loader = this.$loading.show();
             const method = this.product.id?'PUT':'POST';
+            const url = `/api/products/` + (method === 'PUT'?this.product.id:'');
+            const loader = this.$loading.show();
             this.$http({
                 method: method,
                 url: url,
                 data: {...this.product},
                 params: {include: this.include}
             }).then(response => {
+
+                if (method === 'POST') {
+                    window.location.href = `/products/${response.data.id}/edit`
+                    return;
+                }
+
                 this.product = response.data
                 loader.hide();
                 this.refresh();

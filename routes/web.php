@@ -17,5 +17,5 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('/admin/imports/preview', 'Admin\Imports\PreviewController')->only(['store', 'update']);
     Route::resource('/admin/imports', 'Admin\Imports\RunController')->only(['create', 'store']);
-    Route::resource('products', 'Products\ProductsController')->only(['index', 'edit']);
+    Route::resource('products', 'Products\ProductsController')->only(['index', 'create', 'edit']);
 });

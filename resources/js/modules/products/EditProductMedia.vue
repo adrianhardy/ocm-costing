@@ -7,13 +7,13 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-form-file @input="addMedia($event) " ref="file"/>
+    <b-form-file :disabled="disabled" @input="addMedia($event) " ref="file"/>
   </div>
 </template>
 
 <script>
 export default {
-  props: {product: Object},
+  props: {product: Object, disabled: Boolean},
   name: "EditProductMedia",
   methods: {
     addMedia(file) {

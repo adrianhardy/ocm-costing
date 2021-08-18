@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Product;
 use App\Models\Repositories\ProductRepository;
+use App\Models\Supplier;
 use App\Transformers\ProductTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -33,6 +34,7 @@ class ProductsController extends Controller
         $unique = Rule::unique('products')->ignore($product, 'id');
 
         $this->validate($request, [
+            'supplier.id'           => 'required|exists:suppliers,id',
             'item_number'           => ['required', 'min:1', 'max:64'],
             'article_number'        => ['required', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
@@ -64,6 +66,7 @@ class ProductsController extends Controller
             'unit_price',
             'case_weight_kg'
         ]));
+        $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
         $product->save();
         return fractal($product->fresh(), new ProductTransformer());
     }
@@ -76,8 +79,9 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'item_number'           => 'required|unique|min:1|max:64',
-            'article_number'        => 'required|unique|min:1|max:64',
+            'supplier.id'           => 'required|exists:suppliers,id',
+            'item_number'           => 'required|min:1|max:64',
+            'article_number'        => 'required|min:1|max:64',
             'name'                  => 'required|min:1|max:200',
             'barcode'               => 'sometimes|max:32',
             'length_cm'             => 'sometimes|min:0|numeric',
@@ -87,8 +91,8 @@ class ProductsController extends Controller
             'unit_price'            => 'sometimes|min:0|numeric',
             'units_per_case'        => 'sometimes|min:0|numeric',
             'inner_qty'             => 'sometimes|min:0|numeric',
-            'packing_instructions'  => 'sometimes|required|max:500',
-            'product_description'   => 'sometimes|required|max:500',
+            'packing_instructions'  => 'sometimes|max:500',
+            'product_description'   => 'sometimes|max:500',
         ]);
         $product = new Product($request->only([
             'item_number',
@@ -105,6 +109,7 @@ class ProductsController extends Controller
             'unit_price',
             'case_weight_kg'
         ]));
+        $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
         $product->save();
         return fractal($product->fresh(), new ProductTransformer());
     }

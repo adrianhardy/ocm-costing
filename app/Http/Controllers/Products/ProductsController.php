@@ -17,6 +17,14 @@ class ProductsController extends Controller
     }
 
     /**
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return response()->view('products.create');
+    }
+
+    /**
      * @param Product $product
      * @return \Illuminate\Http\Response
      */

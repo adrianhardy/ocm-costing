@@ -17,7 +17,7 @@ Route::group(['as' => 'api.'], function() {
     Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);
     Route::resource('settings', 'Api\Settings\SettingsController')->only(['index']);
     Route::resource('products.comments', 'Api\Products\CommentsController')->only(['store']);
-    Route::resource('products', 'Api\Products\ProductsController')->only(['index', 'show', 'update', 'delete']);
+    Route::resource('products', 'Api\Products\ProductsController')->only(['index', 'show', 'store', 'update', 'delete']);
     Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
     Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);
     Route::resource('admin/shipping/simple-calculator', 'Api\Calculator\SimpleShippingCalculator')->only(['store']);
