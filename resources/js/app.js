@@ -35,7 +35,7 @@ Vue.component('vue-select', VueSelect);
 Vue.component('auto-toast', require('./components/AutoToast.vue').default);
 Vue.component('create-import', require('./modules/imports/Importer.vue').default);
 Vue.component('products-list', require('./modules/products/ProductsList.vue').default);
-
+Vue.component('edit-product', require('./modules/products/EditProduct.vue').default);
 
 // make available to the footer scripts which are used
 // for raising toasts, etc

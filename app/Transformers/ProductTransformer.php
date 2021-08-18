@@ -23,7 +23,7 @@ class ProductTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'quotes', 'media'
+        'quotes', 'media', 'supplier', 'comments', 'comments.author'
     ];
 
     public function includeQuoteLines(Product $product)
@@ -31,9 +31,20 @@ class ProductTransformer extends TransformerAbstract
         return $this->collection($product->quote_lines_product, new QuoteLineTransformer);
     }
 
+    public function includeSupplier(Product $product)
+    {
+        return $this->item($product->supplier, new SupplierTransformer);
+    }
+
+    public function includeComments(Product $product)
+    {
+        return $this->collection($product->comments, new CommentTransformer);
+    }
+
+
     public function includeMedia(Product $product)
     {
-        return $this->collection($product->getMedia('quote'), function(Media $media) {
+        return $this->collection($product->getMedia('images'), function(Media $media) {
             return [
                 'id' => $media->id,
                 'url' => $media->getFullUrl()
@@ -49,6 +60,25 @@ class ProductTransformer extends TransformerAbstract
      */
     public function transform(Product $product)
     {
-        return $product->only(['id', 'name', 'article_number', 'item_number']);
+        return $product->only([
+            'id',
+            'item_number',
+            'article_number',
+            'name',
+            'packing_instructions',
+            'barcode',
+            'length_m',
+            'width_m',
+            'height_m',
+            'length_cm',
+            'width_cm',
+            'height_cm',
+            'units_per_case',
+            'inner_qty',
+            'packing_instructions',
+            'product_description',
+            'unit_price',
+            'case_weight_kg'
+        ]);
     }
 }

@@ -11,6 +11,7 @@ use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Product
@@ -22,6 +23,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $article_number
  * @property string $name
  * @property int $supplier_id
+ * @property int|null $units_per_case
+ * @property int|null $inner_qty
+ * @property float|null $case_weight_kg
+ * @property float|null $height_m
+ * @property float|null $length_m
+ * @property float|null $width_m
+ * @property float|null $unit_price
+ * @property float|null $est_landed_cost_gbp
+ * @property string|null $packing_instructions
+ * @property string|null $product_description
+ * @property string|null $deleted_at
  * 
  * @property Supplier $supplier
  * @property Collection|QuoteLine[] $quote_lines_product
@@ -30,10 +42,19 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Product extends Model
 {
+	use SoftDeletes;
 	protected $table = 'products';
 
 	protected $casts = [
-		'supplier_id' => 'int'
+		'supplier_id' => 'int',
+		'units_per_case' => 'int',
+		'inner_qty' => 'int',
+		'case_weight_kg' => 'float',
+		'height_m' => 'float',
+		'length_m' => 'float',
+		'width_m' => 'float',
+		'unit_price' => 'float',
+		'est_landed_cost_gbp' => 'float'
 	];
 
 	public function supplier()

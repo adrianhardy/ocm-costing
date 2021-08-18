@@ -14,6 +14,9 @@
                         <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
                     </div>
                 </template>
+                <template #cell(name)="data">
+                    <a :href="`/products/${data.item.id}/edit`">{{ data.value }}</a>
+                </template>
                 <template #cell(image)="data">
                     <b-avatar v-if="data.item.media[0]">
                         <b-img fluid :src="data.item.media[0].url" />

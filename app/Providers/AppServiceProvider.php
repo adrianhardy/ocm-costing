@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use \Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        Validator::extend('current_password', function ($attribute, $value, $parameters, $validator) {
+            return \Auth::user() && Hash::check($value, \Auth::user()->password);
+        });
     }
 }
