@@ -7,6 +7,7 @@
 namespace App\Models\Base;
 
 use App\Models\QuoteLine;
+use App\Models\SalesOrderLine;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,12 +32,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $width_m
  * @property float|null $unit_price
  * @property float|null $est_landed_cost_gbp
+ * @property string|null $barcode
  * @property string|null $packing_instructions
  * @property string|null $product_description
  * @property string|null $deleted_at
  * 
  * @property Supplier $supplier
  * @property Collection|QuoteLine[] $quote_lines_product
+ * @property Collection|SalesOrderLine[] $sales_order_lines_product
  *
  * @package App\Models\Base
  */
@@ -65,5 +68,10 @@ class Product extends Model
 	public function quote_lines_product()
 	{
 		return $this->hasMany(QuoteLine::class);
+	}
+
+	public function sales_order_lines_product()
+	{
+		return $this->hasMany(SalesOrderLine::class);
 	}
 }

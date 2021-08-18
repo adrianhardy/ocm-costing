@@ -7,6 +7,7 @@
 namespace App\Models\Base;
 
 use App\Models\Product;
+use App\Models\SalesOrder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * 
  * @property Collection|Product[] $products_supplier
+ * @property Collection|SalesOrder[] $sales_orders_supplier
  *
  * @package App\Models\Base
  */
@@ -30,5 +32,10 @@ class Supplier extends Model
 	public function products_supplier()
 	{
 		return $this->hasMany(Product::class);
+	}
+
+	public function sales_orders_supplier()
+	{
+		return $this->hasMany(SalesOrder::class);
 	}
 }

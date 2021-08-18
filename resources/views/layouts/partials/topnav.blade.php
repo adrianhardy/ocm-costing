@@ -12,5 +12,11 @@
                 Products
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('sales-orders.index') }}">
+                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                Sales Orders
+            </a>
+        </li>
     @endauth
 </ul>

@@ -280,7 +280,12 @@ return [
         */
 
         'except' => [
-            'migrations', 'password_resets', 'failed_job', 'jobs', 'notifications', 'media', 'users'
+            'migrations', 'password_resets', 'failed_job', 'jobs', 'notifications', 'media', 'users',
+            'permissions', 'model_has_permissions', 'model_has_roles','roles', 'role_has_permissions',
+            'telescope_entries_tags', 'telescope_entries', 'telescope_monitoring',
+            'versions', 'statuses', 'settings', 'roles', 'failed_jobs', 'comments', 'activity_log',
+
+            'sales_order_lines_consignments'
         ],
 
         /*
