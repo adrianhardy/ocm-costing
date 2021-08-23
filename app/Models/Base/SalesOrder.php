@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property string|null $reference
  * @property Carbon|null $sent_at
  * @property float|null $goods_cost
  * @property float|null $goods_cost_gbp

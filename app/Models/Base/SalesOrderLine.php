@@ -24,6 +24,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  * @property string|null $item_number
  * @property string|null $article_number
+ * @property string|null $packing_instructions
+ * @property string|null $product_description
+ * @property string|null $name
  * @property int|null $product_id
  * @property int $units_requested
  * @property float|null $unit_price

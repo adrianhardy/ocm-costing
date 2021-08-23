@@ -71,6 +71,16 @@ class ParseProductSheet
 
             $data = collect();
             foreach ($row->getCellIterator() as $column => $cell) {
+                try {
+                    $formatted = $cell->getFormattedValue();
+                } catch (\Exception $ex) {
+                    $formatted = '';
+                }
+                try {
+                    $calculated = $cell->getCalculatedValue();
+                } catch (\Exception $ex) {
+                    $calculated = '';
+                }
                 $datum = [
                     'raw'           => $cell->getValue(),
                     'value'         => $cell->getValue(),
@@ -78,10 +88,10 @@ class ParseProductSheet
                         'column'    => $column,
                         'row'       => $i,
                     ],
-                    'formatted'     => $cell->getFormattedValue()
+                    'formatted'     => $formatted
                 ];
                 if ($cell->isFormula()) {
-                    $datum['value'] = $cell->getCalculatedValue();
+                    $datum['value'] = $calculated;
                 }
                 $data->push($datum);
             }

@@ -18,6 +18,11 @@
           </b-form-group>
         </div>
       </div>
+      <b-table
+        show-empty
+        empty-text="No sales order lines to show"
+        :items="so.lines"
+        :fields="fields"
     </b-card>
   </div>
 </template>
@@ -39,6 +44,30 @@ export default {
     this.refresh();
   },
   computed: {
+    fields() {
+      return [{
+        key: 'name',
+        label: 'Name',
+      },{
+        key: 'product.article_number',
+        label: 'Art #',
+      },{
+        key: 'product.item_number',
+        label: 'Item #',
+      },{
+        key: 'packing_instructions',
+        label: 'Packing',
+      },{
+        key: 'unit_price',
+        label: 'Unit Price'
+      },{
+        key: 'units_requested',
+        label: 'Qty'
+      },{
+        key: 'units_requested',
+        label: 'Qty'
+      }]
+    },
     include() {
       return 'supplier,currency,lines,lines.product,lines.product.supplier';
     }

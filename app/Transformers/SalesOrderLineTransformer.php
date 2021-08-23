@@ -2,6 +2,7 @@
 
 namespace App\Transformers;
 
+use App\Models\SalesOrderLine;
 use League\Fractal\TransformerAbstract;
 
 class SalesOrderLineTransformer extends TransformerAbstract
@@ -29,10 +30,26 @@ class SalesOrderLineTransformer extends TransformerAbstract
      *
      * @return array
      */
-    public function transform()
+    public function transform(SalesOrderLine $line)
     {
-        return [
-            //
-        ];
+        return $line->only([
+            'item_number',
+            'article_number',
+            'name',
+            'packing_instructions',
+            'barcode',
+            'length_m',
+            'width_m',
+            'height_m',
+            'length_cm',
+            'width_cm',
+            'height_cm',
+            'units_per_case',
+            'inner_qty',
+            'packing_instructions',
+            'product_description',
+            'unit_price',
+            'case_weight_kg'
+        ]);
     }
 }
