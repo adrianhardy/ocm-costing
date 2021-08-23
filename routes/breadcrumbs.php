@@ -66,7 +66,7 @@ Breadcrumbs::for('reason-codes.index', function ($trail) {
 
 Breadcrumbs::for('users.index', function ($trail) {
     $trail->parent('home');
-    $trail->push('Users');
+    $trail->push('users');
     $trail->push('List', route('users.index'));
 });
 
