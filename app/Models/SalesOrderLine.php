@@ -12,10 +12,11 @@ class SalesOrderLine extends BaseSalesOrderLine
 		'article_number',
 		'product_id',
 		'units_requested',
+        'packing_instructions',
+        'product_description',
 		'unit_price',
 		'unit_price_gbp',
 		'total',
 		'total_gbp',
-		'fx_rate'
 	];
 }

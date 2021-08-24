@@ -38,3 +38,25 @@ body {
     vertical-align: middle;
 }
 
+@for $i from 1 through 9 {
+    .w-#{$i} {
+        width: #{$i}#{"%"};
+    }
+}
+
+@for $i from 2 through 20 {
+    .w-#{$i * 5} {
+        width: #{$i * 5}#{"%"};
+    }
+}
+
+input.no-stepper::-webkit-outer-spin-button,
+input.no-stepper::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number].no-stepper {
+    -moz-appearance: textfield;
+}

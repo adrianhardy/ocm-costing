@@ -22,9 +22,17 @@ class SalesOrderLineTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        //
+        'product'
     ];
-    
+
+    public function includeProduct(SalesOrderLine $line)
+    {
+        if (!$line->product) {
+            return $this->null();
+        }
+        return $this->item($line->product, new ProductTransformer());
+    }
+
     /**
      * A Fractal transformer.
      *
@@ -33,10 +41,10 @@ class SalesOrderLineTransformer extends TransformerAbstract
     public function transform(SalesOrderLine $line)
     {
         return $line->only([
+            'id',
             'item_number',
             'article_number',
             'name',
-            'packing_instructions',
             'barcode',
             'length_m',
             'width_m',
@@ -49,7 +57,10 @@ class SalesOrderLineTransformer extends TransformerAbstract
             'packing_instructions',
             'product_description',
             'unit_price',
-            'case_weight_kg'
+            'case_weight_kg',
+            'units_requested',
+            'total',
+            'total_gbp'
         ]);
     }
 }

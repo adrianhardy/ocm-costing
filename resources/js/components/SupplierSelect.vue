@@ -20,12 +20,12 @@ export default {
   },
   methods: {
     refresh() {
-      const loader = this.$loading.show();
+      this.$refs['select'].toggleLoading(true);
       this.$http.get('/api/suppliers', {params: {all: true}}).then(response => {
         this.options = response.data.items;
-        loader.hide();
+        this.$refs['select'].toggleLoading(false);
       }).catch(error => {
-        loader.hide();
+        this.$refs['select'].toggleLoading(false);
         this.$handleExceptionResponse(error, true);
       })
     }

@@ -121,7 +121,9 @@ class ProductsController extends Controller
      */
     public function index(Request $request, ProductRepository $productRepository)
     {
-        $paginator = $productRepository->paginate();
+        $paginator = $productRepository->paginate(
+            $request->input('per_page', 100)
+        );
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductTransformer
         ));

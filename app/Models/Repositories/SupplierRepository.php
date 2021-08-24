@@ -10,6 +10,10 @@ use Prettus\Repository\Eloquent\BaseRepository;
 
 class SupplierRepository extends BaseRepository
 {
+    protected $fieldSearchable = [
+        'name' => 'LIKE'
+    ];
+
     public function model()
     {
         return Supplier::class;

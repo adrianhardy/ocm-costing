@@ -32,6 +32,6 @@ class CurrencyTransformer extends TransformerAbstract
      */
     public function transform(Currency $currency)
     {
-        return $currency->only(['id', 'name', 'default_fx_rate']);
+        return $currency->only(['id', 'code', 'name', 'default_fx_rate']);
     }
 }

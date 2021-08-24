@@ -13,14 +13,6 @@ use Illuminate\Http\Request;
 
 class SalesOrdersController extends Controller
 {
-    public function index(SalesOrderRepository $salesOrderRepository)
-    {
-        $paginator = $salesOrderRepository->paginate();
-        return response()->json(new SerializeLengthAwarePaginator(
-            $paginator, new SalesOrderTransformer
-        ));
-    }
-
     /**
      * @param SalesOrder $sales_order
      * @return \Illuminate\Http\JsonResponse
@@ -29,6 +21,23 @@ class SalesOrdersController extends Controller
     {
         return response()->json(fractal(
             $sales_order, new SalesOrderTransformer
+        ));
+    }
+
+    /**
+     * @param Request $request
+     * @param SalesOrderRepository $salesOrderRepository
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index(
+        Request $request,
+        SalesOrderRepository $salesOrderRepository
+    ) {
+        $paginator = $salesOrderRepository->paginate(
+            $request->input('per_page', 100)
+        );
+        return response()->json(new SerializeLengthAwarePaginator(
+            $paginator, new SalesOrderTransformer
         ));
     }
 

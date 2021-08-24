@@ -20,6 +20,11 @@ class SalesOrder extends BaseSalesOrder
 		'supplier_id'
 	];
 
+	public function getIsSentAttribute()
+    {
+        return $this->sent_at !== null;
+    }
+
 	public function lines()
     {
         return $this->sales_order_lines_sales_order();

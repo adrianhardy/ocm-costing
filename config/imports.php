@@ -11,19 +11,19 @@ return [
                 'unit_price'          => 'Unit Price',
             ],
             'quantities' => [
-                'cases'                 => 'Total Cases',
-                'total_unit_qty'        => 'Total Units (Qty)',
-                'case_qty'              => 'Case Qty (units per case)',
+                'cases'                 => 'Total Cartons',
+                'total_unit_qty'        => 'Total Qty (Pcs)',
+                'case_qty'              => 'Pieces per Carton',
                 'case_inner_qty'        => 'Case Inner Qty',
             ],
             'general' => [
-                'name'                  => 'Name',
+                'name'                  => 'Product\'s Description',
                 'packing_instructions'  => 'Packing Instructions',
                 'barcode'               => 'Barcode',
             ],
             'volume' => [
-                'case_volume_cu_m'      => 'Case Vol. cu M',
-                'case_volume_cu_ft'     => 'Case Vol. cu Ft',
+                'case_volume_cu_m'      => 'cu M per Carton',
+                'case_volume_cu_ft'     => 'cu Ft per Carton',
             ],
             'measurements' => [
                 'case_width_m'        => 'Case Width (m)',
