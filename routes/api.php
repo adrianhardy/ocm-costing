@@ -24,5 +24,7 @@ Route::group(['as' => 'api.'], function() {
     Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);
     Route::resource('admin/shipping/simple-calculator', 'Api\Calculator\SimpleShippingCalculator')->only(['store']);
     Route::resource('admin/users', 'Api\Admin\UsersController')->only(['index', 'update', 'store', 'show']);
+    Route::resource('admin/suppliers', 'Api\Admin\SuppliersController')->only(['index', 'update', 'store', 'show']);
+    Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['index', 'update', 'store', 'show']);
 });
 

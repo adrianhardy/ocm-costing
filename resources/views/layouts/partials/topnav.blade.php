@@ -24,5 +24,17 @@
                 Users
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('suppliers.index') }}">
+                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                Suppliers
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('factories.index') }}">
+                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                Factories
+            </a>
+        </li>
     @endauth
 </ul>
