@@ -12,6 +12,9 @@ class FactoryRepository extends BaseRepository
 {
     protected $fieldSearchable = [
         'name' => 'like',
+        'contact_name' => 'like',
+        'country' => 'like',
+
     ];
     public function model()
     {

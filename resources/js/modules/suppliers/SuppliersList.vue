@@ -3,6 +3,9 @@
     <b-card class="shadow-sm">
       <template #header>
         <table-header v-model="pagination">
+          <div>
+            <search-input v-model="search" placeholder="Type and press enter to search" @search="$refs['table'].refresh()"></search-input>
+          </div>
           <slot>
             <b-button href="/admin/suppliers/create">Create New Supplier</b-button>
           </slot>
@@ -29,20 +32,23 @@
 
 <script>
 import TableHeader from '../../components/table/TableHeader';
+import SearchInput from "../../components/common/SearchInput";
 export default {
   name: "SuppliersList",
-  components: {TableHeader},
+  components: {TableHeader, SearchInput},
   methods: {
     items(ctx) {
+      const payload = {search: this.search}
       return this.$paginatedFetch(
           '/api/admin/suppliers',
           this.pagination,
-          ctx, {}
+          ctx, payload
       );
     }
   },
   data() {
     return {
+      search: '',
       pagination: {
         total: 0,
         perPage: 100,

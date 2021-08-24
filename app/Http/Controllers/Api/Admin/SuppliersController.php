@@ -29,10 +29,10 @@ class SuppliersController extends Controller
         $request->validate([
             'name' => 'required|max:255',
             'country' => 'required|max:255',
-            'delivery_address' => 'required|max:255',
-            'contact_name' => 'required|max:255',
-            'contact_email' => 'required|max:255',
-            'contact_phone' => 'required|max:64'
+            'delivery_address' => 'sometimes|max:255',
+            'contact_name' => 'sometimes|max:255',
+            'contact_email' => 'sometimes|max:255',
+            'contact_phone' => 'sometimes|max:64'
         ]);
 
         $supplier->fill($request->only([
@@ -54,9 +54,9 @@ class SuppliersController extends Controller
         $request->validate([
             'name' => 'required|max:255',
             'country' => 'required|max:255',
-            'delivery_address' => 'required|max:255',
-            'contact_name' => 'required|max:255',
-            'contact_email' => 'required|max:255',
+            'delivery_address' => 'sometimes|max:255',
+            'contact_name' => 'sometimes|max:255',
+            'contact_email' => 'sometimes|max:255',
             'contact_phone' => 'required|max:64'
         ]);
 
