@@ -4,6 +4,7 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
+                        <search-input v-model="search" @search="$refs['table'].refresh()"/>
                         <b-button href="/admin/imports/create">Import Products</b-button>
                     </slot>
                 </table-header>
@@ -29,15 +30,17 @@
 
 <script>
 import TableHeader from '../../components/table/TableHeader';
+import SearchInput from "../../components/SearchInput";
 export default {
     name: "ProductsList",
-    components: {TableHeader},
+    components: {SearchInput, TableHeader},
     methods: {
         items(ctx) {
             return this.$paginatedFetch(
                 '/api/products',
                 this.pagination,
                 ctx, {
+                    search:this.search,
                     include: 'quotes_lines,media'
                 }
             );
@@ -45,6 +48,7 @@ export default {
     },
     data() {
         return {
+            search: '',
             pagination: {
                 total: 0,
                 perPage: 100,

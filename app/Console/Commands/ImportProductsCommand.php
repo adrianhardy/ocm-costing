@@ -108,12 +108,12 @@ class ImportProductsCommand extends Command
             ])->toArray());
             $product->save();
             if ($data->get('image')) {
-                $product->clearMediaCollection('quote');
+                $product->clearMediaCollection('default');
                 $product->addMediaFromBase64(
                     $data->get('image')
                 )
                 ->usingFileName('product-' . $product->id . '.png')
-                ->toMediaCollection('quote');
+                ->toMediaCollection('default');
             }
 
             if ($data->get('case_volume_cu_f') && !$data->get('case_volume_cu_m')) {

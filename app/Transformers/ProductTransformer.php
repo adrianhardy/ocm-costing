@@ -41,10 +41,13 @@ class ProductTransformer extends TransformerAbstract
         return $this->collection($product->comments, new CommentTransformer);
     }
 
-
+    /**
+     * @param Product $product
+     * @return \League\Fractal\Resource\Collection
+     */
     public function includeMedia(Product $product)
     {
-        return $this->collection($product->getMedia('images'), function(Media $media) {
+        return $this->collection($product->getMedia('default'), function(Media $media) {
             return [
                 'id' => $media->id,
                 'url' => $media->getFullUrl()

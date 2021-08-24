@@ -10,6 +10,13 @@ use Prettus\Repository\Eloquent\BaseRepository;
 
 class ProductRepository extends BaseRepository
 {
+    protected $fieldSearchable = [
+        'name' => 'LIKE',
+        'barcode' => 'LIKE',
+        'item_number' => 'LIKE',
+        'article_number' => 'LIKE'
+    ];
+
     public function model()
     {
         return Product::class;

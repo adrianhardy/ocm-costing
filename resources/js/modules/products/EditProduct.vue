@@ -130,7 +130,7 @@ import SupplierSelect from "../../components/SupplierSelect";
 import EditProductMedia from "./EditProductMedia";
 
 export default {
-    name: "ProductsList",
+    name: "EditProduct",
     components: {EditProductMedia, SupplierSelect},
     props: {productId: Number},
     filters: {

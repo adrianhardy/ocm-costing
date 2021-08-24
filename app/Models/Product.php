@@ -22,7 +22,21 @@ class Product extends BaseProduct implements HasMedia
     use HasComments;
     use LogsActivity;
 
-    static $logFillable = true;
+    protected $logAttributes = [
+        'item_number',
+        'article_number',
+        'name',
+        'barcode',
+        'length_m',
+        'width_m',
+        'height_m',
+        'units_per_case',
+        'inner_qty',
+        'packing_instructions',
+        'product_description',
+        'unit_price',
+        'case_weight_kg'
+    ];
 
 	protected $fillable = [
 		'item_number',
