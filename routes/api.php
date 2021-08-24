@@ -20,7 +20,7 @@ Route::group(['as' => 'api.'], function() {
     Route::resource('products', 'Api\Products\ProductsController')->only(['index', 'show', 'store', 'update', 'delete']);
     Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index']);
     Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);
-    Route::resource('sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['store', 'update', 'delete']);
+    Route::resource('sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['store', 'update', 'destroy']);
     Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
     Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);
     Route::resource('admin/shipping/simple-calculator', 'Api\Calculator\SimpleShippingCalculator')->only(['store']);

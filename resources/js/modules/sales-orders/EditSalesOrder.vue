@@ -32,7 +32,7 @@
                 :fields="fields"
             >
                 <template #cell(id)="data">
-                    <b-icon-x class="text-danger" @click="trash(line)" style="cursor: pointer"/>
+                    <b-icon-x class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
                 </template>
                 <template #cell(article_number)="data">
                     <b-form-input size="sm" v-model="data.item.article_number" />

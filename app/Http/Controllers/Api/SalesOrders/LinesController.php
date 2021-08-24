@@ -62,14 +62,14 @@ class LinesController extends Controller
 
     /**
      * @param SalesOrder $salesOrder
-     * @param SalesOrderLine $salesOrderLine
+     * @param SalesOrderLine $line
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function destroy(SalesOrder $salesOrder, SalesOrderLine $salesOrderLine)
+    public function destroy(SalesOrder $salesOrder, SalesOrderLine $line)
     {
-        abort_unless ($salesOrderLine->sales_order_id == $salesOrder->id, 400);
-        $salesOrderLine->delete();
+        abort_unless ($line->sales_order_id == $salesOrder->id, 400);
+        $line->delete();
         $salesOrder->touch();
         return response()->json(
             fractal($salesOrder->fresh(), new SalesOrderTransformer())
