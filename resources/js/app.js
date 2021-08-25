@@ -40,6 +40,11 @@ Vue.component('auto-toast', require('./components/AutoToast.vue').default);
 Vue.component('create-import', require('./modules/imports/Importer.vue').default);
 Vue.component('products-list', require('./modules/products/ProductsList.vue').default);
 Vue.component('edit-product', require('./modules/products/EditProduct.vue').default);
+Vue.component('users-list', require('./modules/users/UserList.vue').default);
+Vue.component('edit-user', require('./modules/users/EditUser.vue').default);
+Vue.component('suppliers-list', require('./modules/suppliers/SuppliersList.vue').default);
+Vue.component('edit-supplier', require('./modules/suppliers/EditSupplier.vue').default);
+Vue.component('factories-list', require('./modules/factories/FactoryList.vue').default);
 
 Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersList.vue').default);
 Vue.component('edit-sales-order', require('./modules/sales-orders/EditSalesOrder.vue').default);

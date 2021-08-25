@@ -7,6 +7,11 @@ use App\Models\Base\Supplier as BaseSupplier;
 class Supplier extends BaseSupplier
 {
 	protected $fillable = [
-		'name'
+		'name',
+        'country',
+        'delivery_address',
+        'contact_name',
+        'contact_email',
+        'contact_phone'
 	];
 }

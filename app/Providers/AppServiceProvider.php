@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models;
+use App\Models\User;
+use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use \Illuminate\Support\Facades\Validator;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        User::observe(UserObserver::class);
         Validator::extend('current_password', function ($attribute, $value, $parameters, $validator) {
             return \Auth::user() && Hash::check($value, \Auth::user()->password);
         });

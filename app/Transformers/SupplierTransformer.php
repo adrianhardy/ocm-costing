@@ -33,7 +33,13 @@ class SupplierTransformer extends TransformerAbstract
     public function transform(Supplier $supplier)
     {
         return $supplier->only([
-            'id', 'name'
+            'id',
+            'name',
+            'country',
+            'delivery_address',
+            'contact_name',
+            'contact_email',
+            'contact_phone'
         ]);
     }
 }

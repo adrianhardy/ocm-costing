@@ -19,6 +19,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string $name
+ * @property string|null $delivery_address
+ * @property string|null $contact_name
+ * @property string|null $contact_email
+ * @property string|null $contact_phone
+ * @property string|null $country
  * 
  * @property Collection|Product[] $products_supplier
  * @property Collection|SalesOrder[] $sales_orders_supplier
