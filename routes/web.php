@@ -14,6 +14,7 @@
 Auth::routes(['register' => false]);
 Route::redirect('/', '/home');
 Route::group(['middleware' => ['auth']], function() {
+    Route::resource('/admin/media', 'Admin\MediaController')->only(['show', 'destroy']);
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('/admin/imports/preview', 'Admin\Imports\PreviewController')->only(['store', 'update']);
     Route::resource('/admin/imports', 'Admin\Imports\RunController')->only(['create', 'store']);

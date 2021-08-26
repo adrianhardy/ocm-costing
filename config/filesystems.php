@@ -53,6 +53,11 @@ return [
             'root' => storage_path('app/private/imports'),
         ],
 
+        'files' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/files')
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

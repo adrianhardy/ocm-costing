@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Models\Base\Supplier as BaseSupplier;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class Supplier extends BaseSupplier
+class Supplier extends BaseSupplier implements HasMedia
 {
+    use HasMediaTrait;
+
 	protected $fillable = [
 		'name',
         'country',

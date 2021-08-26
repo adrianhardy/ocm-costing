@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
+
     /**
      * @return \Illuminate\Http\JsonResponse
      */
@@ -14,7 +15,6 @@ class SettingsController extends Controller
     {
         return response()->json([
             'items' => [
-                'exchange_rate_usd'         => setting('exchange_rate_usd'),
                 'cubic_metres_to_feet'      => setting('cubic_metres_to_feet'),
                 'shipping_cost_per_cubic_foot' => setting('shipping_cost_per_cubic_foot'),
                 'default_commission_rate' => setting('default_commission_rate'),
