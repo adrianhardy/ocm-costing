@@ -29,5 +29,6 @@ Route::group(['as' => 'api.'], function() {
     Route::resource('admin/suppliers.files', 'Api\Admin\Suppliers\MediaController')->only(['index', 'store']);
     Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['index', 'update', 'store', 'show']);
     Route::resource('admin/factories.files', 'Api\Admin\Factories\MediaController')->only(['index', 'store']);
+    Route::resource('admin/settings', 'Api\Admin\SettingsController')->only(['index', 'store']);
 });
 

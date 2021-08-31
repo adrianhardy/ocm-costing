@@ -48,9 +48,11 @@ Vue.component('factories-list', require('./modules/factories/FactoryList.vue').d
 
 Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersList.vue').default);
 Vue.component('edit-sales-order', require('./modules/sales-orders/EditSalesOrder.vue').default);
-
 // make available to the footer scripts which are used
 // for raising toasts, etc
+
+Vue.component('settings-list', require('./modules/settings/SettingsList.vue').default);
+
 window.Vue = Vue;
 
 new Vue().$mount('#app');
