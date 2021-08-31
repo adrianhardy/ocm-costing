@@ -22,7 +22,7 @@ class Product extends BaseProduct implements HasMedia
     use HasComments;
     use LogsActivity;
 
-    protected $logAttributes = [
+    protected static $logAttributes = [
         'item_number',
         'article_number',
         'name',
@@ -30,6 +30,9 @@ class Product extends BaseProduct implements HasMedia
         'length_m',
         'width_m',
         'height_m',
+        'length_cm',
+        'width_cm',
+        'height_cm',
         'units_per_case',
         'inner_qty',
         'packing_instructions',
