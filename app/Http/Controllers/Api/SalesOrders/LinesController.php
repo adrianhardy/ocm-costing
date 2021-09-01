@@ -39,7 +39,7 @@ class LinesController extends Controller
             'unit_price',
             'units_requested'
         ]));
-        if ($request->input('product.id')) {
+        if ($request->input('product.id') && $request->input('product.id') != $line->product_id) {
             $product = Product::findOrFail($request->input('product.id'));
             $line->fill([
                 'name' => '' . $product->name,
@@ -51,7 +51,7 @@ class LinesController extends Controller
             ]);
             $line->product()->associate($product);
         }
-        $line->total = $line->units_requested & $line->unit_price;
+        $line->total = $line->units_requested * $line->unit_price;
         $line->total_gbp = $line->total * $salesOrder->fx_rate;
         $line->unit_price_gbp = $line->unit_price * $salesOrder->fx_rate;
         $line->save();

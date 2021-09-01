@@ -9,6 +9,7 @@ use App\Models\Repositories\SalesOrderRepository;
 use App\Models\SalesOrder;
 use App\Models\Supplier;
 use App\Transformers\SalesOrderTransformer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SalesOrdersController extends Controller
@@ -76,6 +77,11 @@ class SalesOrdersController extends Controller
         $sales_order->fill($request->only([
             'reference', 'fx_rate'
         ]));
+
+        if ($request->input('finalise')) {
+            $sales_order->finalised_at = Carbon::now();
+            $sales_order->save();
+        }
 
         return response()->json(fractal(
             $sales_order->fresh(), new SalesOrderTransformer

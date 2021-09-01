@@ -63,11 +63,14 @@ class SalesOrderTransformer extends TransformerAbstract
     {
         return $so->only([
             'id',
+            'sales_order_number',
             'reference',
             'created_at',
             'updated_at',
             'is_sent',
+            'is_finalised',
             'sent_at',
+            'finalised_at',
             'fx_rate',
             'total', 'total_gbp',
             'shipping_cost',

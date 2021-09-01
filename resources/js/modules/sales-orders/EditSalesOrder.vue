@@ -1,6 +1,15 @@
 <template>
     <div>
         <b-card class="shadow-sm">
+            <template #header>
+              <div>
+                <h4 class="m-0">Sales Order {{salesOrder.sales_order_number}}</h4>
+                <b-badge variant="success" v-if="salesOrder.is_finalised">
+                  Finalised
+                  {{ new Date(salesOrder.finalised_at) | date('dd/MM/yy HH:mm') }}
+                </b-badge>
+              </div>
+            </template>
             <div class="row">
                 <div class="col-12 col-md-4">
                     <b-form-group label="Supplier">
@@ -35,19 +44,31 @@
                     <b-icon-x class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
                 </template>
                 <template #cell(article_number)="data">
-                    <b-form-input size="sm" v-model="data.item.article_number" />
-                </template>
-                <template #cell(item_number)="data">
-                    <b-form-input size="sm" v-model="data.item.item_number" />
+                    <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.article_number" />
+                    <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.item_number" />
                 </template>
                 <template #cell(total)="data">
-                    <div>{{ data.value | 2dp_value }}</div>
-                    <div class="small text-right mr-1">{{ data.item.total_gbp | cash_value }}</div>
+
+                  <b-input-group :prepend="salesOrder.currency.code" size="sm">
+                    <b-form-input
+                        readonly
+                        type="number"
+                        class="no-stepper"
+                        :value="data.value | 2dp_value"
+                    />
+                  </b-input-group>
+                  <b-input-group prepend="GBP" size="sm">
+                    <b-form-input
+                        readonly
+                        class="no-stepper"
+                        :value="data.item.total_gbp | 2dp_value"
+                    />
+                  </b-input-group>
                 </template>
                 <template #cell(product.name)="data">
                     <product-select
                         size="sm"
-                        :readonly="salesOrder.is_sent"
+                        :readonly="salesOrder.is_finalised"
                         v-model="data.item.product"
                         @input="selectProduct($event, data.item)"
                     />
@@ -63,41 +84,64 @@
                 <template #cell(units_requested)="data">
                     <b-form-input
                         size="sm"
-                        v-if="!salesOrder.is_approved"
+                        :readonly="salesOrder.is_finalised"
                         type="number"
                         class="no-stepper"
                         v-model.number="data.item.units_requested" @change="updateLine(data.item)"
                     />
-                    <span v-else>{{ data.item.units_requested }}</span>
-                </template>
+                    <b-form-input
+                        size="sm"
+                        :readonly="salesOrder.is_finalised"
+                        type="number"
+                        class="no-stepper"
+                    />
+                  </template>
                 <template #cell(unit_price)="data">
                     <b-input-group :prepend="salesOrder.currency.code" size="sm">
                         <b-form-input
-                            :readonly="salesOrder.is_approved"
+                            :readonly="salesOrder.is_finalised"
                             type="number"
                             class="no-stepper"
                             v-model="data.item.unit_price"
                             @change="updateLine(data.item)"
                         />
                     </b-input-group>
-                    <div class="small text-right mr-1">{{ data.item.unit_price * salesOrder.fx_rate | cash_value }}</div>
+                    <b-input-group prepend="GBP" size="sm">
+                      <b-form-input
+                          readonly
+                          class="no-stepper"
+                          :value="data.item.unit_price * salesOrder.fx_rate | cash_value"
+                      />
+                    </b-input-group>
                 </template>
-
+                <template #cell(checked)="data">
+                    <b-form-checkbox size="lg" v-model="data.item.checked" />
+                </template>
             </b-table>
             <div class="d-flex justify-content-between w-100">
                 <div>
-                    <b-button v-if="salesOrder.id > 0 && !salesOrder.is_sent" variant="primary" size="lg">
+                    <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg" @click="finalise">
                         Finalise
                     </b-button>
                     <b-button v-if="salesOrder.id > 0" variant="secondary" size="lg">
-                        Send To Supplier
+                        Export for Supplier
                     </b-button>
                 </div>
-                <b-button class="mr-1" size="lg" variant="success" @click="add" v-if="salesOrder.id > 0 && !salesOrder.is_sent">
+                <b-button class="mr-1" size="lg" variant="success" @click="add" v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
                     Add Line
+                </b-button>
+                <b-button
+                    class="mr-1"
+                    size="lg"
+                    variant="success"
+                    v-if="salesOrder.is_finalised && hasSelectedRows"
+                    @click="$refs['update-inbound-shipments-modal'].open()"
+                >
+                    Update Inbound Shipments
                 </b-button>
             </div>
         </b-card>
+        <update-inbound-shipments-modal :lines="selectedRows" ref="update-inbound-shipments-modal" />
     </div>
 </template>
 
@@ -106,11 +150,12 @@ import {dateFilter} from "vue-date-fns";
 import SupplierSelect from "../../components/SupplierSelect";
 import CurrencySelect from "../../components/CurrencySelect";
 import ProductSelect from "../../components/ProductSelect";
+import UpdateInboundShipmentsModal from "./UpdateInboundShipmentsModal";
 
 
 export default {
     name: "EditSalesOrder",
-    components: {ProductSelect, CurrencySelect, SupplierSelect},
+    components: {UpdateInboundShipmentsModal, ProductSelect, CurrencySelect, SupplierSelect},
     props: {salesOrderId: Number},
     filters: {
         date: dateFilter
@@ -119,8 +164,16 @@ export default {
         this.refresh();
     },
     computed: {
+        selectedRows() {
+            return _.filter(this.salesOrder.lines, line => {
+                return line.checked;
+            })
+        },
+        hasSelectedRows() {
+            return this.selectedRows.length > 0;
+        },
         fields() {
-            return [{
+            const fields = [{
                 key: 'id',
                 label: '',
                 thClass: 'w-1',
@@ -132,36 +185,66 @@ export default {
                 tdClass: 'align-middle'
             }, {
                 key: 'article_number',
-                label: 'Art #',
-                thClass: 'w-10 text-nowrap'
-            }, {
-                key: 'item_number',
-                label: 'Item #',
+                label: 'Art # / Item #',
                 thClass: 'w-10 text-nowrap'
             }, {
                 key: 'packing_instructions',
                 label: 'Packing Instructions',
-                thClass: 'w-20'
+                thClass: 'w-15'
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
                 thClass: 'w-10'
             }, {
                 key: 'units_requested',
-                label: 'Qty',
-                thClass: 'w-10'
+                label: 'Units / Cu.ft',
+                thClass: 'w-8'
             }, {
                 key: 'total',
                 label: 'Total',
-                thClass: 'w-1 text-nowrap',
+                thClass: 'w-10 text-nowrap',
                 tdClass: 'text-nowrap'
-            }]
+            },{
+                key: 'checked',
+                label: '',
+                thClass: 'w-1',
+                tdClass: 'align-middle'
+            }];
+            if (this.salesOrder.is_finalised) {
+              return _.filter(fields, o => o.key !== 'id')
+            }
+            return fields;
         },
         include() {
             return 'supplier,currency,lines,lines.product,lines.product.supplier';
         }
     },
     methods: {
+        async finalise() {
+          let result = await this.$bvModal.msgBoxConfirm(
+              "Are you sure you want to finalise this into a sales order?", {
+                centered: true,
+                title: 'Please confirm',
+                okTitle: 'Yes'
+              }
+          );
+
+          if (!result) {
+            return;
+          }
+            const loader = this.$loading.show();
+            this.$http.put(
+                `/api/sales-orders/${this.salesOrder.id}`, {
+                  finalise: true,
+                }, {params: {include: this.include}}
+            ).then(response => {
+                this.salesOrder = response.data;
+                loader.hide();
+            }).catch(error => {
+                this.$handleExceptionResponse(error);
+                loader.hide();
+            });
+        },
         selectProduct(product, line) {
             this.updateLine(line);
         },

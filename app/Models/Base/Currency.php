@@ -6,6 +6,7 @@
 
 namespace App\Models\Base;
 
+use App\Models\Country;
 use App\Models\SalesOrder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property float|null $default_fx_to_gbp
  * 
+ * @property Collection|Country[] $countries_currency
  * @property Collection|SalesOrder[] $sales_orders_currency
  *
  * @package App\Models\Base
@@ -32,6 +34,11 @@ class Currency extends Model
 	protected $casts = [
 		'default_fx_to_gbp' => 'float'
 	];
+
+	public function countries_currency()
+	{
+		return $this->hasMany(Country::class);
+	}
 
 	public function sales_orders_currency()
 	{
