@@ -72,6 +72,7 @@ class ImportProductsCommand extends Command
         // Process the data in two phases
         DB::beginTransaction();
 
+        /*
         $quote = Quote::query()->where('reference', $import->config['quote_reference'])->first();
         if (!$quote) {
             $quote = new Quote([
@@ -82,6 +83,7 @@ class ImportProductsCommand extends Command
             }
             $quote->save();
         }
+        */
 
         foreach ($products as $data) {
             $validator = $this->createProductValidator($data);
@@ -104,8 +106,18 @@ class ImportProductsCommand extends Command
             $product->fill($data->only([
                 'name',
                 'article_number',
-                'item_number'
+                'item_number',
+                'barcode',
+                'packing_instructions',
+                'case_inner_qty',
+                'unit_price',
+                'units_per_case' => $data->get('case_qty'),
+                'case_weight_kg' => $data->get('case_weight_kg'),
+                'height_m' => $data->get('case_height_m'),
+                'width_m' => $data->get('case_width_m'),
+                'depth_m' => $data->get('case_depth_m'),
             ])->toArray());
+
             $product->save();
             if ($data->get('image')) {
                 $product->clearMediaCollection('default');
@@ -117,9 +129,10 @@ class ImportProductsCommand extends Command
             }
 
             if ($data->get('case_volume_cu_f') && !$data->get('case_volume_cu_m')) {
-                $data['case_volume_cu_m'] = 0.0283168 * $data->get('case_volume_cu_f');
+                $data['case_volume_cu_m'] = $data->get('case_volume_cu_f') / settings('cubic_metres_to_feet');
             }
 
+            /*
             $line = new QuoteLine([
                 'barcode' => $data->get('barcode'),
                 'packing_instructions' => $data->get('packing_instructions'),
@@ -134,6 +147,7 @@ class ImportProductsCommand extends Command
             ]);
             $line->product()->associate($product);
             $quote->lines()->save($line);
+            */
             $import->save();
         }
 

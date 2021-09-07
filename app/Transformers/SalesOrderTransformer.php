@@ -72,10 +72,12 @@ class SalesOrderTransformer extends TransformerAbstract
             'sent_at',
             'finalised_at',
             'fx_rate',
-            'total', 'total_gbp',
+            'total',
+            'total_gbp',
             'shipping_cost',
             'shipping_cost_gbp',
-            'goods_cost', 'goods_cost_gbp',
+            'goods_cost',
+            'goods_cost_gbp',
         ]);
     }
 }

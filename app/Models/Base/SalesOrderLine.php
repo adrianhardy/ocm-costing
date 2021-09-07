@@ -70,6 +70,6 @@ class SalesOrderLine extends Model
 	public function consignments()
 	{
 		return $this->belongsToMany(Consignment::class, 'sales_order_lines_consignments')
-					->withPivot('qty_shipped', 'goods_cost', 'goods_cost_gbp', 'shipping_cost_gbp', 'shipping_cost_gbp_per_unit');
+					->withPivot('qty_shipped', 'goods_cost', 'goods_cost_gbp', 'shipping_cost_gbp', 'shipping_cost_gbp_per_unit', 'invoice_amt', 'est_landed_cost_per_unit', 'est_landed_cost_per_unit_gbp');
 	}
 }

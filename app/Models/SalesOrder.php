@@ -22,6 +22,14 @@ class SalesOrder extends BaseSalesOrder
 		'supplier_id'
 	];
 
+	public function getStageDescriptionAttribute()
+    {
+        if ($this->finalised_at) {
+            return 'Sales Order';
+        }
+        return 'Quote';
+    }
+
     public function getIsFinalisedAttribute()
     {
         return $this->finalised_at !== null;

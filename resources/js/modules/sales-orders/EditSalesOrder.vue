@@ -67,12 +67,18 @@
                 </template>
                 <template #cell(product.name)="data">
                     <product-select
+                        v-if="!salesOrder.finalised_at"
                         size="sm"
                         :readonly="salesOrder.is_finalised"
                         v-model="data.item.product"
                         @input="selectProduct($event, data.item)"
                     />
-                    <span>{{ data.item.product_description }}</span>
+                    <div v-else>
+                        <div>{{ data.item.product.name }}</div>
+                        <div v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
+                            Est. L'C/Unit: {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
+                        </div>
+                    </div>
                 </template>
                 <template #cell(packing_instructions)="data">
                     <b-textarea
@@ -91,8 +97,8 @@
                     />
                     <b-form-input
                         size="sm"
-                        :readonly="salesOrder.is_finalised"
                         type="number"
+                        v-model.number="data.item.total_cubic_ft" @change="updateLine(data.item)"
                         class="no-stepper"
                     />
                   </template>
@@ -116,6 +122,24 @@
                 </template>
                 <template #cell(checked)="data">
                     <b-form-checkbox size="lg" v-model="data.item.checked" />
+                </template>
+                <template #custom-foot>
+                    <b-tr>
+                      <b-th colspan="3"></b-th>
+                      <b-th class="text-right">Total</b-th>
+                      <b-th></b-th>
+                      <b-td>
+                        <strong>Shipping</strong> <br />
+                        {{ salesOrder.currency.code}} {{ salesOrder.shipping_cost }}
+                        GBP {{ salesOrder.shipping_cost_gbp }}
+                      </b-td>
+                      <b-td>
+                        <strong>Goods</strong> <br />
+                        {{ salesOrder.currency.code}}
+                        {{ salesOrder.goods_cost }} <br />
+                        GBP {{ salesOrder.goods_cost_gbp }}
+                      </b-td>
+                    </b-tr>
                 </template>
             </b-table>
             <div class="d-flex justify-content-between w-100">
@@ -141,7 +165,12 @@
                 </b-button>
             </div>
         </b-card>
-        <update-inbound-shipments-modal :lines="selectedRows" ref="update-inbound-shipments-modal" />
+        <update-inbound-shipments-modal
+            @updated="refresh()"
+            :order="salesOrder"
+            :lines="selectedRows"
+            ref="update-inbound-shipments-modal"
+        />
     </div>
 </template>
 
@@ -179,6 +208,11 @@ export default {
                 thClass: 'w-1',
                 tdClass: 'align-middle'
             },{
+              key: 'checked',
+              label: '',
+              thClass: 'w-1',
+              tdClass: 'align-middle'
+            },{
                 key: 'product.name',
                 label: 'Product',
                 thClass: 'w-20',
@@ -204,19 +238,15 @@ export default {
                 label: 'Total',
                 thClass: 'w-10 text-nowrap',
                 tdClass: 'text-nowrap'
-            },{
-                key: 'checked',
-                label: '',
-                thClass: 'w-1',
-                tdClass: 'align-middle'
             }];
             if (this.salesOrder.is_finalised) {
               return _.filter(fields, o => o.key !== 'id')
+            } else {
+                return _.filter(fields, o => o.key !== 'checked')
             }
-            return fields;
         },
         include() {
-            return 'supplier,currency,lines,lines.product,lines.product.supplier';
+            return 'supplier,currency,lines,lines.product,lines.product.supplier,lines.landed_cost';
         }
     },
     methods: {

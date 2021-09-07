@@ -20,6 +20,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/admin/imports', 'Admin\Imports\RunController')->only(['create', 'store']);
     Route::resource('products', 'Products\ProductsController')->only(['index', 'create', 'edit']);
     Route::resource('sales-orders', 'SalesOrders\SalesOrdersController')->only(['index', 'edit']);
+    Route::resource('sales-orders.export', 'SalesOrders\ExportController')->only(['index']);
     Route::resource('/admin/users', 'Admin\UsersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/suppliers', 'Admin\SuppliersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/factories', 'Admin\FactoriesController')->only(['index', 'edit', 'create']);

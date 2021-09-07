@@ -14,7 +14,7 @@ class AddCubicMToSalesOrderLines extends Migration
     public function up()
     {
         Schema::table('sales_order_lines', function (Blueprint $table) {
-            $table->decimal('total_cubic_m')->nullable();
+            $table->decimal('total_cubic_m', 6, 4)->nullable();
         });
     }
 

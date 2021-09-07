@@ -81,7 +81,9 @@ class ProductTransformer extends TransformerAbstract
             'packing_instructions',
             'product_description',
             'unit_price',
-            'case_weight_kg'
+            'case_weight_kg',
+            'case_cubic_m',
+            'case_cubic_ft'
         ]);
     }
 }

@@ -15,6 +15,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $length_cm
  * @property $width_cm
  * @property $height_cm
+ * @property $case_cubic_m
  */
 class Product extends BaseProduct implements HasMedia
 {
@@ -74,35 +75,46 @@ class Product extends BaseProduct implements HasMedia
             });
     }
 
+    public function getCaseCubicFtAttribute()
+    {
+        return round($this->case_cubic_m * setting('cubic_metres_to_feet'), 2);
+    }
+
+    public function getCaseCubicMAttribute()
+    {
+        return $this->length_m *
+            $this->width_m *
+            $this->height_m;
+    }
 
     public function getLengthCmAttribute()
     {
-        return round($this->length_m / 100, 2);
+        return round($this->length_m * 100, 2);
     }
 
     public function getWidthCmAttribute()
     {
-        return round($this->width_m / 100, 2);
+        return round($this->width_m * 100, 2);
     }
 
     public function getHeightCmAttribute()
     {
-        return round($this->height_m / 100, 2);
+        return round($this->height_m * 100, 2);
     }
 
     public function setLengthCmAttribute($cm)
     {
-        $this->length_m = $cm*100;
+        $this->length_m = $cm/100;
     }
 
     public function setWidthCmAttribute($cm)
     {
-        $this->width_m = $cm*100;
+        $this->width_m = $cm/100;
     }
 
     public function setHeightCmAttribute($cm)
     {
-        $this->height_m = $cm*100;
+        $this->height_m = $cm/100;
     }
 
     /**
