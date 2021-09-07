@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $currency_id
  * @property float|null $fx_rate
  * @property int $supplier_id
+ * @property Carbon|null $finalised_at
  * 
  * @property Currency|null $currency
  * @property Supplier $supplier
@@ -57,7 +58,8 @@ class SalesOrder extends Model
 	];
 
 	protected $dates = [
-		'sent_at'
+		'sent_at',
+		'finalised_at'
 	];
 
 	public function currency()

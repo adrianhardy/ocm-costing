@@ -4,6 +4,12 @@ namespace App\Models;
 
 use App\Models\Base\SalesOrderLine as BaseSalesOrderLine;
 
+/**
+ * Class SalesOrderLine
+ * @package App\Models
+ * @property-read $estimated_shipping_cost_gbp
+ * @property $total_cubic_ft
+ */
 class SalesOrderLine extends BaseSalesOrderLine
 {
 	protected $fillable = [
@@ -18,5 +24,26 @@ class SalesOrderLine extends BaseSalesOrderLine
 		'unit_price_gbp',
 		'total',
 		'total_gbp',
+        'total_cubic_ft',
+        'total_cubic_m'
 	];
+
+	public function getEstimatedShippingCostGbpAttribute()
+    {
+	    return $this->total_cubic_ft
+            * setting('shipping_cost_per_cubic_foot_usd')
+            * setting('exchange_rate_usd');
+    }
+
+
+    public function getTotalCubicFtAttribute()
+    {
+        return round($this->total_cubic_m * setting('cubic_metres_to_feet'), 2);
+    }
+
+    public function setTotalCubicFtAttribute($ft)
+    {
+        return $this->total_cubic_m = $ft / setting('cubic_metres_to_feet');
+    }
+
 }

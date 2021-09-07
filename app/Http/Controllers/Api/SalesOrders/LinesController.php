@@ -37,24 +37,39 @@ class LinesController extends Controller
             'product_description',
             'name',
             'unit_price',
-            'units_requested'
+            'units_requested',
+            'total_cubic_ft'
         ]));
-        if ($request->input('product.id')) {
+
+        if ($request->input('product.id') && $request->input('product.id') != $line->product_id) {
             $product = Product::findOrFail($request->input('product.id'));
             $line->fill([
-                'name' => '' . $product->name,
-                'item_number' => '' . $product->item_number,
-                'article_number' => '' . $product->article_number,
-                'product_description' => '' . $product->product_description,
-                'packing_instructions' => '' . $product->packing_instructions,
-                'unit_price' => $product->unit_price
+                'name'                  => '' . $product->name,
+                'item_number'           => '' . $product->item_number,
+                'article_number'        => '' . $product->article_number,
+                'product_description'   => '' . $product->product_description,
+                'packing_instructions'  => '' . $product->packing_instructions,
+                'unit_price'            => $product->unit_price
             ]);
             $line->product()->associate($product);
         }
-        $line->total = $line->units_requested & $line->unit_price;
+
+        if (!$salesOrder->is_finalised &&
+            $line->isDirty('units_requested') &&
+            $line->product->case_cubic_m > 0 &&
+            $line->product->units_per_case > 0
+        ) {
+            $cases = intval(ceil($line->units_requested / $line->product->units_per_case));
+            $line->total_cubic_m = $cases * $line->product->case_cubic_m;
+        }
+
+        $line->total = $line->units_requested * $line->unit_price;
         $line->total_gbp = $line->total * $salesOrder->fx_rate;
         $line->unit_price_gbp = $line->unit_price * $salesOrder->fx_rate;
         $line->save();
+
+        $salesOrder->touch();
+
         return response()->json(
             fractal($salesOrder->fresh(), new SalesOrderTransformer())
         );

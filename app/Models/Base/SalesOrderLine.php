@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_price_gbp
  * @property float|null $total
  * @property float|null $total_gbp
+ * @property float|null $total_cubic_m
  * 
  * @property Product|null $product
  * @property SalesOrder|null $sales_order
@@ -52,7 +53,8 @@ class SalesOrderLine extends Model
 		'unit_price' => 'float',
 		'unit_price_gbp' => 'float',
 		'total' => 'float',
-		'total_gbp' => 'float'
+		'total_gbp' => 'float',
+		'total_cubic_m' => 'float'
 	];
 
 	public function product()
@@ -68,6 +70,6 @@ class SalesOrderLine extends Model
 	public function consignments()
 	{
 		return $this->belongsToMany(Consignment::class, 'sales_order_lines_consignments')
-					->withPivot('qty_shipped', 'goods_cost', 'goods_cost_gbp', 'shipping_cost_gbp', 'shipping_cost_gbp_per_unit');
+					->withPivot('qty_shipped', 'goods_cost', 'goods_cost_gbp', 'shipping_cost_gbp', 'shipping_cost_gbp_per_unit', 'invoice_amt', 'est_landed_cost_per_unit', 'est_landed_cost_per_unit_gbp');
 	}
 }

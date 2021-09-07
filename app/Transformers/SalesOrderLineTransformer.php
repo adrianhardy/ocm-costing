@@ -2,7 +2,9 @@
 
 namespace App\Transformers;
 
+use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
+use Illuminate\Support\Facades\DB;
 use League\Fractal\TransformerAbstract;
 
 class SalesOrderLineTransformer extends TransformerAbstract
@@ -22,8 +24,21 @@ class SalesOrderLineTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'product'
+        'product', 'landed_cost'
     ];
+
+    public function includeLandedCost(SalesOrderLine $line)
+    {
+        $consignment = $line->consignments()
+            ->orderBy('est_landed_cost_per_unit_gbp', 'DESC')
+            ->first();
+
+        if (!$consignment) {
+            return $this->null();
+        }
+
+        return $this->primitive($consignment->pivot);
+    }
 
     public function includeProduct(SalesOrderLine $line)
     {
@@ -60,7 +75,10 @@ class SalesOrderLineTransformer extends TransformerAbstract
             'case_weight_kg',
             'units_requested',
             'total',
-            'total_gbp'
+            'total_gbp',
+            'total_cubic_m',
+            'total_cubic_ft',
+            'estimated_shipping_cost_gbp'
         ]);
     }
 }
