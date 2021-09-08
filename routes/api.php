@@ -21,6 +21,7 @@ Route::group(['as' => 'api.'], function() {
     Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
     Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index']);
     Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);
+    Route::resource('sales-orders.history', 'Api\SalesOrders\HistoryController')->only(['index']);
     Route::resource('sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['store', 'update', 'destroy']);
     Route::resource('sales-orders/lines/shipments', 'Api\Shipments\CreateShipmentFromOrderLinesController')->only(['store', 'index']);
     Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);

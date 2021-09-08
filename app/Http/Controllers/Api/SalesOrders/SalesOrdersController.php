@@ -74,14 +74,29 @@ class SalesOrdersController extends Controller
      */
     public function update(Request $request, SalesOrder $sales_order)
     {
+        $request->validate([
+            'supplier.id' => 'required|exists:suppliers,id',
+            'currency.id' => 'required|exists:currencies,id',
+            'fx_rate' => 'required|min:0|numeric'
+        ], [], [
+            'currency.id' => 'currency',
+            'supplier.id' => 'supplier',
+            'fx_rate' => 'FX (Foreign Exchange Rate)'
+        ]);
+
+        $currency = Currency::query()->findOrFail($request->input('currency.id'));
+        $supplier = Supplier::query()->findOrFail($request->input('supplier.id'));
+        $sales_order->currency()->associate($currency);
+        $sales_order->supplier()->associate($supplier);
+
         $sales_order->fill($request->only([
             'reference', 'fx_rate'
         ]));
 
         if ($request->input('finalise')) {
             $sales_order->finalised_at = Carbon::now();
-            $sales_order->save();
         }
+        $sales_order->save();
 
         return response()->json(fractal(
             $sales_order->fresh(), new SalesOrderTransformer

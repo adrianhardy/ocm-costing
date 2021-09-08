@@ -1,35 +1,41 @@
 <template>
     <div>
-        <b-card class="shadow-sm">
+        <b-card class="shadow-sm" header-class="justify-content-between">
             <template #header>
-              <div>
-                <h4 class="m-0">Sales Order {{salesOrder.sales_order_number}}</h4>
-                <b-badge variant="success" v-if="salesOrder.is_finalised">
-                  Finalised
-                  {{ new Date(salesOrder.finalised_at) | date('dd/MM/yy HH:mm') }}
-                </b-badge>
-              </div>
+                <div>
+                    <h4 class="m-0">
+                        Sales Order {{ salesOrder.sales_order_number }}
+                    </h4>
+                    <b-badge variant="success" v-if="salesOrder.is_finalised">
+                        Finalised
+                        {{ new Date(salesOrder.finalised_at) | date('dd/MM/yy HH:mm') }}
+                    </b-badge>
+                </div>
+                <b-button variant="outline-primary" class="float-right" @click="openHistoryModal()">
+                    Show History
+                </b-button>
             </template>
             <div class="row">
                 <div class="col-12 col-md-4">
                     <b-form-group label="Supplier">
-                        <supplier-select v-model="salesOrder.supplier"/>
+                        <supplier-select v-model="salesOrder.supplier" @select="save()"/>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-4">
                     <b-form-group label="Reference">
-                        <b-form-input v-model="salesOrder.reference"/>
+                        <b-form-input v-model="salesOrder.reference" @change="save()"/>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-2">
                     <b-form-group label="Currency">
-                        <currency-select v-model="salesOrder.currency"/>
+                        <currency-select v-model="salesOrder.currency" @select="save()"/>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-2">
                     <b-form-group label="FX Rate : GBP">
                         <b-input-group :prepend="`${salesOrder.currency.code}:GBP`">
-                            <b-form-input class="no-stepper" type="number" v-model.number="salesOrder.fx_rate"/>
+                            <b-form-input class="no-stepper" type="number" v-model.number="salesOrder.fx_rate"
+                                          @change="save()"/>
                         </b-input-group>
                     </b-form-group>
                 </div>
@@ -44,26 +50,26 @@
                     <b-icon-x class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
                 </template>
                 <template #cell(article_number)="data">
-                    <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.article_number" />
-                    <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.item_number" />
+                    <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.article_number"/>
+                    <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.item_number"/>
                 </template>
                 <template #cell(total)="data">
 
-                  <b-input-group :prepend="salesOrder.currency.code" size="sm">
-                    <b-form-input
-                        readonly
-                        type="number"
-                        class="no-stepper"
-                        :value="data.value | 2dp_value"
-                    />
-                  </b-input-group>
-                  <b-input-group prepend="GBP" size="sm">
-                    <b-form-input
-                        readonly
-                        class="no-stepper"
-                        :value="data.item.total_gbp | 2dp_value"
-                    />
-                  </b-input-group>
+                    <b-input-group :prepend="salesOrder.currency.code" size="sm">
+                        <b-form-input
+                            readonly
+                            type="number"
+                            class="no-stepper"
+                            :value="data.value | 2dp_value"
+                        />
+                    </b-input-group>
+                    <b-input-group prepend="GBP" size="sm">
+                        <b-form-input
+                            readonly
+                            class="no-stepper"
+                            :value="data.item.total_gbp | 2dp_value"
+                        />
+                    </b-input-group>
                 </template>
                 <template #cell(product.name)="data">
                     <product-select
@@ -101,7 +107,7 @@
                         v-model.number="data.item.total_cubic_ft" @change="updateLine(data.item)"
                         class="no-stepper"
                     />
-                  </template>
+                </template>
                 <template #cell(unit_price)="data">
                     <b-input-group :prepend="salesOrder.currency.code" size="sm">
                         <b-form-input
@@ -113,45 +119,47 @@
                         />
                     </b-input-group>
                     <b-input-group prepend="GBP" size="sm">
-                      <b-form-input
-                          readonly
-                          class="no-stepper"
-                          :value="data.item.unit_price * salesOrder.fx_rate | cash_value"
-                      />
+                        <b-form-input
+                            readonly
+                            class="no-stepper"
+                            :value="data.item.unit_price * salesOrder.fx_rate | cash_value"
+                        />
                     </b-input-group>
                 </template>
                 <template #cell(checked)="data">
-                    <b-form-checkbox size="lg" v-model="data.item.checked" />
+                    <b-form-checkbox size="lg" v-model="data.item.checked"/>
                 </template>
                 <template #custom-foot>
                     <b-tr>
-                      <b-th colspan="3"></b-th>
-                      <b-th class="text-right">Total</b-th>
-                      <b-th></b-th>
-                      <b-td>
-                        <strong>Shipping</strong> <br />
-                        {{ salesOrder.currency.code}} {{ salesOrder.shipping_cost }}
-                        GBP {{ salesOrder.shipping_cost_gbp }}
-                      </b-td>
-                      <b-td>
-                        <strong>Goods</strong> <br />
-                        {{ salesOrder.currency.code}}
-                        {{ salesOrder.goods_cost }} <br />
-                        GBP {{ salesOrder.goods_cost_gbp }}
-                      </b-td>
+                        <b-th colspan="3"></b-th>
+                        <b-th class="text-right">Total</b-th>
+                        <b-th></b-th>
+                        <b-td>
+                            <strong>Shipping</strong> <br/>
+                            {{ salesOrder.currency.code }} {{ salesOrder.shipping_cost }}
+                            GBP {{ salesOrder.shipping_cost_gbp }}
+                        </b-td>
+                        <b-td>
+                            <strong>Goods</strong> <br/>
+                            {{ salesOrder.currency.code }}
+                            {{ salesOrder.goods_cost }} <br/>
+                            GBP {{ salesOrder.goods_cost_gbp }}
+                        </b-td>
                     </b-tr>
                 </template>
             </b-table>
             <div class="d-flex justify-content-between w-100">
                 <div>
-                    <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg" @click="finalise">
+                    <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg"
+                              @click="finalise">
                         Finalise
                     </b-button>
                     <b-button v-if="salesOrder.id > 0" variant="secondary" size="lg">
                         Export for Supplier
                     </b-button>
                 </div>
-                <b-button class="mr-1" size="lg" variant="success" @click="add" v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
+                <b-button class="mr-1" size="lg" variant="success" @click="add"
+                          v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
                     Add Line
                 </b-button>
                 <b-button
@@ -165,6 +173,10 @@
                 </b-button>
             </div>
         </b-card>
+        <sales-order-history-modal
+            :sales-order="salesOrder"
+            ref="sales-order-history-modal"
+        />
         <update-inbound-shipments-modal
             @updated="refresh()"
             :order="salesOrder"
@@ -180,11 +192,12 @@ import SupplierSelect from "../../components/SupplierSelect";
 import CurrencySelect from "../../components/CurrencySelect";
 import ProductSelect from "../../components/ProductSelect";
 import UpdateInboundShipmentsModal from "./UpdateInboundShipmentsModal";
+import SalesOrderHistoryModal from "./SalesOrderHistoryModal";
 
 
 export default {
     name: "EditSalesOrder",
-    components: {UpdateInboundShipmentsModal, ProductSelect, CurrencySelect, SupplierSelect},
+    components: {SalesOrderHistoryModal, UpdateInboundShipmentsModal, ProductSelect, CurrencySelect, SupplierSelect},
     props: {salesOrderId: Number},
     filters: {
         date: dateFilter
@@ -207,12 +220,12 @@ export default {
                 label: '',
                 thClass: 'w-1',
                 tdClass: 'align-middle'
-            },{
-              key: 'checked',
-              label: '',
-              thClass: 'w-1',
-              tdClass: 'align-middle'
-            },{
+            }, {
+                key: 'checked',
+                label: '',
+                thClass: 'w-1',
+                tdClass: 'align-middle'
+            }, {
                 key: 'product.name',
                 label: 'Product',
                 thClass: 'w-20',
@@ -240,7 +253,7 @@ export default {
                 tdClass: 'text-nowrap'
             }];
             if (this.salesOrder.is_finalised) {
-              return _.filter(fields, o => o.key !== 'id')
+                return _.filter(fields, o => o.key !== 'id')
             } else {
                 return _.filter(fields, o => o.key !== 'checked')
             }
@@ -250,23 +263,30 @@ export default {
         }
     },
     methods: {
+        openHistoryModal() {
+            this.$refs['sales-order-history-modal'].open();
+        },
         async finalise() {
-          let result = await this.$bvModal.msgBoxConfirm(
-              "Are you sure you want to finalise this into a sales order?", {
-                centered: true,
-                title: 'Please confirm',
-                okTitle: 'Yes'
-              }
-          );
+            let result = await this.$bvModal.msgBoxConfirm(
+                "Are you sure you want to finalise this into a sales order?", {
+                    centered: true,
+                    title: 'Please confirm',
+                    okTitle: 'Yes'
+                }
+            );
 
-          if (!result) {
-            return;
-          }
+            if (!result) {
+                return;
+            }
+
+            this.save({finalised: true})
+        },
+
+        save(model = false) {
+            console.log(this.salesOrder.reference);
             const loader = this.$loading.show();
             this.$http.put(
-                `/api/sales-orders/${this.salesOrder.id}`, {
-                  finalise: true,
-                }, {params: {include: this.include}}
+                `/api/sales-orders/${this.salesOrder.id}`, (model) ? model : this.salesOrder, {params: {include: this.include}}
             ).then(response => {
                 this.salesOrder = response.data;
                 loader.hide();
