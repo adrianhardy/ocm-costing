@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Shipments;
 
+use App\Domain\LandedCostCalculator;
 use App\Http\Controllers\Controller;
 use App\Models\Base\SalesOrder;
 use App\Models\Consignment;
@@ -35,22 +36,18 @@ class CreateShipmentFromOrderLinesController extends Controller
 
             /** @var SalesOrderLine $soLine */
             $soLine = SalesOrderLine::query()->findOrFail($data['id']);
-            $fx = $soLine->sales_order->fx_rate;
             $invoiceAmount = $data['invoice_amt'];
-            $goodsTotal = $soLine->unit_price * $data['qty_on_boat'];
-            $shippingCost = $invoiceAmount - $goodsTotal;
-            $shippingCostPerUnit = $shippingCost / $data['qty_on_boat'];
 
-            $shipment->sales_order_lines()->save($soLine, [
-                'qty_shipped' => $data['qty_on_boat'],
-                'goods_cost' => $goodsTotal,
-                'goods_cost_gbp' => $goodsTotal * $fx,
-                'shipping_cost_gbp' =>  $shippingCost * $fx,
-                'shipping_cost_gbp_per_unit' => $shippingCostPerUnit * $fx,
-                'est_landed_cost_per_unit' => $soLine->unit_price + $shippingCostPerUnit,
-                'est_landed_cost_per_unit_gbp' => $soLine->unit_price_gbp + ($shippingCostPerUnit * $fx),
-                'invoice_amt' => $invoiceAmount
-            ]);
+
+            $calculator = new LandedCostCalculator();
+            $new = $calculator->calculateFromSalesOrderLine(
+                $soLine,
+                $data['qty_on_boat'],
+                $invoiceAmount
+            );
+
+            $shipment->sales_order_lines()->save($soLine, $new);
+            $shipment->save();
         }
         DB::commit();
 

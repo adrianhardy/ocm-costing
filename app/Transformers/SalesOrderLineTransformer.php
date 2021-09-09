@@ -24,7 +24,7 @@ class SalesOrderLineTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'product', 'landed_cost'
+        'product', 'landed_cost', 'consignments'
     ];
 
     public function includeLandedCost(SalesOrderLine $line)
@@ -46,6 +46,11 @@ class SalesOrderLineTransformer extends TransformerAbstract
             return $this->null();
         }
         return $this->item($line->product, new ProductTransformer());
+    }
+
+    public function includeConsignments(SalesOrderLine $line)
+    {
+        return $this->collection($line->consignments, new ConsignmentTransformer());
     }
 
     /**
