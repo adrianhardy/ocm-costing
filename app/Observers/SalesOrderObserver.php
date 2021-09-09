@@ -3,6 +3,10 @@
 namespace App\Observers;
 
 use App\Models\SalesOrder;
+use App\Models\Version;
+use App\Transformers\SalesOrderTransformer;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SalesOrderObserver
 {
@@ -17,5 +21,24 @@ class SalesOrderObserver
 
         $salesOrder->total = $salesOrder->goods_cost + $salesOrder->shipping_cost;
         $salesOrder->total_gbp = $salesOrder->goods_cost_gbp + $salesOrder->shipping_cost_gbp;
+    }
+
+    /**
+     * @param SalesOrder $salesOrder
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function saved(SalesOrder $salesOrder)
+    {
+        $json = fractal($salesOrder)
+            ->parseIncludes(['lines', 'lines.product'])
+            ->transformWith(new SalesOrderTransformer())
+            ->toArray();
+
+        $version = new Version();
+        $version->model_data = $json;
+        $version->user()->associate(\Auth::user());
+        $salesOrder->history()->save($version);
+
+        return response()->json([], 201);
     }
 }

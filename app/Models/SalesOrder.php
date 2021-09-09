@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Base\SalesOrder as BaseSalesOrder;
+use Mpociot\Versionable\VersionableTrait;
 
 /**
  * Class SalesOrder
@@ -48,5 +49,13 @@ class SalesOrder extends BaseSalesOrder
 	public function lines()
     {
         return $this->sales_order_lines_sales_order();
+    }
+
+    public function history()
+    {
+        return $this->morphMany(
+            Version::class,
+            'versionable'
+        );
     }
 }
