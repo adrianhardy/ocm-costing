@@ -27,13 +27,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $units_per_case
  * @property int|null $inner_qty
  * @property float|null $case_weight_kg
- * @property float $unit_weight_kg
+ * @property float|null $unit_weight_kg
  * @property float|null $height_m
  * @property float|null $length_m
  * @property float|null $width_m
- * @property float $unit_height_m
- * @property float $unit_length_m
- * @property float $unit_width_m
+ * @property float|null $unit_height_m
+ * @property float|null $unit_length_m
+ * @property float|null $unit_width_m
  * @property float|null $unit_price
  * @property float|null $est_landed_cost_gbp
  * @property string|null $barcode

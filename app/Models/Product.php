@@ -18,6 +18,9 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $case_cubic_m
  *
  * @property $unit_depth_m aliases to unit_length_m
+ * @property $unit_length_cm
+ * @property $unit_width_cm
+ * @property $unit_height_cm
  */
 class Product extends BaseProduct implements HasMedia
 {
@@ -36,6 +39,9 @@ class Product extends BaseProduct implements HasMedia
         'unit_length_m',
         'unit_width_m',
         'unit_height_m',
+        'unit_length_cm',
+        'unit_width_cm',
+        'unit_height_cm',
         'length_cm',
         'width_cm',
         'height_cm',
@@ -63,6 +69,9 @@ class Product extends BaseProduct implements HasMedia
         'unit_length_m',
         'unit_width_m',
         'unit_height_m',
+        'unit_length_cm',
+        'unit_width_cm',
+        'unit_height_cm',
         'units_per_case',
         'inner_qty',
         'packing_instructions',
@@ -112,6 +121,21 @@ class Product extends BaseProduct implements HasMedia
         return round($this->height_m * 100, 2);
     }
 
+    public function getUnitLengthCmAttribute()
+    {
+        return round($this->unit_length_m * 100, 2);
+    }
+
+    public function getUnitWidthCmAttribute()
+    {
+        return round($this->unit_width_m * 100, 2);
+    }
+
+    public function getUnitHeightCmAttribute()
+    {
+        return round($this->unit_height_m * 100, 2);
+    }
+
     public function setLengthCmAttribute($cm)
     {
         $this->length_m = $cm/100;
@@ -126,6 +150,22 @@ class Product extends BaseProduct implements HasMedia
     {
         $this->height_m = $cm/100;
     }
+
+    public function setUnitLengthCmAttribute($cm)
+    {
+        $this->unit_length_m = $cm/100;
+    }
+
+    public function setUnitWidthCmAttribute($cm)
+    {
+        $this->unit_width_m = $cm/100;
+    }
+
+    public function setUnitHeightCmAttribute($cm)
+    {
+        $this->unit_height_m = $cm/100;
+    }
+
 
     /**
      * @param $model
