@@ -9,13 +9,14 @@ class ProductPricing extends BaseProductPricing
 	protected $fillable = [
 		'product_id',
 		'est_landed_cost_per_unit_gbp',
-		'marketplace_unit_commission_gbp',
-		'marketplace_unit_fee_gbp',
-		'unit_shipping_gbp',
-		'unit_duty_gbp',
-		'suggested_price_gbp',
-		'price_gbp',
+        'marketplace_commission_pc',
+        'suggested_unit_price_gbp',
+        'unit_shipping_gbp',
+        'unit_price_gbp',
+        'gross_unit_cost_gbp',
+        'margin_pc',
 		'approved_at',
+        'superseded_at',
 		'approver_id'
 	];
 }

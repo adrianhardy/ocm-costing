@@ -163,19 +163,31 @@
                         Export for Supplier
                     </b-button>
                 </div>
-                <b-button class="mr-1" size="lg" variant="success" @click="add"
-                          v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
+                <div>
+                  <b-button class="mr-1" size="lg" variant="success" @click="add"
+                            v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
                     Add Line
-                </b-button>
-                <b-button
-                    class="mr-1"
-                    size="lg"
-                    variant="success"
-                    v-if="salesOrder.is_finalised && hasSelectedRows"
-                    @click="$refs['update-inbound-shipments-modal'].open()"
-                >
+                  </b-button>
+
+                  <b-button
+                      class="mr-1"
+                      size="lg"
+                      variant="primary"
+                      v-if="salesOrder.is_finalised && hasSelectedRows"
+                      @click="confirmSendToPricing()"
+                  >
+                    Send To Pricing
+                  </b-button>
+                  <b-button
+                      class="mr-1"
+                      size="lg"
+                      variant="success"
+                      v-if="salesOrder.is_finalised && hasSelectedRows"
+                      @click="$refs['update-inbound-shipments-modal'].open()"
+                  >
                     Update Inbound Shipments
-                </b-button>
+                  </b-button>
+                </div>
             </div>
         </b-card>
         <sales-order-history-modal
@@ -268,6 +280,35 @@ export default {
         }
     },
     methods: {
+        async confirmSendToPricing() {
+            let result = await this.$bvModal.msgBoxConfirm(
+                'Are you sure you want to send the selected lines to pricing? This will invalidate any current pricing', {
+                  okTitle: 'Yes, Continue',
+                  title: 'Please confirm',
+                  centered: true
+                }
+            );
+
+            if (!result) {
+                return;
+            }
+
+            const loader = this.$loading.show();
+            this.$http.post('/api/sales-orders/lines/pricing', {
+                lines: this.selectedRows
+            }).then(() => {
+                loader.hide();
+                this.$bvModal.msgBoxOk(
+                    'The selected products have been sent to pricing', {
+                      centered: true,
+                      title: 'Confirmation'
+                    }
+                );
+            }).catch(error => {
+                loader.hide();
+                this.$handleExceptionResponse(error, true);
+            });
+        },
         openHistoryModal() {
             this.$refs['sales-order-history-modal'].open();
         },

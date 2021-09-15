@@ -8,6 +8,7 @@ use App\Models\Base\SalesOrderLine as BaseSalesOrderLine;
  * Class SalesOrderLine
  * @package App\Models
  * @property-read $estimated_shipping_cost_gbp
+ * @property-read $worst_estimated_landed_cost_data
  * @property $total_cubic_ft
  */
 class SalesOrderLine extends BaseSalesOrderLine
@@ -44,6 +45,17 @@ class SalesOrderLine extends BaseSalesOrderLine
     public function setTotalCubicFtAttribute($ft)
     {
         return $this->total_cubic_m = $ft / setting('cubic_metres_to_feet');
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getWorstEstimatedLandedCostDataAttribute()
+    {
+        $consignment = $this->consignments()
+            ->orderBy('est_landed_cost_per_unit_gbp', 'DESC')
+            ->first();
+        return optional($consignment)->pivot;
     }
 
 }
