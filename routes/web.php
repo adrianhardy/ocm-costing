@@ -13,7 +13,14 @@
 
 Auth::routes(['register' => false]);
 Route::redirect('/', '/home');
+<<<<<<< HEAD
 Route::group(['middleware' => ['auth', 'role:super|admin']], function() {
+=======
+
+// Route::get('/login/token/{token}')
+
+Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
+>>>>>>> 2d40486 (Model for quick/auto logging people in)
     Route::resource('/admin/media', 'Admin\MediaController')->only(['show', 'destroy']);
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('/admin/imports/preview', 'Admin\Imports\PreviewController')->only(['store', 'update']);
