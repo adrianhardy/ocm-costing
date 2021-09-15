@@ -19,7 +19,6 @@
         </b-form-group>
       </div>
       <div class="col-12 col-md-6">
-        <div class="row">
           <div class="col-12 col-md-6">
             <b-form-group label="Password">
               <b-form-input v-model="user.password" type="password"/>
@@ -31,8 +30,14 @@
             </b-form-group>
           </div>
         </div>
+          <div v-else>
+            <div class="alert alert-warning">
+              Please note that suppliers can <strong>only</strong> access the system
+              using time limited URLs. You can provide access to specific Sales Orders
+              so that suppliers can review and update them.
+            </div>
+          </div>
       </div>
-    </div>
     <b-button class="float-right" variant="primary" @click="save()">Save</b-button>
   </b-card>
 </div>
@@ -43,7 +48,7 @@ export default {
   props: ['isCreating', 'user-id', 'roles', 'current-user'],
   name: "EditUser",
   mounted() {
-    if(this.userId){
+    if (this.userId) {
       this.refresh();
     }
   },
@@ -54,8 +59,11 @@ export default {
     }
   },
   computed: {
-    saveUrl(){
-      if(this.isCreating){
+    isCreating() {
+      return this.userId < 1;
+    },
+    saveUrl() {
+      if (this.isCreating) {
         return '/api/admin/users'
       } else {
         return `/api/admin/users/${this.userId}`
@@ -65,7 +73,7 @@ export default {
   methods: {
     save() {
       const loader = this.$loading.show();
-      const method = this.isCreating?'post':'put'
+      const method = this.isCreating ? 'post' : 'put'
       const payload = {...this.user};
       this.$http(this.saveUrl, {
         method: method,
@@ -82,7 +90,7 @@ export default {
           title: 'User',
           variant: 'success'
         });
-        if(method === 'post'){
+        if (method === 'post') {
           loader.hide()
           window.location.href = '/admin/users'
         } else {
@@ -110,7 +118,7 @@ export default {
   },
   data(){
     return {
-      user: {},
+      user: {}
     }
   }
 }

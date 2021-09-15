@@ -27,10 +27,12 @@ class UsersController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $unique = Rule::unique('users','email')->ignoreModel($user);
         $request->validate([
            'name'     => 'required|max:255',
            'password' => 'sometimes|nullable|confirmed|password|min:8',
-           'email'    => ['required', Rule::unique('users','email')->ignore($request->input(['id'])), 'max:128'],
+           'email'    => ['required', $unique, 'email', 'max:128'],
+           'role'     => 'required|in:super,admin,supplier'
         ]);
 
         $user->fill($request->only([
@@ -39,13 +41,13 @@ class UsersController extends Controller
         ]));
 
         if($request->input('password')) {
-
             $user->password = bcrypt($request->input('password'));
         }
         if ($request->input('role')) {
             $user->syncRoles($request->input('role'));
         }
 
+        $user->syncRoles([$request->input('role')]);
         $user->save();
 
         return response()->json(
@@ -55,22 +57,20 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
+        $required = $request->input('role') !== 'supplier'?'required|confirmed|password|min:8':'nullable';
         $request->validate([
             'name'     => 'required|max:255',
             'password' => 'required|confirmed|min:8',
-            'email'    => ['required', Rule::unique('users','email'), 'max:128'],
+            'email'    => [$required, Rule::unique('users','email'), 'max:128'],
+            'role'     => 'required|in:super,admin,supplier'
         ]);
 
         $user = new User();
         $user->fill($request->only([
             'name',
             'email',
-            ]));
-
-        if ($request->input('role')) {
-            $user->syncRoles($request->input('role'));
-        }
-
+        ]));
+        $user->syncRoles($request->input('role'));
         $user->password = bcrypt($request->input('password'));
         $user->save();
 

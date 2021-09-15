@@ -54,5 +54,13 @@
             </a>
         </li>
         @endrole
+        @role('super')
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('users.index') }}">
+                <b-icon-person scale="0.8"></b-icon-person>
+                Users
+            </a>
+        </li>
+        @endrole
     @endauth
 </ul>
