@@ -86,9 +86,9 @@
                     />
                     <div v-else>
                         <div>{{ data.item.product.name }}</div>
-                        <div v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
-                            Est. L'C/Unit: {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
-                        </div>
+                        <b-badge v-b-tooltip.hover.right title="Estimated Landed Cost" variant="primary" v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
+                            {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
+                        </b-badge>
                     </div>
                 </template>
                 <template #cell(packing_instructions)="data">
