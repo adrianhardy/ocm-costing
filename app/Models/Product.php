@@ -16,6 +16,8 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $width_cm
  * @property $height_cm
  * @property $case_cubic_m
+ *
+ * @property $unit_depth_m aliases to unit_length_m
  */
 class Product extends BaseProduct implements HasMedia
 {

@@ -109,7 +109,6 @@ class ImportProductsCommand extends Command
             $product->fill($data->only([
                 'name',
                 'article_number',
-                'item_number',
                 'barcode',
                 'packing_instructions',
                 'case_inner_qty',
@@ -117,16 +116,21 @@ class ImportProductsCommand extends Command
                 'case_weight_kg',
                 'unit_weight_kg',
                 'unit_height_m',
-                'unit_width_m',
-                'unit_depth_m',
+                'unit_width_m'
             ])->toArray());
 
             $product->fill([
                 'units_per_case' => $data->get('case_qty'),
-                'height_m' => $data->get('case_height_m'),
-                'width_m' => $data->get('case_width_m'),
-                'length_m' => $data->get('case_depth_m'),
+                'height_m'      => $data->get('case_height_m'),
+                'width_m'       => $data->get('case_width_m'),
+                'length_m'      => $data->get('case_depth_m'),
+                'unit_length_m' => $data->get('unit_depth_m')
             ]);
+
+            // workaround not nullable constraint
+            if (!$product->item_number) {
+                $product->item_number = '';
+            }
 
             $product->save();
             if ($data->get('image')) {
@@ -180,7 +184,7 @@ class ImportProductsCommand extends Command
             'packing_instructions'  => $data->get('packing_instructions'),
             'barcode'               => $data->get('barcode')
         ],[
-            'item_number'           => 'required|min:2|max:200',
+            'item_number'           => 'min:0|max:200',
             'article_number'        => 'required|min:2|max:200',
             'name'                  => 'required|min:2|max:200',
             'packing_instructions'  => 'sometimes|min:0|max:512',

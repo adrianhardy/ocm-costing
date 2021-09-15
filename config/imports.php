@@ -24,11 +24,11 @@ return [
             'measurements' => [
                 'case_width_m'        => 'Carton Width (m)',
                 'case_height_m'       => 'Carton Height (m)',
-                'case_depth_m'        => 'Carton Depth (m)',
+                'case_depth_m'        => 'Carton Length (m)',
                 'case_weight_kg'      => 'Carton Weight (kg)',
                 'unit_width_m'        => 'Unit Width (m)',
-                'unit_height_m'       => 'Unit Width (m)',
-                'unit_depth_m'        => 'Unit Depth (m)',
+                'unit_height_m'       => 'Unit Height (m)',
+                'unit_depth_m'        => 'Unit Length (m)',
                 'unit_weight_kg'      => 'Unit Weight (kg)',
             ]
         ]
