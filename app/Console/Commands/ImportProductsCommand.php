@@ -114,7 +114,6 @@ class ImportProductsCommand extends Command
                 'packing_instructions',
                 'case_inner_qty',
                 'unit_price',
-                'units_per_case',
                 'case_weight_kg',
                 'unit_weight_kg',
                 'unit_height_m',
@@ -123,9 +122,10 @@ class ImportProductsCommand extends Command
             ])->toArray());
 
             $product->fill([
+                'units_per_case' => $data->get('case_qty'),
                 'height_m' => $data->get('case_height_m'),
                 'width_m' => $data->get('case_width_m'),
-                'depth_m' => $data->get('case_depth_m'),
+                'length_m' => $data->get('case_depth_m'),
             ]);
 
             $product->save();

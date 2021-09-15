@@ -1,7 +1,14 @@
 <template>
 <div>
-  <b-card class="shadow-sm">
-    <slot name="title"/>
+  <b-card class="shadow-sm" header-class="justify-content-between">
+    <template #header>
+      <div>
+        <slot name="title"/>
+      </div>
+      <div>
+        <b-button variant="outline-primary" :href="`/sales-orders/${orderId}/edit`">Back to Sales Order</b-button>
+      </div>
+    </template>
     <div>
       <b-table
           small
@@ -22,33 +29,33 @@
           </div>
         </template>
         <template #row-details="row">
-          <h5>Consignments</h5>
           <b-table-simple striped borderless outlined class="p-8">
             <b-tr>
-              <b-th>Reference</b-th>
-              <b-th>Qty Shipped</b-th>
-              <b-th>Goods Cost</b-th>
-              <b-th>Goods Cost GBP</b-th>
-              <b-th>Shipping Cost GBP</b-th>
-              <b-th>Shipping Cost GBP/Unit</b-th>
-              <b-th>Invoice Amt</b-th>
+              <b-th class="w-15">Reference</b-th>
+              <b-th class="w-10">Goods Cost</b-th>
+              <b-th class="w-10"></b-th>
+              <b-th class="w-10">Shipping Cost</b-th>
+              <b-th class="w-10"></b-th>
+              <b-th>Ship' &pound;/Unit</b-th>
+              <b-th class="text-nowrap">Qty Shipped</b-th>
+              <b-th class="text-nowrap">Invoice Amt</b-th>
             </b-tr>
             <b-tbody>
+              <b-tr v-if="row.item.consignments.length < 1">
+                <b-td colspan="7" class="text-center">No shipments recorded yet</b-td>
+              </b-tr>
               <b-tr v-for="consignment in row.item.consignments" :key="consignment.id +':'+ row.item.id">
                 <b-td class="w-15">{{ consignment.reference }}</b-td>
-                <b-td class="w-5">
-                  <b-form-group>
-                    <b-form-input size="sm" @change="updateConsignment(row.item, consignment)" v-model="consignment.pivot.qty_shipped"/>
-                  </b-form-group>
-                </b-td>
                 <b-td>{{consignment.pivot.goods_cost}}</b-td>
                 <b-td>{{consignment.pivot.goods_cost_gbp | cash_value}}</b-td>
+                <b-td>{{ (consignment.pivot.invoice_amt - consignment.pivot.goods_cost) | 2dp_value}}</b-td>
                 <b-td>{{consignment.pivot.shipping_cost_gbp | cash_value}}</b-td>
                 <b-td>{{consignment.pivot.shipping_cost_gbp_per_unit | cash_value}}</b-td>
                 <b-td class="w-10">
-                  <b-form-group>
+                  <b-form-input size="sm" @change="updateConsignment(row.item, consignment)" v-model="consignment.pivot.qty_shipped"/>
+                </b-td>
+                <b-td class="w-10">
                     <b-form-input size="sm" @change="updateConsignment(row.item, consignment)" v-model="consignment.pivot.invoice_amt"/>
-                  </b-form-group>
                 </b-td>
               </b-tr>
             </b-tbody>
@@ -63,7 +70,7 @@
 <script>
 export default {
   name: "ConsignmentsList",
-  props: ['order-id'],
+  props: {orderId: Number},
   computed: {
     include() {
       return 'product,landed_cost,consignments,consignments.pivot';

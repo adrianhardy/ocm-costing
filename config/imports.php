@@ -8,7 +8,7 @@ return [
                 'item_number'         => 'Item Number',
             ],
             'costing' => [
-                'unit_price'          => 'Unit Price',
+                'unit_price'            => 'Unit Price',
             ],
             'quantities' => [
                 'cases'                 => 'Total Cartons',

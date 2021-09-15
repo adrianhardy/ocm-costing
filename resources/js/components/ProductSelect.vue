@@ -41,7 +41,8 @@ export default {
             const params = {
                 search: search,
                 page: 1,
-                per_page: 50
+                per_page: 50,
+                include: 'media'
             };
 
             loading(true);

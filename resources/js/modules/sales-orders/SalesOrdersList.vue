@@ -26,9 +26,6 @@
                 </template>
                 <template #cell(reference)="data">
                     <a :href="`/sales-orders/${data.item.id}/edit`">{{ data.value }}</a>
-                  <a :href="`/sales-orders/${data.item.id}/consignments`" v-b-tooltip.top title="Consignments">
-                    <b-icon-file-text />
-                  </a>
                 </template>
                 <template #cell(created_at)="data">
                     <span>{{ new Date(data.value) | date('dd/MM/yy HH:mm') }}</span>

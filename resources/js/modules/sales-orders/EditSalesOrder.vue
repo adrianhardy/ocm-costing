@@ -11,9 +11,14 @@
                         {{ new Date(salesOrder.finalised_at) | date('dd/MM/yy HH:mm') }}
                     </b-badge>
                 </div>
-                <b-button variant="outline-primary" class="float-right" @click="openHistoryModal()">
-                    Show History
-                </b-button>
+                <div>
+                  <b-button variant="outline-primary"  @click="openHistoryModal()">
+                    Show Changes
+                  </b-button>
+                  <b-button variant="outline-primary" :href="`/sales-orders/${salesOrderId}/consignments`">
+                    Shipping History
+                  </b-button>
+                </div>
             </template>
             <div class="row">
                 <div class="col-12 col-md-4">
@@ -154,7 +159,7 @@
                               @click="finalise">
                         Finalise
                     </b-button>
-                    <b-button v-if="salesOrder.id > 0" variant="secondary" size="lg">
+                    <b-button v-show="false" v-if="salesOrder.id > 0" variant="secondary" size="lg">
                         Export for Supplier
                     </b-button>
                 </div>

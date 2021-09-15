@@ -10,14 +10,19 @@
                         <supplier-select all v-model="product.supplier"/>
                     </b-form-group>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                             <b-form-group label="Item Number">
                                 <b-form-input all v-model="product.item_number"/>
                             </b-form-group>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <b-form-group label="Article Number">
                                 <b-form-input all v-model="product.article_number"/>
+                            </b-form-group>
+                        </div>
+                        <div class="col-4">
+                            <b-form-group label="Barcode">
+                                <b-form-input all v-model="product.barcode"/>
                             </b-form-group>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 <template>
-    <b-modal ref="modal" title="Shipment History" ok-only size="xl">
+    <b-modal ref="modal" title="Sales Order History" ok-only size="xl">
       <b-table-simple>
         <b-thead>
           <b-tr>
