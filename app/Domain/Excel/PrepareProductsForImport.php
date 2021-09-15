@@ -42,6 +42,12 @@ class PrepareProductsForImport
             }
             $mappedRow = collect();
             foreach ($mapping as $column => $name) {
+
+                if (!$name) {
+                    // skip empty mapping columns, like "[ None ]"
+                    continue;
+                }
+
                 if (isset($row[$column])) {
                     $mappedRow[$name] = $row[$column]['value'];
                     $mappedRow['_source'] = $row[$column]['coords'];
@@ -57,6 +63,7 @@ class PrepareProductsForImport
                     return $image['coords']['row'] >= $row['_source']['row']
                         && $image['coords']['row'] < $nextRow['_source']['row'];
                 });
+
                 if ($candidates->count() > 0) {
                     $row['image'] = base64_encode($candidates->first()['blob']);
                 }

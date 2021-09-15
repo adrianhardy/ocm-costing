@@ -42,9 +42,9 @@
                   </b-form-group>
                 </b-td>
                 <b-td>{{consignment.pivot.goods_cost}}</b-td>
-                <b-td>£{{consignment.pivot.goods_cost_gbp}}</b-td>
-                <b-td>£{{consignment.pivot.shipping_cost_gbp}}</b-td>
-                <b-td>£{{consignment.pivot.shipping_cost_gbp_per_unit}}</b-td>
+                <b-td>{{consignment.pivot.goods_cost_gbp | cash_value}}</b-td>
+                <b-td>{{consignment.pivot.shipping_cost_gbp | cash_value}}</b-td>
+                <b-td>{{consignment.pivot.shipping_cost_gbp_per_unit | cash_value}}</b-td>
                 <b-td class="w-10">
                   <b-form-group>
                     <b-form-input size="sm" @change="updateConsignment(row.item, consignment)" v-model="consignment.pivot.invoice_amt"/>
@@ -120,7 +120,8 @@ export default {
         {key: 'article_number', label: 'Art. #'},
         {key: 'item_number', label: 'Item #'},
         {key: 'unit_price', label: 'Unit Price'},
-        {key: 'estimated_shipping_cost_gbp', label: 'Est Shipping Cost GBP'},
+        {key: 'landed_cost.shipping_cost_gbp', label: 'Est Shipping Cost GBP'},
+        {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Est Landed Cost / Unit GBP'},
         {key: 'expand', label: ''},
       ],
       pagination: {

@@ -27,15 +27,21 @@
                 <div class="col-12 col-md-6">
                     <b-tabs content-class="pt-3">
                         <b-tab title="Product">
+                            <h5>Carton</h5>
                             <div class="row">
-                                <div class="col-6">
-                                    <b-form-group label="Case Qty">
+                                <div class="col-4">
+                                    <b-form-group label="Quantity">
                                         <b-form-input v-model="product.units_per_case"/>
                                     </b-form-group>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-4">
                                     <b-form-group label="Inner Qty">
                                         <b-form-input v-model="product.inner_qty"/>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Weight (kg)">
+                                        <b-form-input v-model="product.case_weight_kg"/>
                                     </b-form-group>
                                 </div>
                             </div>
@@ -56,17 +62,35 @@
                                     </b-form-group>
                                 </div>
                             </div>
+                            <h5>Unit</h5>
                             <div class="row">
-                                <div class="col-6">
-                                    <b-form-group label="Case Weight (kg)">
-                                        <b-form-input v-model="product.case_weight_kg"/>
-                                    </b-form-group>
-                                </div>
                                 <div class="col-6">
                                     <b-form-group label="Unit Price ($)">
                                         <b-form-input v-model="product.unit_price"/>
                                     </b-form-group>
                                 </div>
+                                <div class="col-6">
+                                    <b-form-group label="Unit Weight (kg)">
+                                        <b-form-input v-model="product.unit_weight_kg"/>
+                                    </b-form-group>
+                                </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-4">
+                                <b-form-group label="Length (cm)">
+                                  <b-form-input v-model="product.unit_length_cm"/>
+                                </b-form-group>
+                              </div>
+                              <div class="col-4">
+                                <b-form-group label="Width (cm)">
+                                  <b-form-input v-model="product.unit_width_cm"/>
+                                </b-form-group>
+                              </div>
+                              <div class="col-4">
+                                <b-form-group label="Height (cm)">
+                                  <b-form-input v-model="product.unit_height_cm"/>
+                                </b-form-group>
+                              </div>
                             </div>
                             <b-form-group label="Product Description">
                                 <b-textarea v-model="product.product_description" maxlength="500"/>

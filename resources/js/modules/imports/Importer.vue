@@ -53,9 +53,10 @@
 
         <div class="row" v-if="this.file">
             <div class="col-md-8">
-                <b-table class="mapping-table" small :items="sample" :fields="tableColumns">
+                <b-table bordered class="mapping-table" small :items="sample" :fields="tableColumns">
                     <template v-for="(column, index) in tableColumns" v-slot:[`head(${column.key})`]="data">
                         <b-select size="sm" v-model="mapping[index]">
+                            <b-select-option value="">[ None ]</b-select-option>
                             <b-select-option-group v-for="(options, group) in mappableColumns" :label="group" :key="group">
                                 <b-select-option :value="value" v-for="(label, value) in options" :key="value">{{ label }}</b-select-option>
                             </b-select-option-group>
@@ -197,6 +198,11 @@ export default {
                 });
         },
         preview() {
+
+            if (!this.file) {
+              return;
+            }
+
             const loader = this.$loading.show();
             let formData = new FormData();
             formData.append('xlsx', this.file);
@@ -253,7 +259,12 @@ export default {
         margin: 0 auto;
         overflow-x: auto;
         white-space: nowrap;
-        max-height: 600px
+        max-height: 700px
+    }
+
+    >>> .table.mapping-table td {
+      padding-top: 1px;
+      padding-bottom: 1px;
     }
 
     .horizontal-scroll {

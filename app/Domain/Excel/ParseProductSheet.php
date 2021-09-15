@@ -125,20 +125,34 @@ class ParseProductSheet
     public function scanImages()
     {
         $images = array_map(function($drawing) {
+            $payload = [
+                'coords' => [
+                    'column' => substr($drawing->getCoordinates(), 0, 1),
+                    'row' => substr($drawing->getCoordinates(), 1)
+                ],
+                'blob' => null
+            ];
             if ($drawing instanceof MemoryDrawing) {
                 $temp = fopen('php://temp', 'w');
                 imagepng($drawing->getImageResource(), $temp);
                 $bytes = ftell($temp);
                 rewind($temp);
-                return [
-                    'coords' => [
-                        'column' => substr($drawing->getCoordinates(), 0, 1),
-                        'row' => substr($drawing->getCoordinates(), 1)
-                    ],
-                    'blob' => fread($temp, $bytes)
-                ];
+                $payload['blob'] = fread($temp, $bytes);
+            } else {
+                $zip = fopen($drawing->getPath(), 'r');
+                $blob = '';
+                while (!feof($zip)) {
+                    $blob .= fread($zip, 1024);
+                }
+                $payload['blob'] = $blob;
             }
+
+            if ($payload['blob']) {
+                return $payload;
+            }
+
             return null;
+
         }, (array) $this->sheet->getDrawingCollection());
 
         $this->images = Collection::wrap($images);

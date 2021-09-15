@@ -65,7 +65,10 @@ class ImportProductsCommand extends Command
         $parse->read($import->getSplFileObject());
 
         $prep = new PrepareProductsForImport($parse->rows, $parse->images);
-        $products = $prep->prepare($import->mapping, $import->skip_header_rows);
+        $products = $prep->prepare(
+            $import->mapping,
+            $import->skip_header_rows
+        );
 
         $this->log->warning("Found {$products->count()} potential products in sheet");
 
@@ -111,12 +114,19 @@ class ImportProductsCommand extends Command
                 'packing_instructions',
                 'case_inner_qty',
                 'unit_price',
-                'units_per_case' => $data->get('case_qty'),
-                'case_weight_kg' => $data->get('case_weight_kg'),
+                'units_per_case',
+                'case_weight_kg',
+                'unit_weight_kg',
+                'unit_height_m',
+                'unit_width_m',
+                'unit_depth_m',
+            ])->toArray());
+
+            $product->fill([
                 'height_m' => $data->get('case_height_m'),
                 'width_m' => $data->get('case_width_m'),
                 'depth_m' => $data->get('case_depth_m'),
-            ])->toArray());
+            ]);
 
             $product->save();
             if ($data->get('image')) {

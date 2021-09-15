@@ -22,10 +22,14 @@ return [
                 'barcode'               => 'Barcode',
             ],
             'measurements' => [
-                'case_width_m'        => 'Case Width (m)',
-                'case_height_m'       => 'Case Width (m)',
-                'case_depth_m'         => 'Case Depth (m)',
-                'case_weight_kg'      => 'Case Weight (kg)',
+                'case_width_m'        => 'Carton Width (m)',
+                'case_height_m'       => 'Carton Height (m)',
+                'case_depth_m'        => 'Carton Depth (m)',
+                'case_weight_kg'      => 'Carton Weight (kg)',
+                'unit_width_m'        => 'Unit Width (m)',
+                'unit_height_m'       => 'Unit Width (m)',
+                'unit_depth_m'        => 'Unit Depth (m)',
+                'unit_weight_kg'      => 'Unit Weight (kg)',
             ]
         ]
     ]

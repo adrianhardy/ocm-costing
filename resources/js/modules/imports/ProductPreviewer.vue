@@ -25,8 +25,18 @@
                 <b-td class="truncated" v-b-tooltip.hover :title="product.packing_instructions">{{ product.packing_instructions }}</b-td>
             </b-tr>
             <b-tr>
+                <b-th class="text-nowrap">Case WxLxH (m)</b-th>
+                <b-td>
+                  <span v-if="product.case_width_m">
+                    {{ product.case_width_m }} &times;
+                    {{ product.case_depth_m }} &times;
+                    {{ product.case_height_m }}
+                  </span>
+                </b-td>
+            </b-tr>
+            <b-tr>
                 <b-th>Unit Price</b-th>
-                <b-td>{{ product.unit_price }}</b-td>
+                <b-td>{{ product.unit_price | 2dp_value }}</b-td>
             </b-tr>
             <b-tr>
                 <b-th>Cases</b-th>
@@ -35,14 +45,6 @@
             <b-tr>
                 <b-th>Case Qty</b-th>
                 <b-td>{{ product.case_qty }}</b-td>
-            </b-tr>
-            <b-tr>
-                <b-th>Cu. ft/Case</b-th>
-                <b-td>{{ product.cu_ft_per_case }}</b-td>
-            </b-tr>
-            <b-tr>
-                <b-th>Total Cu. ft</b-th>
-                <b-td>{{ product.total_cu_ft }}</b-td>
             </b-tr>
             <b-tr v-if ="product.image">
                 <b-td colspan="2" class="text-center">
@@ -88,7 +90,7 @@ export default {
             });
         },
         next() {
-            if (this.current < this.products.length-1) {
+            if (this.current+1 < this.products.length) {
                 this.current++;
             }
         },

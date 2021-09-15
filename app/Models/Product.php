@@ -31,6 +31,9 @@ class Product extends BaseProduct implements HasMedia
         'length_m',
         'width_m',
         'height_m',
+        'unit_length_m',
+        'unit_width_m',
+        'unit_height_m',
         'length_cm',
         'width_cm',
         'height_cm',
@@ -39,7 +42,8 @@ class Product extends BaseProduct implements HasMedia
         'packing_instructions',
         'product_description',
         'unit_price',
-        'case_weight_kg'
+        'case_weight_kg',
+        'unit_weight_kg'
     ];
 
 	protected $fillable = [
@@ -54,12 +58,16 @@ class Product extends BaseProduct implements HasMedia
         'length_cm',
         'width_cm',
         'height_cm',
+        'unit_length_m',
+        'unit_width_m',
+        'unit_height_m',
         'units_per_case',
         'inner_qty',
         'packing_instructions',
         'product_description',
         'unit_price',
-        'case_weight_kg'
+        'case_weight_kg',
+        'unit_weight_kg'
     ];
 
     public function registerMediaCollections()

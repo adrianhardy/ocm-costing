@@ -27,9 +27,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $units_per_case
  * @property int|null $inner_qty
  * @property float|null $case_weight_kg
+ * @property float $unit_weight_kg
  * @property float|null $height_m
  * @property float|null $length_m
  * @property float|null $width_m
+ * @property float $unit_height_m
+ * @property float $unit_length_m
+ * @property float $unit_width_m
  * @property float|null $unit_price
  * @property float|null $est_landed_cost_gbp
  * @property string|null $barcode
@@ -53,9 +57,13 @@ class Product extends Model
 		'units_per_case' => 'int',
 		'inner_qty' => 'int',
 		'case_weight_kg' => 'float',
+		'unit_weight_kg' => 'float',
 		'height_m' => 'float',
 		'length_m' => 'float',
 		'width_m' => 'float',
+		'unit_height_m' => 'float',
+		'unit_length_m' => 'float',
+		'unit_width_m' => 'float',
 		'unit_price' => 'float',
 		'est_landed_cost_gbp' => 'float'
 	];
