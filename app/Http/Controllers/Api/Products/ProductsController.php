@@ -42,7 +42,11 @@ class ProductsController extends Controller
             'length_cm'             => 'nullable|sometimes|min:0|numeric',
             'width_cm'              => 'nullable|sometimes|min:0|numeric',
             'height_cm'             => 'nullable|sometimes|min:0|numeric',
+            'unit_length_cm'        => 'nullable|sometimes|min:0|numeric',
+            'unit_width_cm'         => 'nullable|sometimes|min:0|numeric',
+            'unit_height_cm'        => 'nullable|sometimes|min:0|numeric',
             'case_weight_kg'        => 'nullable|sometimes|min:0|numeric',
+            'unit_weight_kg'        => 'nullable|sometimes|min:0|numeric',
             'unit_price'            => 'nullable|sometimes|min:0|numeric',
             'units_per_case'        => 'nullable|sometimes|min:0|numeric',
             'inner_qty'             => 'nullable|sometimes|min:0|numeric',
@@ -59,12 +63,16 @@ class ProductsController extends Controller
             'length_cm',
             'width_cm',
             'height_cm',
+            'unit_length_cm',
+            'unit_width_cm',
+            'unit_height_cm',
             'units_per_case',
             'inner_qty',
             'packing_instructions',
             'product_description',
             'unit_price',
-            'case_weight_kg'
+            'case_weight_kg',
+            'unit_weight_kg'
         ]));
         $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
         $product->save();
