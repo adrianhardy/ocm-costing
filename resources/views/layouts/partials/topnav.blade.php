@@ -14,25 +14,25 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('sales-orders.index') }}">
-                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
                 Sales Orders
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('users.index') }}">
-                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                <b-icon-person scale="0.8"></b-icon-person>
                 Users
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('suppliers.index') }}">
-                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                <b-icon-truck scale="0.8"></b-icon-truck>
                 Suppliers
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('factories.index') }}">
-                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                <b-icon-building scale="0.8"></b-icon-building>
                 Factories
             </a>
         </li>
