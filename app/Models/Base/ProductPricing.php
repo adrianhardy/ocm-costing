@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $product_id
  * @property float $est_landed_cost_per_unit_gbp
  * @property float|null $marketplace_commission_pc
+ * @property float|null marketplace_fee
+ * @property float|null $profit
  * @property float|null $suggested_unit_price_gbp
  * @property float|null $unit_shipping_gbp
  * @property float|null $unit_price_gbp

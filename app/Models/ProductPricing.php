@@ -17,6 +17,7 @@ class ProductPricing extends BaseProductPricing
         'margin_pc',
 		'approved_at',
         'superseded_at',
-		'approver_id'
+		'approver_id',
+        'marketplace_fee'
 	];
 }
