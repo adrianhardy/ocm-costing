@@ -33,28 +33,25 @@ class ProductPricingController extends Controller
     public function update(Request $request, ProductPricing $pricing)
     {
         $this->validate($request, [
-            'unit_price_gbp' => 'required',
-            'marketplace_fee' => 'required'
+            'unit_price_gbp' => 'required|numeric',
+            'marketplace_fee' => 'required|numeric',
+            'marketplace_commission_pc' => 'required|numeric',
+            'unit_shipping_gbp' => 'required|numeric'
         ]);
 
         $pricing->fill($request->only([
             'unit_price_gbp',
-            'marketplace_fee'
+            'marketplace_fee',
+            'marketplace_commission_pc',
+            'unit_shipping_gbp'
         ]));
 
         if($request->input(['submitted'])){
             $pricing->approved_at = Carbon::now();
         }
 
-        if($pricing->unit_price_gbp && $pricing->marketplace_fee){
-            $pricing->profit = $pricing->unit_price_gbp;
-            $pricing->profit = $pricing->profit - ($pricing->sale_price * $pricing->marketplace_commission_pc / 100);
-            $pricing->profit = $pricing->profit - ($pricing->sale_price * $pricing->margin_pc / 100);
-            $pricing->profit = $pricing->profit - ($pricing->sale_price * 0.15);
-            $pricing->profit = $pricing->profit - $pricing->est_landed_cost_per_unit_gbp;
-            $pricing->profit = $pricing->profit - $pricing->marketplace_fee;
-        }
-
+        $pricing->profit = $pricing->calculated_gross_profit_gbp;
+        $pricing->margin_pc = $pricing->calculated_gross_profit_gbp / $pricing->unit_price_gbp;
         $pricing->save();
 
         return fractal($pricing->fresh(), new ProductPricingTransformer());

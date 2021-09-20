@@ -1,12 +1,12 @@
 <template>
-  <b-modal id="pricing" :title="value.product.name" ref="modal" ok-title="Save" @ok="save($event)" centered size="xl">
+  <b-modal id="pricing" :title="value.product.name" ref="modal" ok-title="Save" @ok="save($event)" cancel-title="Close" ok-title-html="Update" centered size="xl">
     <div>
       <div class="row">
         <div class="col-12 col-md-6">
           <div>
             <h5>Image</h5>
             <div class="p-1">
-              <b-img fluid class="img-thumnail" :src="value.product | product_image_url"/>
+              <b-img fluid  style="max-height: 200px" class="img-thumnail" :src="value.product | product_image_url"/>
             </div>
           </div>
           <div>
@@ -14,8 +14,8 @@
           </div>
           <div class="row"> <!-- Left Side of Modal -->
             <div class="col-4">
-              <b-form-group label="Quantity">
-                <b-form-input readonly v-model="value.product.quantity"/>
+              <b-form-group label="Carton Quantity">
+                <b-form-input readonly v-model="value.product.units_per_case"/>
               </b-form-group>
             </div>
             <div class="col-4">
@@ -50,7 +50,7 @@
           <div class="row">
             <div class="col-6">
               <b-form-group label="Unit Price">
-                <b-form-input readonly v-model="value.product.unit_price"/>
+                <b-form-input readonly :value="value.product.unit_price"/>
               </b-form-group>
             </div>
             <div class="col-6">
@@ -79,44 +79,66 @@
         </div>
         <div class="col-12 col-md-6">
           <b-tabs content-class="pt-3">
-            <b-tab title="Pricing">  <!-- Pricing Tab -->
+            <b-tab title="Pricing">
+              <h5>Pricing</h5>
               <div class="row">
-                <div class="col-6">
-                  <b-form-group label="Marketplace Commission">
-                    <b-input-group prepend="%">
-                      <b-form-input readonly v-model="value.marketplace_commission_pc"/>
-                    </b-input-group>
-                  </b-form-group>
-                </div>
-                <div class="col-6">
-                  <b-form-group label="Marketplace Fee">
+                <div class="col-4">
+                  <b-form-group label="Est. Landed Cost">
                     <b-input-group prepend="£">
-                      <b-form-input v-model="value.marketplace_fee"/>
+                      <b-form-input readonly v-model="value.est_landed_cost_per_unit_gbp"/>
                     </b-input-group>
                   </b-form-group>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-6">
+                <div class="col-4">
                   <b-form-group label="Suggested Unit Price">
                     <b-input-group prepend="£">
                       <b-form-input readonly v-model="value.suggested_unit_price_gbp"/>
                     </b-input-group>
                   </b-form-group>
                 </div>
-                <div class="col-6">
-                  <b-form-group label="Unit Price">
+                <div class="col-4">
+                  <b-form-group label="Our Unit Price">
                     <b-input-group prepend="£">
                       <b-form-input v-model="value.unit_price_gbp"/>
                     </b-input-group>
                   </b-form-group>
                 </div>
               </div>
-              <b-form-group label="Margin">
-                <b-input-group prepend="%">
-                  <b-form-input readonly v-model="value.margin_pc"/>
-                </b-input-group>
-              </b-form-group>
+              <h5>Costs</h5>
+              <div class="row">
+                <div class="col-4">
+                  <b-form-group label="Marketplace Comm.">
+                    <b-input-group prepend="%">
+                      <b-form-input v-model="value.marketplace_commission_pc"/>
+                    </b-input-group>
+                  </b-form-group>
+                </div>
+                <div class="col-4">
+                  <b-form-group label="Marketplace Fee">
+                    <b-input-group prepend="£">
+                      <b-form-input v-model="value.marketplace_fee"/>
+                    </b-input-group>
+                  </b-form-group>
+                </div>
+                <div class="col-4">
+                  <b-form-group label="Unit Shipping">
+                    <b-input-group prepend="£">
+                      <b-form-input v-model="value.unit_shipping_gbp"/>
+                    </b-input-group>
+                  </b-form-group>
+                </div>
+              </div>
+              <hr />
+              <div class="d-flex justify-content-around">
+                <div class="h5">
+                  <label>Calculated Profit</label>
+                  <div>{{ value.profit | cash_value }}</div>
+                </div>
+                <div class="h5">
+                  <label>Margin</label>
+                  <div>{{ (value.margin_pc * 100).toFixed(2) }}%</div>
+                </div>
+              </div>
             </b-tab>
             <b-tab title="History"> <!-- History Tab -->
               <b-table size="sm" ref="table" :fields="fields" :items="items">
@@ -184,12 +206,11 @@ export default {
         sortBy: 'approved_at'
       },
       fields: [
-        {key: 'id'},
         {key: 'product.name', label: 'Product'},
         {key: 'approved_at', label: 'Approved At', sortable: true},
         {key: 'unit_price_gbp', label: 'Unit Price'},
-        {key: 'marketplace_fee', label: 'Mkt Fee'},
         {key: 'profit', label: 'Profit'},
+        {key: 'margin_pc', label: 'Margin'},
 
       ]
     }
