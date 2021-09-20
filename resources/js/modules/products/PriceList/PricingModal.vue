@@ -4,12 +4,6 @@
       <div class="row">
         <div class="col-12 col-md-6">
           <div>
-            <h5>Image</h5>
-            <div class="p-1">
-              <b-img fluid  style="max-height: 200px" class="img-thumnail" :src="value.product | product_image_url"/>
-            </div>
-          </div>
-          <div>
             <h5>Carton</h5>
           </div>
           <div class="row"> <!-- Left Side of Modal -->
@@ -76,6 +70,12 @@
               </b-form-group>
             </div>
           </div>
+          <div>
+            <h5>Image</h5>
+            <div class="p-1">
+              <b-img fluid  style="max-height: 200px" class="img-thumnail" :src="value.product | product_image_url"/>
+            </div>
+          </div>
         </div>
         <div class="col-12 col-md-6">
           <b-tabs content-class="pt-3">
@@ -129,7 +129,7 @@
                 </div>
               </div>
               <hr />
-              <div class="d-flex justify-content-around">
+              <div class="d-flex justify-content-between">
                 <div class="h5">
                   <label>Calculated Profit</label>
                   <div>{{ value.profit | cash_value }}</div>
