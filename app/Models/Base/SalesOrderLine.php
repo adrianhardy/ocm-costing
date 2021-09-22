@@ -24,9 +24,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  * @property string|null $item_number
  * @property string|null $article_number
- * @property string|null $packing_instructions
- * @property string|null $product_description
- * @property string|null $name
  * @property int|null $product_id
  * @property int $units_requested
  * @property float|null $unit_price
@@ -34,6 +31,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $total
  * @property float|null $total_gbp
  * @property float|null $total_cubic_m
+ * @property string|null $packing_instructions
+ * @property string|null $product_description
  * 
  * @property Product|null $product
  * @property SalesOrder|null $sales_order

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Products;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
+use App\Models\Factory;
 use App\Models\Product;
 use App\Models\Repositories\ProductRepository;
 use App\Models\Supplier;
@@ -35,6 +36,7 @@ class ProductsController extends Controller
 
         $this->validate($request, [
             'supplier.id'           => 'required|exists:suppliers,id',
+            'factory.id'            => 'required|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64'],
             'article_number'        => ['required', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
@@ -75,6 +77,7 @@ class ProductsController extends Controller
             'unit_weight_kg'
         ]));
         $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        $product->factory()->associate((Factory::find($request->input('factory.id'))));
         $product->save();
         return fractal($product->fresh(), new ProductTransformer());
     }
@@ -88,6 +91,7 @@ class ProductsController extends Controller
     {
         $this->validate($request, [
             'supplier.id'           => 'required|exists:suppliers,id',
+            'factory.id'            => 'required|exists:factories,id',
             'item_number'           => 'required|min:1|max:64',
             'article_number'        => 'required|min:1|max:64',
             'name'                  => 'required|min:1|max:200',
@@ -118,6 +122,7 @@ class ProductsController extends Controller
             'case_weight_kg'
         ]));
         $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        $product->factory()->associate((Factory::find($request->input('factory.id'))));
         $product->save();
         return fractal($product->fresh(), new ProductTransformer());
     }

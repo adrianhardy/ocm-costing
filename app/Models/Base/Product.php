@@ -6,6 +6,7 @@
 
 namespace App\Models\Base;
 
+use App\Models\Factory;
 use App\Models\ProductPricing;
 use App\Models\QuoteLine;
 use App\Models\SalesOrderLine;
@@ -41,7 +42,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $packing_instructions
  * @property string|null $product_description
  * @property string|null $deleted_at
+ * @property int|null $factory_id
  * 
+ * @property Factory|null $factory
  * @property Supplier $supplier
  * @property Collection|ProductPricing[] $product_pricings_product
  * @property Collection|QuoteLine[] $quote_lines_product
@@ -67,8 +70,14 @@ class Product extends Model
 		'unit_length_m' => 'float',
 		'unit_width_m' => 'float',
 		'unit_price' => 'float',
-		'est_landed_cost_gbp' => 'float'
+		'est_landed_cost_gbp' => 'float',
+		'factory_id' => 'int'
 	];
+
+	public function factory()
+	{
+		return $this->belongsTo(Factory::class);
+	}
 
 	public function supplier()
 	{

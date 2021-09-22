@@ -23,7 +23,7 @@ class ProductTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'quotes', 'media', 'supplier', 'comments', 'comments.author'
+        'quotes', 'media', 'supplier', 'comments', 'comments.author', 'factory'
     ];
 
     public function includeQuoteLines(Product $product)
@@ -34,6 +34,14 @@ class ProductTransformer extends TransformerAbstract
     public function includeSupplier(Product $product)
     {
         return $this->item($product->supplier, new SupplierTransformer);
+    }
+
+    public function includeFactory(Product $product)
+    {
+        if(!$product->factory){
+            return $this->null();
+        }
+        return $this->item($product->factory, new FactoryTransformer());
     }
 
     public function includeComments(Product $product)

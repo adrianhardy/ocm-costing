@@ -22,8 +22,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $product_id
  * @property float $est_landed_cost_per_unit_gbp
  * @property float|null $marketplace_commission_pc
- * @property float|null marketplace_fee
- * @property float|null $profit
  * @property float|null $suggested_unit_price_gbp
  * @property float|null $unit_shipping_gbp
  * @property float|null $unit_price_gbp
@@ -32,6 +30,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $approved_at
  * @property int|null $approver_id
  * @property Carbon|null $superseded_at
+ * @property float|null $marketplace_fee
+ * @property float|null $profit
  * 
  * @property User|null $approver
  * @property Product $product
@@ -52,7 +52,9 @@ class ProductPricing extends Model
 		'unit_price_gbp' => 'float',
 		'gross_unit_cost_gbp' => 'float',
 		'margin_pc' => 'float',
-		'approver_id' => 'int'
+		'approver_id' => 'int',
+		'marketplace_fee' => 'float',
+		'profit' => 'float'
 	];
 
 	protected $dates = [

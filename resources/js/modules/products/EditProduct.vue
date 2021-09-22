@@ -9,6 +9,9 @@
                     <b-form-group label="Supplier">
                         <supplier-select all v-model="product.supplier"/>
                     </b-form-group>
+                    <b-form-group label="Factory">
+                      <factory-select all v-model="product.factory"/>
+                    </b-form-group>
                     <div class="row">
                         <div class="col-4">
                             <b-form-group label="Item Number">
@@ -174,10 +177,11 @@
 import {dateFilter} from "vue-date-fns";
 import SupplierSelect from "../../components/SupplierSelect";
 import EditProductMedia from "./EditProductMedia";
+import FactorySelect from "../../components/FactorySelect";
 
 export default {
     name: "EditProduct",
-    components: {EditProductMedia, SupplierSelect},
+    components: {FactorySelect, EditProductMedia, SupplierSelect},
     props: {productId: Number},
     filters: {
         date: dateFilter
@@ -192,7 +196,7 @@ export default {
             return !(this.productId > 0);
         },
         include() {
-            return 'supplier,comments,comments.commentator,media';
+            return 'supplier,comments,comments.commentator,media,factory';
         },
         productLogFields() {
           return [{
@@ -292,7 +296,8 @@ export default {
                 product_description: '',
                 packing_instructions: '',
                 comments: [],
-                supplier: {}
+                supplier: {},
+                factory: {}
             }
         }
     }
