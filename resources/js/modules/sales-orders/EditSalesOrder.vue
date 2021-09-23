@@ -139,11 +139,7 @@
                         <b-th colspan="3"></b-th>
                         <b-th class="text-right">Total</b-th>
                         <b-th></b-th>
-                        <b-td>
-                            <strong>Shipping</strong> <br/>
-                            {{ salesOrder.currency.code }} {{ salesOrder.shipping_cost }}
-                            GBP {{ salesOrder.shipping_cost_gbp }}
-                        </b-td>
+                        <b-td></b-td>
                         <b-td>
                             <strong>Goods</strong> <br/>
                             {{ salesOrder.currency.code }}
@@ -153,7 +149,8 @@
                     </b-tr>
                 </template>
             </b-table>
-            <div class="d-flex justify-content-between w-100">
+          <b-button variant="danger float-right" v-if="salesOrder.is_finalised">unfinalise</b-button>
+          <div class="d-flex justify-content-between w-100">
                 <div>
                     <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg"
                               @click="finalise">

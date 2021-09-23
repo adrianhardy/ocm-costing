@@ -75,24 +75,13 @@ export default {
             fields: [
                 {
                     key: 'reference',
-                    label: 'Reference',
+                    label: 'Order #',
                     sortable: true,
                 }, {
                     key: 'created_at',
                     sortable: true
                 }, {
                     key: 'sent_at',
-                    sortable: true
-                }, {
-                    key: 'goods_cost_gbp',
-                    label: 'Goods Cost (£)',
-                    sortable: true
-                }, {
-                    key: 'shipping_cost_gbp',
-                    label: 'Shipping Cost (£)',
-                    sortable: true
-                }, {
-                    key: 'total_gbp',
                     sortable: true
                 }
             ]

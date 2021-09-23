@@ -56,11 +56,9 @@ class UserTransformer extends TransformerAbstract
 
     public function includeRoles(User $user)
     {
-        $roles = Role::all();
-        $roles = $roles->mapWithKeys(function($role) use ($user) {
-            return [$role->name => $user->hasRole($role)];
+        return $this->collection($user->roles, function(Role $role) {
+            return $role->only(['id', 'name']);
         });
-        return $this->primitive($roles);
     }
 
     public function includePermissions(User $user)
