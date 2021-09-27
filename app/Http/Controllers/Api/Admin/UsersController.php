@@ -14,7 +14,15 @@ class UsersController extends Controller
 {
     public function index(Request $request, UserRepository $userRepository)
     {
-        $paginator = $userRepository->paginate();
+        $limit = $request->input('all')?PHP_INT_MAX:null;
+        $limit = $request->input('per_page', $limit);
+
+        $paginator = $userRepository;
+        if ($request->input('role')) {
+            $paginator->role([$request->input('role')]);
+        }
+        $paginator = $paginator->paginate($limit);
+
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new UserTransformer()
         ));

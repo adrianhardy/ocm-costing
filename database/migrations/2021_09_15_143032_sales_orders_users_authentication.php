@@ -15,6 +15,7 @@ class SalesOrdersUsersAuthentication extends Migration
     {
         Schema::create('sales_order_authentications', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->softDeletes();
             $table->timestamps();
             $table->dateTime('expires_at');
             $table->dateTime('consumed_at')->nullable();
@@ -35,6 +36,6 @@ class SalesOrdersUsersAuthentication extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_orders_users_authentication');
+        Schema::dropIfExists('sales_order_authentications');
     }
 }

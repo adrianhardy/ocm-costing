@@ -12,15 +12,18 @@
                     </b-badge>
                 </div>
                 <div>
-                  <b-button v-if="salesOrder.is_finalised && isSuper" @click="unfinalise" variant="outline-danger">
-                    Un-Finalise
-                  </b-button>
-                  <b-button variant="outline-primary"  @click="openHistoryModal()">
-                    Show Changes
-                  </b-button>
-                  <b-button variant="outline-primary" v-if="isSuper" :href="`/sales-orders/${salesOrderId}/consignments`">
-                    Shipping History
-                  </b-button>
+                    <b-button variant="outline-primary" @click="openSupplierAccessModal()">
+                        Supplier Access
+                    </b-button>
+                    <b-button v-if="salesOrder.is_finalised && isSuper" @click="unfinalise" variant="outline-danger">
+                        Un-Finalise
+                    </b-button>
+                    <b-button variant="outline-primary" @click="openHistoryModal()">
+                        Show Changes
+                    </b-button>
+                    <b-button variant="outline-primary" v-if="isSuper" :href="`/sales-orders/${salesOrderId}/consignments`">
+                        Shipping History
+                    </b-button>
                 </div>
             </template>
             <div class="row">
@@ -89,7 +92,8 @@
                     />
                     <div v-else>
                         <div>{{ data.item.product.name }}</div>
-                        <b-badge v-b-tooltip.hover.right title="Estimated Landed Cost" variant="primary" v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
+                        <b-badge v-b-tooltip.hover.right title="Estimated Landed Cost" variant="primary"
+                                 v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
                             {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
                         </b-badge>
                     </div>
@@ -193,6 +197,10 @@
             :sales-order="salesOrder"
             ref="sales-order-history-modal"
         />
+        <supplier-access-modal
+            :sales-order="salesOrder"
+            ref="supplier-access-modal"
+        />
         <update-inbound-shipments-modal
             @updated="refresh()"
             :order="salesOrder"
@@ -209,11 +217,19 @@ import CurrencySelect from "../../components/CurrencySelect";
 import ProductSelect from "../../components/ProductSelect";
 import UpdateInboundShipmentsModal from "./UpdateInboundShipmentsModal";
 import SalesOrderHistoryModal from "./SalesOrderHistoryModal";
+import SupplierAccessModal from "./SupplierAccessModal";
 
 
 export default {
     name: "EditSalesOrder",
-    components: {SalesOrderHistoryModal, UpdateInboundShipmentsModal, ProductSelect, CurrencySelect, SupplierSelect},
+    components: {
+        SupplierAccessModal,
+        SalesOrderHistoryModal,
+        UpdateInboundShipmentsModal,
+        ProductSelect,
+        CurrencySelect,
+        SupplierSelect
+    },
     props: {salesOrderId: Number, isSuper: Boolean},
     filters: {
         date: dateFilter
@@ -279,6 +295,9 @@ export default {
         }
     },
     methods: {
+        openSupplierAccessModal() {
+            this.$refs['supplier-access-modal'].open();
+        },
         async confirmSendToPricing() {
             let result = await this.$bvModal.msgBoxConfirm(
                 'Are you sure you want to send the selected lines to pricing? This will invalidate any current pricing', {
@@ -319,8 +338,6 @@ export default {
           });
 
           this.restore();
-
-
         },
         async finalise() {
             let result = await this.$bvModal.msgBoxConfirm(

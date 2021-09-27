@@ -17,8 +17,6 @@ class CreateStandardRolesAndPermissions extends Migration
             $table->string('api_token', 128)->unique()->nullable();
         });
 
-
-
         $super = \Spatie\Permission\Models\Role::findOrCreate('super');
         $supplier = \Spatie\Permission\Models\Role::findOrCreate('supplier');
         $admin = \Spatie\Permission\Models\Role::findOrCreate('admin');
