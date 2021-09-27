@@ -22,7 +22,7 @@ class ProductPricingTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'product'
+        'product', 'approver'
     ];
 
     /**
@@ -47,6 +47,14 @@ class ProductPricingTransformer extends TransformerAbstract
             'marketplace_fee',
             'profit'
         ]);
+    }
+
+    public function includeApprover(ProductPricing $productPricing)
+    {
+        if (!$productPricing->approver_id) {
+            return $this->null();
+        }
+        return $this->item($productPricing->approver, new UserTransformer());
     }
 
     public function includeProduct(ProductPricing $pricing){

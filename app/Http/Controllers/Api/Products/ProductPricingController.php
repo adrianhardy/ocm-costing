@@ -48,6 +48,7 @@ class ProductPricingController extends Controller
 
         if($request->input(['submitted'])){
             $pricing->approved_at = Carbon::now();
+            $pricing->approver()->associate(\Auth::user());
         }
 
         $pricing->profit = $pricing->calculated_gross_profit_gbp;

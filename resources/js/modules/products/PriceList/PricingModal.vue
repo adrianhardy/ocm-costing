@@ -163,20 +163,24 @@ export default {
   methods: {
     save(event){
       event.preventDefault();
-      this.updateLine()
+      this.update()
     },
-    updateLine(){
-      this.$http.put(`api/pricing/${this.value.id}`, {...this.value}).then(response => {
-        this.close()
+    update(){
+      this.$http.put(`/api/pricing/${this.value.id}`, {...this.value}, {params: {
+          include: `product,product.media`
+        }}).then(response => {
+          this.value = response.data;
         this.$emit('updated');
       }).catch(error => {
         this.$handleExceptionResponse(error, true)
       })
     },
     open(line) {
-      this.value = line
+      this.value = line;
       this.$http.get(`api/pricing/${this.value.id}`, {
-        include: `product,product.media'`
+        params: {
+          include: `product,product.media`
+        }
       }).then(response => {
         this.value = response.data
         this.$refs['modal'].show();
@@ -189,7 +193,7 @@ export default {
           `api/pricing/${this.value.id}/history`,
           this.pagination,
           ctx, {
-            include: 'product,product.media'
+            include: 'approver'
           });
     },
     close() {
@@ -206,8 +210,8 @@ export default {
         sortBy: 'approved_at'
       },
       fields: [
-        {key: 'product.name', label: 'Product'},
         {key: 'approved_at', label: 'Approved At', sortable: true},
+        {key: 'approver.name', label: 'Approved By', sortable: true},
         {key: 'unit_price_gbp', label: 'Unit Price'},
         {key: 'profit', label: 'Profit'},
         {key: 'margin_pc', label: 'Margin'},

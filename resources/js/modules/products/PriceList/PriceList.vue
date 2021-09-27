@@ -52,7 +52,6 @@ export default {
       this.$refs['pricing-modal'].open(line);
     },
     updatePricing(){
-      this.$refs['pricing-modal'].close();
       this.$bvToast.toast('Pricing Updated', {
         variant: 'success',
         title: 'Pricing'
