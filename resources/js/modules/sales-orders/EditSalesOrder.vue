@@ -12,10 +12,13 @@
                     </b-badge>
                 </div>
                 <div>
+                  <b-button v-if="salesOrder.is_finalised && isSuper" @click="unfinalise" variant="outline-danger">
+                    Un-Finalise
+                  </b-button>
                   <b-button variant="outline-primary"  @click="openHistoryModal()">
                     Show Changes
                   </b-button>
-                  <b-button variant="outline-primary" :href="`/sales-orders/${salesOrderId}/consignments`">
+                  <b-button variant="outline-primary" v-if="isSuper" :href="`/sales-orders/${salesOrderId}/consignments`">
                     Shipping History
                   </b-button>
                 </div>
@@ -139,11 +142,7 @@
                         <b-th colspan="3"></b-th>
                         <b-th class="text-right">Total</b-th>
                         <b-th></b-th>
-                        <b-td>
-                            <strong>Shipping</strong> <br/>
-                            {{ salesOrder.currency.code }} {{ salesOrder.shipping_cost }}
-                            GBP {{ salesOrder.shipping_cost_gbp }}
-                        </b-td>
+                        <b-td></b-td>
                         <b-td>
                             <strong>Goods</strong> <br/>
                             {{ salesOrder.currency.code }}
@@ -153,7 +152,7 @@
                     </b-tr>
                 </template>
             </b-table>
-            <div class="d-flex justify-content-between w-100">
+          <div class="d-flex justify-content-between w-100">
                 <div>
                     <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg"
                               @click="finalise">
@@ -215,7 +214,7 @@ import SalesOrderHistoryModal from "./SalesOrderHistoryModal";
 export default {
     name: "EditSalesOrder",
     components: {SalesOrderHistoryModal, UpdateInboundShipmentsModal, ProductSelect, CurrencySelect, SupplierSelect},
-    props: {salesOrderId: Number},
+    props: {salesOrderId: Number, isSuper: Boolean},
     filters: {
         date: dateFilter
     },
@@ -312,6 +311,17 @@ export default {
         openHistoryModal() {
             this.$refs['sales-order-history-modal'].open();
         },
+        async unfinalise() {
+          let result = await this.$bvModal.msgBoxConfirm('Are you sure you want to restore this sales order?', {
+            centered: true,
+            title: 'Please confirm',
+            okTitle: 'Yes'
+          });
+
+          this.restore();
+
+
+        },
         async finalise() {
             let result = await this.$bvModal.msgBoxConfirm(
                 "Are you sure you want to finalise this into a sales order?", {
@@ -326,6 +336,19 @@ export default {
             }
 
             this.save({finalised: true})
+        },
+        restore(){
+          const loader = this.$loading.show
+          this.salesOrder.restore = true
+          this.$http.put(`/api/sales-orders/${this.salesOrder.id}`, this.salesOrder, {params: {include: this.include}}
+          ).then(response => {
+            this.salesOrder = response.data;
+            loader.hide
+          }).catch(error => {
+            this.$handleExceptionResponse(error);
+            loader.hide();
+          });
+
         },
 
         save(model = false) {

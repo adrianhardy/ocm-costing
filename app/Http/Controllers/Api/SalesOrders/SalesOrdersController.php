@@ -34,6 +34,22 @@ class SalesOrdersController extends Controller
         Request $request,
         SalesOrderRepository $salesOrderRepository
     ) {
+        $paginator = $salesOrderRepository;
+
+        switch($request->query('stage'))
+        {
+            case 'quote':
+                $paginator = $paginator->whereNull('finalised_at')->whereNull('sent_at');
+                break;
+            case 'finalised':
+                $paginator = $paginator->whereNotNull('finalised_at')->whereNull('sent_at');
+                break;
+            Case 'sent':
+                $paginator = $paginator->whereNotNull('finalised_at')->whereNotNull('sent_at');
+                break;
+        }
+
+
         $paginator = $salesOrderRepository->paginate(
             $request->input('per_page', 100)
         );
@@ -97,6 +113,10 @@ class SalesOrdersController extends Controller
 
         if ($request->input('finalised')) {
             $sales_order->finalised_at = Carbon::now();
+        }
+
+        if ($request->input('restore')) {
+            $sales_order->finalised_at = null;
         }
         $sales_order->save();
 

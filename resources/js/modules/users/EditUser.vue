@@ -10,6 +10,13 @@
         <b-form-group label="Email">
           <b-form-input v-model="user.email"/>
         </b-form-group>
+        <b-form-group label="Role">
+          <b-select :disabled="currentUser.id == userId" v-model="user.role">
+            <b-select-option value="super">Super</b-select-option>
+            <b-select-option value="pricing">Pricing</b-select-option>
+            <b-select-option value="admin">Admin</b-select-option>
+          </b-select>
+        </b-form-group>
       </div>
       <div class="col-12 col-md-6">
         <div class="row">
@@ -26,18 +33,24 @@
         </div>
       </div>
     </div>
-    <b-button class="float-right" variant="primary" @click="save()">Create New User</b-button>
+    <b-button class="float-right" variant="primary" @click="save()">Save</b-button>
   </b-card>
 </div>
 </template>
 
 <script>
 export default {
-  props: ['isCreating', 'user-id'],
+  props: ['isCreating', 'user-id', 'roles', 'current-user'],
   name: "EditUser",
   mounted() {
     if(this.userId){
       this.refresh();
+    }
+  },
+  watch: {
+    role(newValue) {
+      const role = _.find(this.roles, ['name', newValue]);
+      this.user.roles = [role]
     }
   },
   computed: {
@@ -56,16 +69,22 @@ export default {
       const payload = {...this.user};
       this.$http(this.saveUrl, {
         method: method,
-        data: payload
+        data: payload,
+        params: {
+          include: 'roles'
+        }
       }).then(response => {
         this.user = response.data
+        if (response.data.roles && response.data.roles[0]) {
+          this.user.role = response.data.roles[0].name;
+        }
         this.$bvToast.toast('User has been saved', {
           title: 'User',
           variant: 'success'
         });
         if(method === 'post'){
           loader.hide()
-          //window.location.href = '/admin/users'
+          window.location.href = '/admin/users'
         } else {
           loader.hide();
         }
@@ -77,8 +96,11 @@ export default {
     async refresh() {
       const loader = this.$loading.show();
       const url = `/api/admin/users/${this.userId}`;
-      this.$http.get(url).then(response => {
-        this.user = response.data.data;
+      this.$http.get(url,{params: {include: 'roles'}}).then(response => {
+        this.user = response.data;
+        if (response.data.roles && response.data.roles[0]) {
+          this.user.role = response.data.roles[0].name;
+        }
         loader.hide();
       }).catch(error => {
         loader.hide();
@@ -88,7 +110,7 @@ export default {
   },
   data(){
     return {
-      user: {}
+      user: {},
     }
   }
 }

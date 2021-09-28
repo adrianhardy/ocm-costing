@@ -23,7 +23,8 @@ class ProductPricing extends BaseProductPricing
 		'approved_at',
         'superseded_at',
 		'approver_id',
-        'marketplace_fee'
+        'marketplace_fee',
+        'profit'
 	];
 
 	public function getCalculatedGrossProfitGbpAttribute()

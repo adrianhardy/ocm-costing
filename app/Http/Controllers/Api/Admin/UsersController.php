@@ -30,7 +30,7 @@ class UsersController extends Controller
         $request->validate([
            'name'     => 'required|max:255',
            'password' => 'sometimes|nullable|confirmed|password|min:8',
-           'email'    => ['required', Rule::unique('users','email'), 'max:128'],
+           'email'    => ['required', Rule::unique('users','email')->ignore($request->input(['id'])), 'max:128'],
         ]);
 
         $user->fill($request->only([
@@ -41,6 +41,9 @@ class UsersController extends Controller
         if($request->input('password')) {
 
             $user->password = bcrypt($request->input('password'));
+        }
+        if ($request->input('role')) {
+            $user->syncRoles($request->input('role'));
         }
 
         $user->save();
@@ -54,7 +57,7 @@ class UsersController extends Controller
     {
         $request->validate([
             'name'     => 'required|max:255',
-            'password' => 'required|confirmed|password|min:8',
+            'password' => 'required|confirmed|min:8',
             'email'    => ['required', Rule::unique('users','email'), 'max:128'],
         ]);
 
@@ -63,6 +66,10 @@ class UsersController extends Controller
             'name',
             'email',
             ]));
+
+        if ($request->input('role')) {
+            $user->syncRoles($request->input('role'));
+        }
 
         $user->password = bcrypt($request->input('password'));
         $user->save();

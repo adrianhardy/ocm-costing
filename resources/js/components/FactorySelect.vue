@@ -21,7 +21,7 @@ export default {
   methods: {
     refresh() {
       this.$refs['select'].toggleLoading(true);
-      this.$http.get('/api/factories', {params: {all: true}}).then(response => {
+      this.$http.get('/api/admin/factories', {params: {all: true}}).then(response => {
         this.options = response.data.items;
         this.$refs['select'].toggleLoading(false);
       }).catch(error => {

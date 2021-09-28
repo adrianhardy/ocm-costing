@@ -21,6 +21,8 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $unit_length_cm
  * @property $unit_width_cm
  * @property $unit_height_cm
+ *
+ * @property-read $current_landed_cost_per_unit_gbp
  */
 class Product extends BaseProduct implements HasMedia
 {
@@ -181,6 +183,19 @@ class Product extends BaseProduct implements HasMedia
         return $this
             ->morphMany(config('comments.comment_class'), 'commentable')
             ->orderBy('created_at', 'DESC');
+    }
+
+    public function getCurrentLandedCostPerUnitGbpAttribute()
+    {
+
+        $landedCostData = \DB::table('sales_order_lines_consignments')
+            ->leftJoin('sales_order_lines', 'sales_order_lines.id', '=', 'sales_order_lines_consignments.sales_order_line_id')
+            ->where('sales_order_lines.product_id', '=', $this->id)
+            ->orderBy('sales_order_lines.created_at', 'DESC')
+            ->limit(1)
+            ->first();
+
+        return $landedCostData->est_landed_cost_per_unit_gbp;
     }
 
 }

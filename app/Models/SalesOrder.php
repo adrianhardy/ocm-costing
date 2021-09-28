@@ -9,6 +9,8 @@ use Mpociot\Versionable\VersionableTrait;
  * Class SalesOrder
  * @package App\Models
  * @property SalesOrderLine[] $lines
+ * @property-read boolean $is_finalised
+ * @property-read boolean $is_sent
  */
 class SalesOrder extends BaseSalesOrder
 {
@@ -39,6 +41,22 @@ class SalesOrder extends BaseSalesOrder
 	public function getIsSentAttribute()
     {
         return $this->sent_at !== null;
+    }
+
+    public function getStatusAttribute()
+    {
+        switch(true)
+        {
+            case $this->is_sent:
+                return 'Sent';
+                break;
+            case $this->is_finalised:
+                return 'Finalised';
+                break;
+            default:
+                return 'Quote';
+                break;
+        }
     }
 
     public function getSalesOrderNumberAttribute()
