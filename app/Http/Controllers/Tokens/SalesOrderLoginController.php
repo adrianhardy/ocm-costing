@@ -29,8 +29,8 @@ class SalesOrderLoginController extends Controller
         }
 
         if (\Auth::check()) {
-            // $this->authorize('view', $token->salesOrder);
-            return response()->redirectToRoute('sales-orders.show', $token->salesOrder);
+            $this->authorize('view', $token->salesOrder);
+            return response()->redirectToRoute('supplier.sales-orders.edit', $token->salesOrder);
         }
 
         abort(401, 'Unauthorised');

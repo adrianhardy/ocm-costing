@@ -13,7 +13,17 @@
 
 Auth::routes(['register' => false]);
 Route::redirect('/', '/home');
-Route::get('/tokens/order/{token}', 'Tokens\SalesOrderLoginController@auth')->name('auto-login');
+
+Route::get('/supplier/tokens/order/{token}', 'Tokens\SalesOrderLoginController@auth')->name('sales-order-token-login');
+
+Route::group(['middleware' => ['auth', 'sales_order_token', 'role:supplier']], function() {
+    Route::resource(
+        'supplier/sales-orders',
+        'Supplier\SalesOrders\SalesOrdersController',
+        ['as' => 'supplier']
+    )->only(['edit']);
+
+});
 
 Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
     Route::resource('/admin/media', 'Admin\MediaController')->only(['show', 'destroy']);

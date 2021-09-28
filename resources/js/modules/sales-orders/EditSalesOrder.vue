@@ -11,7 +11,7 @@
                         {{ new Date(salesOrder.finalised_at) | date('dd/MM/yy HH:mm') }}
                     </b-badge>
                 </div>
-                <div>
+                <div v-if="!isSupplier">
                     <b-button variant="outline-primary" @click="openSupplierAccessModal()">
                         Supplier Access
                     </b-button>
@@ -26,7 +26,7 @@
                     </b-button>
                 </div>
             </template>
-            <div class="row">
+            <div class="row" v-if="!isSupplier">
                 <div class="col-12 col-md-4">
                     <b-form-group label="Supplier">
                         <supplier-select v-model="salesOrder.supplier" @select="save()"/>
@@ -58,7 +58,7 @@
                 :fields="fields"
             >
                 <template #cell(id)="data">
-                    <b-icon-x class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
+                    <b-icon-x v-if="!isSupplier" class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
                 </template>
                 <template #cell(article_number)="data">
                     <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.article_number"/>
@@ -230,7 +230,10 @@ export default {
         CurrencySelect,
         SupplierSelect
     },
-    props: {salesOrderId: Number, isSuper: Boolean},
+    props: {
+      salesOrderId: Number,
+      isSupplier: Boolean
+    },
     filters: {
         date: dateFilter
     },
@@ -238,6 +241,9 @@ export default {
         this.refresh();
     },
     computed: {
+        urlPrefix() {
+          return `/api/${this.isSupplier?'supplier/':''}sales-orders`
+        },
         selectedRows() {
             return _.filter(this.salesOrder.lines, line => {
                 return line.checked;
@@ -372,7 +378,7 @@ export default {
             console.log(this.salesOrder.reference);
             const loader = this.$loading.show();
             this.$http.put(
-                `/api/sales-orders/${this.salesOrder.id}`, (model) ? model : this.salesOrder, {params: {include: this.include}}
+                `${this.urlPrefix}/${this.salesOrder.id}`, (model) ? model : this.salesOrder, {params: {include: this.include}}
             ).then(response => {
                 this.salesOrder = response.data;
                 loader.hide();
@@ -422,7 +428,7 @@ export default {
         },
         updateLine(line) {
             const loader = this.$loading.show();
-            const url = `/api/sales-orders/${this.salesOrder.id}/lines/${line.id}`;
+            const url = `${this.urlPrefix}/${this.salesOrder.id}/lines/${line.id}`;
             this.$http.put(url, {...line}, {
                 params: {include: this.include}
             }).then(response => {
@@ -435,7 +441,7 @@ export default {
         },
         refresh() {
             const loader = this.$loading.show();
-            this.$http.get(`/api/sales-orders/${this.salesOrderId}`, {
+            this.$http.get(`${this.urlPrefix}/${this.salesOrderId}`, {
                 params: {include: this.include}
             }).then(response => {
                 this.salesOrder = response.data;

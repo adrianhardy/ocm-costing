@@ -49,6 +49,10 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('pricing.history', 'Api\Products\ProductPricingHistoryController')->only(['index']);
     });
 
+    Route::group(['middleware' => ['auth:api', 'role:supplier']], function() {
+        Route::resource('supplier/sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['show']);
+        Route::resource('supplier/sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['update']);
+    });
 });
 
 

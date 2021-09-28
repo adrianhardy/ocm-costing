@@ -17,6 +17,8 @@ class LinesController extends Controller
      */
     public function store(SalesOrder $salesOrder)
     {
+        $this->authorize('view', $salesOrder);
+
         $line = new SalesOrderLine();
         $salesOrder->lines()->save($line);
         return response()->json(
@@ -32,6 +34,7 @@ class LinesController extends Controller
      */
     public function update(Request $request, SalesOrder $salesOrder, SalesOrderLine $line)
     {
+        $this->authorize('view', $salesOrder);
         $line->fill($request->only([
             'packing_instructions',
             'product_description',
@@ -83,6 +86,7 @@ class LinesController extends Controller
      */
     public function destroy(SalesOrder $salesOrder, SalesOrderLine $line)
     {
+        $this->authorize('view', $salesOrder);
         abort_unless ($line->sales_order_id == $salesOrder->id, 400);
         $line->delete();
         $salesOrder->touch();
