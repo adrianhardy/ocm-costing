@@ -7,6 +7,7 @@
 namespace App\Models\Base;
 
 use App\Models\Currency;
+use App\Models\SalesOrderAuthentication;
 use App\Models\SalesOrderLine;
 use App\Models\Supplier;
 use Carbon\Carbon;
@@ -36,6 +37,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * 
  * @property Currency|null $currency
  * @property Supplier $supplier
+ * @property Collection|SalesOrderAuthentication[] $sales_order_authentications_sales_order
  * @property Collection|SalesOrderLine[] $sales_order_lines_sales_order
  *
  * @package App\Models\Base
@@ -70,6 +72,11 @@ class SalesOrder extends Model
 	public function supplier()
 	{
 		return $this->belongsTo(Supplier::class);
+	}
+
+	public function sales_order_authentications_sales_order()
+	{
+		return $this->hasMany(SalesOrderAuthentication::class);
 	}
 
 	public function sales_order_lines_sales_order()

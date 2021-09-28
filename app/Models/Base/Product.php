@@ -6,6 +6,7 @@
 
 namespace App\Models\Base;
 
+use App\Models\ProductPricing;
 use App\Models\QuoteLine;
 use App\Models\SalesOrderLine;
 use App\Models\Supplier;
@@ -42,6 +43,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  * 
  * @property Supplier $supplier
+ * @property Collection|ProductPricing[] $product_pricings_product
  * @property Collection|QuoteLine[] $quote_lines_product
  * @property Collection|SalesOrderLine[] $sales_order_lines_product
  *
@@ -71,6 +73,11 @@ class Product extends Model
 	public function supplier()
 	{
 		return $this->belongsTo(Supplier::class);
+	}
+
+	public function product_pricings_product()
+	{
+		return $this->hasMany(ProductPricing::class);
 	}
 
 	public function quote_lines_product()

@@ -12,6 +12,8 @@
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
+                <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="/storage/raf.apk">Download App</a>
                 <a class="dropdown-item" href="{{ route('logout') }}"
                    onclick="event.preventDefault();
@@ -26,3 +28,4 @@
         </li>
     @endguest
 </ul>
+<quick-cost-modal ref="quick-cost-modal"></quick-cost-modal>

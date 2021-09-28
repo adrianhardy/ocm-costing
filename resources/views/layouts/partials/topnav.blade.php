@@ -19,6 +19,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('price-list.index') }}">
+                <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
+                Price List
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('users.index') }}">
                 <b-icon-person scale="0.8"></b-icon-person>
                 Users
