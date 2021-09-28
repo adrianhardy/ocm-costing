@@ -67,6 +67,10 @@ class UsersController extends Controller
             'email',
             ]));
 
+        if ($request->input('role')) {
+            $user->syncRoles($request->input('role'));
+        }
+
         $user->password = bcrypt($request->input('password'));
         $user->save();
 

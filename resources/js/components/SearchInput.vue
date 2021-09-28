@@ -10,7 +10,7 @@
         />
         <b-input-group-append>
             <b-input-group-text class="bg-white">
-                <b-icon-search />
+                <b-icon-search class="search-action" @click="$emit('search', value)" />
             </b-input-group-text>
         </b-input-group-append>
         <slot name="right"></slot>
@@ -29,4 +29,9 @@ export default {
     name: "SearchInput",
 }
 </script>
+<style>
+    .search-action {
+      cursor: pointer
+    }
+</style>
 

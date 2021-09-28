@@ -6,7 +6,7 @@
                 Home
             </a>
         </li>
-        @role('super')
+        @role('super|admin')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('products.index') }}">
                 <b-icon-box-seam scale="0.8"></b-icon-box-seam>
@@ -14,7 +14,7 @@
             </a>
         </li>
         @endrole
-        @role('super|pricing')
+        @role('super|admin')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('sales-orders.index') }}">
                 <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
@@ -22,13 +22,15 @@
             </a>
         </li>
         @endrole
-        @role('super')
+        @role('super|pricing|admin')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('price-list.index') }}">
                 <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
                 Price List
             </a>
         </li>
+        @endrole
+        @role('super|admin')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('users.index') }}">
                 <b-icon-person scale="0.8"></b-icon-person>
@@ -44,7 +46,7 @@
             </a>
         </li>
         @endrole
-        @role('super')
+        @role('super|admin')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('factories.index') }}">
                 <b-icon-building scale="0.8"></b-icon-building>

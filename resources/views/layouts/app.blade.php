@@ -40,6 +40,11 @@
         <auto-toast></auto-toast>
     </div>
     @include('layouts.partials.vue-alerts')
+    @auth
+        <script type="text/javascript">
+            window.__state = {!! json_encode(['api_token' => \Auth::user()->api_token]) !!};
+        </script>
+    @endauth
     <script type="text/javascript" src="{{ mix('/js/manifest.js') }}"></script>
     <script type="text/javascript" src="{{ mix('/js/vendor.js') }}"></script>
     <script type="text/javascript" src="{{ mix('/js/app.js') }}"></script>

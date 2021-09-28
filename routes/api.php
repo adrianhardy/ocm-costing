@@ -12,14 +12,18 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::group(['as' => 'api.'], function() {
+Route::group(['as' => 'api.', 'middleware' => ['auth:api', 'role:super']], function() {
+    Route::resource('sales-orders.consignments', 'Api\SalesOrders\ConsignmentsController')->only(['index']);
+});
+
+
+
+Route::group(['as' => 'api.', 'middleware' => ['auth:api', 'role:super|admin']], function() {
     Route::post('login', 'Api\AuthController@login');
     Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);
     Route::resource('settings', 'Api\Settings\SettingsController')->only(['index']);
     Route::resource('products.comments', 'Api\Products\CommentsController')->only(['store']);
     Route::resource('products', 'Api\Products\ProductsController')->only(['index', 'show', 'store', 'update', 'delete']);
-    Route::resource('pricing','Api\Products\ProductPricingController')->only(['index','update','show']);
-    Route::resource('pricing.history', 'Api\Products\ProductPricingHistoryController')->only(['index']);
     Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
     Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index']);
     Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);
@@ -27,7 +31,6 @@ Route::group(['as' => 'api.'], function() {
     Route::resource('sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['store', 'update', 'destroy']);
     Route::resource('sales-orders/lines/shipments', 'Api\Shipments\CreateShipmentFromOrderLinesController')->only(['store', 'index']);
     Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
-    Route::resource('sales-orders.consignments', 'Api\SalesOrders\ConsignmentsController')->only(['index']);
     Route::put('sales-orders/lines/{line}/consignments/{consignment}', 'Api\SalesOrders\ConsignmentsController@update');
     Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
     Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);
@@ -39,4 +42,10 @@ Route::group(['as' => 'api.'], function() {
     Route::resource('admin/factories.files', 'Api\Admin\Factories\MediaController')->only(['index', 'store']);
     Route::resource('admin/settings', 'Api\Admin\SettingsController')->only(['index', 'store']);
 });
+
+Route::group(['as' => 'api.', 'middleware' => ['auth:api', 'role:super|pricing']], function() {
+    Route::resource('pricing','Api\Products\ProductPricingController')->only(['index','update','show']);
+    Route::resource('pricing.history', 'Api\Products\ProductPricingHistoryController')->only(['index']);
+});
+
 

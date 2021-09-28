@@ -14,6 +14,7 @@
           <b-select :disabled="currentUser.id == userId" v-model="user.role">
             <b-select-option value="super">Super</b-select-option>
             <b-select-option value="pricing">Pricing</b-select-option>
+            <b-select-option value="admin">Admin</b-select-option>
           </b-select>
         </b-form-group>
       </div>
