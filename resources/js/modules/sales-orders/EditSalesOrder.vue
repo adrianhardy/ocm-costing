@@ -26,7 +26,7 @@
                     </b-button>
                 </div>
             </template>
-            <div class="row" v-if="!isSupplier">
+            <div class="row" v-if="!isSupplier ">
                 <div class="col-12 col-md-4">
                     <b-form-group label="Supplier">
                         <supplier-select v-model="salesOrder.supplier" @select="save()"/>
@@ -61,8 +61,23 @@
                     <b-icon-x v-if="!isSupplier" class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
                 </template>
                 <template #cell(article_number)="data">
-                    <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.article_number"/>
-                    <b-form-input :readonly="salesOrder.is_finalised" size="sm" v-model="data.item.item_number"/>
+                    <b-form-input
+                        :readonly="salesOrder.is_finalised"
+                        size="sm"
+                        v-model="data.item.article_number"
+                        @change="updateLine(data.item)"
+                    />
+                    <b-form-input
+                        :readonly="salesOrder.is_finalised"
+                        size="sm"
+                        v-model="data.item.item_number"
+                        @change="updateLine(data.item)"
+                        class="mt-1"
+                    />
+                    <b-form-group label-cols="6" label="Unit kg" class="mt-1" label-size="sm">
+                        <b-input size="sm" v-model="data.item.unit_weight_kg" @change="updateLine(data.item)" />
+                    </b-form-group>
+
                 </template>
                 <template #cell(total)="data">
 
@@ -74,7 +89,7 @@
                             :value="data.value | 2dp_value"
                         />
                     </b-input-group>
-                    <b-input-group prepend="GBP" size="sm">
+                    <b-input-group prepend="GBP" size="sm" class="mt-1">
                         <b-form-input
                             readonly
                             class="no-stepper"
@@ -84,7 +99,7 @@
                 </template>
                 <template #cell(product.name)="data">
                     <product-select
-                        v-if="!salesOrder.finalised_at"
+                        v-if="!isSupplier && !salesOrder.finalised_at"
                         size="sm"
                         :readonly="salesOrder.is_finalised"
                         v-model="data.item.product"
@@ -97,13 +112,23 @@
                             {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
                         </b-badge>
                     </div>
+
+                    <div class="mt-1">
+                        <product-dimensions-input v-model="data.item" @updated="updateLine(data.item)"/>
+                    </div>
+
                 </template>
                 <template #cell(packing_instructions)="data">
                     <b-textarea
+                        style="height: 4.7em"
                         size="sm"
+                        rows="3"
                         type="number"
                         v-model="data.item.packing_instructions" @change="updateLine(data.item)"
                     />
+                    <b-form-group label-cols="6" label="Carton kg" class="mt-1" label-size="sm">
+                        <b-input size="sm" v-model="data.item.case_weight_kg" />
+                    </b-form-group>
                 </template>
                 <template #cell(units_requested)="data">
                     <b-form-input
@@ -117,7 +142,7 @@
                         size="sm"
                         type="number"
                         v-model.number="data.item.total_cubic_ft" @change="updateLine(data.item)"
-                        class="no-stepper"
+                        class="no-stepper mt-1"
                     />
                 </template>
                 <template #cell(unit_price)="data">
@@ -130,13 +155,19 @@
                             @change="updateLine(data.item)"
                         />
                     </b-input-group>
-                    <b-input-group prepend="GBP" size="sm">
+                    <b-input-group prepend="GBP" size="sm" class="mt-1">
                         <b-form-input
                             readonly
                             class="no-stepper"
                             :value="data.item.unit_price * salesOrder.fx_rate | cash_value"
                         />
                     </b-input-group>
+                    <b-form-group label-cols="6" class="mt-1" label-size="sm">
+                        <template #label>
+                            <div>Units/Ct</div>
+                        </template>
+                        <b-input size="sm" v-model="data.item.units_per_case" @change="updateLine(data.item)" />
+                    </b-form-group>
                 </template>
                 <template #cell(checked)="data">
                     <b-form-checkbox size="lg" v-model="data.item.checked"/>
@@ -156,7 +187,7 @@
                     </b-tr>
                 </template>
             </b-table>
-          <div class="d-flex justify-content-between w-100">
+            <div class="d-flex justify-content-between w-100" v-if="!isSupplier">
                 <div>
                     <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg"
                               @click="finalise">
@@ -167,29 +198,29 @@
                     </b-button>
                 </div>
                 <div>
-                  <b-button class="mr-1" size="lg" variant="success" @click="add"
-                            v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
-                    Add Line
-                  </b-button>
+                    <b-button class="mr-1" size="lg" variant="success" @click="add"
+                              v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
+                        Add Line
+                    </b-button>
 
-                  <b-button
-                      class="mr-1"
-                      size="lg"
-                      variant="primary"
-                      v-if="salesOrder.is_finalised && hasSelectedRows"
-                      @click="confirmSendToPricing()"
-                  >
-                    Send To Pricing
-                  </b-button>
-                  <b-button
-                      class="mr-1"
-                      size="lg"
-                      variant="success"
-                      v-if="salesOrder.is_finalised && hasSelectedRows"
-                      @click="$refs['update-inbound-shipments-modal'].open()"
-                  >
-                    Update Inbound Shipments
-                  </b-button>
+                    <b-button
+                        class="mr-1"
+                        size="lg"
+                        variant="primary"
+                        v-if="salesOrder.is_finalised && hasSelectedRows"
+                        @click="confirmSendToPricing()"
+                    >
+                        Send To Pricing
+                    </b-button>
+                    <b-button
+                        class="mr-1"
+                        size="lg"
+                        variant="success"
+                        v-if="salesOrder.is_finalised && hasSelectedRows"
+                        @click="$refs['update-inbound-shipments-modal'].open()"
+                    >
+                        Update Inbound Shipments
+                    </b-button>
                 </div>
             </div>
         </b-card>
@@ -218,11 +249,13 @@ import ProductSelect from "../../components/ProductSelect";
 import UpdateInboundShipmentsModal from "./UpdateInboundShipmentsModal";
 import SalesOrderHistoryModal from "./SalesOrderHistoryModal";
 import SupplierAccessModal from "./SupplierAccessModal";
+import ProductDimensionsInput from "../../components/ProductDimensionsInput";
 
 
 export default {
     name: "EditSalesOrder",
     components: {
+        ProductDimensionsInput,
         SupplierAccessModal,
         SalesOrderHistoryModal,
         UpdateInboundShipmentsModal,
@@ -231,8 +264,9 @@ export default {
         SupplierSelect
     },
     props: {
-      salesOrderId: Number,
-      isSupplier: Boolean
+        salesOrderId: Number,
+        isSupplier: Boolean,
+        isSuper: Boolean
     },
     filters: {
         date: dateFilter
@@ -242,7 +276,7 @@ export default {
     },
     computed: {
         urlPrefix() {
-          return `/api/${this.isSupplier?'supplier/':''}sales-orders`
+            return `/api/${this.isSupplier ? 'supplier/' : ''}sales-orders`
         },
         selectedRows() {
             return _.filter(this.salesOrder.lines, line => {
@@ -307,9 +341,9 @@ export default {
         async confirmSendToPricing() {
             let result = await this.$bvModal.msgBoxConfirm(
                 'Are you sure you want to send the selected lines to pricing? This will invalidate any current pricing', {
-                  okTitle: 'Yes, Continue',
-                  title: 'Please confirm',
-                  centered: true
+                    okTitle: 'Yes, Continue',
+                    title: 'Please confirm',
+                    centered: true
                 }
             );
 
@@ -324,8 +358,8 @@ export default {
                 loader.hide();
                 this.$bvModal.msgBoxOk(
                     'The selected products have been sent to pricing', {
-                      centered: true,
-                      title: 'Confirmation'
+                        centered: true,
+                        title: 'Confirmation'
                     }
                 );
             }).catch(error => {
@@ -337,13 +371,13 @@ export default {
             this.$refs['sales-order-history-modal'].open();
         },
         async unfinalise() {
-          let result = await this.$bvModal.msgBoxConfirm('Are you sure you want to restore this sales order?', {
-            centered: true,
-            title: 'Please confirm',
-            okTitle: 'Yes'
-          });
+            let result = await this.$bvModal.msgBoxConfirm('Are you sure you want to restore this sales order?', {
+                centered: true,
+                title: 'Please confirm',
+                okTitle: 'Yes'
+            });
 
-          this.restore();
+            this.restore();
         },
         async finalise() {
             let result = await this.$bvModal.msgBoxConfirm(
@@ -360,17 +394,17 @@ export default {
 
             this.save({finalised: true})
         },
-        restore(){
-          const loader = this.$loading.show
-          this.salesOrder.restore = true
-          this.$http.put(`/api/sales-orders/${this.salesOrder.id}`, this.salesOrder, {params: {include: this.include}}
-          ).then(response => {
-            this.salesOrder = response.data;
-            loader.hide
-          }).catch(error => {
-            this.$handleExceptionResponse(error);
-            loader.hide();
-          });
+        restore() {
+            const loader = this.$loading.show
+            this.salesOrder.restore = true
+            this.$http.put(`/api/sales-orders/${this.salesOrder.id}`, this.salesOrder, {params: {include: this.include}}
+            ).then(response => {
+                this.salesOrder = response.data;
+                loader.hide
+            }).catch(error => {
+                this.$handleExceptionResponse(error);
+                loader.hide();
+            });
 
         },
 

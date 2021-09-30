@@ -13,7 +13,9 @@ use App\Models\Base\SalesOrderLine as BaseSalesOrderLine;
  */
 class SalesOrderLine extends BaseSalesOrderLine
 {
-	protected $fillable = [
+    use Traits\ProductDimensionMutators;
+
+    protected $fillable = [
 		'sales_order_id',
 		'item_number',
 		'article_number',
@@ -26,7 +28,26 @@ class SalesOrderLine extends BaseSalesOrderLine
 		'total',
 		'total_gbp',
         'total_cubic_ft',
-        'total_cubic_m'
+        'total_cubic_m',
+
+        'units_per_case',
+        'inner_qty',
+        'case_weight_kg',
+        'unit_weight_kg',
+
+        'height_cm',
+        'length_cm',
+        'width_cm',
+        'unit_width_cm',
+        'unit_length_cm',
+        'unit_height_cm',
+        'height_m',
+        'length_m',
+        'width_m',
+        'unit_width_m',
+        'unit_length_m',
+        'unit_height_m',
+        'barcode'
 	];
 
 	public function getEstimatedShippingCostGbpAttribute()
