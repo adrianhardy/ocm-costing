@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models;
 use App\Models\User;
+use App\Observers\SalesOrderLineObserver;
 use App\Observers\SalesOrderObserver;
 use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
     {
         User::observe(UserObserver::class);
         Models\SalesOrder::observe(SalesOrderObserver::class);
+        Models\SalesOrderLine::observe(SalesOrderLineObserver::class);
         Validator::extend('current_password', function ($attribute, $value, $parameters, $validator) {
             return \Auth::user() && Hash::check($value, \Auth::user()->password);
         });

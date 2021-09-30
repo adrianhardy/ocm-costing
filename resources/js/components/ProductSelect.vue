@@ -19,7 +19,7 @@
             </div>
         </template>
         <template slot="selected-option" slot-scope="data">
-            <div>{{ data.name }}</div>
+            <div>{{ data.name | dotdotdot(30) }}</div>
         </template>
     </vue-select>
 </template>

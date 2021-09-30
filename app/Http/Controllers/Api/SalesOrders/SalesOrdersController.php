@@ -20,6 +20,7 @@ class SalesOrdersController extends Controller
      */
     public function show(SalesOrder $sales_order)
     {
+        $this->authorize('view', $sales_order);
         return response()->json(fractal(
             $sales_order, new SalesOrderTransformer
         ));
@@ -90,6 +91,7 @@ class SalesOrdersController extends Controller
      */
     public function update(Request $request, SalesOrder $sales_order)
     {
+        $this->authorize('view', $sales_order);
         if(!$request->input('finalised')){
             $request->validate([
                 'supplier.id' => 'required|exists:suppliers,id',

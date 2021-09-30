@@ -24,6 +24,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  * @property string|null $item_number
  * @property string|null $article_number
+ * @property string|null $packing_instructions
+ * @property string|null $product_description
+ * @property string|null $name
  * @property int|null $product_id
  * @property int $units_requested
  * @property float|null $unit_price
@@ -31,8 +34,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $total
  * @property float|null $total_gbp
  * @property float|null $total_cubic_m
- * @property string|null $packing_instructions
- * @property string|null $product_description
+ * @property int|null $units_per_case
+ * @property int|null $inner_qty
+ * @property float|null $case_weight_kg
+ * @property float|null $height_m
+ * @property float|null $length_m
+ * @property float|null $width_m
+ * @property float|null $unit_width_m
+ * @property float|null $unit_length_m
+ * @property float|null $unit_height_m
+ * @property float|null $unit_weight_kg
+ * @property string|null $barcode
  * 
  * @property Product|null $product
  * @property SalesOrder|null $sales_order
@@ -53,7 +65,17 @@ class SalesOrderLine extends Model
 		'unit_price_gbp' => 'float',
 		'total' => 'float',
 		'total_gbp' => 'float',
-		'total_cubic_m' => 'float'
+		'total_cubic_m' => 'float',
+		'units_per_case' => 'int',
+		'inner_qty' => 'int',
+		'case_weight_kg' => 'float',
+		'height_m' => 'float',
+		'length_m' => 'float',
+		'width_m' => 'float',
+		'unit_width_m' => 'float',
+		'unit_length_m' => 'float',
+		'unit_height_m' => 'float',
+		'unit_weight_kg' => 'float'
 	];
 
 	public function product()

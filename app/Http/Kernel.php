@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\SalesOrderTokenMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Spatie\Permission\Middlewares\RoleMiddleware;
 
@@ -64,8 +65,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'shared' => \App\Http\Middleware\SharedResourceRoleMiddleware::class,
-        'role' => RoleMiddleware::class
+        'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
+        'sales_order_token' => SalesOrderTokenMiddleware::class
     ];
 
     /**

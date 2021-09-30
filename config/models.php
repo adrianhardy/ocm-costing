@@ -285,7 +285,8 @@ return [
             'telescope_entries_tags', 'telescope_entries', 'telescope_monitoring',
             'versions', 'statuses', 'settings', 'roles', 'failed_jobs', 'comments', 'activity_log',
 
-            'sales_order_lines_consignments'
+            'sales_order_lines_consignments',
+            'sales_order_authentications'
         ],
 
         /*

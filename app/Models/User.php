@@ -81,5 +81,9 @@ class User extends Authenticatable
         $this->save();
     }
 
+    public function getRoleAttribute()
+    {
+        return $this->roles->first();
+    }
 
 }

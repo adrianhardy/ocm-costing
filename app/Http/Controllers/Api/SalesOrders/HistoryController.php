@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\SalesOrders;
 
 use App\Http\Controllers\Controller;
 use App\Models\SalesOrder;
+use App\Transformers\VersionTransformer;
 use Illuminate\Http\Request;
 
 class HistoryController extends Controller
@@ -18,8 +19,9 @@ class HistoryController extends Controller
             ->history()
             ->orderBy('created_at', 'DESC')
             ->get();
+
         return response()->json([
-            'items' => $history
+            'items' => fractal($history, new VersionTransformer())
         ]);
     }
 }
