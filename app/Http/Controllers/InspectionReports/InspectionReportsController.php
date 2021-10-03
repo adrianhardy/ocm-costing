@@ -10,7 +10,7 @@ class InspectionReportsController extends Controller
 {
     public function edit(InspectionReport $inspection)
     {
-        return response()->view('inspection.edit', [
+        return response()->view('inspections.edit', [
             'inspection' => $inspection
         ]);
     }
