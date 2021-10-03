@@ -7,6 +7,7 @@
 namespace App\Models\Base;
 
 use App\Models\Consignment;
+use App\Models\InspectionReport;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use Carbon\Carbon;
@@ -34,9 +35,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $total
  * @property float|null $total_gbp
  * @property float|null $total_cubic_m
+ * @property int|null $units_per_case
+ * @property int|null $inner_qty
+ * @property float|null $case_weight_kg
+ * @property float|null $height_m
+ * @property float|null $length_m
+ * @property float|null $width_m
+ * @property float|null $unit_width_m
+ * @property float|null $unit_length_m
+ * @property float|null $unit_height_m
+ * @property float|null $unit_weight_kg
+ * @property string|null $barcode
  * 
  * @property Product|null $product
  * @property SalesOrder|null $sales_order
+ * @property Collection|InspectionReport[] $inspection_reports_sales_order_line
  * @property Collection|Consignment[] $consignments
  *
  * @package App\Models\Base
@@ -54,7 +67,17 @@ class SalesOrderLine extends Model
 		'unit_price_gbp' => 'float',
 		'total' => 'float',
 		'total_gbp' => 'float',
-		'total_cubic_m' => 'float'
+		'total_cubic_m' => 'float',
+		'units_per_case' => 'int',
+		'inner_qty' => 'int',
+		'case_weight_kg' => 'float',
+		'height_m' => 'float',
+		'length_m' => 'float',
+		'width_m' => 'float',
+		'unit_width_m' => 'float',
+		'unit_length_m' => 'float',
+		'unit_height_m' => 'float',
+		'unit_weight_kg' => 'float'
 	];
 
 	public function product()
@@ -65,6 +88,11 @@ class SalesOrderLine extends Model
 	public function sales_order()
 	{
 		return $this->belongsTo(SalesOrder::class);
+	}
+
+	public function inspection_reports_sales_order_line()
+	{
+		return $this->hasMany(InspectionReport::class);
 	}
 
 	public function consignments()

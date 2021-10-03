@@ -6,6 +6,7 @@ use App\Domain\LandedCostCalculator;
 use App\Http\Controllers\Controller;
 use App\Models\Base\SalesOrder;
 use App\Models\Consignment;
+use App\Models\InspectionReport;
 use App\Models\SalesOrderLine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,6 +49,11 @@ class CreateShipmentFromOrderLinesController extends Controller
 
             $shipment->sales_order_lines()->save($soLine, $new);
             $shipment->save();
+
+            $inspection = new InspectionReport();
+            $inspection->consignment()->associate($shipment);
+            $inspection->sales_order_line()->associate($soLine);
+            $inspection->setStatus(InspectionReport::STATUS_PENDING);
         }
         DB::commit();
 

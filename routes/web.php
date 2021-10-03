@@ -26,4 +26,5 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/admin/suppliers', 'Admin\SuppliersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/factories', 'Admin\FactoriesController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/settings', 'Admin\SettingsController')->only(['index']);
+    Route::resource('/inspections', 'InspectionReports\InspectionReportsController')->only(['edit']);
 });
