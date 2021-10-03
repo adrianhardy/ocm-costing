@@ -4,6 +4,11 @@ namespace App\Models;
 
 use App\Models\Base\ProductPricing as BaseProductPricing;
 
+/**
+ * Class ProductPricing
+ * @package App\Models
+ * @property-read $calculated_gross_profit_gbp
+ */
 class ProductPricing extends BaseProductPricing
 {
 	protected $fillable = [
@@ -21,4 +26,14 @@ class ProductPricing extends BaseProductPricing
 		'marketplace_fee',
 		'profit'
 	];
+
+	public function getCalculatedGrossProfitGbpAttribute()
+    {
+        $profit = $this->unit_price_gbp;
+        $profit -= ($this->unit_price_gbp * ($this->marketplace_commission_pc / 100));
+        $profit -= $this->marketplace_fee;
+        $profit -= $this->est_landed_cost_per_unit_gbp;
+        $profit -= $this->unit_shipping_gbp;
+        return $profit;
+    }
 }

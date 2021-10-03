@@ -17,6 +17,8 @@ class LinesController extends Controller
      */
     public function store(SalesOrder $salesOrder)
     {
+        $this->authorize('view', $salesOrder);
+
         $line = new SalesOrderLine();
         $salesOrder->lines()->save($line);
         return response()->json(
@@ -32,25 +34,30 @@ class LinesController extends Controller
      */
     public function update(Request $request, SalesOrder $salesOrder, SalesOrderLine $line)
     {
+        $this->authorize('view', $salesOrder);
         $line->fill($request->only([
             'packing_instructions',
             'product_description',
             'name',
             'unit_price',
             'units_requested',
-            'total_cubic_ft'
+            'total_cubic_ft',
+            'article_number',
+            'item_number',
+            'case_weight_kg',
+            'unit_weight_kg',
+            'height_cm',
+            'length_cm',
+            'width_cm',
+            'unit_width_cm',
+            'unit_length_cm',
+            'unit_height_cm',
+            'units_per_case',
+            'barcode'
         ]));
 
         if ($request->input('product.id') && $request->input('product.id') != $line->product_id) {
             $product = Product::findOrFail($request->input('product.id'));
-            $line->fill([
-                'name'                  => '' . $product->name,
-                'item_number'           => '' . $product->item_number,
-                'article_number'        => '' . $product->article_number,
-                'product_description'   => '' . $product->product_description,
-                'packing_instructions'  => '' . $product->packing_instructions,
-                'unit_price'            => $product->unit_price
-            ]);
             $line->product()->associate($product);
         }
 
@@ -83,6 +90,7 @@ class LinesController extends Controller
      */
     public function destroy(SalesOrder $salesOrder, SalesOrderLine $line)
     {
+        $this->authorize('view', $salesOrder);
         abort_unless ($line->sales_order_id == $salesOrder->id, 400);
         $line->delete();
         $salesOrder->touch();

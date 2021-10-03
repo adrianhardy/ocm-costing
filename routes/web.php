@@ -13,7 +13,19 @@
 
 Auth::routes(['register' => false]);
 Route::redirect('/', '/home');
-Route::group(['middleware' => ['auth']], function() {
+
+Route::get('/supplier/tokens/order/{token}', 'Tokens\SalesOrderLoginController@auth')->name('sales-order-token-login');
+
+Route::group(['middleware' => ['auth', 'sales_order_token', 'role:supplier']], function() {
+    Route::resource(
+        'supplier/sales-orders',
+        'Supplier\SalesOrders\SalesOrdersController',
+        ['as' => 'supplier']
+    )->only(['edit']);
+
+});
+
+Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
     Route::resource('/admin/media', 'Admin\MediaController')->only(['show', 'destroy']);
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('/admin/imports/preview', 'Admin\Imports\PreviewController')->only(['store', 'update']);
@@ -22,9 +34,17 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('sales-orders', 'SalesOrders\SalesOrdersController')->only(['index', 'edit']);
     Route::resource('sales-orders.export', 'SalesOrders\ExportController')->only(['index']);
     Route::resource('sales-orders.consignments', 'SalesOrders\ConsignmentsController')->only(['index']);
+});
+
+Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
     Route::resource('/admin/users', 'Admin\UsersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/suppliers', 'Admin\SuppliersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/factories', 'Admin\FactoriesController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/settings', 'Admin\SettingsController')->only(['index']);
     Route::resource('/inspections', 'InspectionReports\InspectionReportsController')->only(['edit']);
+});
+
+Route::group(['middleware' => ['auth', 'role:super|pricing']], function() {
+    Route::resource('price-list', 'Products\ProductPricingController')->only(['index']);
+
 });

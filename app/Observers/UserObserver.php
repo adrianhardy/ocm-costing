@@ -15,5 +15,10 @@ class UserObserver
         if (!$user->api_token) {
             $user->api_token = Str::random(96);
         }
+
+        if ($user->hasRole('supplier')) {
+            $user->password = User::USER_LOCKED;
+        }
+
     }
 }

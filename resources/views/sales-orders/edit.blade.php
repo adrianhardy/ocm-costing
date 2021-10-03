@@ -1,6 +1,12 @@
 @extends('layouts.app')
 @section('content')
     <div class="container">
-        <edit-sales-order :sales-order-id="{{ $so->id }}"></edit-sales-order>
+        <edit-sales-order
+                :sales-order-id="{{ $so->id }}"
+                :is-super="{!! json_encode(\Auth::user()->hasRole('super')) !!}"
+
+        >
+
+        </edit-sales-order>
     </div>
 @endsection

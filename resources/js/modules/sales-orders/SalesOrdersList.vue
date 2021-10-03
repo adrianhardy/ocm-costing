@@ -4,6 +4,12 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
+                        <b-select v-model="stage" style="width:100px !important" @change="$refs['table'].refresh()">
+                          <b-select-option value="">All</b-select-option>
+                          <b-select-option value="quote">Quotes</b-select-option>
+                          <b-select-option value="finalised">Finalised</b-select-option>
+                          <b-select-option value="sent">Sent</b-select-option>
+                        </b-select>
                         <search-input v-model="search" @search="$refs['table'].refresh()"/>
                         <b-button @click="$refs['create'].open()">Create New Sales Order</b-button>
                     </slot>
@@ -59,6 +65,7 @@ export default {
                 this.pagination,
                 ctx, {
                     search: this.search,
+                    stage: this.stage,
                     include: ''
                 }
             );
@@ -67,6 +74,7 @@ export default {
     data() {
         return {
             search: '',
+            stage: '',
             pagination: {
                 total: 0,
                 perPage: 100,
@@ -75,7 +83,7 @@ export default {
             fields: [
                 {
                     key: 'reference',
-                    label: 'Reference',
+                    label: 'Order #',
                     sortable: true,
                 }, {
                     key: 'created_at',
@@ -84,17 +92,8 @@ export default {
                     key: 'sent_at',
                     sortable: true
                 }, {
-                    key: 'goods_cost_gbp',
-                    label: 'Goods Cost (£)',
-                    sortable: true
-                }, {
-                    key: 'shipping_cost_gbp',
-                    label: 'Shipping Cost (£)',
-                    sortable: true
-                }, {
-                    key: 'total_gbp',
-                    sortable: true
-                }
+                    key: 'status'
+              }
             ]
         }
     }

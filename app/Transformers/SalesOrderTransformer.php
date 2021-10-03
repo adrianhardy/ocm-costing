@@ -78,6 +78,7 @@ class SalesOrderTransformer extends TransformerAbstract
             'shipping_cost_gbp',
             'goods_cost',
             'goods_cost_gbp',
+            'status'
         ]);
     }
 }

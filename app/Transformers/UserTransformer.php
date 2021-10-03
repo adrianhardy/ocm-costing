@@ -39,8 +39,9 @@ class UserTransformer extends TransformerAbstract
             'email',
             'created_at',
             'last_seen_at',
-            'is_locked'
+            'is_locked',
         ]);
+        $json['role'] = optional($user->role)->name;
         $json['me'] = \Auth::id() == $user->id;
         $pivot = $user->getAttribute('pivot');
         if ($pivot) {
@@ -56,11 +57,9 @@ class UserTransformer extends TransformerAbstract
 
     public function includeRoles(User $user)
     {
-        $roles = Role::all();
-        $roles = $roles->mapWithKeys(function($role) use ($user) {
-            return [$role->name => $user->hasRole($role)];
+        return $this->collection($user->roles, function(Role $role) {
+            return $role->only(['id', 'name']);
         });
-        return $this->primitive($roles);
     }
 
     public function includePermissions(User $user)

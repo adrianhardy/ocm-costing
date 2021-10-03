@@ -23,8 +23,14 @@ class ProductTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'quotes', 'media', 'supplier', 'comments', 'comments.author'
+        'quotes', 'media', 'supplier', 'comments', 'comments.author', 'factory',
+        'current_landed_cost_per_unit_gbp'
     ];
+
+    public function includeCurrentLandedCostPerUnitGbp(Product $product)
+    {
+        return $this->primitive($product->current_landed_cost_per_unit_gbp);
+    }
 
     public function includeQuoteLines(Product $product)
     {
@@ -34,6 +40,14 @@ class ProductTransformer extends TransformerAbstract
     public function includeSupplier(Product $product)
     {
         return $this->item($product->supplier, new SupplierTransformer);
+    }
+
+    public function includeFactory(Product $product)
+    {
+        if (!$product->factory) {
+            return $this->null();
+        }
+        return $this->item($product->factory, new FactoryTransformer());
     }
 
     public function includeComments(Product $product)
@@ -47,7 +61,7 @@ class ProductTransformer extends TransformerAbstract
      */
     public function includeMedia(Product $product)
     {
-        return $this->collection($product->getMedia('default'), function(Media $media) {
+        return $this->collection($product->getMedia('default'), function (Media $media) {
             return [
                 'id' => $media->id,
                 'url' => $media->getFullUrl()
@@ -56,7 +70,7 @@ class ProductTransformer extends TransformerAbstract
     }
 
     /**
-    /**
+     * /**
      * A Fractal transformer.
      *
      * @return array

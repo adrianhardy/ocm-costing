@@ -57,16 +57,16 @@ export default {
             loading: false,
             fields: [
                 {
-                    key: 'image'
-                },
-                {
-                    key: 'name',
+                    key: 'article_number',
                     sortable: true
+
                 },{
                     key: 'item_number',
                     sortable: true
                 },{
-                    key: 'article_number',
+                    key: 'image',
+                },{
+                    key: 'name',
                     sortable: true
                 },{
                     key: 'barcode',

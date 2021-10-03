@@ -17,6 +17,9 @@
             <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
           </div>
         </template>
+        <template #cell(role)="data">
+          {{ data.value.toUpperCase() }}
+        </template>
         <template #cell(name)="data">
           <a :href="`/admin/users/${data.item.id}/edit`">{{ data.value }}</a>
         </template>
@@ -62,6 +65,9 @@ export default {
         }, {
           key: 'email',
           sortable: true
+        }, {
+          key: 'role',
+          sortable: false
         }
       ]
     }

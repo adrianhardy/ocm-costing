@@ -20,6 +20,7 @@ class SalesOrdersController extends Controller
      */
     public function show(SalesOrder $sales_order)
     {
+        $this->authorize('view', $sales_order);
         return response()->json(fractal(
             $sales_order, new SalesOrderTransformer
         ));
@@ -34,6 +35,22 @@ class SalesOrdersController extends Controller
         Request $request,
         SalesOrderRepository $salesOrderRepository
     ) {
+        $paginator = $salesOrderRepository;
+
+        switch($request->query('stage'))
+        {
+            case 'quote':
+                $paginator = $paginator->whereNull('finalised_at')->whereNull('sent_at');
+                break;
+            case 'finalised':
+                $paginator = $paginator->whereNotNull('finalised_at')->whereNull('sent_at');
+                break;
+            Case 'sent':
+                $paginator = $paginator->whereNotNull('finalised_at')->whereNotNull('sent_at');
+                break;
+        }
+
+
         $paginator = $salesOrderRepository->paginate(
             $request->input('per_page', 100)
         );
@@ -74,6 +91,7 @@ class SalesOrdersController extends Controller
      */
     public function update(Request $request, SalesOrder $sales_order)
     {
+        $this->authorize('view', $sales_order);
         if(!$request->input('finalised')){
             $request->validate([
                 'supplier.id' => 'required|exists:suppliers,id',
@@ -97,6 +115,10 @@ class SalesOrdersController extends Controller
 
         if ($request->input('finalised')) {
             $sales_order->finalised_at = Carbon::now();
+        }
+
+        if ($request->input('restore')) {
+            $sales_order->finalised_at = null;
         }
         $sales_order->save();
 
