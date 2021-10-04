@@ -15,4 +15,9 @@ class InspectionReportsController extends Controller
         ]);
     }
 
+    public function index(InspectionReport $inspection)
+    {
+        return response()->view('inspections.index');
+    }
+
 }

@@ -53,11 +53,20 @@ class LinesController extends Controller
             'unit_length_cm',
             'unit_height_cm',
             'units_per_case',
-            'barcode'
+            'barcode',
+            'inner_qty'
         ]));
 
         if ($request->input('product.id') && $request->input('product.id') != $line->product_id) {
             $product = Product::findOrFail($request->input('product.id'));
+            $line->fill([
+                'name'                  => '' . $product->name,
+                'item_number'           => '' . $product->item_number,
+                'article_number'        => '' . $product->article_number,
+                'product_description'   => '' . $product->product_description,
+                'packing_instructions'  => '' . $product->packing_instructions,
+                'unit_price'            => $product->unit_price
+            ]);
             $line->product()->associate($product);
         }
 

@@ -23,12 +23,31 @@ class CreateInspectionReportsTable extends Migration
             // copied to contrast with what was requested in SO
             $table->string('product_description', 512)->nullable();
             $table->string('packing_instructions', 512)->nullable();
-            $table->unsignedMediumInteger('units_per_case');
-            $table->unsignedMediumInteger('inner_qty');
-            $table->unsignedDecimal('case_weight_kg', 8,3);
-            $table->unsignedDecimal('unit_weight_kg', 8,3);
+            $table->unsignedMediumInteger('units_per_case')->nullable();
+            $table->unsignedMediumInteger('inner_qty')->nullable();
+            $table->unsignedDecimal('case_weight_kg', 8,3)->nullable();
+            $table->unsignedDecimal('unit_weight_kg', 8,3)->nullable();
             $table->string('inner_barcode', 64)->nullable();
             $table->string('outer_barcode', 64)->nullable();
+
+            $table->unsignedDecimal('unit_length_m', 8,3)->nullable();
+            $table->unsignedDecimal('unit_width_m', 8,3)->nullable();
+            $table->unsignedDecimal('unit_height_m', 8,3)->nullable();
+            $table->unsignedDecimal('case_length_m', 8,3)->nullable();
+            $table->unsignedDecimal('case_width_m', 8,3)->nullable();
+            $table->unsignedDecimal('case_height_m', 8,3)->nullable();
+
+            $table->boolean('is_unit_size_ok')->nullable();
+            $table->boolean('is_case_size_ok')->nullable();
+            $table->boolean('is_packaging_ok')->nullable();
+            $table->boolean('is_instructions_ok')->nullable();
+            $table->boolean('is_product_test_run_ok')->nullable();
+            $table->boolean('is_appearance_ok')->nullable();
+            $table->boolean('is_inner_barcode_ok')->nullable();
+            $table->boolean('is_outer_barcode_ok')->nullable();
+            $table->boolean('is_unit_weight_ok')->nullable();
+            $table->boolean('is_case_weight_ok')->nullable();
+
             $table->string('inner_barcode_comments', 512)->nullable();
             $table->string('outer_barcode_comments', 512)->nullable();
 
@@ -39,26 +58,12 @@ class CreateInspectionReportsTable extends Migration
             $table->string('case_weight_kg_comments', 512)->nullable();
             $table->string('unit_weight_kg_comments', 512)->nullable();
 
-            $table->decimal('unit_length_m', 8,3);
-            $table->decimal('unit_width_m', 8,3);
-            $table->decimal('unit_height_m', 8,3);
-            $table->decimal('case_length_m', 8,3);
-            $table->decimal('case_width_m', 8,3);
-            $table->decimal('case_height_m', 8,3);
-            $table->boolean('is_unit_size_ok')->nullable();
-            $table->boolean('is_case_size_ok')->nullable();
             $table->string('case_dimensions_comments',512)->nullable();
             $table->string('unit_dimensions_comments',512)->nullable();
+            $table->string('packaging_comments', 512)->nullable();
 
             //worth making things like packaging / instructions + other checkboxes boolean, and anything that
             //needs to be said is in the comments?
-            $table->boolean('is_packaging_ok')->nullable();
-            $table->string('packaging_comments', 512)->nullable();
-            $table->string('is_instructions_ok')->nullable();
-            $table->string('is_product_test_run_ok')->nullable();
-            $table->string('is_appearance_ok')->nullable();
-            $table->string('is_inner_barcode_ok')->nullable();
-            $table->string('is_outer_barcode_ok')->nullable();
             $table->string('instructions_comments', 512)->nullable();
             $table->string('product_test_comments', 512)->nullable();
             $table->string('appearance_comments', 512)->nullable();

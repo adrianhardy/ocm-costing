@@ -52,8 +52,10 @@ class CreateShipmentFromOrderLinesController extends Controller
 
             $inspection = InspectionReport::createFromSalesOrderLine($soLine);
             $inspection->consignment()->associate($shipment);
-            $inspection->setStatus(InspectionReport::STATUS_PENDING);
             $inspection->save();
+            $inspection->setStatus(InspectionReport::STATUS_PENDING, 'pending');
+            $inspection->save();
+
         }
         DB::commit();
 

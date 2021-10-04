@@ -56,6 +56,7 @@ Vue.component('price-list', require('./modules/products/PriceList/PriceList').de
 Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersList.vue').default);
 Vue.component('edit-sales-order', require('./modules/sales-orders/EditSalesOrder.vue').default);
 Vue.component('edit-inspection-report-modal', require('./modules/inspection/EditInspectionReportModal').default);
+Vue.component('inspection-report-list', require('./modules/inspection/InspectionReportList').default);
 // make available to the footer scripts which are used
 // for raising toasts, etc
 

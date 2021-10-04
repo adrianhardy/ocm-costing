@@ -52,6 +52,8 @@ class InspectionReportTransformer extends TransformerAbstract
     public function transform(InspectionReport $inspection)
     {
         return $inspection->only([
+            'created_at',
+            'status',
             'id',
             'product_description',
             'packing_instructions',
@@ -82,7 +84,9 @@ class InspectionReportTransformer extends TransformerAbstract
             'case_width_cm',
             'case_height_cm',
             'is_unit_size_ok',
+            'is_unit_weight_ok',
             'is_case_size_ok',
+            'is_case_weight_ok',
             'case_dimensions_comments',
             'unit_dimensions_comments',
             'is_packaging_ok',
@@ -97,7 +101,7 @@ class InspectionReportTransformer extends TransformerAbstract
             'appearance_comments',
             'comments',
             'completed_at',
-            'is_approved'
+            'is_completed'
         ]);
     }
 }
