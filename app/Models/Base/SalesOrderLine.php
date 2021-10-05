@@ -7,6 +7,7 @@
 namespace App\Models\Base;
 
 use App\Models\Consignment;
+use App\Models\InspectionReport;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use Carbon\Carbon;
@@ -48,6 +49,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * 
  * @property Product|null $product
  * @property SalesOrder|null $sales_order
+ * @property Collection|InspectionReport[] $inspection_reports_sales_order_line
  * @property Collection|Consignment[] $consignments
  *
  * @package App\Models\Base
@@ -86,6 +88,11 @@ class SalesOrderLine extends Model
 	public function sales_order()
 	{
 		return $this->belongsTo(SalesOrder::class);
+	}
+
+	public function inspection_reports_sales_order_line()
+	{
+		return $this->hasMany(InspectionReport::class);
 	}
 
 	public function consignments()
