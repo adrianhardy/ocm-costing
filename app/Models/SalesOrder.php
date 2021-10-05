@@ -113,7 +113,7 @@ class SalesOrder extends BaseSalesOrder
     public function tokens()
     {
         return $this->hasMany(
-            SalesOrderAuthentication::class,
+            SalesOrderAuthentication::class
         )->where(function($query) {
             $query
                 ->whereNull('expires_at')
