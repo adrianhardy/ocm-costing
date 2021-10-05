@@ -13,6 +13,12 @@ class InspectionReport extends BaseInspectionReport
 
     const STATUS_PENDING = 'pending';
 
+    const STATUSES = [
+        self::STATUS_PENDING => 'pending',
+        'approved' => 'approved',
+        'rejected' => 'rejected'
+    ];
+
 	protected $fillable = [
 		'sales_order_line_id',
 		'consignment_id',
@@ -45,7 +51,9 @@ class InspectionReport extends BaseInspectionReport
         'case_width_cm',
         'case_height_cm',
 		'is_unit_size_ok',
+        'is_unit_weight_ok',
 		'is_case_size_ok',
+        'is_case_weight_ok',
 		'case_dimensions_comments',
 		'unit_dimensions_comments',
 		'is_packaging_ok',
@@ -94,9 +102,9 @@ class InspectionReport extends BaseInspectionReport
         return $inspection;
     }
 
-    public function getIsApprovedAttribute()
+    public function getIsCompletedAttribute()
     {
-        return $this->approved_at !== null;
+        return $this->completed_at !== null;
     }
 
     public function setCaseLengthCmAttribute($cm)

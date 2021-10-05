@@ -17,13 +17,17 @@
             <div class="text-center">
                 <b-form-checkbox
                     size="lg"
+                    :checked="passValue"
                     @input="$emit('pass-updated', $event)"
+                    :checked-value="true"
+                    :unchecked-value="false"
                 />
             </div>
         </div>
         <div class="col-12 col-sm-4">
             <b-form-textarea
                 :placeholder="commentsPlaceholder"
+                :value="commentsValue"
                 size="sm"
                 @input="$emit('comments-updated', $event)"
             />
@@ -43,7 +47,9 @@ export default {
         value: [Number, String],
         commentsPlaceholder: String,
         commentsVModel: Object,
-        isPassVModel: Object
+        isPassVModel: Object,
+        passValue: Boolean,
+        commentsValue: [Number, String]
     }
 }
 </script>

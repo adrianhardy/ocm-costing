@@ -33,7 +33,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
         Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);
         Route::resource('admin/shipping/simple-calculator', 'Api\Calculator\SimpleShippingCalculator')->only(['store']);
-        Route::resource('inspections', 'Api\InspectionReports\InspectionReportsController')->only(['show', 'update']);
+        Route::resource('inspections', 'Api\InspectionReports\InspectionReportsController')->only(['show', 'update', 'index']);
     });
 
     Route::group(['middleware' => ['auth:api', 'role:super']], function() {

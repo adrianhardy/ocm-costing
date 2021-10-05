@@ -24,6 +24,14 @@
             </a>
         </li>
         @endrole
+        @role('super|admin')
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('inspections.index') }}">
+                <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
+                Inspections
+            </a>
+        </li>
+        @endrole
         @role('super|pricing|admin')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('price-list.index') }}">
