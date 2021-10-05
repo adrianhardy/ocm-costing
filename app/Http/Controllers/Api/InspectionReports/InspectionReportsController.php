@@ -36,13 +36,14 @@ class InspectionReportsController extends Controller
             'units_per_case_comments' => 'sometimes|max:512',
             'inner_qty_comments' => 'sometimes|max:512',
             'case_weight_kg_comments' => 'sometimes|max:512',
-            'unit_weight_kg_comments' => 'sometimes|max|512',
+            'unit_weight_kg_comments' => 'sometimes|max:512',
             'case_dimensions_comments' => 'sometimes|max:512',
             'unit_dimensions_comments' => 'sometimes|max:512',
             'packaging_comments' => 'sometimes|max:512',
             'instructions_comments' => 'sometimes|max:512',
             'product_test_comments' => 'sometimes|max:512',
-            'appearance_test_comments' => 'sometimes|max:512'
+            'appearance_test_comments' => 'sometimes|max:512',
+            'status' => 'required'
         ]);
 
 
@@ -71,7 +72,8 @@ class InspectionReportsController extends Controller
             'instructions_comments',
             'product_test_comments',
             'appearance_comments',
-            'comments'
+            'comments',
+            'outer_barcode'
         ));
 
         if($request->input('status') == 'rejected') {

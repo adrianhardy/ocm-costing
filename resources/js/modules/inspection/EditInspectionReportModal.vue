@@ -11,7 +11,7 @@
         <inspection-detail-row
             title="Name"
             :value="product.name"
-            :pass-value="inspection.is_packaging_ok === true"
+            :hide-pass="true"
             :comments-value="inspection.product_description_comments"
             comments-placeholder="Comments on product description or title"
             @pass-updated="inspection.is_packaging_ok = $event"
@@ -19,12 +19,12 @@
         />
         <inspection-detail-row
             title="Packing"
-            v-model="inspection.product_description"
+            v-model="inspection.packing_instructions"
             input-type="textarea"
             comments-placeholder="Comments on packaging"
-            :pass-value="inspection.is_instructions_ok === true"
+            :pass-value="inspection.is_packaging_ok === true"
             :comments-value="inspection.packaging_comments"
-            @pass-updated="inspection.is_instructions_ok = $event"
+            @pass-updated="inspection.is_packaging_ok = $event"
             @comments-updated="inspection.packaging_comments = $event"
         />
         <inspection-detail-row
@@ -166,7 +166,8 @@ export default {
         }
     },
     methods: {
-        save() {
+        save($event) {
+            $event.preventDefault();
             const loader = this.$loading.show();
             const url = `/api/inspections/${this.inspection.id}`;
             const include = 'sales_order_line,sales_order_line.product,sales_order_line.product.media,approver,consignment';

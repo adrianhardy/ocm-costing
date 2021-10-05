@@ -9,9 +9,10 @@
             <p v-else>{{ value }}</p>
         </div>
         <div class="col-2 col-sm-1">
-            <div class="text-center">Pass</div>
+            <div class="text-center" v-if="!hidePass">Pass</div>
             <div class="text-center">
                 <b-form-checkbox
+                    v-if="!hidePass"
                     size="lg"
                     :checked="passValue"
                     @input="$emit('pass-updated', $event)"
@@ -41,6 +42,7 @@ export default {
         passValue: Boolean,
         commentsValue: [Number, String],
         commentsPlaceholder: String,
+        hidePass: Boolean
     }
 }
 </script>

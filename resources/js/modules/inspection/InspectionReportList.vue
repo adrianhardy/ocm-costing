@@ -56,7 +56,9 @@ export default {
       fields: [
         {key: 'created_at', label: 'Created At'},
         {key: 'sales_order_line.product.name', label: 'Product'},
-        {key: 'status', label: 'Status'}
+        {key: 'status', label: 'Status', formatter: (value) => {
+            return value.toUpperCase();
+        }}
       ]
 
     }
