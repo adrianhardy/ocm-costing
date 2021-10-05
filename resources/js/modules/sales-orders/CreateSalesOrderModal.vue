@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" title="Create new Sales Order" @ok="save" ok-title="Create">
+  <b-modal ref="modal" no-close-on-backdrop title="Create new Sales Order" @ok="save" ok-title="Create">
     <b-form-group label="Supplier">
       <supplier-select v-model="supplier" />
     </b-form-group>
