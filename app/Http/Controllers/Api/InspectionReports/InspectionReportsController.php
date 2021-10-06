@@ -8,9 +8,11 @@ use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\InspectionReport;
 use App\Models\Repositories\InspectionReportRepository;
 use App\Models\User;
+use App\Services\RafService;
 use App\Transformers\InspectionReportTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InspectionReportsController extends Controller
 {
@@ -26,7 +28,7 @@ class InspectionReportsController extends Controller
      * @param InspectionReport $inspection
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, InspectionReport $inspection)
+    public function update(Request $request, InspectionReport $inspection, RafService $rafService)
     {
 
         $request->validate([
@@ -46,8 +48,17 @@ class InspectionReportsController extends Controller
             'status' => 'required'
         ]);
 
+        DB::beginTransaction();
 
         $inspection->fill($request->only(
+            'unit_length_m',
+            'unit_height_m',
+            'unit_width_m',
+            'unit_weight_kg',
+            'case_length_m',
+            'case_width_m',
+            'case_height_m',
+            'case_weight_kg',
             'inner_barcode_comments',
             'outer_barcode_comments',
             'product_description_comments',
@@ -84,12 +95,19 @@ class InspectionReportsController extends Controller
             $inspection->setStatus('approved');
             $inspection->approver()->associate(\Auth::user());
             $inspection->completed_at = Carbon::now();
+            //saving here so that the value put up into rafservice are accurate
+            $inspection->save();
+            try{
+                $rafService->updateProductForced($inspection);
+            } catch(\Exception $ex){
+                //
+            }
             event(new ProductInspectionApproved($inspection));
         }
 
         $inspection->save();
 
-
+        DB::commit();
         return response()->json(
             fractal($inspection->fresh(), new InspectionReportTransformer())
         );

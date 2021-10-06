@@ -90,9 +90,9 @@ class InspectionReport extends BaseInspectionReport
             'unit_height_m',
         ]));
         $inspection->fill([
-            'case_length_m' => $line->length_m,
-            'case_width_m' => $line->width_m,
-            'case_height_m' => $line->height_m,
+            'case_length_m' => $line->length_m * 100,
+            'case_width_m' => $line->width_m * 100,
+            'case_height_m' => $line->height_m * 100,
             'inner_barcode' => $line->barcode
         ]);
         if (!$inspection->product_description) {
@@ -109,15 +109,15 @@ class InspectionReport extends BaseInspectionReport
 
     public function setCaseLengthCmAttribute($cm)
     {
-        return $this->case_length_cm = ($cm / 100);
+        return $this->case_length_m = ($cm * 100);
     }
     public function setCaseHeightCmAttribute($cm)
     {
-        return $this->case_height_cm = ($cm / 100);
+        return $this->case_height_m = ($cm * 100);
     }
     public function setCaseWidthCmAttribute($cm)
     {
-        return $this->case_width_cm = ($cm / 100);
+        return $this->case_width_m = ($cm * 100);
     }
     public function getCaseLengthCmAttribute($cm)
     {

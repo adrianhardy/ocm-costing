@@ -29,7 +29,7 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <b-form-group label="Current Landed Cost">
+                    <b-form-group label="Current Landed Cost" v-if="product.current_landed_cost_per_unit_gbp">
                       <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
                     </b-form-group>
                     <h5>Images</h5>
@@ -63,7 +63,7 @@
                           <h5>Carton</h5>
                           <div class="row">
                               <div class="col-4">
-                                  <b-form-group label="Quantity">
+                                  <b-form-group label="Units Per Case">
                                       <b-form-input v-model="product.units_per_case"/>
                                   </b-form-group>
                               </div>
@@ -124,7 +124,7 @@
                                 <b-form-input v-model="product.unit_height_cm"/>
                               </b-form-group>
                             </div>
-                          </div>
+                          </div>1
                           <b-button variant="outline-primary float-right" @click="save()">{{ this.productId?'Update':'Create' }} Product</b-button>
                       </b-tab>
                       <b-tab title="Notes">
