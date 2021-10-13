@@ -19,6 +19,7 @@ class SalesOrderLoginController extends Controller
      */
     public function auth(Request $request)
     {
+        /** @var SalesOrderAuthentication $token */
         $token = SalesOrderAuthentication::query()
             ->where('token', $request->route('token'))
             ->firstOrFail();
@@ -29,8 +30,8 @@ class SalesOrderLoginController extends Controller
         }
 
         if (\Auth::check()) {
-            $this->authorize('view', $token->salesOrder);
-            return response()->redirectToRoute('supplier.sales-orders.edit', $token->salesOrder);
+            $this->authorize('view', $token->sales_order);
+            return response()->redirectToRoute('supplier.sales-orders.edit', $token->sales_order);
         }
 
         abort(401, 'Unauthorised');
