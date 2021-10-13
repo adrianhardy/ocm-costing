@@ -37,9 +37,11 @@ class RafService
 
         // make json representation of product ready for RAF
         try {
+            /*
             $this->http->post('/api/costing/integration/products', [
                 'json' => $json,
             ]);
+            */
         } catch (\Exception $ex) {
             // do something clever here
             throw $ex;
@@ -68,10 +70,12 @@ class RafService
 
 
         // make json representation of product ready for RAF
-            $this->http->put('api/costing/integration/products', [
+        /*
+        $this->http->put('api/costing/integration/products', [
             'json' => $json,
             'item_number' => $json['item_number']
         ]);
+	*/
     }
 
     /**
