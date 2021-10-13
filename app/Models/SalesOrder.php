@@ -101,7 +101,7 @@ class SalesOrder extends BaseSalesOrder
             'password' => $password,
             'expires_at' => Carbon::now()->addDays($days)
         ]);
-        $token->salesOrder()->associate($this);
+        $token->sales_order()->associate($this);
         $token->user()->associate($user);
         $this->tokens()->save($token);
         return $token;
