@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api\SalesOrders;
 
+use anlutro\LaravelSettings\ServiceProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Currency;
 use App\Models\Repositories\SalesOrderRepository;
 use App\Models\SalesOrder;
 use App\Models\Supplier;
+use App\Services\RafService;
 use App\Transformers\SalesOrderTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -89,7 +91,7 @@ class SalesOrdersController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function update(Request $request, SalesOrder $sales_order)
+    public function update(Request $request, SalesOrder $sales_order, RafService $rafService)
     {
         $this->authorize('view', $sales_order);
         if(!$request->input('finalised')){
@@ -115,11 +117,19 @@ class SalesOrdersController extends Controller
 
         if ($request->input('finalised')) {
             $sales_order->finalised_at = Carbon::now();
+            foreach($sales_order->lines as $line) {
+                try {
+                    $rafService->createProduct($line->product);
+                } catch (\Exception $ex) {
+                    // log exception here
+                }
+            }
         }
 
         if ($request->input('restore')) {
             $sales_order->finalised_at = null;
         }
+
         $sales_order->save();
 
         return response()->json(fractal(

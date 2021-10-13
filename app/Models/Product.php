@@ -135,6 +135,10 @@ class Product extends BaseProduct implements HasMedia
             ->limit(1)
             ->first();
 
+        if(!$landedCostData){
+            return null;
+        }
+
         return $landedCostData->est_landed_cost_per_unit_gbp;
     }
 
