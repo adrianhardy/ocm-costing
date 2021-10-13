@@ -44,10 +44,10 @@
 
 <script>
 export default {
-    props: ['isCreating', 'user-id', 'roles', 'current-user'],
+    props: ['user-id', 'roles', 'current-user'],
     name: "EditUser",
     mounted() {
-        if (this.userId) {
+        if (!this.isCreating) {
             this.refresh();
         }
     },
@@ -59,7 +59,7 @@ export default {
     },
     computed: {
         isCreating() {
-            return this.userId < 1;
+            return ! (this.userId > 0);
         },
         saveUrl() {
             if (this.isCreating) {

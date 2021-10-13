@@ -67,7 +67,7 @@ host('staging')
     ->set('branch', 'master')
     ->user('deploy')
     ->hostname('coststaging.orchardcrownmall.co.uk')
-    ->set('bin/php', '/usr/bin/php72')
+    ->set('bin/php', '/usr/bin/php74')
     ->set('rsync_src', __DIR__)
     ->set('deploy_path', '/home/orchardcrownmall.co.uk/coststaging');
 
