@@ -47,6 +47,7 @@ class CreatePricingFromOrderLinesController extends Controller
             $grossCost = $costingData['est_landed_cost_per_unit_gbp'] + $commission;
 
             $pricing = new ProductPricing();
+            $pricing->sales_order_line()->associate($line);
             $pricing->product()->associate($line->product);
             $pricing->fill([
                 'est_landed_cost_per_unit_gbp' => $costingData['est_landed_cost_per_unit_gbp'],
