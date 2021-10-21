@@ -10,7 +10,7 @@
                         <supplier-select all v-model="product.supplier"/>
                     </b-form-group>
                     <b-form-group label="Factory">
-                      <factory-select all v-model="product.factory"/>
+                        <factory-select all v-model="product.factory"/>
                     </b-form-group>
                     <div class="row">
                         <div class="col-4">
@@ -29,150 +29,163 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <b-form-group label="Current Landed Cost" v-if="product.current_landed_cost_per_unit_gbp">
-                      <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
-                    </b-form-group>
+                    <div class="row">
+                        <div class="col-6">
+                            <b-form-group label="Current Landed Cost" v-if="product.current_landed_cost_per_unit_gbp">
+                                <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
+                            </b-form-group>
+                        </div>
+                        <div class="col-6">
+                            <b-form-group label="Unit Price ($)">
+                                <b-form-input v-model="product.unit_price"/>
+                            </b-form-group>
+                        </div>
+                    </div>
                     <h5>Images</h5>
                     <edit-product-media :disabled="disabled" :product="product" @updated="refresh()"/>
                 </div>
                 <div class="col-12 col-md-6">
                     <b-tabs content-class="pt-3">
-                      <b-tab title="Description">
-                        <b-form-group label="Product Description">
-                          <b-textarea v-model="product.product_description" maxlength="500" rows="7"/>
-                          <template #description>
+                        <b-tab title="Description">
+                            <b-form-group label="Product Description">
+                                <b-textarea v-model="product.product_description" maxlength="500" rows="7"/>
+                                <template #description>
                                     <span v-if="product.product_description">
                                         {{ product.product_description.length }} / 500 characters
                                     </span>
-                            <span v-else>0 / 500</span>
-                          </template>
-                        </b-form-group>
-                        <b-form-group label="Packing Instructions">
-                          <b-textarea v-model="product.packing_instructions" maxlength="500" rows="7"/>
-                          <template #description>
+                                    <span v-else>0 / 500</span>
+                                </template>
+                            </b-form-group>
+                            <b-form-group label="Packing Instructions">
+                                <b-textarea v-model="product.packing_instructions" maxlength="500" rows="7"/>
+                                <template #description>
                                   <span v-if="product.packing_instructions">
                                       {{ product.packing_instructions.length }} / 500 characters
                                   </span>
-                            <span v-else>0 / 500</span>
-                          </template>
-                        </b-form-group>
-                        <b-button variant="outline-primary float-right" @click="save()">{{ this.productId?'Update':'Create' }} Product</b-button>
+                                    <span v-else>0 / 500</span>
+                                </template>
+                            </b-form-group>
+                            <b-button variant="outline-primary float-right" @click="save()">
+                                {{ this.productId ? 'Update' : 'Create' }} Product
+                            </b-button>
 
-                      </b-tab>
-                      <b-tab title="Dimensions">
-                          <h5>Carton</h5>
-                          <div class="row">
-                              <div class="col-4">
-                                  <b-form-group label="Units Per Case">
-                                      <b-form-input v-model="product.units_per_case"/>
-                                  </b-form-group>
-                              </div>
-                              <div class="col-4">
-                                  <b-form-group label="Inner Qty">
-                                      <b-form-input v-model="product.inner_qty"/>
-                                  </b-form-group>
-                              </div>
-                              <div class="col-4">
-                                  <b-form-group label="Weight (kg)">
-                                      <b-form-input v-model="product.case_weight_kg"/>
-                                  </b-form-group>
-                              </div>
-                          </div>
-                          <div class="row">
-                              <div class="col-4">
-                                  <b-form-group label="Length (cm)">
-                                      <b-form-input v-model="product.length_cm"/>
-                                  </b-form-group>
-                              </div>
-                              <div class="col-4">
-                                  <b-form-group label="Width (cm)">
-                                      <b-form-input v-model="product.width_cm"/>
-                                  </b-form-group>
-                              </div>
-                              <div class="col-4">
-                                  <b-form-group label="Height (cm)">
-                                      <b-form-input v-model="product.height_cm"/>
-                                  </b-form-group>
-                              </div>
-                          </div>
-                          <h5>Unit</h5>
-                          <div class="row">
-                              <div class="col-6">
-                                  <b-form-group label="Unit Price ($)">
-                                      <b-form-input v-model="product.unit_price"/>
-                                  </b-form-group>
-                              </div>
-                              <div class="col-6">
-                                  <b-form-group label="Unit Weight (kg)">
-                                      <b-form-input v-model="product.unit_weight_kg"/>
-                                  </b-form-group>
-                              </div>
-                          </div>
-                          <div class="row">
-                            <div class="col-4">
-                              <b-form-group label="Length (cm)">
-                                <b-form-input v-model="product.unit_length_cm"/>
-                              </b-form-group>
+                        </b-tab>
+                        <b-tab title="Dimensions">
+                            <h5>Carton</h5>
+                            <div class="row">
+                                <div class="col-4">
+                                    <b-form-group label="Units Per Case">
+                                        <b-form-input v-model="product.units_per_case"/>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Inner Qty">
+                                        <b-form-input v-model="product.inner_qty"/>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Weight (kg)">
+                                        <b-form-input v-model="product.case_weight_kg"/>
+                                    </b-form-group>
+                                </div>
                             </div>
-                            <div class="col-4">
-                              <b-form-group label="Width (cm)">
-                                <b-form-input v-model="product.unit_width_cm"/>
-                              </b-form-group>
+                            <div class="row">
+                                <div class="col-4">
+                                    <b-form-group label="Length (cm)">
+                                        <b-form-input v-model="product.length_cm"/>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Width (cm)">
+                                        <b-form-input v-model="product.width_cm"/>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Height (cm)">
+                                        <b-form-input v-model="product.height_cm"/>
+                                    </b-form-group>
+                                </div>
                             </div>
-                            <div class="col-4">
-                              <b-form-group label="Height (cm)">
-                                <b-form-input v-model="product.unit_height_cm"/>
-                              </b-form-group>
+                            <h5>Unit</h5>
+                            <div class="row">
+                                <div class="col-12">
+                                    <b-form-group label="Unit Weight (kg)">
+                                        <b-form-input v-model="product.unit_weight_kg"/>
+                                    </b-form-group>
+                                </div>
                             </div>
-                          </div>1
-                          <b-button variant="outline-primary float-right" @click="save()">{{ this.productId?'Update':'Create' }} Product</b-button>
-                      </b-tab>
-                      <b-tab title="Notes">
-                          <b-table-simple small>
-                              <b-thead>
-                                  <b-tr>
-                                      <b-th class="w-25">Created</b-th>
-                                      <b-th>Note</b-th>
-                                  </b-tr>
-                              </b-thead>
-                              <b-tr v-if="product.comments.length < 1">
-                                  <b-td colspan="2" class="text-center">No Notes Added</b-td>
-                              </b-tr>
-                              <b-tr v-for="note in product.comments" :key="note.id">
-                                  <b-td>
-                                      <div class="small">
-                                          <span v-if="note.commentator && note.commentator.id">{{ note.commentator.name }}</span>
-                                          <span v-else>System</span>
-                                          <br/>
-                                          <span>{{ new Date(note.created_at) | date('dd/MM/yy HH:mm') }}</span>
-                                      </div>
-                                  </b-td>
-                                  <b-td class="align-top"> {{ note.comment }}</b-td>
-                              </b-tr>
-                          </b-table-simple>
-                          <hr />
-                          <b-form-group>
-                              <b-textarea v-model="note" placeholder="Add new note... "/>
-                          </b-form-group>
-                          <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
-                      </b-tab>
-                      <b-tab title="History">
-                        <b-table small :items="productLog" :fields="productLogFields">
-                          <template #cell(updated_at)="data">
-                            {{ new Date(data.value) | date('dd/MM/yy HH:mm') }}
-                          </template>
-                          <template #cell(extra)="data">
-                            <div v-if="data.item && data.item.attributes">
-                              <span v-b-popover.hover="data.item.attributes.packing_instructions" title="Packing Instructions" style="cursor:pointer">
+                            <div class="row">
+                                <div class="col-4">
+                                    <b-form-group label="Length (cm)">
+                                        <b-form-input v-model="product.unit_length_cm"/>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Width (cm)">
+                                        <b-form-input v-model="product.unit_width_cm"/>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Height (cm)">
+                                        <b-form-input v-model="product.unit_height_cm"/>
+                                    </b-form-group>
+                                </div>
+                            </div>
+                            1
+                            <b-button variant="outline-primary float-right" @click="save()">
+                                {{ this.productId ? 'Update' : 'Create' }} Product
+                            </b-button>
+                        </b-tab>
+                        <b-tab title="Notes">
+                            <b-table-simple small>
+                                <b-thead>
+                                    <b-tr>
+                                        <b-th class="w-25">Created</b-th>
+                                        <b-th>Note</b-th>
+                                    </b-tr>
+                                </b-thead>
+                                <b-tr v-if="product.comments.length < 1">
+                                    <b-td colspan="2" class="text-center">No Notes Added</b-td>
+                                </b-tr>
+                                <b-tr v-for="note in product.comments" :key="note.id">
+                                    <b-td>
+                                        <div class="small">
+                                            <span v-if="note.commentator && note.commentator.id">{{
+                                                    note.commentator.name
+                                                }}</span>
+                                            <span v-else>System</span>
+                                            <br/>
+                                            <span>{{ new Date(note.created_at) | date('dd/MM/yy HH:mm') }}</span>
+                                        </div>
+                                    </b-td>
+                                    <b-td class="align-top"> {{ note.comment }}</b-td>
+                                </b-tr>
+                            </b-table-simple>
+                            <hr/>
+                            <b-form-group>
+                                <b-textarea v-model="note" placeholder="Add new note... "/>
+                            </b-form-group>
+                            <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
+                        </b-tab>
+                        <b-tab title="History">
+                            <b-table small :items="productLog" :fields="productLogFields">
+                                <template #cell(updated_at)="data">
+                                    {{ new Date(data.value) | date('dd/MM/yy HH:mm') }}
+                                </template>
+                                <template #cell(extra)="data">
+                                    <div v-if="data.item && data.item.attributes">
+                              <span v-b-popover.hover="data.item.attributes.packing_instructions"
+                                    title="Packing Instructions" style="cursor:pointer">
                                 <b-icon-box-seam/>
                               </span>
-                              <span v-b-popover.hover="data.item.attributes.product_description" title="Product Description" style="cursor:pointer">
+                                        <span v-b-popover.hover="data.item.attributes.product_description"
+                                              title="Product Description" style="cursor:pointer">
                                 <b-icon-tag/>
                               </span>
-                            </div>
-                          </template>
-                        </b-table>
-                      </b-tab>
+                                    </div>
+                                </template>
+                            </b-table>
+                        </b-tab>
                     </b-tabs>
                 </div>
             </div>
@@ -206,51 +219,51 @@ export default {
             return 'supplier,comments,comments.commentator,media,factory,current_landed_cost_per_unit_gbp';
         },
         productLogFields() {
-          return [{
-            key: 'updated_at',
-            label: 'When',
-          },{
-            key: 'attributes.barcode',
-            label: 'Barcode'
-          },{
-            key: 'attributes.case_weight_kg',
-            label: 'Ctn Kg'
-          },{
-            key: 'attributes.units_per_case',
-            label: 'Qty/Ctn'
-          },{
-            key: 'attributes.length_cm',
-            label: 'L'
-          },{
-            key: 'attributes.width_cm',
-            label: 'W'
-          },{
-            key: 'attributes.height_cm',
-            label: 'H'
-          },{
-            key: 'attributes.unit_price',
-            label: 'U/Price'
-          },{
-            key: 'extra',
-            label: 'Desc'
-          }]
+            return [{
+                key: 'updated_at',
+                label: 'When',
+            }, {
+                key: 'attributes.barcode',
+                label: 'Barcode'
+            }, {
+                key: 'attributes.case_weight_kg',
+                label: 'Ctn Kg'
+            }, {
+                key: 'attributes.units_per_case',
+                label: 'Qty/Ctn'
+            }, {
+                key: 'attributes.length_cm',
+                label: 'L'
+            }, {
+                key: 'attributes.width_cm',
+                label: 'W'
+            }, {
+                key: 'attributes.height_cm',
+                label: 'H'
+            }, {
+                key: 'attributes.unit_price',
+                label: 'U/Price'
+            }, {
+                key: 'extra',
+                label: 'Desc'
+            }]
         }
     },
     methods: {
         productLog() {
-          const url = `/api/products/${this.productId}/history`;
-          return this.$http.get(url).then(response => {
-            return _.map(response.data.items, row => {
-              return {
-                updated_at: row.updated_at,
-                attributes: row.properties.attributes
-              }
+            const url = `/api/products/${this.productId}/history`;
+            return this.$http.get(url).then(response => {
+                return _.map(response.data.items, row => {
+                    return {
+                        updated_at: row.updated_at,
+                        attributes: row.properties.attributes
+                    }
+                });
             });
-          });
         },
         save() {
-            const method = this.product.id?'PUT':'POST';
-            const url = `/api/products/` + (method === 'PUT'?this.product.id:'');
+            const method = this.product.id ? 'PUT' : 'POST';
+            const url = `/api/products/` + (method === 'PUT' ? this.product.id : '');
             const loader = this.$loading.show();
             this.$http({
                 method: method,
