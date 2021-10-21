@@ -39,7 +39,7 @@
                     <b-tabs content-class="pt-3">
                       <b-tab title="Description">
                         <b-form-group label="Product Description">
-                          <b-textarea v-model="product.product_description" maxlength="500"/>
+                          <b-textarea v-model="product.product_description" maxlength="500" rows="7"/>
                           <template #description>
                                     <span v-if="product.product_description">
                                         {{ product.product_description.length }} / 500 characters
@@ -48,7 +48,7 @@
                           </template>
                         </b-form-group>
                         <b-form-group label="Packing Instructions">
-                          <b-textarea v-model="product.packing_instructions" maxlength="500"/>
+                          <b-textarea v-model="product.packing_instructions" maxlength="500" rows="7"/>
                           <template #description>
                                   <span v-if="product.packing_instructions">
                                       {{ product.packing_instructions.length }} / 500 characters
