@@ -9,6 +9,7 @@ namespace App\Models\Base;
 use App\Models\Consignment;
 use App\Models\InspectionReport;
 use App\Models\Product;
+use App\Models\ProductPricing;
 use App\Models\SalesOrder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,6 +26,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  * @property string|null $item_number
  * @property string|null $article_number
+ * @property string|null $packing_instructions
+ * @property string|null $product_description
+ * @property string|null $name
  * @property int|null $product_id
  * @property int $units_requested
  * @property float|null $unit_price
@@ -32,8 +36,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $total
  * @property float|null $total_gbp
  * @property float|null $total_cubic_m
- * @property string|null $packing_instructions
- * @property string|null $product_description
  * @property int|null $units_per_case
  * @property int|null $inner_qty
  * @property float|null $case_weight_kg
@@ -49,6 +51,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Product|null $product
  * @property SalesOrder|null $sales_order
  * @property Collection|InspectionReport[] $inspection_reports_sales_order_line
+ * @property Collection|ProductPricing[] $product_pricings_sales_order_line
  * @property Collection|Consignment[] $consignments
  *
  * @package App\Models\Base
@@ -92,6 +95,11 @@ class SalesOrderLine extends Model
 	public function inspection_reports_sales_order_line()
 	{
 		return $this->hasMany(InspectionReport::class);
+	}
+
+	public function product_pricings_sales_order_line()
+	{
+		return $this->hasMany(ProductPricing::class);
 	}
 
 	public function consignments()

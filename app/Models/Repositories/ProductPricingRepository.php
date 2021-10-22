@@ -13,8 +13,10 @@ class ProductPricingRepository extends BaseRepository
 {
     protected $fieldSearchable = [
         'id' => 'like',
-        'created_at' => 'like '
-
+        'created_at' => 'like',
+        'product.name' => 'like',
+        'product.item_number' => 'like',
+        'product.article_number' => 'like'
     ];
     public function model()
     {

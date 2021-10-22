@@ -4,7 +4,15 @@
     <template #header>
       <table-header v-model="pagination">
         <slot>
-          <search-input v-model="search" @search="$refs['table'].refresh()"/>
+          <search-input v-model="search" @search="$refs['table'].refresh()">
+            <template #right>
+              <b-input-group-append>
+                <b-input-group-text>
+                  <b-form-checkbox v-model="todoOnly" @change="$refs['table'].refresh()" /> To-do only
+                </b-input-group-text>
+              </b-input-group-append>
+            </template>
+          </search-input>
         </slot>
       </table-header>
     </template>
@@ -74,13 +82,16 @@ export default {
           'api/pricing',
           this.pagination,
           ctx, {
-            include: 'product,product.media'
-      });
+            include: 'product,product.media',
+            todo_only: this.todoOnly,
+            search: this.search
+          });
     },
   },
   data(){
     return{
       search: '',
+      todoOnly: true,
       pagination: {
         total: 0,
         perPage: 100,
