@@ -130,6 +130,63 @@
                                 </template>
                             </b-table>
                         </b-tab>
+                        <b-tab title="Amazon shipping rates">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">UK (£)</th>
+                                    <th scope="col">DE/PL/CZ(&#128;)</th>
+                                    <th scope="col">FR (&#128;)</th>
+                                    <th scope="col">IT (&#128;)</th>
+                                    <th scope="col">ES (&#128;) </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th colspan="6">Small Envelope, Dimensions &#8804; 20 x 15 x 1cm</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">&#8804; 80g</th>
+                                    <td>£0.60</td>
+                                    <td>&#128;1</td>
+                                    <td>&#128;1.40</td>
+                                    <td>&#128;1.45</td>
+                                    <td>&#128;1.35</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6">Standard Envelope, Dimensions &#8804; 33 x 23 x 2.5cm </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">&#8804; 60g</th>
+                                    <td>£0.80</td>
+                                    <td>&#128;1.15</td>
+                                    <td>&#128;1.60</td>
+                                    <td>&#128;1.60</td>
+                                    <td>&#128;1.52</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">&#8804; 210g</th>
+                                    <td>£0.85</td>
+                                    <td>&#128;1.32</td>
+                                    <td>&#128;2.10</td>
+                                    <td>&#128;1.85</td>
+                                    <td>&#128;1.65</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6">Standard Envelope, Dimensions &#8804; 33 x 23 x 5cm </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">&#8804; 210g</th>
+                                    <td>£1.42</td>
+                                    <td>&#128;1.95</td>
+                                    <td>&#128;3.45</td>
+                                    <td>&#128;2.60</td>
+                                    <td>&#128;2.18</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </b-tab>
                     </b-tabs>
                 </div>
             </div>
