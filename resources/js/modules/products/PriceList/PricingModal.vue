@@ -53,7 +53,7 @@
                         <b-tab title="Pricing">
                             <h5>Pricing</h5>
                             <div class="row">
-                                <div class="col-8">
+                                <div class="col-6">
                                     <b-form-group label="Our Unit Price" label-cols="6" label-size="sm">
                                         <b-input-group prepend="£" size="sm">
                                             <b-form-input v-model="value.unit_price_gbp"/>
@@ -64,63 +64,59 @@
                                             <b-form-input readonly v-model="value.est_landed_cost_per_unit_gbp"/>
                                         </b-input-group>
                                     </b-form-group>
-                                    <b-form-group label="Marketplace Comm." label-cols="6" label-size="sm" >
-                                        <b-input-group prepend="%" size="sm">
-                                            <b-form-input v-model="value.marketplace_commission_pc"/>
-                                            <b-input-group-append class="w-40">
-                                                <b-input-group-text class="w-100">
-                                                    {{ calculatedMarketplaceComm | cash_value }}
-                                                </b-input-group-text>
-                                            </b-input-group-append>
-                                        </b-input-group>
-                                    </b-form-group>
-                                    <b-form-group label="VAT" label-cols="6" label-size="sm">
-                                        <b-input-group prepend="%" size="sm">
-                                            <b-form-input v-model="value.uk_vat"/>
-                                            <b-input-group-append class="w-40">
-                                                <b-input-group-text class="w-100">
-                                                    {{ vatValue | cash_value }}
-                                                </b-input-group-text>
-                                            </b-input-group-append>
-                                        </b-input-group>
-                                    </b-form-group>
-                                    <b-form-group label="Unit Shipping" label-cols="6" label-size="sm">
-                                        <b-input-group prepend="£" size="sm">
-                                            <b-form-input v-model="value.unit_shipping_gbp"/>
-                                        </b-input-group>
-                                    </b-form-group>
                                 </div>
-                                <div class="col-4 text-center mt-4">
-                                    <h5>UK - GBP</h5>
-                                    <div class="h6 my-3">
-                                        <label>Calculated Profit</label>
-                                        <div>{{ calculatedProfit | cash_value }}</div>
-                                    </div>
-                                    <div class="h6">
-                                        <label>Margin</label>
-                                        <div>{{ (calculatedMarginPc * 100).toFixed(2) }}%</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 col-md-4">
-                                    <rest-of-world-product-pricing v-model="value" currency="USD" ship-field="unit_usd_shipping" price-field="unit_usd_price" fx-field="usd_fx_rate" />
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <rest-of-world-product-pricing v-model="value" currency="CAD" ship-field="unit_cad_shipping" price-field="unit_cad_price" fx-field="cad_fx_rate" />
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <rest-of-world-product-pricing v-model="value" currency="MXN" ship-field="unit_mxn_shipping" price-field="unit_mxn_price" fx-field="mxn_fx_rate" />
+                                <div class="col-6">
+                                  <b-form-group label="Marketplace Comm." label-cols="6" label-size="sm" >
+                                    <b-input-group prepend="%" size="sm">
+                                      <b-form-input v-model="value.marketplace_commission_pc"/>
+                                      <b-input-group-append class="w-40">
+                                        <b-input-group-text class="w-100">
+                                          {{ calculatedMarketplaceComm | cash_value }}
+                                        </b-input-group-text>
+                                      </b-input-group-append>
+                                    </b-input-group>
+                                  </b-form-group>
+                                  <b-form-group label="EUR FX Rate" label-cols="6" label-size="sm" >
+                                    <b-input-group size="sm">
+                                      <b-form-input v-model="value.eur_fx_rate"/>
+                                      <b-input-group-append class="w-40">
+                                        <b-input-group-text class="w-100">
+                                          to 1 GBP
+                                        </b-input-group-text>
+                                      </b-input-group-append>
+                                    </b-input-group>
+                                  </b-form-group>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12 col-md-2">
-                                    <b-form-group label="EUR FX Rate" label-size="sm">
-                                        <b-form-input v-model.number="value.eur_fx_rate" size="sm"/>
-                                    </b-form-group>
+                                  <eu-product-pricing v-model="value" country="UK" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_shipping_gbp" price-field="unit_price_gbp" vat-field="uk_vat" :fx-rate="1"  />
                                 </div>
                                 <div class="col-12 col-md-2">
-                                    <eu-product-pricing v-model="value" country="FR" ship-field="unit_fr_shipping" price-field="unit_fr_price" vat-field="fr_vat" :fx-rate="value.eur_fx_rate"  />
+                                    <eu-product-pricing v-model="value" country="FR" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_fr_shipping" price-field="unit_fr_price" vat-field="fr_vat" :fx-rate="value.eur_fx_rate"  />
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <eu-product-pricing v-model="value" country="DE" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_de_shipping" price-field="unit_de_price" vat-field="de_vat" :fx-rate="value.eur_fx_rate"  />
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <eu-product-pricing v-model="value" country="IT" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_it_shipping" price-field="unit_it_price" vat-field="it_vat" :fx-rate="value.eur_fx_rate"  />
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <eu-product-pricing v-model="value" country="ES" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_es_shipping" price-field="unit_es_price" vat-field="es_vat" :fx-rate="value.eur_fx_rate"  />
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <eu-product-pricing v-model="value" country="NL" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_nl_shipping" price-field="unit_nl_price" vat-field="nl_vat" :fx-rate="value.eur_fx_rate"  />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-md-4">
+                                    <rest-of-world-product-pricing v-model="value" currency="USD" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_usd_shipping" price-field="unit_usd_price" fx-field="usd_fx_rate" />
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <rest-of-world-product-pricing v-model="value" currency="CAD" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_cad_shipping" price-field="unit_cad_price" fx-field="cad_fx_rate" />
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <rest-of-world-product-pricing v-model="value" currency="MXN" :marketplace-commission-pc="value.marketplace_commission_pc" ship-field="unit_mxn_shipping" price-field="unit_mxn_price" fx-field="mxn_fx_rate" />
                                 </div>
                             </div>
                         </b-tab>
@@ -133,9 +129,6 @@
                                     {{ data.value | date_dmY }}
                                 </template>
                             </b-table>
-                        </b-tab>
-                        <b-tab title="debug">
-                            {{ value }}
                         </b-tab>
                     </b-tabs>
                 </div>
@@ -152,9 +145,6 @@ export default {
     name: "PricingModal",
     components: {EuProductPricing, EuOfWorldProductPricing, RestOfWorldProductPricing},
     computed: {
-        vatValue() {
-            return this.value.unit_price_gbp * (this.value.uk_vat / 100);
-        },
         calculatedMarketplaceComm() {
             return this.value.unit_price_gbp * (this.value.marketplace_commission_pc/100);
         },

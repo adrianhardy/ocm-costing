@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Pricing;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\ProductPricing;
 use App\Models\SalesOrderLine;
 use Carbon\Carbon;
@@ -46,6 +47,16 @@ class CreatePricingFromOrderLinesController extends Controller
             $commission = $suggestedPrice * (1/setting('default_marketplace_commission_pc'));
             $grossCost = $costingData['est_landed_cost_per_unit_gbp'] + $commission;
 
+            $fr = Country::where('iso_2_code', 'FR')->first();
+            $uk = Country::where('iso_2_code', 'GB')->first();
+            $de = Country::where('iso_2_code', 'DE')->first();
+            $es = Country::where('iso_2_code', 'ES')->first();
+            $it = Country::where('iso_2_code', 'IT')->first();
+            $nl = Country::where('iso_2_code', 'NL')->first();
+            $us = Country::where('iso_2_code', 'US')->first();
+            $ca = Country::where('iso_2_code', 'CA')->first();
+            $mx = Country::where('iso_2_code', 'MX')->first();
+
             $pricing = new ProductPricing();
             $pricing->sales_order_line()->associate($line);
             $pricing->product()->associate($line->product);
@@ -55,7 +66,17 @@ class CreatePricingFromOrderLinesController extends Controller
                 'unit_price_gbp' => $suggestedPrice,
                 'marketplace_commission_pc' => setting('default_marketplace_commission_pc'),
                 'gross_unit_cost_gbp' => $grossCost,
-                'margin_pc' => $suggestedPrice / $grossCost
+                'margin_pc' => $suggestedPrice / $grossCost,
+                'fr_vat' => $fr->vat_rate,
+                'uk_vat' => $uk->vat_rate,
+                'es_vat' => $es->vat_rate,
+                'it_vat' => $it->vat_rate,
+                'de_vat' => $de->vat_rate,
+                'nl_vat' => $nl->vat_rate,
+                'mxn_fx_rate' => $mx->currency->default_fx_to_gbp,
+                'eur_fx_rate' => $fr->currency->default_fx_to_gbp,
+                'usd_fx_rate' => $us->currency->default_fx_to_gbp,
+                'cad_fx_rate' => $ca->currency->default_fx_to_gbp,
             ]);
             $pricing->save();
         }

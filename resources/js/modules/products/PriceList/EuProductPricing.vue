@@ -27,7 +27,7 @@
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">M'gn %</b-input-group-text>
+                    <b-input-group-text class="w-100">M'gn</b-input-group-text>
                 </b-input-group-prepend>
                 <div class="form-control">
                     {{ calculatedMargin | cash_value }}
@@ -47,6 +47,7 @@ export default {
         priceField: String,
         country: String,
         fxRate: Number,
+        marketplaceCommissionPc: Number
     },
     computed: {
         calculatedMargin() {
@@ -54,9 +55,16 @@ export default {
                 return 0;
             }
 
-            return (this.value[this.priceField] / this.fxRate) -
-                this.value.est_landed_cost_per_unit_gbp -
-                this.value[this.shipField];
+            const fxRate = this.fxRate;
+            const commission = this.value[this.priceField] * (this.marketplaceCommissionPc / 100);
+            const vat = this.value[this.priceField] * (this.value[this.vatField] / 100);
+            const margin = (this.value[this.priceField]) -
+                (this.value.est_landed_cost_per_unit_gbp / fxRate) -
+                vat -
+                commission -
+                (this.value[this.shipField] / fxRate) ;
+
+            return (margin * fxRate).toFixed(2);
         }
     }
 }

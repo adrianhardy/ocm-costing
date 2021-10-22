@@ -41,7 +41,6 @@ return [
 	'valueColumn' => 'value',
 
     'defaults' => [
-        'exchange_rate_usd' => '1.25',
         'cubic_metres_to_feet' => 35.3147,
         'shipping_cost_per_cubic_foot_usd' => 2.50,
         'default_commission_rate_pc' => 4.0,

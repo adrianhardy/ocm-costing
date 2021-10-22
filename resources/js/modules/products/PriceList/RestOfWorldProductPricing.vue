@@ -3,7 +3,7 @@
         <b-form-group :label="currency" label-size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-30">
-                    <b-input-group-text class="w-100">FX Rate</b-input-group-text>
+                    <b-input-group-text class="w-100">FX {{ currencySymbol }}</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[fxField]" size="sm" />
                 <b-input-group-append class="w-30">
@@ -55,17 +55,39 @@ export default {
         fxField: String,
         priceField: String,
         currency: String,
-        currencySymbol: String
+        currencySymbol: String,
+        marketplaceCommissionPc: Number
     },
     computed: {
+
+        localCommission() {
+          return this.value[this.priceField] * (this.marketplaceCommissionPc / 100);
+        },
+
         calculatedMargin() {
             if (!this.value[this.fxField]) {
                 return 0;
             }
 
-            return (this.value[this.priceField] / this.value[this.fxField]) -
-                this.value.est_landed_cost_per_unit_gbp -
-                this.value[this.shipField];
+            const fxRate = this.value[this.fxField];
+            const commission = this.value[this.priceField] * (this.marketplaceCommissionPc / 100);
+            const localPrice = (this.value[this.priceField]);
+            const localLandedCost = (this.value.est_landed_cost_per_unit_gbp / fxRate);
+            const localShipping = (this.value[this.shipField] / fxRate);
+
+            const margin = localPrice - commission - localLandedCost - localShipping;
+
+            return (margin * fxRate);
+        }
+    },
+    methods: {
+        showMyWorking() {
+            const fxRate = this.value[this.fxField];
+            this.$bvModal.msgBoxOk(
+                `Commission: ${this.value[this.priceField] * (this.marketplaceCommissionPc / 100)}, Local Shipping ${(this.value[this.shipField] / fxRate)}, Local Landed Cost ${this.value.est_landed_cost_per_unit_gbp / fxRate}`,
+                {
+                  title: 'Calculation',
+                });
         }
     }
 }

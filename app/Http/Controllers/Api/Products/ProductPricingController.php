@@ -12,13 +12,24 @@ use Illuminate\Http\Request;
 
 class ProductPricingController extends Controller
 {
-    public function index(ProductPricingRepository $productPricingRepository)
-    {
-        // Pricing's to be approved/done:
-        $paginator = $productPricingRepository
-            ->whereNull('superseded_at')
-            ->whereNull('approved_at')
-            ->paginate();
+    public function index(
+        Request $request,
+        ProductPricingRepository $productPricingRepository
+    ) {
+
+        $paginator = $productPricingRepository;
+        if ($request->input('todo_only')) {
+            // Pricing's to be approved/done:
+            $paginator = $paginator
+                ->whereNull('superseded_at')
+                ->whereNull('approved_at')
+                ->paginate();
+        } else {
+            $paginator = $paginator
+                ->whereNull('superseded_at')
+                ->paginate();
+        }
+
 
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductPricingTransformer()
