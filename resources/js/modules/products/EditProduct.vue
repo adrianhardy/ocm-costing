@@ -136,7 +136,13 @@
                                 {{ this.productId ? 'Update' : 'Create' }} Product
                             </b-button>
                         </b-tab>
-                        <b-tab title="Notes">
+                        <b-tab>
+                            <template #title>
+                                <div>
+                                    Notes
+                                    <b-badge variant="primary">{{product.comments.length}} <span class="sr-only">number of notes</span></b-badge>
+                                </div>
+                            </template>
                             <b-table-simple small>
                                 <b-thead>
                                     <b-tr>
