@@ -177,7 +177,7 @@
                                     <td colspan="6">Standard Envelope, Dimensions &#8804; 33 x 23 x 5cm </td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">&#8804; 210g</th>
+                                    <th scope="row">&#8804; 225g</th>
                                     <td>£1.42</td>
                                     <td>&#128;1.95</td>
                                     <td>&#128;3.45</td>
