@@ -67,17 +67,11 @@
                         v-model="data.item.article_number"
                         @change="updateLine(data.item)"
                     />
-                    <b-form-input
-                        :readonly="salesOrder.is_finalised"
-                        size="sm"
-                        v-model="data.item.item_number"
-                        @change="updateLine(data.item)"
-                        class="mt-1"
-                    />
-                    <b-form-group label-cols="6" label="Unit kg" class="mt-1" label-size="sm">
+                </template>
+                <template #cell(unit_weight_kg)="data">
+                    <b-form-group class="mt-1" label-size="sm">
                         <b-input size="sm" v-model="data.item.unit_weight_kg" @change="updateLine(data.item)" />
                     </b-form-group>
-
                 </template>
                 <template #cell(total)="data">
 
@@ -300,24 +294,32 @@ export default {
             }, {
                 key: 'product.name',
                 label: 'Product',
-                thClass: 'w-20',
+                thClass: 'w-10',
                 tdClass: 'align-middle'
             }, {
                 key: 'article_number',
-                label: 'Art # / Item #',
-                thClass: 'w-10 text-nowrap'
+                label: 'Art #',
+                thClass: 'w-5 text-nowrap'
+            }, {
+                key: 'item_number',
+                label: 'Item #',
+                thClass: 'w-5 text-nowrap'
+            }, {
+                key: 'unit_weight_kg',
+                label: 'unit kg',
+                thClass: 'w-5 text-nowrap'
             }, {
                 key: 'packing_instructions',
-                label: 'Packing Instructions',
-                thClass: 'w-15'
+                label: 'Packing',
+                thClass: 'w-10'
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
-                thClass: 'w-10'
+                thClass: 'w-5'
             }, {
                 key: 'units_requested',
                 label: 'Units / Cu.ft',
-                thClass: 'w-8'
+                thClass: 'w-5'
             }, {
                 key: 'total',
                 label: 'Total',
