@@ -83,13 +83,6 @@
                             :value="data.value | 2dp_value"
                         />
                     </b-input-group>
-                    <b-input-group prepend="GBP" size="sm" class="mt-1">
-                        <b-form-input
-                            readonly
-                            class="no-stepper"
-                            :value="data.item.total_gbp | 2dp_value"
-                        />
-                    </b-input-group>
                 </template>
                 <template #cell(product.name)="data">
                     <product-select
@@ -112,6 +105,14 @@
                     </div>
 
                 </template>
+                <template #cell(product_desc)="data">
+                    <b-textarea
+                        style="height: 4.7em"
+                        size="sm"
+                        rows="3"
+                        type="number"
+                    />
+                </template>
                 <template #cell(packing_instructions)="data">
                     <b-textarea
                         style="height: 4.7em"
@@ -120,7 +121,9 @@
                         type="number"
                         v-model="data.item.packing_instructions" @change="updateLine(data.item)"
                     />
-                    <b-form-group label-cols="6" label="Carton kg" class="mt-1" label-size="sm">
+                </template>
+                <template #cell(case_weight_kg)="data">
+                    <b-form-group class="mt-1" label-size="sm">
                         <b-input size="sm" v-model="data.item.case_weight_kg" />
                     </b-form-group>
                 </template>
@@ -131,12 +134,6 @@
                         type="number"
                         class="no-stepper"
                         v-model.number="data.item.units_requested" @change="updateLine(data.item)"
-                    />
-                    <b-form-input
-                        size="sm"
-                        type="number"
-                        v-model.number="data.item.total_cubic_ft" @change="updateLine(data.item)"
-                        class="no-stepper mt-1"
                     />
                 </template>
                 <template #cell(unit_price)="data">
@@ -149,19 +146,21 @@
                             @change="updateLine(data.item)"
                         />
                     </b-input-group>
-                    <b-input-group prepend="GBP" size="sm" class="mt-1">
-                        <b-form-input
-                            readonly
-                            class="no-stepper"
-                            :value="data.item.unit_price * salesOrder.fx_rate | cash_value"
-                        />
-                    </b-input-group>
-                    <b-form-group label-cols="6" class="mt-1" label-size="sm">
+                </template>
+                <template #cell(units_per_case)="data">
+                    <b-form-group class="mt-1" label-size="sm">
                         <template #label>
-                            <div>Units/Ct</div>
                         </template>
                         <b-input size="sm" v-model="data.item.units_per_case" @change="updateLine(data.item)" />
                     </b-form-group>
+                </template>
+                <template #cell(cubic_feet_per_unit)="data">
+                    <b-form-input
+                        size="sm"
+                        type="number"
+                        v-model.number="data.item.total_cubic_ft" @change="updateLine(data.item)"
+                        class="no-stepper mt-1"
+                    />
                 </template>
                 <template #cell(checked)="data">
                     <b-form-checkbox size="lg" v-model="data.item.checked"/>
@@ -292,22 +291,27 @@ export default {
                 thClass: 'w-1',
                 tdClass: 'align-middle'
             }, {
-                key: 'product.name',
-                label: 'Product',
-                thClass: 'w-10',
-                tdClass: 'align-middle'
+                key: 'item_number',
+                label: 'Item #',
+                thClass: 'w-5 text-nowrap'
+            }, {
+                key: 'product_photo',
+                label: 'product photo',
+                thClass: 'w-10 text-nowrap'
             }, {
                 key: 'article_number',
                 label: 'Art #',
                 thClass: 'w-5 text-nowrap'
             }, {
-                key: 'item_number',
-                label: 'Item #',
-                thClass: 'w-5 text-nowrap'
+                key: 'product.name',
+                label: 'Product',
+                thClass: 'w-15',
+                tdClass: 'align-middle'
             }, {
-                key: 'unit_weight_kg',
-                label: 'unit kg',
-                thClass: 'w-5 text-nowrap'
+                key: 'product_desc',
+                label: 'Product description',
+                thClass: 'w-10',
+                tdClass: 'align-middle'
             }, {
                 key: 'packing_instructions',
                 label: 'Packing',
@@ -315,16 +319,33 @@ export default {
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
+                thClass: 'w-8'
+            }, {
+                key: 'units_per_case',
+                label: 'units per case',
                 thClass: 'w-5'
             }, {
+                key: 'unit_weight_kg',
+                label: 'unit kg',
+                thClass: 'w-5 text-nowrap'
+            }, {
                 key: 'units_requested',
-                label: 'Units / Cu.ft',
+                label: 'Units',
+                thClass: 'w-5'
+            }, {
+                key: 'Cubic_feet_per_unit',
+                label: 'cubic feet',
                 thClass: 'w-5'
             }, {
                 key: 'total',
-                label: 'Total',
-                thClass: 'w-10 text-nowrap',
+                label: 'sub-Total',
+                thClass: 'w-7 text-nowrap',
                 tdClass: 'text-nowrap'
+            }, {
+                key: 'case_weight_kg',
+                label: 'carton weight',
+                thclass: 'w-7'
+            }, {
             }];
             if (this.salesOrder.is_finalised) {
                 return _.filter(fields, o => o.key !== 'id')
