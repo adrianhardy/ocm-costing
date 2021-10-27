@@ -85,6 +85,12 @@
                     </b-input-group>
                 </template>
                 <template #cell(product.name)="data">
+                    <b-textarea
+                        size="sm"
+                        rows="5"
+                    />
+                </template>
+                <template #cell(product_description)="data">
                     <product-select
                         v-if="!isSupplier && !salesOrder.finalised_at"
                         size="sm"
@@ -94,19 +100,8 @@
                     />
                     <div v-else>
                         <div>{{ data.item.product.name }}</div>
-                        <b-badge v-b-tooltip.hover.right title="Estimated Landed Cost" variant="primary"
-                                 v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
-                            {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
-                        </b-badge>
                     </div>
-                </template>
-                <template #cell(product_desc)="data">
-                    <b-textarea
-                        style="height: 4.7em"
-                        size="sm"
-                        rows="3"
-                        type="number"
-                    />
+
                 </template>
                 <template #cell(packing_instructions)="data">
                     <b-textarea
@@ -143,6 +138,10 @@
                             />
                         </b-input-group>
                     </b-form-group>
+                    <b-badge v-b-tooltip.hover.right title="Estimated Landed Cost" variant="primary"
+                             v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
+                        {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
+                    </b-badge>
                 </template>
                 <template #cell(units_per_case)="data">
                     <b-form-group>
@@ -311,6 +310,10 @@ export default {
                 label: 'Product',
                 thClass: 'w-15',
             }, {
+                key: 'product_description',
+                label: 'product desc',
+                thClass: 'w-10'
+            }, {
                 key: 'product_size_cm',
                 label: 'dimensions ',
                 thClass: 'w-15',
@@ -343,7 +346,7 @@ export default {
             }, {
                 key: 'total',
                 label: 'sub-Total',
-                thClass: 'w-7 text-nowrap',
+                thClass: 'w-5 text-nowrap',
                 tdClass: 'text-nowrap'
             }, {
                 key: 'case_weight_kg',
