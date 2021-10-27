@@ -69,7 +69,7 @@
                     />
                 </template>
                 <template #cell(unit_weight_kg)="data">
-                    <b-form-group class="mt-1" label-size="sm">
+                    <b-form-group>
                         <b-input size="sm" v-model="data.item.unit_weight_kg" @change="updateLine(data.item)" />
                     </b-form-group>
                 </template>
@@ -99,11 +99,6 @@
                             {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
                         </b-badge>
                     </div>
-
-                    <div class="mt-1">
-                        <product-dimensions-input v-model="data.item" @updated="updateLine(data.item)"/>
-                    </div>
-
                 </template>
                 <template #cell(product_desc)="data">
                     <b-textarea
@@ -115,43 +110,52 @@
                 </template>
                 <template #cell(packing_instructions)="data">
                     <b-textarea
-                        style="height: 4.7em"
                         size="sm"
-                        rows="3"
-                        type="number"
+                        rows="5"
                         v-model="data.item.packing_instructions" @change="updateLine(data.item)"
                     />
                 </template>
                 <template #cell(case_weight_kg)="data">
-                    <b-form-group class="mt-1" label-size="sm">
+                    <b-form-group>
                         <b-input size="sm" v-model="data.item.case_weight_kg" />
                     </b-form-group>
                 </template>
                 <template #cell(units_requested)="data">
-                    <b-form-input
-                        size="sm"
-                        :readonly="salesOrder.is_finalised"
-                        type="number"
-                        class="no-stepper"
-                        v-model.number="data.item.units_requested" @change="updateLine(data.item)"
-                    />
-                </template>
-                <template #cell(unit_price)="data">
-                    <b-input-group :prepend="salesOrder.currency.code" size="sm">
+                    <b-form-group>
                         <b-form-input
+                            size="sm"
                             :readonly="salesOrder.is_finalised"
                             type="number"
                             class="no-stepper"
-                            v-model="data.item.unit_price"
-                            @change="updateLine(data.item)"
+                            v-model.number="data.item.units_requested" @change="updateLine(data.item)"
                         />
-                    </b-input-group>
+                    </b-form-group>
+                </template>
+                <template #cell(unit_price)="data">
+                    <b-form-group>
+                        <b-input-group :prepend="salesOrder.currency.code" size="sm">
+                            <b-form-input
+                                :readonly="salesOrder.is_finalised"
+                                type="number"
+                                class="no-stepper"
+                                v-model="data.item.unit_price"
+                                @change="updateLine(data.item)"
+                            />
+                        </b-input-group>
+                    </b-form-group>
                 </template>
                 <template #cell(units_per_case)="data">
-                    <b-form-group class="mt-1" label-size="sm">
+                    <b-form-group>
                         <template #label>
                         </template>
                         <b-input size="sm" v-model="data.item.units_per_case" @change="updateLine(data.item)" />
+                    </b-form-group>
+                </template>
+                <template #cell(product_size_cm)="data">
+                    <b-form-group>
+                        <div class="mt-1">
+                            <product-dimensions-input v-model="data.item" @updated="updateLine(data.item)"/>
+                        </div>
                     </b-form-group>
                 </template>
                 <template #cell(cubic_feet_per_unit)="data">
@@ -159,7 +163,7 @@
                         size="sm"
                         type="number"
                         v-model.number="data.item.total_cubic_ft" @change="updateLine(data.item)"
-                        class="no-stepper mt-1"
+                        class="no-stepper"
                     />
                 </template>
                 <template #cell(checked)="data">
@@ -296,8 +300,8 @@ export default {
                 thClass: 'w-5 text-nowrap'
             }, {
                 key: 'product_photo',
-                label: 'product photo',
-                thClass: 'w-10 text-nowrap'
+                label: 'photo',
+                thClass: 'w-5 text-nowrap'
             }, {
                 key: 'article_number',
                 label: 'Art #',
@@ -306,25 +310,25 @@ export default {
                 key: 'product.name',
                 label: 'Product',
                 thClass: 'w-15',
-                tdClass: 'align-middle'
             }, {
-                key: 'product_desc',
-                label: 'Product description',
-                thClass: 'w-10',
+                key: 'product_size_cm',
+                label: 'dimensions ',
+                thClass: 'w-15',
                 tdClass: 'align-middle'
             }, {
                 key: 'packing_instructions',
                 label: 'Packing',
-                thClass: 'w-10'
+                thClass: 'w-15'
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
-                thClass: 'w-8'
+                thClass: 'w-7'
             }, {
                 key: 'units_per_case',
-                label: 'units per case',
+                label: 'units/case',
                 thClass: 'w-5'
             }, {
+
                 key: 'unit_weight_kg',
                 label: 'unit kg',
                 thClass: 'w-5 text-nowrap'
@@ -334,7 +338,7 @@ export default {
                 thClass: 'w-5'
             }, {
                 key: 'Cubic_feet_per_unit',
-                label: 'cubic feet',
+                label: 'C.ft',
                 thClass: 'w-5'
             }, {
                 key: 'total',
@@ -343,8 +347,8 @@ export default {
                 tdClass: 'text-nowrap'
             }, {
                 key: 'case_weight_kg',
-                label: 'carton weight',
-                thclass: 'w-7'
+                label: 'Cart.KG',
+                thclass: 'w-5'
             }, {
             }];
             if (this.salesOrder.is_finalised) {
