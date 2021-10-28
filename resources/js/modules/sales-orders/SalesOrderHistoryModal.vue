@@ -6,6 +6,7 @@
                     <b-th>Product</b-th>
                     <b-th>Article #</b-th>
                     <b-th>Item #</b-th>
+                    <b-th>Product Description</b-th>
                     <b-th>Packing Instructions</b-th>
                     <b-th>Unit Price</b-th>
                     <b-th>Units</b-th>
@@ -14,6 +15,7 @@
                     <b-td>{{ line.product.name }}</b-td>
                     <b-td>{{ line.article_number }}</b-td>
                     <b-td>{{ line.item_number }}</b-td>
+                    <b-td>{{ line.product_description }}</b-td>
                     <b-td>{{ line.packing_instructions }}</b-td>
                     <b-td>{{ line.unit_price }}</b-td>
                     <b-td>{{ line.units_requested }}</b-td>

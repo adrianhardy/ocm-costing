@@ -85,34 +85,37 @@
                     </b-input-group>
                 </template>
                 <template #cell(product.name)="data">
-                    <b-textarea
-                        size="sm"
-                        rows="5"
-                    />
+                        <product-select
+                            v-if="!isSupplier && !salesOrder.finalised_at"
+                            size="sm"
+                            :readonly="salesOrder.is_finalised"
+                            v-model="data.item.product"
+                            @input="selectProduct($event, data.item)"
+                        />
+                        <div v-else>
+                            <div>{{ data.item.product.name }}</div>
+                        </div>
                 </template>
                 <template #cell(product_description)="data">
-                    <product-select
-                        v-if="!isSupplier && !salesOrder.finalised_at"
+                    <b-textarea
                         size="sm"
-                        :readonly="salesOrder.is_finalised"
-                        v-model="data.item.product"
-                        @input="selectProduct($event, data.item)"
+                        rows="4"
+                        v-model="data.item.product_description" @change="updateLine(data.item)"
                     />
-                    <div v-else>
-                        <div>{{ data.item.product.name }}</div>
-                    </div>
-
                 </template>
                 <template #cell(packing_instructions)="data">
                     <b-textarea
                         size="sm"
-                        rows="5"
+                        rows="4"
                         v-model="data.item.packing_instructions" @change="updateLine(data.item)"
                     />
                 </template>
                 <template #cell(case_weight_kg)="data">
                     <b-form-group>
-                        <b-input size="sm" v-model="data.item.case_weight_kg" />
+                        <b-input
+                            size="sm"
+                            v-model="data.item.case_weight_kg" @change="updateLine(data.item)"
+                        />
                     </b-form-group>
                 </template>
                 <template #cell(units_requested)="data">
@@ -170,15 +173,15 @@
                 </template>
                 <template #custom-foot>
                     <b-tr>
-                        <b-th colspan="3"></b-th>
+                        <b-th colspan="10"></b-th>
                         <b-th class="text-right">Total</b-th>
                         <b-th></b-th>
                         <b-td></b-td>
                         <b-td>
                             <strong>Goods</strong> <br/>
                             {{ salesOrder.currency.code }}
-                            {{ salesOrder.goods_cost }} <br/>
-                            GBP {{ salesOrder.goods_cost_gbp }}
+                            {{ salesOrder.goods_cost | 2dp_value }} <br/>
+                            GBP {{ salesOrder.goods_cost_gbp | 2dp_value }}
                         </b-td>
                     </b-tr>
                 </template>
@@ -296,7 +299,8 @@ export default {
             }, {
                 key: 'item_number',
                 label: 'Item #',
-                thClass: 'w-5 text-nowrap'
+                thClass: 'w-5 text-nowrap',
+                tdClass: 'small'
             }, {
                 key: 'product_photo',
                 label: 'photo',
@@ -308,7 +312,7 @@ export default {
             }, {
                 key: 'product.name',
                 label: 'Product',
-                thClass: 'w-15',
+                thClass: 'w-12',
             }, {
                 key: 'product_description',
                 label: 'product desc',
@@ -316,12 +320,12 @@ export default {
             }, {
                 key: 'product_size_cm',
                 label: 'dimensions ',
-                thClass: 'w-15',
+                thClass: 'w-12',
                 tdClass: 'align-middle'
             }, {
                 key: 'packing_instructions',
                 label: 'Packing',
-                thClass: 'w-15'
+                thClass: 'w-10'
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
@@ -341,12 +345,12 @@ export default {
                 thClass: 'w-5'
             }, {
                 key: 'Cubic_feet_per_unit',
-                label: 'C.ft',
+                label: 'Cu.ft',
                 thClass: 'w-5'
             }, {
                 key: 'total',
-                label: 'sub-Total',
-                thClass: 'w-5 text-nowrap',
+                label: 'Sub-Total',
+                thClass: 'w-7 text-nowrap',
                 tdClass: 'text-nowrap'
             }, {
                 key: 'case_weight_kg',
@@ -517,7 +521,9 @@ export default {
     },
     data() {
         return {
-            salesOrder: {},
+            salesOrder: {
+                currency: {}
+            },
             note: '',
         }
     }
