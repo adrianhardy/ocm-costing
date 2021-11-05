@@ -67,17 +67,11 @@
                         v-model="data.item.article_number"
                         @change="updateLine(data.item)"
                     />
-                    <b-form-input
-                        :readonly="salesOrder.is_finalised"
-                        size="sm"
-                        v-model="data.item.item_number"
-                        @change="updateLine(data.item)"
-                        class="mt-1"
-                    />
-                    <b-form-group label-cols="6" label="Unit kg" class="mt-1" label-size="sm">
+                </template>
+                <template #cell(unit_weight_kg)="data">
+                    <b-form-group>
                         <b-input size="sm" v-model="data.item.unit_weight_kg" @change="updateLine(data.item)" />
                     </b-form-group>
-
                 </template>
                 <template #cell(total)="data">
 
@@ -89,100 +83,105 @@
                             :value="data.value | 2dp_value"
                         />
                     </b-input-group>
-                    <b-input-group prepend="GBP" size="sm" class="mt-1">
-                        <b-form-input
-                            readonly
-                            class="no-stepper"
-                            :value="data.item.total_gbp | 2dp_value"
-                        />
-                    </b-input-group>
                 </template>
                 <template #cell(product.name)="data">
-                    <product-select
-                        v-if="!isSupplier && !salesOrder.finalised_at"
+                        <product-select
+                            v-if="!isSupplier && !salesOrder.finalised_at"
+                            size="sm"
+                            :readonly="salesOrder.is_finalised"
+                            v-model="data.item.product"
+                            @input="selectProduct($event, data.item)"
+                        />
+                        <div v-else>
+                            <div>{{ data.item.product.name }}</div>
+                        </div>
+                </template>
+                <template #cell(product_description)="data">
+                    <b-textarea
                         size="sm"
-                        :readonly="salesOrder.is_finalised"
-                        v-model="data.item.product"
-                        @input="selectProduct($event, data.item)"
+                        rows="4"
+                        v-model="data.item.product_description" @change="updateLine(data.item)"
                     />
-                    <div v-else>
-                        <div>{{ data.item.product.name }}</div>
-                        <b-badge v-b-tooltip.hover.right title="Estimated Landed Cost" variant="primary"
-                                 v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
-                            {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
-                        </b-badge>
-                    </div>
-
-                    <div class="mt-1">
-                        <product-dimensions-input v-model="data.item" @updated="updateLine(data.item)"/>
-                    </div>
-
                 </template>
                 <template #cell(packing_instructions)="data">
                     <b-textarea
-                        style="height: 4.7em"
                         size="sm"
-                        rows="3"
-                        type="number"
+                        rows="4"
                         v-model="data.item.packing_instructions" @change="updateLine(data.item)"
                     />
-                    <b-form-group label-cols="6" label="Carton kg" class="mt-1" label-size="sm">
-                        <b-input size="sm" v-model="data.item.case_weight_kg" />
+                </template>
+                <template #cell(case_weight_kg)="data">
+                    <b-form-group>
+                        <b-input
+                            size="sm"
+                            v-model="data.item.case_weight_kg" @change="updateLine(data.item)"
+                        />
                     </b-form-group>
                 </template>
                 <template #cell(units_requested)="data">
-                    <b-form-input
-                        size="sm"
-                        :readonly="salesOrder.is_finalised"
-                        type="number"
-                        class="no-stepper"
-                        v-model.number="data.item.units_requested" @change="updateLine(data.item)"
-                    />
+                    <b-form-group>
+                        <b-form-input
+                            size="sm"
+                            :readonly="salesOrder.is_finalised"
+                            type="number"
+                            class="no-stepper"
+                            v-model.number="data.item.units_requested" @change="updateLine(data.item)"
+                        />
+                    </b-form-group>
+                </template>
+                <template #cell(unit_price)="data">
+                    <b-form-group>
+                        <b-input-group :prepend="salesOrder.currency.code" size="sm">
+                            <b-form-input
+                                :readonly="salesOrder.is_finalised"
+                                type="number"
+                                class="no-stepper"
+                                v-model="data.item.unit_price"
+                                @change="updateLine(data.item)"
+                            />
+                        </b-input-group>
+                    </b-form-group>
+                    <b-badge v-b-tooltip.hover.right title="Estimated Landed Cost" variant="primary"
+                             v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
+                        {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
+                    </b-badge>
+                </template>
+                <template #cell(units_per_case)="data">
+                    <b-form-group>
+                        <template #label>
+                        </template>
+                        <b-input size="sm" v-model="data.item.units_per_case" @change="updateLine(data.item)" />
+                    </b-form-group>
+                </template>
+                <template #cell(product_size_cm)="data">
+                    <b-form-group>
+                        <div class="mt-1">
+                            <product-dimensions-input v-model="data.item" @updated="updateLine(data.item)"/>
+                        </div>
+                    </b-form-group>
+                </template>
+                <template #cell(cubic_feet_per_unit)="data">
                     <b-form-input
                         size="sm"
                         type="number"
                         v-model.number="data.item.total_cubic_ft" @change="updateLine(data.item)"
-                        class="no-stepper mt-1"
+                        class="no-stepper"
                     />
-                </template>
-                <template #cell(unit_price)="data">
-                    <b-input-group :prepend="salesOrder.currency.code" size="sm">
-                        <b-form-input
-                            :readonly="salesOrder.is_finalised"
-                            type="number"
-                            class="no-stepper"
-                            v-model="data.item.unit_price"
-                            @change="updateLine(data.item)"
-                        />
-                    </b-input-group>
-                    <b-input-group prepend="GBP" size="sm" class="mt-1">
-                        <b-form-input
-                            readonly
-                            class="no-stepper"
-                            :value="data.item.unit_price * salesOrder.fx_rate | cash_value"
-                        />
-                    </b-input-group>
-                    <b-form-group label-cols="6" class="mt-1" label-size="sm">
-                        <template #label>
-                            <div>Units/Ct</div>
-                        </template>
-                        <b-input size="sm" v-model="data.item.units_per_case" @change="updateLine(data.item)" />
-                    </b-form-group>
                 </template>
                 <template #cell(checked)="data">
                     <b-form-checkbox size="lg" v-model="data.item.checked"/>
                 </template>
                 <template #custom-foot>
                     <b-tr>
-                        <b-th colspan="3"></b-th>
+                        <b-th colspan="10"></b-th>
                         <b-th class="text-right">Total</b-th>
                         <b-th></b-th>
                         <b-td></b-td>
                         <b-td>
                             <strong>Goods</strong> <br/>
                             {{ salesOrder.currency.code }}
-                            {{ salesOrder.goods_cost }} <br/>
-                            GBP {{ salesOrder.goods_cost_gbp }}
+                            {{ salesOrder.goods_cost | 2dp_value }} <br/>
+                            GBP {{ salesOrder.goods_cost_gbp | 2dp_value }}
                         </b-td>
                     </b-tr>
                 </template>
@@ -298,31 +297,66 @@ export default {
                 thClass: 'w-1',
                 tdClass: 'align-middle'
             }, {
-                key: 'product.name',
-                label: 'Product',
-                thClass: 'w-20',
-                tdClass: 'align-middle'
+                key: 'item_number',
+                label: 'Item #',
+                thClass: 'w-5 text-nowrap',
+                tdClass: 'small'
+            }, {
+                key: 'product_photo',
+                label: 'photo',
+                thClass: 'w-5 text-nowrap'
             }, {
                 key: 'article_number',
-                label: 'Art # / Item #',
-                thClass: 'w-10 text-nowrap'
+                label: 'Art #',
+                thClass: 'w-5 text-nowrap'
+            }, {
+                key: 'product.name',
+                label: 'Product',
+                thClass: 'w-12',
+            }, {
+                key: 'product_description',
+                label: 'product desc',
+                thClass: 'w-10'
+            }, {
+                key: 'product_size_cm',
+                label: 'dimensions ',
+                thClass: 'w-12',
+                tdClass: 'align-middle'
             }, {
                 key: 'packing_instructions',
-                label: 'Packing Instructions',
-                thClass: 'w-15'
+                label: 'Packing',
+                thClass: 'w-10'
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
-                thClass: 'w-10'
+                thClass: 'w-7'
+            }, {
+                key: 'units_per_case',
+                label: 'units/case',
+                thClass: 'w-5'
+            }, {
+
+                key: 'unit_weight_kg',
+                label: 'unit kg',
+                thClass: 'w-5 text-nowrap'
             }, {
                 key: 'units_requested',
-                label: 'Units / Cu.ft',
-                thClass: 'w-8'
+                label: 'Units',
+                thClass: 'w-5'
+            }, {
+                key: 'Cubic_feet_per_unit',
+                label: 'Cu.ft',
+                thClass: 'w-5'
             }, {
                 key: 'total',
-                label: 'Total',
-                thClass: 'w-10 text-nowrap',
+                label: 'Sub-Total',
+                thClass: 'w-7 text-nowrap',
                 tdClass: 'text-nowrap'
+            }, {
+                key: 'case_weight_kg',
+                label: 'Cart.KG',
+                thclass: 'w-5'
+            }, {
             }];
             if (this.salesOrder.is_finalised) {
                 return _.filter(fields, o => o.key !== 'id')
@@ -487,7 +521,9 @@ export default {
     },
     data() {
         return {
-            salesOrder: {},
+            salesOrder: {
+                currency: {}
+            },
             note: '',
         }
     }
