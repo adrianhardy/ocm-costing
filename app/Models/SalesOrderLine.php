@@ -9,6 +9,8 @@ use App\Models\Base\SalesOrderLine as BaseSalesOrderLine;
  * @package App\Models
  * @property-read $estimated_shipping_cost_gbp
  * @property-read $worst_estimated_landed_cost_data
+ * @property-read $case_cubic_m
+ * @property-read $case_cubic_ft
  * @property $total_cubic_ft
  */
 class SalesOrderLine extends BaseSalesOrderLine
@@ -67,6 +69,18 @@ class SalesOrderLine extends BaseSalesOrderLine
     {
         return $this->total_cubic_m = $ft / setting('cubic_metres_to_feet');
     }
+
+    public function getCaseCubicMAttribute()
+    {
+	    return $this->length_m * $this->width_m * $this->height_m;
+    }
+
+    public function getCaseCubicFtAttribute()
+    {
+        return $this->case_cubic_m * setting('cubic_metres_to_feet');
+    }
+
+
 
     /**
      * @return array|null

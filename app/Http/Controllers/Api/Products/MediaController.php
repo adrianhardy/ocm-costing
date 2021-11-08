@@ -25,7 +25,7 @@ class MediaController extends Controller
 
         $product
             ->addMediaFromRequest('image')
-            ->toMediaCollection('images');
+            ->toMediaCollection();
 
         return response()->json([]);
     }
