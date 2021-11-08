@@ -86,7 +86,7 @@ class Product extends BaseProduct implements HasMedia
 
     public function registerMediaCollections()
     {
-        $this->addMediaCollection('images')
+        $this->addMediaCollection('default')
             ->acceptsMimeTypes(['image/jpeg', 'image/png'])
             ->registerMediaConversions(function () {
                 return $this
