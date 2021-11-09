@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models;
 use App\Models\User;
+use App\Observers\ProductObserver;
 use App\Observers\SalesOrderLineObserver;
 use App\Observers\SalesOrderObserver;
 use App\Observers\UserObserver;
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(UserObserver::class);
+        Models\Product::observe(ProductObserver::class);
         Models\SalesOrder::observe(SalesOrderObserver::class);
         Models\SalesOrderLine::observe(SalesOrderLineObserver::class);
         Validator::extend('current_password', function ($attribute, $value, $parameters, $validator) {

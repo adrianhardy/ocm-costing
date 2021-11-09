@@ -30,12 +30,17 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
+                            <b-form-group label="Est. Landed Cost GBP">
+                                <b-form-input readonly v-model="product.est_landed_cost_gbp"/>
+                            </b-form-group>
+                        </div>
+                        <div class="col-4">
                             <b-form-group label="Current Landed Cost" v-if="product.current_landed_cost_per_unit_gbp">
                                 <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
                             </b-form-group>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <b-form-group label="Unit Price ($)">
                                 <b-form-input v-model="product.unit_price"/>
                             </b-form-group>
@@ -174,21 +179,28 @@
                             <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
                         </b-tab>
                         <b-tab title="History">
-                            <b-table small :items="productLog" :fields="productLogFields">
+                            <b-table small :items="productLog" :fields="productLogFields" sticky-header="600px">
                                 <template #cell(updated_at)="data">
                                     {{ new Date(data.value) | date('dd/MM/yy HH:mm') }}
+                                </templat
+                                <template #cell(attributes.unit_price)="data">
+                                    {{ data.value | 2dp_value }}
+                                </template>
+                                <template #cell(attributes.est_landed_cost_gbp)="data">
+                                    {{ data.value | cash_value }}
                                 </template>
                                 <template #cell(extra)="data">
-                                    <div v-if="data.item && data.item.attributes">
-                              <span v-b-popover.hover="data.item.attributes.packing_instructions"
-                                    title="Packing Instructions" style="cursor:pointer">
-                                <b-icon-box-seam/>
-                              </span>
-                                        <span v-b-popover.hover="data.item.attributes.product_description"
-                                              title="Product Description" style="cursor:pointer">
-                                <b-icon-tag/>
-                              </span>
-                                    </div>
+                                  <div v-if="data.item && data.item.attributes">
+                                      <span v-b-popover.hover="data.item.attributes.packing_instructions" title="Packing Instructions" style="cursor:pointer">
+                                        <b-icon-box-seam/>
+                                      </span>
+                                        <span v-b-popover.hover="data.item.attributes.product_description" title="Product Description" style="cursor:pointer">
+                                        <b-icon-tag/>
+                                      </span>
+                                      <span style="cursor:pointer" v-b-popover.hover="data.item.attributes.barcode" title="Barcode">
+                                        <b-icon-upc-scan />
+                                      </span>
+                                  </div>
                                 </template>
                             </b-table>
                         </b-tab>
@@ -229,11 +241,11 @@ export default {
                 key: 'updated_at',
                 label: 'When',
             }, {
-                key: 'attributes.barcode',
-                label: 'Barcode'
-            }, {
                 key: 'attributes.case_weight_kg',
                 label: 'Ctn Kg'
+            }, {
+                key: 'attributes.est_landed_cost_gbp',
+                label: 'ELC'
             }, {
                 key: 'attributes.units_per_case',
                 label: 'Qty/Ctn'

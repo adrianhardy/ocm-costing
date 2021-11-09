@@ -104,7 +104,8 @@ class ProductTransformer extends TransformerAbstract
             'case_weight_kg',
             'unit_weight_kg',
             'case_cubic_m',
-            'case_cubic_ft'
+            'case_cubic_ft',
+            'est_landed_cost_gbp'
         ]);
     }
 }

@@ -23,6 +23,11 @@
                         <b-img fluid :src="data.item.media[0].url" />
                     </b-avatar>
                 </template>
+                <template #cell(est_landed_cost_gbp)="data">
+                  <span v-if="data.value">
+                    {{ data.value | cash_value }}
+                  </span>
+                </template>
             </b-table>
         </b-card>
     </div>
@@ -70,6 +75,10 @@ export default {
                     sortable: true
                 },{
                     key: 'barcode',
+                    sortable: true
+                },{
+                    key: 'est_landed_cost_gbp',
+                    label: 'ELC GBP',
                     sortable: true
                 }
             ]

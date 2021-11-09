@@ -23,6 +23,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $unit_height_cm
  *
  * @property-read $current_landed_cost_per_unit_gbp
+ * @property-read $case_cubic_ft
  */
 class Product extends BaseProduct implements HasMedia
 {
@@ -54,7 +55,8 @@ class Product extends BaseProduct implements HasMedia
         'product_description',
         'unit_price',
         'case_weight_kg',
-        'unit_weight_kg'
+        'unit_weight_kg',
+        'est_landed_cost_gbp'
     ];
 
 	protected $fillable = [
@@ -81,7 +83,8 @@ class Product extends BaseProduct implements HasMedia
         'product_description',
         'unit_price',
         'case_weight_kg',
-        'unit_weight_kg'
+        'unit_weight_kg',
+        'est_landed_cost_gbp'
     ];
 
     public function registerMediaCollections()

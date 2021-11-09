@@ -4,6 +4,7 @@
 namespace App\Domain;
 
 
+use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
 
