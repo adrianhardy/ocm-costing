@@ -1,13 +1,16 @@
 <template>
   <div>
-    <b-row>
-      <b-col cols="4" v-for="(media, index) in product.media" :key="media.id">
-        <b-card no-body :img-src="media.url">
-          <b-button size="sm" block variant="outline-danger" @click="deleteImage(media)">Delete</b-button>
+    <div class="row">
+      <div class="col-4 col-sm-4" v-for="(media, index) in product.media" :key="media.id">
+        <b-card no-body :img-src="media.url" class="h100">
+          <b-button class="delete-button" size="sm" block variant="danger" @click="deleteImage(media)">Delete</b-button>
         </b-card>
-      </b-col>
-    </b-row>
-    <b-form-file :disabled="disabled" @input="addMedia($event) " ref="file"/>
+      </div>
+    </div>
+    <b-input-group class="mt-2">
+      <b-form-file :disabled="disabled" v-model="file" ref="file"/>
+      <b-button variant="success" :disabled="disabled || !file" @click="addMedia">Upload</b-button>
+    </b-input-group>
   </div>
 </template>
 
@@ -15,11 +18,16 @@
 export default {
   props: {product: Object, disabled: Boolean},
   name: "EditProductMedia",
+  data() {
+    return {
+      file: null
+    }
+  },
   methods: {
-    addMedia(file) {
+    addMedia() {
       const loader = this.$loading.show();
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('image', this.file);
       this.$http.post(`/api/products/${this.product.id}/media`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       }).then(() => {
@@ -53,4 +61,14 @@ export default {
 
 <style scoped>
 
+  .card-img {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .delete-button {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+  }
 </style>

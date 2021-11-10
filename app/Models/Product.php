@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Base\Product as BaseProduct;
 use BeyondCode\Comments\Traits\HasComments;
+use Illuminate\Database\Eloquent\Collection;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -21,7 +22,8 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $unit_length_cm
  * @property $unit_width_cm
  * @property $unit_height_cm
- *
+ * @property Collection|ProductLandedCost[] $landed_costs
+
  * @property-read $current_landed_cost_per_unit_gbp
  * @property-read $case_cubic_ft
  */
@@ -56,7 +58,8 @@ class Product extends BaseProduct implements HasMedia
         'unit_price',
         'case_weight_kg',
         'unit_weight_kg',
-        'est_landed_cost_gbp'
+        'est_landed_cost_gbp',
+        'is_excluded_from_commission'
     ];
 
 	protected $fillable = [
@@ -84,7 +87,8 @@ class Product extends BaseProduct implements HasMedia
         'unit_price',
         'case_weight_kg',
         'unit_weight_kg',
-        'est_landed_cost_gbp'
+        'est_landed_cost_gbp',
+        'is_excluded_from_commission'
     ];
 
     public function registerMediaCollections()
@@ -105,11 +109,23 @@ class Product extends BaseProduct implements HasMedia
         return round($this->case_cubic_m * setting('cubic_metres_to_feet'), 2);
     }
 
+    public function getUnitCubicFtAttribute()
+    {
+        return round($this->unit_cubic_m * setting('cubic_metres_to_feet'), 2);
+    }
+
     public function getCaseCubicMAttribute()
     {
         return $this->length_m *
             $this->width_m *
             $this->height_m;
+    }
+
+    public function getUnitCubicMAttribute()
+    {
+        return $this->unit_length_m *
+            $this->unit_width_m *
+            $this->unit_height_m;
     }
 
     /**
@@ -131,10 +147,9 @@ class Product extends BaseProduct implements HasMedia
     public function getCurrentLandedCostPerUnitGbpAttribute()
     {
 
-        $landedCostData = \DB::table('sales_order_lines_consignments')
-            ->leftJoin('sales_order_lines', 'sales_order_lines.id', '=', 'sales_order_lines_consignments.sales_order_line_id')
-            ->where('sales_order_lines.product_id', '=', $this->id)
-            ->orderBy('sales_order_lines.created_at', 'DESC')
+        $landedCostData = \DB::table('product_landed_costs')
+            ->where('product_id', '=', $this->id)
+            ->orderBy('product_landed_costs.date', 'DESC')
             ->limit(1)
             ->first();
 
@@ -142,7 +157,15 @@ class Product extends BaseProduct implements HasMedia
             return null;
         }
 
-        return $landedCostData->est_landed_cost_per_unit_gbp;
+        return $landedCostData->landed_cost_per_unit_gbp;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function landed_costs()
+    {
+        return $this->hasMany(ProductLandedCost::class);
     }
 
 }

@@ -21,6 +21,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('products.comments', 'Api\Products\CommentsController')->only(['store']);
         Route::resource('products', 'Api\Products\ProductsController')->only(['index', 'show', 'store', 'update', 'delete']);
         Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
+        Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['index']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index']);
         Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
         Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);

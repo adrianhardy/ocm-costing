@@ -7,6 +7,7 @@
 namespace App\Models\Base;
 
 use App\Models\Country;
+use App\Models\ProductLandedCost;
 use App\Models\SalesOrder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $default_fx_to_gbp
  * 
  * @property Collection|Country[] $countries_currency
+ * @property Collection|ProductLandedCost[] $product_landed_costs_currency
  * @property Collection|SalesOrder[] $sales_orders_currency
  *
  * @package App\Models\Base
@@ -38,6 +40,11 @@ class Currency extends Model
 	public function countries_currency()
 	{
 		return $this->hasMany(Country::class);
+	}
+
+	public function product_landed_costs_currency()
+	{
+		return $this->hasMany(ProductLandedCost::class);
 	}
 
 	public function sales_orders_currency()
