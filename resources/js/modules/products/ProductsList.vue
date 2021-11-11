@@ -5,7 +5,7 @@
                 <table-header v-model="pagination">
                     <slot>
                         <search-input v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button href="/admin/imports/create">Import</b-button>
+                        <b-button @click="location.href='/admin/imports/create'">Import</b-button>
                         <b-button variant="primary" @click="createProduct()">Create</b-button>
                     </slot>
                 </table-header>

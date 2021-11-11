@@ -8,6 +8,7 @@ namespace App\Models\Base;
 
 use App\Models\Consignment;
 use App\Models\InspectionReport;
+use App\Models\Medium;
 use App\Models\Product;
 use App\Models\ProductPricing;
 use App\Models\SalesOrder;
@@ -47,7 +48,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_height_m
  * @property float|null $unit_weight_kg
  * @property string|null $barcode
+ * @property int|null $media_id
  * 
+ * @property Medium|null $media
  * @property Product|null $product
  * @property SalesOrder|null $sales_order
  * @property Collection|InspectionReport[] $inspection_reports_sales_order_line
@@ -79,8 +82,14 @@ class SalesOrderLine extends Model
 		'unit_width_m' => 'float',
 		'unit_length_m' => 'float',
 		'unit_height_m' => 'float',
-		'unit_weight_kg' => 'float'
+		'unit_weight_kg' => 'float',
+		'media_id' => 'int'
 	];
+
+	public function media()
+	{
+		return $this->belongsTo(Medium::class, 'media_id');
+	}
 
 	public function product()
 	{

@@ -44,6 +44,13 @@
                     </div>
                     <div class="row">
                         <div class="col-4">
+                            <b-form-group label="Unit Price">
+                                <b-input-group prepend="$">
+                                    <b-form-input v-model="product.unit_price"/>
+                                </b-input-group>
+                            </b-form-group>
+                        </div>
+                        <div class="col-4">
                             <b-form-group label="Est. Land' Cost">
                                 <b-input-group prepend="£">
                                     <b-form-input readonly v-model="product.est_landed_cost_gbp"/>
@@ -54,13 +61,6 @@
                             <b-form-group label="Current Land' Cost" v-if="product.current_landed_cost_per_unit_gbp">
                                 <b-input-group prepend="£">
                                     <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
-                                </b-input-group>
-                            </b-form-group>
-                        </div>
-                        <div class="col-4">
-                            <b-form-group label="Unit Price">
-                                <b-input-group prepend="$">
-                                    <b-form-input v-model="product.unit_price"/>
                                 </b-input-group>
                             </b-form-group>
                         </div>
@@ -239,28 +239,7 @@
                                 </template>
                             </b-table>
                         </b-tab>
-                        <b-tab title="Landed Costs" v-if="product.id">
-                            <b-table ref="landed-cost-history" small :items="landedCostsLog" :fields="landedCostsFields" sticky-header="600px">
-                                <template #cell(date)="data">
-                                    {{ new Date(data.value) | date('dd/MM/yy') }}
-                                </template>
-                                <template #cell(length_cm)="data">
-                                    {{ data.item.length_cm }}x{{ data.item.width_cm }}x{{ data.item.height_cm }}
-                                </template>
-                                <template #cell(landed_cost_per_unit_gbp)="data">
-                                    {{ data.value | cash_value }}
-                                </template>
-                                <template #cell(fx_rate)="data">
-                                    {{ data.value | cash_value }}
-                                </template>
-                                <template #cell(fx_rate)="data">
-                                    {{ data.value | cash_value }}
-                                </template>
-                                <template #cell(import_duty_pc)="data">
-                                    {{ data.value | 2dp_value }}%
-                                </template>
-                            </b-table>
-                        </b-tab>
+                        <landed-cost-history-tab v-if="product.id" :product="product" />
                     </b-tabs>
                 </div>
             </div>
@@ -273,10 +252,11 @@ import {dateFilter} from "vue-date-fns";
 import SupplierSelect from "../../components/SupplierSelect";
 import EditProductMedia from "./EditProductMedia";
 import FactorySelect from "../../components/FactorySelect";
+import LandedCostHistoryTab from "./LandedCostHistoryTab";
 
 export default {
     name: "EditProduct",
-    components: {FactorySelect, EditProductMedia, SupplierSelect},
+    components: {LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
     props: {productId: Number},
     filters: {
         date: dateFilter
@@ -322,39 +302,9 @@ export default {
                 key: 'extra',
                 label: 'Desc'
             }]
-        },
-        landedCostsFields() {
-            return [{
-                key: 'date',
-                label: 'When',
-            }, {
-                key: 'fx_rate',
-                label: 'FX'
-            }, {
-                key: 'shipping_cost_per_cuft_usd',
-                label: 'USD/cuft'
-            }, {
-                key: 'case_cubic_ft',
-                label: 'Case cuft'
-            }, {
-                key: 'units_per_case',
-                label: 'Qty/Ctn'
-            }, {
-                key: 'unit_price',
-                label: 'U/Price'
-            }, {
-                key: 'landed_cost_per_unit_gbp',
-                label: '£LC/Unit'
-            }]
         }
     },
     methods: {
-        landedCostsLog() {
-            const url = `/api/products/${this.productId}/landed-costs`;
-            return this.$http.get(url).then(response => {
-                return response.data.items;
-            });
-        },
         productLog() {
             const url = `/api/products/${this.productId}/history`;
             return this.$http.get(url).then(response => {

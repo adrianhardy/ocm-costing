@@ -60,6 +60,14 @@
                 <template #cell(id)="data">
                     <b-icon-x v-if="!isSupplier" class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
                 </template>
+                <template #cell(product_photo)="data">
+                    <sales-order-line-photo-chooser
+                        :media="data.item.product.media"
+                        :order="salesOrder"
+                        :line="data.item"
+                        @updated="refresh()"
+                    />
+                </template>
                 <template #cell(article_number)="data">
                     <b-form-input
                         :readonly="salesOrder.is_finalised"
@@ -69,13 +77,19 @@
                     />
                 </template>
                 <template #cell(unit_weight_kg)="data">
-                    <b-form-group>
+                    <b-form-group label="Unit" label-size="sm">
                         <b-input size="sm" v-model="data.item.unit_weight_kg" @change="updateLine(data.item)" />
+                    </b-form-group>
+                    <b-form-group label="Carton"  label-size="sm">
+                        <b-input
+                            size="sm"
+                            v-model="data.item.case_weight_kg" @change="updateLine(data.item)"
+                        />
                     </b-form-group>
                 </template>
                 <template #cell(total)="data">
 
-                    <b-input-group :prepend="salesOrder.currency.code" size="sm">
+                    <b-input-group size="sm">
                         <b-form-input
                             readonly
                             type="number"
@@ -99,7 +113,7 @@
                 <template #cell(product_description)="data">
                     <b-textarea
                         size="sm"
-                        rows="4"
+                        rows="6"
                         v-model="data.item.product_description" @change="updateLine(data.item)"
                     />
                 </template>
@@ -109,12 +123,10 @@
                         rows="4"
                         v-model="data.item.packing_instructions" @change="updateLine(data.item)"
                     />
-                </template>
-                <template #cell(case_weight_kg)="data">
-                    <b-form-group>
+                    <b-form-group label="Barcode" label-size="sm">
                         <b-input
                             size="sm"
-                            v-model="data.item.case_weight_kg" @change="updateLine(data.item)"
+                            v-model="data.item.barcode" @change="updateLine(data.item)"
                         />
                     </b-form-group>
                 </template>
@@ -128,6 +140,9 @@
                             v-model.number="data.item.units_requested" @change="updateLine(data.item)"
                         />
                     </b-form-group>
+                    <div :class="['text-left', 'small', 'ml-1', (data.item.units_requested % data.item.units_per_case) > 0?'text-danger':'']">
+                        {{ Math.round(data.item.units_requested / data.item.units_per_case) }} Ctn
+                    </div>
                 </template>
                 <template #cell(unit_price)="data">
                     <b-form-group>
@@ -141,10 +156,16 @@
                             />
                         </b-input-group>
                     </b-form-group>
-                    <b-badge v-b-tooltip.hover.right title="Estimated Landed Cost" variant="primary"
-                             v-if="data.item.landed_cost && data.item.landed_cost.consignment_id">
-                        {{ data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value }}
-                    </b-badge>
+                    <b-form-group>
+                        <b-input-group prepend="£ELC" size="sm" class="no-input" v-b-tooltip.hover title="Est. Landed Cost">
+                            <b-input class="w-50" readonly :value="data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value"></b-input>
+                        </b-input-group>
+                    </b-form-group>
+                    <b-form-group>
+                        <b-input-group prepend="£CLC" size="sm" class="no-input" v-b-tooltip.hover title="Current Landed Cost"  >
+                            <b-input class="w-50" readonly :value="data.item.product.current_landed_cost_per_unit_gbp | cash_value"></b-input>
+                        </b-input-group>
+                    </b-form-group>
                 </template>
                 <template #cell(units_per_case)="data">
                     <b-form-group>
@@ -160,7 +181,7 @@
                         </div>
                     </b-form-group>
                 </template>
-                <template #cell(cubic_feet_per_unit)="data">
+                <template #cell(total_cubic_feet)="data">
                     <b-form-input
                         size="sm"
                         type="number"
@@ -174,11 +195,14 @@
                 <template #custom-foot>
                     <b-tr>
                         <b-th colspan="10"></b-th>
-                        <b-th class="text-right">Total</b-th>
+                        <b-th class="text-right"></b-th>
                         <b-th></b-th>
-                        <b-td></b-td>
                         <b-td>
-                            <strong>Goods</strong> <br/>
+                            <div><strong>Total ft <sup>3</sup></strong></div>
+                            {{ totalCubicFeet }}
+                        </b-td>
+                        <b-td>
+                            <strong>Total</strong> <br/>
                             {{ salesOrder.currency.code }}
                             {{ salesOrder.goods_cost | 2dp_value }} <br/>
                             GBP {{ salesOrder.goods_cost_gbp | 2dp_value }}
@@ -249,11 +273,13 @@ import UpdateInboundShipmentsModal from "./UpdateInboundShipmentsModal";
 import SalesOrderHistoryModal from "./SalesOrderHistoryModal";
 import SupplierAccessModal from "./SupplierAccessModal";
 import ProductDimensionsInput from "../../components/ProductDimensionsInput";
+import SalesOrderLinePhotoChooser from "./SalesOrderLinePhotoChooser";
 
 
 export default {
     name: "EditSalesOrder",
     components: {
+        SalesOrderLinePhotoChooser,
         ProductDimensionsInput,
         SupplierAccessModal,
         SalesOrderHistoryModal,
@@ -274,6 +300,14 @@ export default {
         this.refresh();
     },
     computed: {
+        totalCubicFeet() {
+            const cases = _.map(this.salesOrder.lines, line => {
+                const cases = Math.round(line.units_requested / line.units_per_case);
+                return line.case_cubic_ft * cases;
+            });
+
+            return _.sum(cases).toFixed(2);
+        },
         urlPrefix() {
             return `/api/${this.isSupplier ? 'supplier/' : ''}sales-orders`
         },
@@ -311,11 +345,15 @@ export default {
                 thClass: 'w-5 text-nowrap'
             }, {
                 key: 'product.name',
-                label: 'Product',
+                label: 'Product Desc.',
                 thClass: 'w-12',
             }, {
                 key: 'product_description',
-                label: 'product desc',
+                label: 'Product Details',
+                thClass: 'w-10'
+            }, {
+                key: 'packing_instructions',
+                label: 'Packing Inst.',
                 thClass: 'w-10'
             }, {
                 key: 'product_size_cm',
@@ -323,9 +361,9 @@ export default {
                 thClass: 'w-12',
                 tdClass: 'align-middle'
             }, {
-                key: 'packing_instructions',
-                label: 'Packing',
-                thClass: 'w-10'
+                key: 'unit_weight_kg',
+                label: 'Weight (kg)',
+                thClass: 'w-5 text-nowrap'
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
@@ -335,16 +373,11 @@ export default {
                 label: 'units/case',
                 thClass: 'w-5'
             }, {
-
-                key: 'unit_weight_kg',
-                label: 'unit kg',
-                thClass: 'w-5 text-nowrap'
-            }, {
                 key: 'units_requested',
                 label: 'Units',
                 thClass: 'w-5'
             }, {
-                key: 'Cubic_feet_per_unit',
+                key: 'total_cubic_feet',
                 label: 'Cu.ft',
                 thClass: 'w-5'
             }, {
@@ -352,11 +385,6 @@ export default {
                 label: 'Sub-Total',
                 thClass: 'w-7 text-nowrap',
                 tdClass: 'text-nowrap'
-            }, {
-                key: 'case_weight_kg',
-                label: 'Cart.KG',
-                thclass: 'w-5'
-            }, {
             }];
             if (this.salesOrder.is_finalised) {
                 return _.filter(fields, o => o.key !== 'id')
@@ -365,7 +393,7 @@ export default {
             }
         },
         include() {
-            return 'supplier,currency,lines,lines.product,lines.product.supplier,lines.landed_cost';
+            return 'supplier,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost';
         }
     },
     methods: {

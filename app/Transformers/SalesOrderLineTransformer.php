@@ -6,6 +6,7 @@ use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
 use Illuminate\Support\Facades\DB;
 use League\Fractal\TransformerAbstract;
+use Spatie\MediaLibrary\Models\Media;
 
 class SalesOrderLineTransformer extends TransformerAbstract
 {
@@ -24,8 +25,21 @@ class SalesOrderLineTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'product', 'landed_cost', 'consignments'
+        'product', 'landed_cost', 'consignments', 'selected_media'
     ];
+
+    public function includeSelectedMedia(SalesOrderLine $line)
+    {
+        if (!$line->selected_media) {
+            return $this->null();
+        }
+        return $this->item($line->selected_media, function(Media $media) {
+            return [
+                'id' => $media->id,
+                'url' => $media->getFullUrl()
+            ];
+        });
+    }
 
     public function includeLandedCost(SalesOrderLine $line)
     {
@@ -82,6 +96,8 @@ class SalesOrderLineTransformer extends TransformerAbstract
             'units_per_case',
             'inner_qty',
             'case_weight_kg',
+            'case_cubic_m',
+            'case_cubic_ft',
             'height_m',
             'length_m',
             'width_m',

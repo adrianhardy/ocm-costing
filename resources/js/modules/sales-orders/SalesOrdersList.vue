@@ -11,7 +11,7 @@
                           <b-select-option value="sent">Sent</b-select-option>
                         </b-select>
                         <search-input v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button @click="$refs['create'].open()">Create New Sales Order</b-button>
+                        <b-button @click="$refs['create'].open()" variant="primary">Create</b-button>
                     </slot>
                 </table-header>
             </template>

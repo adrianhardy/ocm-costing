@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Base\SalesOrderLine as BaseSalesOrderLine;
+use Spatie\MediaLibrary\Models\Media;
 
 /**
  * Class SalesOrderLine
@@ -59,6 +60,10 @@ class SalesOrderLine extends BaseSalesOrderLine
             * setting('exchange_rate_usd');
     }
 
+    public function selected_media()
+    {
+        return $this->belongsTo(Media::class, 'media_id');
+    }
 
     public function getTotalCubicFtAttribute()
     {
