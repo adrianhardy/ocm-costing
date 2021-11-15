@@ -108,7 +108,11 @@ class ProductTransformer extends TransformerAbstract
             'unit_cubic_m',
             'unit_cubic_ft',
             'est_landed_cost_gbp',
-            'is_excluded_from_commission'
+            'is_excluded_from_commission',
+            'primary_asin',
+            'primary_sku',
+            'additional_asins',
+            'additional_skus'
         ]);
     }
 }

@@ -26,6 +26,7 @@ Route::group(['middleware' => ['auth', 'sales_order_token', 'role:supplier']], f
 });
 
 Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
+    Route::resource('/global-notes', 'Admin\NotesController')->only(['store']);
     Route::resource('/admin/media', 'Admin\MediaController')->only(['show', 'destroy']);
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('/admin/imports/preview', 'Admin\Imports\PreviewController')->only(['store', 'update']);
@@ -34,6 +35,7 @@ Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
     Route::resource('sales-orders', 'SalesOrders\SalesOrdersController')->only(['index', 'edit']);
     Route::resource('sales-orders.export', 'SalesOrders\ExportController')->only(['index']);
     Route::resource('sales-orders.consignments', 'SalesOrders\ConsignmentsController')->only(['index']);
+    Route::resource('/admin/currencies', 'Admin\Currencies\CurrencyController')->only(['index']);
 });
 
 Route::group(['middleware' => ['auth', 'role:admin|super']], function() {

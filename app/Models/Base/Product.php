@@ -45,6 +45,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  * @property int|null $factory_id
  * @property bool|null $is_excluded_from_commission
+ * @property string|null $primary_sku
+ * @property string|null $primary_asin
+ * @property string|null $additional_skus
+ * @property string|null $additional_asins
  * 
  * @property Factory|null $factory
  * @property Supplier $supplier

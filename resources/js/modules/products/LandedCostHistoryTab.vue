@@ -1,5 +1,5 @@
 <template>
-    <b-tab title="Landed Costs">
+    <b-tab title="Landed Costs" :disabled="disabled">
         <div class="mb-2 d-flex justify-content-end" v-if="mode !== 'add'">
             <b-button size="sm" @click="mode = 'add'">Add Manual Landed Cost</b-button>
         </div>
@@ -94,6 +94,7 @@ export default {
     name: "LandedCostHistoryTab",
     components: {CurrencySelect},
     props: {
+        disabled: Boolean,
         product: Object
     },
     data() {

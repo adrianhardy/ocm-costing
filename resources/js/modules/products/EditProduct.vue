@@ -19,11 +19,10 @@
                         </div>
                     </div>
 
-                    <b-form-group description="When estimating landed costs, no commission will be added">
+                    <b-form-group description="When estimating landed costs, no commission will be added" v-if="showCosting">
                         <b-form-checkbox v-model="product.is_excluded_from_commission">Exclude from commission
                         </b-form-checkbox>
                     </b-form-group>
-
 
                     <div class="row">
                         <div class="col-4">
@@ -42,7 +41,7 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" v-if="showCosting">
                         <div class="col-4">
                             <b-form-group label="Unit Price">
                                 <b-input-group prepend="$">
@@ -171,6 +170,7 @@
                                 {{ this.productId ? 'Update' : 'Create' }} Product
                             </b-button>
                         </b-tab>
+                        <product-sku-tab v-if="product.id" :product="product" />
                         <b-tab v-if="product.id">
                             <template #title>
                                 <div>
@@ -209,7 +209,7 @@
                             </b-form-group>
                             <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
                         </b-tab>
-                        <b-tab title="History" v-if="product.id">
+                        <b-tab title="History" v-if="product.id" :disabled="!showCosting">
                             <b-table ref="product-history" small :items="productLog" :fields="productLogFields"
                                      sticky-header="600px">
                                 <template #cell(updated_at)="data">
@@ -239,7 +239,7 @@
                                 </template>
                             </b-table>
                         </b-tab>
-                        <landed-cost-history-tab v-if="product.id" :product="product" />
+                        <landed-cost-history-tab v-if="product.id" :product="product" :disabled="!showCosting" />
                     </b-tabs>
                 </div>
             </div>
@@ -253,11 +253,15 @@ import SupplierSelect from "../../components/SupplierSelect";
 import EditProductMedia from "./EditProductMedia";
 import FactorySelect from "../../components/FactorySelect";
 import LandedCostHistoryTab from "./LandedCostHistoryTab";
+import ProductSkuTab from "./ProductSkuTab";
 
 export default {
     name: "EditProduct",
-    components: {LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
-    props: {productId: Number},
+    components: {ProductSkuTab, LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
+    props: {
+        showCosting: Boolean,
+        productId: Number
+    },
     filters: {
         date: dateFilter
     },

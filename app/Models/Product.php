@@ -59,10 +59,14 @@ class Product extends BaseProduct implements HasMedia
         'case_weight_kg',
         'unit_weight_kg',
         'est_landed_cost_gbp',
-        'is_excluded_from_commission'
+        'is_excluded_from_commission',
+        'primary_sku',
+        'primary_asin'
     ];
 
 	protected $fillable = [
+        'primary_sku',
+        'primary_asin',
 		'item_number',
 		'article_number',
 		'name',
@@ -89,6 +93,11 @@ class Product extends BaseProduct implements HasMedia
         'unit_weight_kg',
         'est_landed_cost_gbp',
         'is_excluded_from_commission'
+    ];
+
+	protected $casts = [
+	    'additional_skus' => 'array',
+        'additional_asins' => 'array',
     ];
 
     public function registerMediaCollections()

@@ -8,10 +8,18 @@
                 <b-form-input v-model="value[vatField]" size="sm" />
             </b-input-group>
         </b-form-group>
+        <b-form-group v-if="country === 'UK'" class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-50">
+                    <b-input-group-text class="w-100">SF Price</b-input-group-text>
+                </b-input-group-prepend>
+                <b-form-input v-model="value.sf_price" size="sm" />
+            </b-input-group>
+        </b-form-group>
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">Price</b-input-group-text>
+                    <b-input-group-text class="w-100">FBA Price</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model="value[priceField]" size="sm" />
             </b-input-group>
@@ -27,7 +35,7 @@
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">M'gn</b-input-group-text>
+                    <b-input-group-text class="w-100">Profit</b-input-group-text>
                 </b-input-group-prepend>
                 <div class="form-control">
                     {{ calculatedMargin | cash_value }}

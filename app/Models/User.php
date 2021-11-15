@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Base\User as BaseUser;
+use BeyondCode\Comments\Traits\HasComments;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -29,6 +29,9 @@ class User extends Authenticatable
 {
     use HasRoles;
 
+    // We attach comments to user 1 for "global notes"
+    use HasComments;
+    
     const USER_LOCKED = 'LOCKED';
 
 	protected $hidden = [
