@@ -259,8 +259,9 @@ export default {
     components: {ProductSkuTab, LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
     props: {
         showCosting: Boolean,
-        productId: Number
-    , isSupplier: Boolean},
+        productId: Number,
+        isSupplier: Boolean
+    },
     filters: {
         date: dateFilter
     },
