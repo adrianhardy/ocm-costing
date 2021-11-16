@@ -3,8 +3,12 @@
     <div class="container-fluid">
         <edit-sales-order
                 :sales-order-id="{{ $so->id }}"
-                :is-super="{!! json_encode(\Auth::user()->hasRole('super')) !!}"
-
+                @role('supplier')
+                is-supplier
+                @endrole
+                @role('super')
+                is-super
+                @endrole
         >
 
         </edit-sales-order>

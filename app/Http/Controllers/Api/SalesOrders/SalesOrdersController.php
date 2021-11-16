@@ -52,6 +52,9 @@ class SalesOrdersController extends Controller
                 break;
         }
 
+        if (\Auth::user()->hasAnyRole(['supplier'])) {
+            $paginator->where('supplier_id', \Auth::user()->supplier_id);
+        }
 
         $paginator = $salesOrderRepository->paginate(
             $request->input('per_page', 100)
@@ -69,15 +72,23 @@ class SalesOrdersController extends Controller
      */
     public function store(Request $request)
     {
+        $isSupplier = \Auth::user()->hasAnyRole(['supplier']);
         $this->validate($request, [
             'reference' => 'required|min:1|max:200',
-            'currency.id' => 'required|exists:currencies,id'
+            'currency.id' => 'required|exists:currencies,id',
+            'supplier.id' => ($isSupplier?'nullable':'required') . '|exists:suppliers,id'
         ]);
         $so = new SalesOrder(
             $request->only('reference')
         );
         $so->currency()->associate(Currency::find($request->input('currency.id')));
-        $so->supplier()->associate(Supplier::find($request->input('supplier.id')));
+
+        if ($isSupplier) {
+            $so->supplier()->associate(\Auth::user()->supplier);
+        } else {
+            $so->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        }
+
         $so->fx_rate = $so->currency->default_fx_to_gbp;
         $so->save();
         return response()->json(fractal(

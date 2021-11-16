@@ -1,14 +1,14 @@
 <ul class="nav navbar-nav mr-auto">
     @auth
-        @role('super|admin|pricing')
-        <li class="nav-item active">
+        @auth
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('home') }}">
                 <b-icon-house scale="0.8"></b-icon-house>
                 Home
             </a>
         </li>
-        @endrole
-        @role('super|admin')
+        @endauth
+        @role('super|admin|supplier')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('products.index') }}">
                 <b-icon-box-seam scale="0.8"></b-icon-box-seam>
@@ -16,7 +16,7 @@
             </a>
         </li>
         @endrole
-        @role('super|admin')
+        @role('super|admin|supplier')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('sales-orders.index') }}">
                 <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>

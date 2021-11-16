@@ -58,7 +58,7 @@
                 :fields="fields"
             >
                 <template #cell(id)="data">
-                    <b-icon-x v-if="!isSupplier" class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
+                    <b-icon-x class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
                 </template>
                 <template #cell(product_photo)="data">
                     <sales-order-line-photo-chooser
@@ -100,7 +100,7 @@
                 </template>
                 <template #cell(product.name)="data">
                         <product-select
-                            v-if="!isSupplier && !salesOrder.finalised_at"
+                            v-if="!salesOrder.finalised_at"
                             size="sm"
                             :readonly="salesOrder.is_finalised"
                             v-model="data.item.product"
@@ -210,8 +210,8 @@
                     </b-tr>
                 </template>
             </b-table>
-            <div class="d-flex justify-content-between w-100" v-if="!isSupplier">
-                <div>
+            <div class="d-flex justify-content-between w-100">
+                <div v-if="!isSupplier">
                     <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg"
                               @click="finalise">
                         Finalise
@@ -221,8 +221,7 @@
                     </b-button>
                 </div>
                 <div>
-                    <b-button class="mr-1" size="lg" variant="success" @click="add"
-                              v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
+                    <b-button class="mr-1" size="lg" variant="success" @click="add" v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
                         Add Line
                     </b-button>
 
@@ -230,7 +229,7 @@
                         class="mr-1"
                         size="lg"
                         variant="primary"
-                        v-if="salesOrder.is_finalised && hasSelectedRows"
+                        v-if="!isSupplier && salesOrder.is_finalised && hasSelectedRows"
                         @click="confirmSendToPricing()"
                     >
                         Send To Pricing
@@ -239,7 +238,7 @@
                         class="mr-1"
                         size="lg"
                         variant="success"
-                        v-if="salesOrder.is_finalised && hasSelectedRows"
+                        v-if="!isSupplier && salesOrder.is_finalised && hasSelectedRows"
                         @click="$refs['update-inbound-shipments-modal'].open()"
                     >
                         Update Inbound Shipments
@@ -499,7 +498,7 @@ export default {
                 }
                 const loader = this.$loading.show();
                 this.$http.delete(
-                    `/api/sales-orders/${this.salesOrder.id}/lines/${line.id}`, {
+                    `${this.urlPrefix}/${this.salesOrder.id}/lines/${line.id}`, {
                         params: {include: this.include}
                     }
                 ).then(response => {
@@ -513,7 +512,7 @@ export default {
         },
         add() {
             const loader = this.$loading.show();
-            const url = `/api/sales-orders/${this.salesOrder.id}/lines`;
+            const url = `${this.urlPrefix}/${this.salesOrder.id}/lines`;
             this.$http.post(url, {}, {params: {include: this.include}}).then(response => {
                 this.salesOrder = response.data;
                 loader.hide();

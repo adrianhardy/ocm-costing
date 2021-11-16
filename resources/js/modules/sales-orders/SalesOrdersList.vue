@@ -4,14 +4,17 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
-                        <b-select v-model="stage" style="width:100px !important" @change="$refs['table'].refresh()">
+                        <b-select v-model="stage" style="width:20% !important" @change="$refs['table'].refresh()">
                           <b-select-option value="">All</b-select-option>
                           <b-select-option value="quote">Quotes</b-select-option>
                           <b-select-option value="finalised">Finalised</b-select-option>
                           <b-select-option value="sent">Sent</b-select-option>
                         </b-select>
-                        <search-input v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button @click="$refs['create'].open()" variant="primary">Create</b-button>
+                        <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
+                        <b-button class="w-30" @click="$refs['create'].open()">
+                            Create New
+                            {{ isSupplier?'Quote':'Sales Order'}}
+                        </b-button>
                     </slot>
                 </table-header>
             </template>
@@ -41,7 +44,10 @@
                 </template>
             </b-table>
         </b-card>
-        <create-sales-order-modal ref="create"/>
+        <create-sales-order-modal
+            ref="create"
+            :is-supplier="isSupplier"
+        />
     </div>
 </template>
 
@@ -54,6 +60,9 @@ import SearchInput from "../../components/SearchInput";
 export default {
     name: "SalesOrdersList",
     components: {SearchInput, CreateSalesOrderModal, TableHeader},
+    props: {
+        isSupplier: Boolean
+    },
     filters: {
         date: dateFilter
     },
@@ -61,7 +70,7 @@ export default {
         items(ctx) {
 
             return this.$paginatedFetch(
-                '/api/sales-orders',
+                `/api/${this.isSupplier?'supplier/':''}sales-orders`,
                 this.pagination,
                 ctx, {
                     search: this.search,

@@ -8,17 +8,16 @@
                     </b-form-group>
                     <div class="row">
                         <div class="col-6">
-                            <b-form-group label="Supplier">
+                            <b-form-group label="Supplier" v-if="!isSupplier">
                                 <supplier-select all v-model="product.supplier"/>
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Factory">
+                            <b-form-group label="Factory" v-if="!isSupplier">
                                 <factory-select all v-model="product.factory"/>
                             </b-form-group>
                         </div>
                     </div>
-
                     <b-form-group description="When estimating landed costs, no commission will be added" v-if="showCosting">
                         <b-form-checkbox v-model="product.is_excluded_from_commission">Exclude from commission
                         </b-form-checkbox>
@@ -41,7 +40,7 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <div class="row" v-if="showCosting">
+                    <div class="row" v-if="!isSupplier && showCosting">
                         <div class="col-4">
                             <b-form-group label="Unit Price">
                                 <b-input-group prepend="$">
@@ -209,7 +208,7 @@
                             </b-form-group>
                             <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
                         </b-tab>
-                        <b-tab title="History" v-if="product.id" :disabled="!showCosting">
+                        <b-tab title="History" v-if="!isSupplier && product.id" :disabled="!showCosting">
                             <b-table ref="product-history" small :items="productLog" :fields="productLogFields"
                                      sticky-header="600px">
                                 <template #cell(updated_at)="data">
@@ -239,7 +238,7 @@
                                 </template>
                             </b-table>
                         </b-tab>
-                        <landed-cost-history-tab v-if="product.id" :product="product" :disabled="!showCosting" />
+                        <landed-cost-history-tab v-if="!isSupplier && product.id" :product="product" :disabled="!showCosting" />
                     </b-tabs>
                 </div>
             </div>
@@ -261,7 +260,7 @@ export default {
     props: {
         showCosting: Boolean,
         productId: Number
-    },
+    , isSupplier: Boolean},
     filters: {
         date: dateFilter
     },

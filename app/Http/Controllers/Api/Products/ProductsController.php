@@ -40,7 +40,7 @@ class ProductsController extends Controller
 
         $this->validate($request, [
             'supplier.id'           => 'required|exists:suppliers,id',
-            'factory.id'            => 'sometimes|exists:factories,id',
+            'factory.id'            => 'nullable|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => ['required', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
@@ -103,7 +103,7 @@ class ProductsController extends Controller
 
         $this->validate($request, [
             'supplier.id'           => 'required|exists:suppliers,id',
-            'factory.id'            => 'sometimes|exists:factories,id',
+            'factory.id'            => 'nullable|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => 'required|min:1|max:64',
             'name'                  => 'required|min:1|max:200',
@@ -155,6 +155,11 @@ class ProductsController extends Controller
         $paginator = $productRepository->paginate(
             $request->input('per_page', 100)
         );
+
+        if (\Auth::user()->hasAnyRole(['supplier'])) {
+            $paginator->where('supplier_id', \Auth::user()->supplier_id);
+        }
+
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductTransformer
         ));

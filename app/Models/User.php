@@ -23,6 +23,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Supplier $supplier
  *
  */
 class User extends Authenticatable
@@ -31,7 +32,7 @@ class User extends Authenticatable
 
     // We attach comments to user 1 for "global notes"
     use HasComments;
-    
+
     const USER_LOCKED = 'LOCKED';
 
 	protected $hidden = [
@@ -87,6 +88,11 @@ class User extends Authenticatable
     public function getRoleAttribute()
     {
         return $this->roles->first();
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
 }
