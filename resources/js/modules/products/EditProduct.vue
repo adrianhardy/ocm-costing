@@ -64,8 +64,39 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <h5>Images</h5>
-                    <edit-product-media :disabled="disabled" :product="product" @updated="refresh()"/>
+                    <div class="row">
+                        <div class="col-4">
+                            <div>UK postage</div>
+                            <b-form-select class="md 1" v-model="product.uk_postage_method">
+                                <b-form-select-option value="small_letter">Small letter</b-form-select-option>
+                                <b-form-select-option value="large_letter_package">Large letter package</b-form-select-option>
+                                <b-form-select-option value="package">Package</b-form-select-option>
+                                <b-form-select-option value="dpd_small">DPD small</b-form-select-option>
+                                <b-form-select-option value="dpd_large">DPD large</b-form-select-option>
+                                <b-form-select-option value="parcel_force">Parcel force</b-form-select-option>
+                            </b-form-select>
+                        </div>
+                        <div class="col-4">
+                            <div>EU postage</div>
+                            <b-form-select class="md 1" v-model="product.eu_postage_method">
+                                <b-form-select-option value="lightweight_airmail">Lightweight airmail</b-form-select-option>
+                                <b-form-select-option value="standard_airmail">Standard airmail</b-form-select-option>
+                                <b-form-select-option value="signed_for">Signed for</b-form-select-option>
+                                <b-form-select-option value="parcel_force">Parcel force</b-form-select-option>
+                            </b-form-select>
+                        </div>
+                        <div class="col-4">
+                            <div>Worldwide postage</div>
+                            <b-form-select class="md 1" v-model="product.row_postage_method">
+                                <b-form-select-option value="lightweight_airmail">Lightweight airmail</b-form-select-option>
+                                <b-form-select-option value="standard_airmail">Standard airmail</b-form-select-option>
+                                <b-form-select-option value="signed_for">Signed for</b-form-select-option>
+                                <b-form-select-option value="parcel_force">Parcel force (check amount)</b-form-select-option>
+                            </b-form-select>
+                        </div>
+                    </div>
+                    <h5>Images </h5>
+                        <edit-product-media :disabled="disabled" :product="product" @updated="refresh()"/>
                     <div class="text-muted" v-if="!product.id">Image upload available once product has been created
                     </div>
                 </div>

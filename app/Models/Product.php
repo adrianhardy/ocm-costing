@@ -92,7 +92,10 @@ class Product extends BaseProduct implements HasMedia
         'case_weight_kg',
         'unit_weight_kg',
         'est_landed_cost_gbp',
-        'is_excluded_from_commission'
+        'is_excluded_from_commission',
+        'uk_postage_method',
+        'eu_postage_method',
+        'row_postage_method'
     ];
 
 	protected $casts = [

@@ -25,10 +25,12 @@ class ProductsController extends Controller
         return fractal($product, new ProductTransformer());
     }
 
+
     /**
      * @param Request $request
      * @param Product $product
-     * @return \Spatie\Fractal\Fractal
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, Product $product)
     {
@@ -58,6 +60,9 @@ class ProductsController extends Controller
             'inner_qty'             => 'nullable|sometimes|min:0|numeric',
             'packing_instructions'  => 'nullable|sometimes|max:500',
             'product_description'   => 'nullable|sometimes|max:500',
+            'uk_postage_method'     => 'nullable|sometimes',
+            'eu_postage_method'     => 'nullable|sometimes',
+            'row_postage_method'    => 'nullable|sometimes'
         ]);
 
         $product->fill($request->only([
@@ -79,15 +84,18 @@ class ProductsController extends Controller
             'unit_price',
             'case_weight_kg',
             'unit_weight_kg',
-            'is_excluded_from_commission'
-        ], [], [
+            'is_excluded_from_commission',
+            'uk_postage_method',
+            'eu_postage_method',
+            'row_postage_method'
+        ]), [], [
             'supplier.id' => 'Supplier',
             'factory.id' => 'Factory'
-        ]));
+        ]);
         $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
         $product->factory()->associate((Factory::find($request->input('factory.id'))));
         $product->save();
-        return fractal($product->fresh(), new ProductTransformer());
+        return response()->json(fractal($product->fresh(), new ProductTransformer()));
     }
 
     /**
