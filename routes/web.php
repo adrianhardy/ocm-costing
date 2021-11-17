@@ -34,17 +34,17 @@ Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
     Route::resource('sales-orders', 'SalesOrders\SalesOrdersController')->only(['index', 'edit']);
     Route::resource('sales-orders.export', 'SalesOrders\ExportController')->only(['index']);
     Route::resource('sales-orders.consignments', 'SalesOrders\ConsignmentsController')->only(['index']);
+    Route::resource('/inspections', 'InspectionReports\InspectionReportsController')->only(['edit', 'index']);
 });
 
-Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
+Route::group(['middleware' => ['auth', 'role:super']], function() {
     Route::resource('/admin/users', 'Admin\UsersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/suppliers', 'Admin\SuppliersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/factories', 'Admin\FactoriesController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/settings', 'Admin\SettingsController')->only(['index']);
-    Route::resource('/inspections', 'InspectionReports\InspectionReportsController')->only(['edit', 'index']);
+    Route::resource('/admin/export-templates', 'Admin\ExportTemplatesController', ['as' => 'admin'])->only(['index', 'store']);
 });
 
 Route::group(['middleware' => ['auth', 'role:super|pricing']], function() {
     Route::resource('price-list', 'Products\ProductPricingController')->only(['index']);
-
 });

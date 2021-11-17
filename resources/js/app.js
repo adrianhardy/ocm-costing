@@ -67,7 +67,7 @@ window.Vue = Vue;
 new Vue().$mount('#app');
 
 document.querySelectorAll('.custom-file-input').forEach(element => {
-    element.addEventListener('change',function(e){
+    element.addEventListener('change',function(e) {
         e.target.previousElementSibling.innerText = e.target.files[0].name;
     });
 });

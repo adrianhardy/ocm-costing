@@ -192,9 +192,10 @@
                               @click="finalise">
                         Finalise
                     </b-button>
-                    <b-button v-show="false" v-if="salesOrder.id > 0" variant="secondary" size="lg">
-                        Export for Supplier
-                    </b-button>
+
+                    <b-dropdown v-if="salesOrder.id > 0" text="Export for Supplier" variant="secondary" size="lg">
+                        <b-dropdown-item :key="template" href="#" v-for="template in templates">{{ template }}</b-dropdown-item>
+                    </b-dropdown>
                 </div>
                 <div>
                     <b-button class="mr-1" size="lg" variant="success" @click="add"
@@ -265,7 +266,8 @@ export default {
     props: {
         salesOrderId: Number,
         isSupplier: Boolean,
-        isSuper: Boolean
+        isSuper: Boolean,
+        templates: Array
     },
     filters: {
         date: dateFilter

@@ -53,6 +53,11 @@ return [
             'root' => storage_path('app/private/imports'),
         ],
 
+        'export_templates' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/export_templates')
+        ],
+
         'files' => [
             'driver' => 'local',
             'root' => storage_path('app/private/files')

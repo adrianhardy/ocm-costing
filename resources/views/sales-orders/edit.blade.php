@@ -4,7 +4,7 @@
         <edit-sales-order
                 :sales-order-id="{{ $so->id }}"
                 :is-super="{!! json_encode(\Auth::user()->hasRole('super')) !!}"
-
+                :templates='{!! json_encode($templates) !!}'
         >
 
         </edit-sales-order>
