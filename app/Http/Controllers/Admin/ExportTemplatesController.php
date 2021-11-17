@@ -29,4 +29,14 @@ class ExportTemplatesController extends Controller
             [ 'disk' => 'export_templates']);
         return back()->with('alert-success', 'New export template added');
     }
+
+    /**
+     * This comes in as a get request
+     * @param Request $request
+     */
+    public function destroy(Request $request)
+    {
+        Storage::disk('export_templates')->delete('sales-orders/' . $request->query('template'));
+        return back()->with('alert-success', 'Deleted template');
+    }
 }

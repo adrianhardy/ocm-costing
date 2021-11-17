@@ -17,6 +17,18 @@
                     <tr>
                         <td>{{ $template->getBasename() }}</td>
                         <td>{{ \Carbon\Carbon::parse($template->getCTime())->format('d/m/y H:i') }}</td>
+                        <td>
+                            <confirm-navigation-modal
+                                    delete-url="{{ route('settings.export-templates.destroy', ['template' => $template->getBasename()]) }}"
+                                    confirm-label="Confirm"
+                                    title="Delete Template File"
+                                    message="Please confirm that you want to delete this template file. This cannot be undone"
+                            >
+                                <template slot-scope="{confirm}">
+                                    <b-button size="sm" variant="outline-danger" @click="confirm"><b-icon-x></b-icon-x></b-button>
+                                </template>
+                            </confirm-navigation-modal>
+                        </td>
                     </tr>
                     @endforeach
                 </table>
@@ -26,7 +38,7 @@
                     When you export a sales order, you will be asked to choose a template.
                     You can add to that list of templates here.
                 </div>
-                {!! Form::open(['files' => true, 'url' => route('admin.export-templates.store')]) !!}
+                {!! Form::open(['files' => true, 'url' => route('settings.export-templates.store')]) !!}
                 <div class="form-group">
                 <div class="custom-file">
                     <label class="custom-file-label" for="template">Upload new template</label>

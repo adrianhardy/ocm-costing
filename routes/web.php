@@ -42,7 +42,8 @@ Route::group(['middleware' => ['auth', 'role:super']], function() {
     Route::resource('/admin/suppliers', 'Admin\SuppliersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/factories', 'Admin\FactoriesController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/settings', 'Admin\SettingsController')->only(['index']);
-    Route::resource('/admin/export-templates', 'Admin\ExportTemplatesController', ['as' => 'admin'])->only(['index', 'store']);
+    Route::resource('/admin/export-templates', 'Admin\ExportTemplatesController', ['as' => 'settings'])->only(['index', 'store']);
+    Route::get('/admin/export-templates/delete', 'Admin\ExportTemplatesController@destroy')->name('settings.export-templates.destroy');
 });
 
 Route::group(['middleware' => ['auth', 'role:super|pricing']], function() {
