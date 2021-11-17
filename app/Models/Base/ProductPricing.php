@@ -56,6 +56,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $usd_fx_rate
  * @property float|null $cad_fx_rate
  * @property float|null $mxn_fx_rate
+ * @property float|null $se_vat
+ * @property float|null $au_vat
+ * @property float|null $unit_se_price
+ * @property float|null $unit_au_price
+ * @property float|null $unit_se_shipping
+ * @property float|null $unit_au_shipping
+ * @property float|null $aud_fx_rate
  * 
  * @property User|null $approver
  * @property Product $product
@@ -102,7 +109,14 @@ class ProductPricing extends Model
 		'eur_fx_rate' => 'float',
 		'usd_fx_rate' => 'float',
 		'cad_fx_rate' => 'float',
-		'mxn_fx_rate' => 'float'
+		'mxn_fx_rate' => 'float',
+		'se_vat' => 'float',
+		'au_vat' => 'float',
+		'unit_se_price' => 'float',
+		'unit_au_price' => 'float',
+		'unit_se_shipping' => 'float',
+		'unit_au_shipping' => 'float',
+		'aud_fx_rate' => 'float'
 	];
 
 	protected $dates = [

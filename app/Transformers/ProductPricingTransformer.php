@@ -51,11 +51,14 @@ class ProductPricingTransformer extends TransformerAbstract
             'it_vat',
             'nl_vat',
             'es_vat',
+            'se_vat',
+            'au_vat',
             'unit_fr_price',
             'unit_de_price',
             'unit_it_price',
             'unit_nl_price',
             'unit_es_price',
+            'unit_se_price',
             'unit_fr_shipping',
             'unit_de_shipping',
             'unit_it_shipping',
@@ -64,13 +67,17 @@ class ProductPricingTransformer extends TransformerAbstract
             'unit_usd_shipping',
             'unit_cad_shipping',
             'unit_mxn_shipping',
+            'unit_se_shipping',
+            'unit_aud_shipping',
             'unit_usd_price',
             'unit_cad_price',
             'unit_mxn_price',
+            'unit_aud_price',
             'eur_fx_rate',
             'usd_fx_rate',
             'cad_fx_rate',
-            'mxn_fx_rate'
+            'mxn_fx_rate',
+            'aud_fx_rate'
         ]);
     }
 
