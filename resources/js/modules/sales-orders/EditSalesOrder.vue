@@ -157,7 +157,8 @@
                         </b-input-group>
                     </b-form-group>
                     <b-form-group>
-                        <b-input-group prepend="£ELC" size="sm" class="no-input" v-b-tooltip.hover title="Est. Landed Cost">
+                        <b-input-group
+                            prepend="£ELC" size="sm" class="no-input" v-b-tooltip.hover title="Estimated Landed Cost">
                             <b-input class="w-50" readonly :value="data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>

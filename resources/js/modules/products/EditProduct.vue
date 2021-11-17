@@ -169,7 +169,7 @@
                                 {{ this.productId ? 'Update' : 'Create' }} Product
                             </b-button>
                         </b-tab>
-                        <product-sku-tab v-if="product.id" :product="product" />
+                        <product-sku-tab v-if="!isSupplier && product.id" :product="product" />
                         <b-tab v-if="product.id">
                             <template #title>
                                 <div>
