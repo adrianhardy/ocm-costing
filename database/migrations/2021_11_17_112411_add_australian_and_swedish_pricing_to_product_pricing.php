@@ -27,6 +27,9 @@ class AddAustralianAndSwedishPricingToProductPricing extends Migration
                 'name' => 'Australian Dollar',
                 'default_fx_to_gbp' => 0.54
             ]);
+            /** @var \App\Models\Country $country */
+            $country = \App\Models\Country::query()->where('iso_2_code', 'au')->first();
+            $country->currency()->associate($currency);
             $currency->save();
 
         });

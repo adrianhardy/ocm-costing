@@ -57,7 +57,7 @@ class CreatePricingFromOrderLinesController extends Controller
             $ca = Country::where('iso_2_code', 'CA')->first();
             $mx = Country::where('iso_2_code', 'MX')->first();
             $se = Country::where('iso_2_code', 'se')->first();
-            $aud = Country::where('iso_2_code', 'au')->first();
+            $au = Country::where('iso_2_code', 'au')->first();
 
             $pricing = new ProductPricing();
             $pricing->sales_order_line()->associate($line);
@@ -76,12 +76,12 @@ class CreatePricingFromOrderLinesController extends Controller
                 'de_vat' => $de->vat_rate,
                 'nl_vat' => $nl->vat_rate,
                 'se_vat' => $se->vat_rate,
-                'au_vat' => $aud->vat_rate,
+                'au_vat' => $au->vat_rate,
                 'mxn_fx_rate' => $mx->currency->default_fx_to_gbp,
                 'eur_fx_rate' => $fr->currency->default_fx_to_gbp,
                 'usd_fx_rate' => $us->currency->default_fx_to_gbp,
                 'cad_fx_rate' => $ca->currency->default_fx_to_gbp,
-                'aud_fx_rate' => $aud->currency->default_fix_to_gdp
+                'aud_fx_rate' => $au->currency->default_fx_to_gbp
             ]);
             $pricing->save();
         }

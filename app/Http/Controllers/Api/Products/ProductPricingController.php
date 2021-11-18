@@ -18,16 +18,16 @@ class ProductPricingController extends Controller
     ) {
 
         $paginator = $productPricingRepository;
-        if ($request->input('todo_only')) {
+        if ($request->query->getBoolean('todo_only', false)) {
             // Pricing's to be approved/done:
             $paginator = $paginator
                 ->whereNull('superseded_at')
                 ->whereNull('approved_at')
-                ->paginate();
+                ->paginate($request->input('per_page', 100));
         } else {
             $paginator = $paginator
                 ->whereNull('superseded_at')
-                ->paginate();
+                ->paginate($request->input('per_page', 100));
         }
 
 

@@ -11,7 +11,11 @@
                     :per-page="value.perPage"
                     aria-controls="my-table"
                 />
-                <b-select style="width: 10em" :options="pageSizes" v-model="value.perPage" />
+                <b-select style="width: 10em"
+                    :options="pageSizes"
+                    v-model="value.perPage"
+                    @input="$emit('input', value)"
+                />
             </div>
         </b-col>
         <b-col cols="6">
@@ -31,7 +35,8 @@ export default {
                 {value: 100, text: '100 rows'},
                 {value: 50, text: '50 rows'},
                 {value: 25, text: '25 rows'},
-                {value: 15, text: '15 rows'}
+                {value: 15, text: '15 rows'},
+                {value: 2, text: '2 rows'}
             ];
         }
     }
