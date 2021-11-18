@@ -89,6 +89,10 @@ class InspectionReport extends BaseInspectionReport
             'unit_width_m',
             'unit_height_m',
         ]));
+        // catch not-nullable field
+        if (!$inspection->inner_qty) {
+            $inspection->inner_qty = 0;
+        }
         $inspection->fill([
             'case_length_m' => $line->length_m * 100,
             'case_width_m' => $line->width_m * 100,

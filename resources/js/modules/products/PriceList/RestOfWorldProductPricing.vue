@@ -3,33 +3,68 @@
         <b-form-group :label="currency" label-size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
-                    <b-input-group-text class="w-100">FX {{ currencySymbol }}</b-input-group-text>
+                    <b-input-group-text class="w-100">Rate</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[fxField]" size="sm" />
-                <b-input-group-append class="w-25">
-                    <b-input-group-text class="w-100">1 GBP </b-input-group-text>
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100">:£1</b-input-group-text>
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
+        <b-form-group class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">SF Price</b-input-group-text>
+                </b-input-group-prepend>
+                <b-form-input v-model="value[sfPriceField]" size="sm" />
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+        <hr class="m-2" />
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
                     <b-input-group-text class="w-100">FBA Price</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[priceField]" size="sm" />
-                <b-input-group-append class="w-25">
-                    <b-input-group-text class="w-100">{{ currency }}</b-input-group-text>
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
-                    <b-input-group-text class="w-100">Ship</b-input-group-text>
+                    <b-input-group-text class="w-100">Shipping</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[shipField]" size="sm" />
-                <b-input-group-append class="w-25">
-                    <b-input-group-text class="w-100">GBP</b-input-group-text>
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100">&pound;</b-input-group-text>
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+        <b-form-group size="sm" class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">FBA Fee</b-input-group-text>
+                </b-input-group-prepend>
+                <div class="form-control bg-light">{{ fbaReferralFeeValue }}</div>
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
+                </b-input-group-append>
+
+            </b-input-group>
+        </b-form-group>
+        <b-form-group size="sm" class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">Ref' Tax</b-input-group-text>
+                </b-input-group-prepend>
+                <div class="form-control bg-light">{{ referralTaxValue }}</div>
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
@@ -38,7 +73,7 @@
                 <b-input-group-prepend class="w-40">
                     <b-input-group-text class="w-100">Profit</b-input-group-text>
                 </b-input-group-prepend>
-                <div class="form-control">
+                <div class="form-control bg-light">
                     {{ calculatedMargin | cash_value }}
                 </div>
             </b-input-group>
@@ -47,19 +82,30 @@
 </template>
 
 <script>
+import getSymbolFromCurrency from 'currency-symbol-map';
+
 export default {
     name: "RestOfWorldProductPricing",
     props: {
         value: Object,
         shipField: String,
+        sfPriceField: String,
         fxField: String,
         priceField: String,
         currency: String,
-        currencySymbol: String,
         marketplaceCommissionPc: Number
     },
     computed: {
-
+        referralTaxValue() {
+            return (this.fbaReferralFeeValue * 0.2).toFixed(2);
+        },
+        fbaReferralFeeValue() {
+            const value = this.value[this.priceField] * (1 / this.marketplaceCommissionPc);
+            return value.toFixed(2);
+        },
+        currencySymbol() {
+            return getSymbolFromCurrency(this.currency);
+        },
         localCommission() {
           return this.value[this.priceField] * (this.marketplaceCommissionPc / 100);
         },
@@ -70,14 +116,14 @@ export default {
             }
 
             const fxRate = this.value[this.fxField];
-            const commission = this.value[this.priceField] * (this.marketplaceCommissionPc / 100);
-            const localPrice = (this.value[this.priceField]);
-            const localLandedCost = (this.value.est_landed_cost_per_unit_gbp / fxRate);
-            const localShipping = (this.value[this.shipField] / fxRate);
 
-            const margin = localPrice - commission - localLandedCost - localShipping;
+            const localMargin = (this.value[this.priceField]) -
+                (this.value.est_landed_cost_per_unit_gbp / fxRate) -
+                this.fbaReferralFeeValue -
+                (this.value[this.shipField] / fxRate) -
+                this.referralTaxValue
 
-            return (margin * fxRate);
+            return (localMargin * fxRate).toFixed(2);
         }
     },
     methods: {
@@ -94,5 +140,7 @@ export default {
 </script>
 
 <style scoped>
-
+    .form-control.bg-light {
+        background-color: #ddd !important;
+    }
 </style>

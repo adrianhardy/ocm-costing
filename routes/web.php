@@ -52,4 +52,5 @@ Route::group(['middleware' => ['auth', 'role:super']], function() {
 
 Route::group(['middleware' => ['auth', 'role:super|pricing']], function() {
     Route::resource('price-list', 'Products\ProductPricingController')->only(['index']);
+    Route::resource('price-list/export', 'Products\ProductPricingExportController', ['as' => 'price-list'])->only(['index']);
 });

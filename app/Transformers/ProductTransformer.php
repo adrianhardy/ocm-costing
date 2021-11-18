@@ -112,7 +112,10 @@ class ProductTransformer extends TransformerAbstract
             'primary_asin',
             'primary_sku',
             'additional_asins',
-            'additional_skus'
+            'additional_skus',
+            'uk_postage_method',
+            'eu_postage_method',
+            'row_postage_method'
         ]);
     }
 }

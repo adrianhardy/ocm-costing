@@ -59,6 +59,7 @@ class CreateShipmentFromOrderLinesController extends Controller
                 'height_m' => $product->height_m,
                 'width_m' => $product->width_m,
                 'fx_rate' => $soLine->sales_order->fx_rate,
+                'unit_price' => 0,
                 'shipping_cost_per_cuft_usd' => setting('shipping_cost_per_cubic_foot_usd'),
                 'import_duty_pc' => setting('default_import_duty_pc'),
                 'commission_rate_pc' => setting('default_commission_rate_pc'),

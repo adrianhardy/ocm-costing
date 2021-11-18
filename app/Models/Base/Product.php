@@ -49,6 +49,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $primary_asin
  * @property string|null $additional_skus
  * @property string|null $additional_asins
+ * @property string|null $uk_postage_method
+ * @property string|null $eu_postage_method
+ * @property string|null $row_postage_method
  * 
  * @property Factory|null $factory
  * @property Supplier $supplier
