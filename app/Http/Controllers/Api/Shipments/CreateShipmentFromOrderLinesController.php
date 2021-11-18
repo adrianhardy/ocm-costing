@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Base\SalesOrder;
 use App\Models\Consignment;
 use App\Models\InspectionReport;
+use App\Models\ProductLandedCost;
 use App\Models\SalesOrderLine;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -46,6 +48,26 @@ class CreateShipmentFromOrderLinesController extends Controller
                 $data['qty_on_boat'],
                 $invoiceAmount
             );
+
+            // snapshot the landed cost
+            $product = $soLine->product;
+
+            $landedCost = new ProductLandedCost([
+                'units_per_case' => $product->units_per_case,
+                'date' => Carbon::now(),
+                'length_m' => $product->length_m,
+                'height_m' => $product->height_m,
+                'width_m' => $product->width_m,
+                'fx_rate' => $soLine->sales_order->fx_rate,
+                'shipping_cost_per_cuft_usd' => setting('shipping_cost_per_cubic_foot_usd'),
+                'import_duty_pc' => setting('default_import_duty_pc'),
+                'commission_rate_pc' => setting('default_commission_rate_pc'),
+                'landed_cost_per_unit' => $new['est_landed_cost_per_unit'],
+                'landed_cost_per_unit_gbp' => $new['est_landed_cost_per_unit_gbp']
+            ]);
+            $landedCost->currency()->associate($soLine->sales_order->currency);
+            $landedCost->product()->associate($product);
+            $landedCost->save();
 
             $shipment->sales_order_lines()->save($soLine, $new);
             $shipment->save();

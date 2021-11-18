@@ -24,7 +24,7 @@ class UserTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'pivot', 'roles', 'permissions', 'api_token'
+        'pivot', 'roles', 'permissions', 'api_token', 'supplier'
     ];
 
     /**
@@ -53,6 +53,14 @@ class UserTransformer extends TransformerAbstract
     public function includeApiToken(User $user)
     {
         return $this->primitive($user->api_token);
+    }
+
+    public function includeSupplier(User $user)
+    {
+        if (!$user->supplier) {
+            return $this->null();
+        }
+        return $this->item($user->supplier, new SupplierTransformer());
     }
 
     public function includeRoles(User $user)

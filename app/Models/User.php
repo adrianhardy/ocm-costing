@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Base\User as BaseUser;
+use BeyondCode\Comments\Traits\HasComments;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,11 +23,15 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Supplier $supplier
  *
  */
 class User extends Authenticatable
 {
     use HasRoles;
+
+    // We attach comments to user 1 for "global notes"
+    use HasComments;
 
     const USER_LOCKED = 'LOCKED';
 
@@ -84,6 +88,11 @@ class User extends Authenticatable
     public function getRoleAttribute()
     {
         return $this->roles->first();
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
     }
 
 }

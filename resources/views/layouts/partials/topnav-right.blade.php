@@ -17,6 +17,8 @@
                 @role('super')
                 <a class="dropdown-item" href="{{ route('settings.index') }}">Settings</a>
                 <a class="dropdown-item" href="{{ route('settings.export-templates.index') }}">Templates</a>
+                <a class="dropdown-item" href="{{ route('currencies.index') }}">Currencies</a>
+                <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
                 <div class="dropdown-divider"></div>
                 @endrole
                 <a class="dropdown-item" href="{{ route('logout') }}"

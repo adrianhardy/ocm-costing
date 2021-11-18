@@ -31,14 +31,22 @@ class AccessTokensController extends Controller
     public function store(Request $request, SalesOrder $salesOrder)
     {
         $this->validate($request, [
-            'user.id' => 'required|exists:users,id'
+            'user.id' => 'required|exists:users,id',
+            'period' => 'required|numeric|min:24|max:700'
         ]);
-        // $this->authorize('view', $salesOrder);
+
+        $this->authorize('view', $salesOrder);
 
         /** @var User $user */
         $user = User::query()->findOrFail($request->input('user.id'));
         DB::beginTransaction();
-        $token = $salesOrder->invite($user);
+        $token = $salesOrder->invite($user, $request->input('period'));
+
+        if ($request->input('allow_all')) {
+            $token->sales_order()->dissociate();
+            $token->save();
+        }
+
         Mail::send((new SupplierSalesOrderInvitation($token))
             ->to($user->email, $user->name)
         );

@@ -16,7 +16,7 @@
         </slot>
       </table-header>
     </template>
-    <b-table ref="table" :fields="fields" :items="items">
+    <b-table ref="table" :fields="fields" :items="items" small>
       <template #cell(product.image)="data">
         <b-avatar v-if="data.item.product.media[0]">
           <b-img fluid :src="data.item.product.media[0].url" />
@@ -100,10 +100,12 @@ export default {
       fields: [
         {key: 'product.image', label: 'Image'},
         {key: 'product.name', label: 'Product'},
+        {key: 'product.primary_sku', label: 'SKU'},
+        {key: 'product.primary_asin', label: 'ASIN'},
         {key: 'created_at', label: 'Created At'},
-        {key: 'unit_price_gbp', label: 'Unit Price GBP'},
-        {key: 'est_landed_cost_per_unit_gbp', label: 'Est Landed Cost'},
-        {key: 'marketplace_commission_pc', label: 'Marketplace Comm\' %'},
+        {key: 'unit_price_gbp', label: 'U/Price'},
+        {key: 'est_landed_cost_per_unit_gbp', label: 'Est. LC'},
+        {key: 'marketplace_commission_pc', label: 'Fee\' %'},
         {key: 'margin_pc', label: 'Margin %'},
         {key: 'profit', label: 'profit'},
         {key: 'button', label: ''}

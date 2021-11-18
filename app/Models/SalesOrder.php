@@ -85,12 +85,12 @@ class SalesOrder extends BaseSalesOrder
 
     /**
      * @param User $user
-     * @param int $days
+     * @param int $hours
      * @param null $password
      * @return SalesOrderAuthentication
      * @throws \Exception
      */
-    public function invite(User $user, $days = 7, $password = null)
+    public function invite(User $user, $hours = 24, $password = null)
     {
         $this->tokens()
             ->where('user_id', $user->id)
@@ -99,7 +99,7 @@ class SalesOrder extends BaseSalesOrder
         $token = new SalesOrderAuthentication([
             'token' => Uuid::uuid4(),
             'password' => $password,
-            'expires_at' => Carbon::now()->addDays($days)
+            'expires_at' => Carbon::now()->addHours($hours)
         ]);
         $token->sales_order()->associate($this);
         $token->user()->associate($user);

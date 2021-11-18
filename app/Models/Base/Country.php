@@ -17,9 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $iso_2_code
  * @property float $import_duty
  * @property float $export_duty
- * @property float $vat_rate
+ * @property float|null $vat_rate
  * @property int|null $currency_id
- * @property float|null $gbp_fx_rate
  * 
  * @property Currency|null $currency
  *
@@ -34,8 +33,7 @@ class Country extends Model
 		'import_duty' => 'float',
 		'export_duty' => 'float',
 		'vat_rate' => 'float',
-		'currency_id' => 'int',
-		'gbp_fx_rate' => 'float'
+		'currency_id' => 'int'
 	];
 
 	public function currency()

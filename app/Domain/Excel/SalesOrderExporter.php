@@ -163,13 +163,15 @@ class SalesOrderExporter
             ->getRowDimension($offset+2)
             ->setRowHeight(100);
 
-
-
         // write out the product media to the image column
         if ($line->product->hasMedia()) {
             $coordinates = $this->mapping['product_image'].($offset+1);
+            $image = $line->product->getFirstMedia();
+            if ($line->selected_media) {
+                $image = $line->selected_media;
+            }
             $this->writeImageToCell(
-                $line->product->getFirstMedia(),
+                $image,
                 $this->clone->getSheet(0)->getCell($coordinates)
             );
         }

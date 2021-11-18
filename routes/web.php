@@ -16,28 +16,32 @@ Route::redirect('/', '/home');
 
 Route::get('/supplier/tokens/order/{token}', 'Tokens\SalesOrderLoginController@auth')->name('sales-order-token-login');
 
-Route::group(['middleware' => ['auth', 'sales_order_token', 'role:supplier']], function() {
+Route::group(['middleware' => ['auth', 'role:supplier']], function() {
     Route::resource(
         'supplier/sales-orders',
-        'Supplier\SalesOrders\SalesOrdersController',
+        'SalesOrders\SalesOrdersController',
         ['as' => 'supplier']
-    )->only(['edit']);
+    )->only(['edit', 'index', 'store', 'update']);
+});
 
+Route::group(['middleware' => ['auth']], function() {
+    Route::get('/home', 'HomeController@index')->name('home');
+    Route::resource('products', 'Products\ProductsController')->only(['index', 'create', 'edit']);
+    Route::resource('sales-orders', 'SalesOrders\SalesOrdersController')->only(['index', 'edit']);
 });
 
 Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
+    Route::resource('/global-notes', 'Admin\NotesController')->only(['store']);
     Route::resource('/admin/media', 'Admin\MediaController')->only(['show', 'destroy']);
-    Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('/admin/imports/preview', 'Admin\Imports\PreviewController')->only(['store', 'update']);
     Route::resource('/admin/imports', 'Admin\Imports\RunController')->only(['create', 'store']);
-    Route::resource('products', 'Products\ProductsController')->only(['index', 'create', 'edit']);
-    Route::resource('sales-orders', 'SalesOrders\SalesOrdersController')->only(['index', 'edit']);
     Route::resource('sales-orders.export', 'SalesOrders\ExportController')->only(['index']);
     Route::resource('sales-orders.consignments', 'SalesOrders\ConsignmentsController')->only(['index']);
     Route::resource('/inspections', 'InspectionReports\InspectionReportsController')->only(['edit', 'index']);
 });
 
 Route::group(['middleware' => ['auth', 'role:super']], function() {
+    Route::resource('/admin/currencies', 'Admin\Currencies\CurrencyController')->only(['index']);
     Route::resource('/admin/users', 'Admin\UsersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/suppliers', 'Admin\SuppliersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/factories', 'Admin\FactoriesController')->only(['index', 'edit', 'create']);

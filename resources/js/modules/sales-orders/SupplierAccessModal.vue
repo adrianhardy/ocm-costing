@@ -1,5 +1,5 @@
 <template>
-  <b-modal ref="modal" title="Users with access to this Sales Order" ok-only size="xl">
+  <b-modal ref="modal" title="Users with access to this Sales Order" ok-only size="xl" ok-title="Close">
     <div class="row">
       <div class="col-12 col-md-8">
         <b-table-simple>
@@ -20,9 +20,9 @@
               <b-td>{{ token.user.email }}</b-td>
               <b-td>{{ new Date(token.expires_at) | date('dd/MM/yy HH:mm') }}</b-td>
               <b-td>
-                        <span v-if="token.consumed_at">
-                        {{ token.consumed_at | date('dd/MM/yy HH:mm') }}
-                        </span>
+                <span v-if="token.consumed_at">
+                  {{ token.consumed_at | date('dd/MM/yy HH:mm') }}
+                </span>
               </b-td>
             </b-tr>
           </b-thead>
@@ -30,13 +30,31 @@
       </div>
       <div class="col-12 col-md-4">
         <h6>Invite suppliers to edit this sales order</h6>
-        <p>Search for the supplier user below and then grant them access:</p>
+        <p>Search for the supplier user below and then grant them access for the period specified:</p>
         <div class="row">
-          <div class="col-12 col-sm-8">
-            <user-select v-model="invitee" filter-role="supplier"/>
+          <div class="col-12">
+            <b-form-group label="User">
+              <user-select v-model="invitee" filter-role="supplier"/>
+            </b-form-group>
           </div>
-          <div class="col-12 col-sm-4">
-            <b-button size="lg" variant="success" block @click="add">Add</b-button>
+          <div class="col-12">
+            <b-form-group label="Period">
+              <b-form-select v-model="period">
+                <b-form-select-option value="24">24 Hours</b-form-select-option>
+                <b-form-select-option value="48">48 Hours</b-form-select-option>
+                <b-form-select-option value="168">7 Days</b-form-select-option>
+                <b-form-select-option value="336">14 Days</b-form-select-option>
+                <b-form-select-option value="504">21 Days</b-form-select-option>
+              </b-form-select>
+            </b-form-group>
+          </div>
+          <div class="col-12">
+            <b-form-checkbox v-model="allowAll">
+              Provide access to products and sales orders
+            </b-form-checkbox>
+          </div>
+          <div class="col-12 mt-2">
+            <b-button variant="success" size="lg" block @click="add">Add</b-button>
           </div>
         </div>
       </div>
@@ -84,7 +102,9 @@ export default {
     add() {
       const url = `/api/sales-orders/${this.salesOrder.id}/tokens`;
       this.callXhr('post', url, {
-        user: this.invitee
+        user: this.invitee,
+        period: this.period,
+        allow_all: this.allowAll
       });
     },
     close() {
@@ -93,6 +113,8 @@ export default {
   },
   data() {
     return {
+      period: 24,
+      allowAll: false,
       invitee: null,
       tokens: []
     }

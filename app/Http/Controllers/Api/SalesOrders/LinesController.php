@@ -71,12 +71,15 @@ class LinesController extends Controller
         }
 
         if (!$salesOrder->is_finalised &&
-            $line->isDirty('units_requested') &&
             $line->product->case_cubic_m > 0 &&
             $line->product->units_per_case > 0
         ) {
-            $cases = intval(ceil($line->units_requested / $line->product->units_per_case));
-            $line->total_cubic_m = $cases * $line->product->case_cubic_m;
+            if ($line->units_per_case < 1) {
+                $cases = 0;
+            } else {
+                $cases = intval(ceil($line->units_requested / $line->units_per_case));
+            }
+            $line->total_cubic_m = $cases * ($line->width_m * $line->length_m * $line->height_m);
         }
 
         $line->total = $line->units_requested * $line->unit_price;

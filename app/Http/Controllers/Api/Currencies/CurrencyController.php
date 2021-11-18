@@ -19,4 +19,11 @@ class CurrencyController extends Controller
             'items' => fractal(Currency::query()->orderBy('name')->get(), new CurrencyTransformer)
         ]);
     }
+
+    public function update(Request $request, Currency $currency)
+    {
+        $currency->fill($request->only('default_fx_to_gbp'));
+        $currency->save();
+        return response()->json();
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Repositories\UserRepository;
+use App\Models\Supplier;
 use App\Models\User;
 use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
@@ -37,10 +38,13 @@ class UsersController extends Controller
     {
         $unique = Rule::unique('users','email')->ignoreModel($user);
         $this->validate($request, [
-           'name'     => 'required|max:255',
-           'password' => 'sometimes|nullable|confirmed|password|min:8',
-           'email'    => ['required', $unique, 'email', 'max:128'],
-           'role'     => 'required|in:super,admin,supplier'
+           'name'           => 'required|max:255',
+           'password'       => 'sometimes|nullable|confirmed|password|min:8',
+           'email'          => ['required', $unique, 'email', 'max:128'],
+           'role'           => 'required|in:super,admin,supplier',
+           'supplier.id'    => 'nullable|required_if:role,supplier|exists:suppliers,id'
+        ], [], [
+            'supplier.id' => 'Supplier'
         ]);
 
         $user->fill($request->only([
@@ -53,6 +57,14 @@ class UsersController extends Controller
         }
         if ($request->input('role')) {
             $user->syncRoles($request->input('role'));
+
+            if ($request->input('role') == 'supplier') {
+                $user->supplier()->associate(
+                    Supplier::query()->findOrFail($request->input('supplier.id'))
+                );
+            } else {
+                $user->supplier()->dissociate();
+            }
         }
 
         $user->syncRoles([$request->input('role')]);

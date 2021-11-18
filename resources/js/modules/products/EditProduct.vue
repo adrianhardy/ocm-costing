@@ -3,15 +3,26 @@
         <b-card class="shadow-sm">
             <div class="row">
                 <div class="col-12 col-md-6">
-                    <b-form-group label="Name">
+                    <b-form-group label="Product Description">
                         <b-form-input v-model="product.name" required="required"/>
                     </b-form-group>
-                    <b-form-group label="Supplier">
-                        <supplier-select all v-model="product.supplier"/>
+                    <div class="row">
+                        <div class="col-6">
+                            <b-form-group label="Supplier" v-if="!isSupplier">
+                                <supplier-select all v-model="product.supplier"/>
+                            </b-form-group>
+                        </div>
+                        <div class="col-6">
+                            <b-form-group label="Factory" v-if="!isSupplier">
+                                <factory-select all v-model="product.factory"/>
+                            </b-form-group>
+                        </div>
+                    </div>
+                    <b-form-group description="When estimating landed costs, no commission will be added" v-if="showCosting">
+                        <b-form-checkbox v-model="product.is_excluded_from_commission">Exclude from commission
+                        </b-form-checkbox>
                     </b-form-group>
-                    <b-form-group label="Factory">
-                        <factory-select all v-model="product.factory"/>
-                    </b-form-group>
+
                     <div class="row">
                         <div class="col-4">
                             <b-form-group label="Item Number">
@@ -29,30 +40,38 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" v-if="!isSupplier && showCosting">
                         <div class="col-4">
-                            <b-form-group label="Est. Landed Cost GBP">
-                                <b-form-input readonly v-model="product.est_landed_cost_gbp"/>
+                            <b-form-group label="Unit Price">
+                                <b-input-group prepend="$">
+                                    <b-form-input v-model="product.unit_price"/>
+                                </b-input-group>
                             </b-form-group>
                         </div>
                         <div class="col-4">
-                            <b-form-group label="Current Landed Cost" v-if="product.current_landed_cost_per_unit_gbp">
-                                <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
+                            <b-form-group label="Est. Land' Cost">
+                                <b-input-group prepend="£">
+                                    <b-form-input readonly v-model="product.est_landed_cost_gbp"/>
+                                </b-input-group>
                             </b-form-group>
                         </div>
                         <div class="col-4">
-                            <b-form-group label="Unit Price ($)">
-                                <b-form-input v-model="product.unit_price"/>
+                            <b-form-group label="Current Land' Cost" v-if="product.current_landed_cost_per_unit_gbp">
+                                <b-input-group prepend="£">
+                                    <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
+                                </b-input-group>
                             </b-form-group>
                         </div>
                     </div>
                     <h5>Images</h5>
                     <edit-product-media :disabled="disabled" :product="product" @updated="refresh()"/>
+                    <div class="text-muted" v-if="!product.id">Image upload available once product has been created
+                    </div>
                 </div>
                 <div class="col-12 col-md-6">
-                    <b-tabs content-class="pt-3">
+                    <b-tabs content-class="pt-3" small>
                         <b-tab title="Description">
-                            <b-form-group label="Product Description">
+                            <b-form-group label="Product Details">
                                 <b-textarea v-model="product.product_description" maxlength="500" rows="7"/>
                                 <template #description>
                                     <span v-if="product.product_description">
@@ -95,19 +114,24 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-4">
+                                <div class="col-3">
                                     <b-form-group label="Length (cm)">
                                         <b-form-input v-model="product.length_cm"/>
                                     </b-form-group>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                     <b-form-group label="Width (cm)">
                                         <b-form-input v-model="product.width_cm"/>
                                     </b-form-group>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                     <b-form-group label="Height (cm)">
                                         <b-form-input v-model="product.height_cm"/>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-3">
+                                    <b-form-group label="Volume (ft)" class="no-input">
+                                        {{ product.case_cubic_ft | 2dp_value }}
                                     </b-form-group>
                                 </div>
                             </div>
@@ -120,32 +144,38 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-4">
+                                <div class="col-3">
                                     <b-form-group label="Length (cm)">
                                         <b-form-input v-model="product.unit_length_cm"/>
                                     </b-form-group>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                     <b-form-group label="Width (cm)">
                                         <b-form-input v-model="product.unit_width_cm"/>
                                     </b-form-group>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                     <b-form-group label="Height (cm)">
                                         <b-form-input v-model="product.unit_height_cm"/>
                                     </b-form-group>
                                 </div>
+                                <div class="col-3">
+                                    <b-form-group label="Volume (ft)" class="no-input">
+                                        {{ product.unit_cubic_ft | 2dp_value }}
+                                    </b-form-group>
+                                </div>
                             </div>
-                            1
                             <b-button variant="outline-primary float-right" @click="save()">
                                 {{ this.productId ? 'Update' : 'Create' }} Product
                             </b-button>
                         </b-tab>
-                        <b-tab>
+                        <product-sku-tab v-if="!isSupplier && product.id" :product="product" />
+                        <b-tab v-if="product.id">
                             <template #title>
                                 <div>
                                     Notes
-                                    <b-badge variant="primary">{{product.comments.length}} <span class="sr-only">number of notes</span></b-badge>
+                                    <b-badge variant="primary">{{ product.comments.length }} <span class="sr-only">number of notes</span>
+                                    </b-badge>
                                 </div>
                             </template>
                             <b-table-simple small>
@@ -178,32 +208,37 @@
                             </b-form-group>
                             <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
                         </b-tab>
-                        <b-tab title="History">
-                            <b-table small :items="productLog" :fields="productLogFields" sticky-header="600px">
+                        <b-tab title="History" v-if="!isSupplier && product.id" :disabled="!showCosting">
+                            <b-table ref="product-history" small :items="productLog" :fields="productLogFields"
+                                     sticky-header="600px">
                                 <template #cell(updated_at)="data">
                                     {{ new Date(data.value) | date('dd/MM/yy HH:mm') }}
-                                </templat
-                                <template #cell(attributes.unit_price)="data">
+                                </template>
+                                <template #cell(unit_price)="data">
                                     {{ data.value | 2dp_value }}
                                 </template>
-                                <template #cell(attributes.est_landed_cost_gbp)="data">
+                                <template #cell(landed_cost_per_unit_gbp)="data">
                                     {{ data.value | cash_value }}
                                 </template>
                                 <template #cell(extra)="data">
-                                  <div v-if="data.item && data.item.attributes">
-                                      <span v-b-popover.hover="data.item.attributes.packing_instructions" title="Packing Instructions" style="cursor:pointer">
+                                    <div v-if="data.item && data.item.attributes">
+                                      <span v-b-popover.hover="data.item.attributes.packing_instructions"
+                                            title="Packing Instructions" style="cursor:pointer">
                                         <b-icon-box-seam/>
                                       </span>
-                                        <span v-b-popover.hover="data.item.attributes.product_description" title="Product Description" style="cursor:pointer">
+                                        <span v-b-popover.hover="data.item.attributes.product_description"
+                                              title="Product Description" style="cursor:pointer">
                                         <b-icon-tag/>
                                       </span>
-                                      <span style="cursor:pointer" v-b-popover.hover="data.item.attributes.barcode" title="Barcode">
-                                        <b-icon-upc-scan />
+                                        <span style="cursor:pointer" v-b-popover.hover="data.item.attributes.barcode"
+                                              title="Barcode">
+                                        <b-icon-upc-scan/>
                                       </span>
-                                  </div>
+                                    </div>
                                 </template>
                             </b-table>
                         </b-tab>
+                        <landed-cost-history-tab v-if="!isSupplier && product.id" :product="product" :disabled="!showCosting" />
                     </b-tabs>
                 </div>
             </div>
@@ -216,11 +251,16 @@ import {dateFilter} from "vue-date-fns";
 import SupplierSelect from "../../components/SupplierSelect";
 import EditProductMedia from "./EditProductMedia";
 import FactorySelect from "../../components/FactorySelect";
+import LandedCostHistoryTab from "./LandedCostHistoryTab";
+import ProductSkuTab from "./ProductSkuTab";
 
 export default {
     name: "EditProduct",
-    components: {FactorySelect, EditProductMedia, SupplierSelect},
-    props: {productId: Number},
+    components: {ProductSkuTab, LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
+    props: {
+        showCosting: Boolean,
+        productId: Number
+    , isSupplier: Boolean},
     filters: {
         date: dateFilter
     },

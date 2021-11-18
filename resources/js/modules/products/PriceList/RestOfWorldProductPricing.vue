@@ -2,41 +2,41 @@
     <div>
         <b-form-group :label="currency" label-size="sm" class="mb-2">
             <b-input-group size="sm">
-                <b-input-group-prepend class="w-30">
+                <b-input-group-prepend class="w-40">
                     <b-input-group-text class="w-100">FX {{ currencySymbol }}</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[fxField]" size="sm" />
-                <b-input-group-append class="w-30">
-                    <b-input-group-text class="w-100">to 1 GBP </b-input-group-text>
+                <b-input-group-append class="w-25">
+                    <b-input-group-text class="w-100">1 GBP </b-input-group-text>
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
-                <b-input-group-prepend class="w-30">
-                    <b-input-group-text class="w-100">Price</b-input-group-text>
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">FBA Price</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[priceField]" size="sm" />
-                <b-input-group-append class="w-30">
+                <b-input-group-append class="w-25">
                     <b-input-group-text class="w-100">{{ currency }}</b-input-group-text>
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
-                <b-input-group-prepend class="w-30">
+                <b-input-group-prepend class="w-40">
                     <b-input-group-text class="w-100">Ship</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[shipField]" size="sm" />
-                <b-input-group-append class="w-30">
+                <b-input-group-append class="w-25">
                     <b-input-group-text class="w-100">GBP</b-input-group-text>
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
-                <b-input-group-prepend class="w-30">
-                    <b-input-group-text class="w-100">Margin</b-input-group-text>
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">Profit</b-input-group-text>
                 </b-input-group-prepend>
                 <div class="form-control">
                     {{ calculatedMargin | cash_value }}

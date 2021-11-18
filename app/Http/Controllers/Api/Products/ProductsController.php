@@ -32,12 +32,16 @@ class ProductsController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $unique = Rule::unique('products')->ignore($product, 'id');
+        $unique = Rule::unique('products', 'item_number')
+            ->whereNotNull('barcode')
+            ->where('barcode', $request->input('barcode'))
+            ->ignoreModel($product);
+
 
         $this->validate($request, [
             'supplier.id'           => 'required|exists:suppliers,id',
-            'factory.id'            => 'required|exists:factories,id',
-            'item_number'           => ['required', 'min:1', 'max:64'],
+            'factory.id'            => 'nullable|exists:factories,id',
+            'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => ['required', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
             'barcode'               => 'nullable|sometimes|max:32',
@@ -74,7 +78,11 @@ class ProductsController extends Controller
             'product_description',
             'unit_price',
             'case_weight_kg',
-            'unit_weight_kg'
+            'unit_weight_kg',
+            'is_excluded_from_commission'
+        ], [], [
+            'supplier.id' => 'Supplier',
+            'factory.id' => 'Factory'
         ]));
         $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
         $product->factory()->associate((Factory::find($request->input('factory.id'))));
@@ -89,10 +97,14 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
+        $unique = Rule::unique('products', 'item_number')
+            ->whereNotNull('barcode')
+            ->where('barcode', $request->input('barcode'));
+
         $this->validate($request, [
             'supplier.id'           => 'required|exists:suppliers,id',
-            'factory.id'            => 'required|exists:factories,id',
-            'item_number'           => 'required|min:1|max:64',
+            'factory.id'            => 'nullable|exists:factories,id',
+            'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => 'required|min:1|max:64',
             'name'                  => 'required|min:1|max:200',
             'barcode'               => 'sometimes|max:32',
@@ -105,6 +117,11 @@ class ProductsController extends Controller
             'inner_qty'             => 'sometimes|min:0|numeric',
             'packing_instructions'  => 'sometimes|max:500',
             'product_description'   => 'sometimes|max:500',
+        ], [
+            'item_number.unique' => 'The item number/barcode combination has already been taken'
+        ], [
+            'supplier.id' => 'Supplier',
+            'factory.id' => 'Factory'
         ]);
         $product = new Product($request->only([
             'item_number',
@@ -119,7 +136,8 @@ class ProductsController extends Controller
             'packing_instructions',
             'product_description',
             'unit_price',
-            'case_weight_kg'
+            'case_weight_kg',
+            'is_excluded_from_commission'
         ]));
         $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
         $product->factory()->associate((Factory::find($request->input('factory.id'))));
@@ -137,6 +155,11 @@ class ProductsController extends Controller
         $paginator = $productRepository->paginate(
             $request->input('per_page', 100)
         );
+
+        if (\Auth::user()->hasAnyRole(['supplier'])) {
+            $paginator->where('supplier_id', \Auth::user()->supplier_id);
+        }
+
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductTransformer
         ));
