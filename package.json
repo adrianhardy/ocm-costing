@@ -24,6 +24,7 @@
         "bootstrap": "^4.5.3",
         "bootstrap-vue": "^2.18.1",
         "cookie": "^0.4.1",
+        "currency-symbol-map": "^5.0.1",
         "date-fns": "^2.16.1",
         "filepond": "^4.25.1",
         "filepond-plugin-file-encode": "^2.1.9",
