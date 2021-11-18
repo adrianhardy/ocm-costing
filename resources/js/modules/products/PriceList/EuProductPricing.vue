@@ -8,12 +8,12 @@
                 <b-form-input v-model="value[vatField]" size="sm" />
             </b-input-group>
         </b-form-group>
-        <b-form-group v-if="country === 'UK'" class="mb-2">
+        <b-form-group class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">SF Price</b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model="value.sf_price" size="sm" />
+                <b-form-input v-model="value[sfPriceField]" size="sm" />
             </b-input-group>
         </b-form-group>
         <b-form-group size="sm" class="mb-2">
@@ -52,6 +52,7 @@ export default {
         value: Object,
         vatField: String,
         shipField: String,
+        sfPriceField: String,
         priceField: String,
         country: String,
         fxRate: Number,

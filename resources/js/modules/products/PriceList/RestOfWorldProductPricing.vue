@@ -11,6 +11,14 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
+        <b-form-group class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">SF Price</b-input-group-text>
+                </b-input-group-prepend>
+                <b-form-input v-model="value[sfPriceField]" size="sm" />
+            </b-input-group>
+        </b-form-group>
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
@@ -52,6 +60,7 @@ export default {
     props: {
         value: Object,
         shipField: String,
+        sfPriceField: String,
         fxField: String,
         priceField: String,
         currency: String,
