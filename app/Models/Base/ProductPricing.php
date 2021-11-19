@@ -36,6 +36,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $it_vat
  * @property float|null $nl_vat
  * @property float|null $es_vat
+ * @property float $unit_aud_fba_fee
+ * @property float $unit_mxn_fba_fee
+ * @property float $unit_cad_fba_fee
+ * @property float $unit_usd_fba_fee
+ * @property float $unit_nl_fba_fee
+ * @property float $unit_it_fba_fee
+ * @property float $unit_es_fba_fee
+ * @property float $unit_de_fba_fee
+ * @property float $unit_fr_fba_fee
+ * @property float $unit_se_fba_fee
+ * @property float $unit_uk_fba_fee
  * @property float|null $unit_fr_price
  * @property float|null $unit_de_price
  * @property float|null $unit_it_price
@@ -59,10 +70,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $se_vat
  * @property float|null $au_vat
  * @property float|null $unit_se_price
- * @property float|null $unit_au_price
  * @property float|null $unit_se_shipping
- * @property float|null $unit_au_shipping
+ * @property float|null $unit_aud_price
+ * @property float|null $unit_aud_shipping
  * @property float|null $aud_fx_rate
+ * @property float|null $unit_sf_uk_price
+ * @property float|null $unit_sf_fr_price
+ * @property float|null $unit_sf_de_price
+ * @property float|null $unit_sf_it_price
+ * @property float|null $unit_sf_es_price
+ * @property float|null $unit_sf_nl_price
+ * @property float|null $unit_sf_se_price
+ * @property float|null $unit_sf_usd_price
+ * @property float|null $unit_sf_cad_price
+ * @property float|null $unit_sf_mxn_price
+ * @property float|null $unit_sf_aud_price
  * 
  * @property User|null $approver
  * @property Product $product
@@ -90,6 +112,17 @@ class ProductPricing extends Model
 		'it_vat' => 'float',
 		'nl_vat' => 'float',
 		'es_vat' => 'float',
+		'unit_aud_fba_fee' => 'float',
+		'unit_mxn_fba_fee' => 'float',
+		'unit_cad_fba_fee' => 'float',
+		'unit_usd_fba_fee' => 'float',
+		'unit_nl_fba_fee' => 'float',
+		'unit_it_fba_fee' => 'float',
+		'unit_es_fba_fee' => 'float',
+		'unit_de_fba_fee' => 'float',
+		'unit_fr_fba_fee' => 'float',
+		'unit_se_fba_fee' => 'float',
+		'unit_uk_fba_fee' => 'float',
 		'unit_fr_price' => 'float',
 		'unit_de_price' => 'float',
 		'unit_it_price' => 'float',
@@ -113,10 +146,21 @@ class ProductPricing extends Model
 		'se_vat' => 'float',
 		'au_vat' => 'float',
 		'unit_se_price' => 'float',
-		'unit_au_price' => 'float',
 		'unit_se_shipping' => 'float',
-		'unit_au_shipping' => 'float',
-		'aud_fx_rate' => 'float'
+		'unit_aud_price' => 'float',
+		'unit_aud_shipping' => 'float',
+		'aud_fx_rate' => 'float',
+		'unit_sf_uk_price' => 'float',
+		'unit_sf_fr_price' => 'float',
+		'unit_sf_de_price' => 'float',
+		'unit_sf_it_price' => 'float',
+		'unit_sf_es_price' => 'float',
+		'unit_sf_nl_price' => 'float',
+		'unit_sf_se_price' => 'float',
+		'unit_sf_usd_price' => 'float',
+		'unit_sf_cad_price' => 'float',
+		'unit_sf_mxn_price' => 'float',
+		'unit_sf_aud_price' => 'float'
 	];
 
 	protected $dates = [

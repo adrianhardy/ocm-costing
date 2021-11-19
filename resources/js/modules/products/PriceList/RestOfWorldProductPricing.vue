@@ -22,7 +22,6 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
-        <hr class="m-2" />
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
@@ -49,6 +48,17 @@
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
                     <b-input-group-text class="w-100">FBA Fee</b-input-group-text>
+                </b-input-group-prepend>
+                <b-form-input v-model.number="value[feeField]" size="sm" />
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100">&pound;</b-input-group-text>
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+        <b-form-group size="sm" class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">Ref' Fee</b-input-group-text>
                 </b-input-group-prepend>
                 <div class="form-control bg-light">{{ fbaReferralFeeValue }}</div>
                 <b-input-group-append class="w-20">
@@ -92,6 +102,7 @@ export default {
         sfPriceField: String,
         fxField: String,
         priceField: String,
+        feeField: String,
         currency: String,
         marketplaceCommissionPc: Number
     },
@@ -120,6 +131,7 @@ export default {
             const localMargin = (this.value[this.priceField]) -
                 (this.value.est_landed_cost_per_unit_gbp / fxRate) -
                 this.fbaReferralFeeValue -
+                (this.value[this.feeField] / fxRate) -
                 (this.value[this.shipField] / fxRate) -
                 this.referralTaxValue
 

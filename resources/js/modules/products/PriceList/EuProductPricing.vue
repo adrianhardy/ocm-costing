@@ -3,23 +3,22 @@
         <b-form-group :label="country" label-size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">SF Price</b-input-group-text>
-                </b-input-group-prepend>
-                <b-form-input v-model="value[sfPriceField]" size="sm" />
-                <b-input-group-append class="w-15">
-                    <b-input-group-text class="w-100" v-html="currencySymbol" />
-                </b-input-group-append>
-            </b-input-group>
-        </b-form-group>
-        <hr class="m-2" />
-        <b-form-group class="mb-2">
-            <b-input-group size="sm">
-                <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">VAT</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model="value[vatField]" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100">%</b-input-group-text>
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+        <b-form-group class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-50">
+                    <b-input-group-text class="w-100">SF Price</b-input-group-text>
+                </b-input-group-prepend>
+                <b-form-input v-model="value[sfPriceField]" size="sm" />
+                <b-input-group-append class="w-15">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
@@ -45,11 +44,21 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
-
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA Fee</b-input-group-text>
+                </b-input-group-prepend>
+                <b-form-input v-model="value[feeField]" size="sm" />
+                <b-input-group-append class="w-15">
+                    <b-input-group-text class="w-100">&pound;</b-input-group-text>
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+        <b-form-group size="sm" class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-50">
+                    <b-input-group-text class="w-100">Ref' Fee</b-input-group-text>
                 </b-input-group-prepend>
                 <div class="form-control bg-light">{{ fbaReferralFeeValue }}</div>
                 <b-input-group-append class="w-15">
@@ -94,6 +103,7 @@ export default {
         sfPriceField: String,
         priceField: String,
         country: String,
+        feeField: String,
         fxRate: Number,
         marketplaceCommissionPc: Number,
         fbaReferralFee: Number
@@ -122,6 +132,7 @@ export default {
             const localMargin = (this.value[this.priceField]) -
                 (this.value.est_landed_cost_per_unit_gbp / this.fxRate) -
                 this.vatValue -
+                (this.value[this.feeField] / this.fxRate) -
                 this.fbaReferralFeeValue -
                 (this.value[this.shipField] / this.fxRate) ;
 

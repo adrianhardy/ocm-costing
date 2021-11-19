@@ -64,7 +64,6 @@ class CreatePricingFromOrderLinesController extends Controller
             $pricing->product()->associate($line->product);
             $pricing->fill([
                 'est_landed_cost_per_unit_gbp' => $costingData['est_landed_cost_per_unit_gbp'],
-                'suggested_unit_price_gbp' => $costingData['est_landed_cost_per_unit_gbp'] * setting('suggested_price_multiplier'),
                 'unit_price_gbp' => $suggestedPrice,
                 'marketplace_commission_pc' => setting('default_marketplace_commission_pc'),
                 'gross_unit_cost_gbp' => $grossCost,

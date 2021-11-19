@@ -54,6 +54,13 @@ class ProductPricingController extends Controller
             'unit_sf_nl_price' => 'numeric|min:0|max:99999',
             'unit_sf_es_price' => 'numeric|min:0|max:99999',
             'unit_sf_se_price' => 'numeric|min:0|max:99999',
+            'unit_uk_fba_fee' => 'numeric|min:0|max:99999',
+            'unit_fr_fba_fee' => 'numeric|min:0|max:99999',
+            'unit_de_fba_fee' => 'numeric|min:0|max:99999',
+            'unit_it_fba_fee' => 'numeric|min:0|max:99999',
+            'unit_nl_fba_fee' => 'numeric|min:0|max:99999',
+            'unit_es_fba_fee' => 'numeric|min:0|max:99999',
+            'unit_se_fba_fee' => 'numeric|min:0|max:99999',
         ],[
 
         ],[
@@ -63,7 +70,14 @@ class ProductPricingController extends Controller
             'unit_sf_it_price' => 'IT seller-fulfilled price',
             'unit_sf_nl_price' => 'NL seller-fulfilled price',
             'unit_sf_es_price' => 'ES seller-fulfilled price',
-            'unit_sf_se_price' => 'SE seller-fulfilled price'
+            'unit_sf_se_price' => 'SE seller-fulfilled price',
+            'unit_uk_fba_fee' => 'UK FBA fee',
+            'unit_fr_fba_fee' => 'FR FBA fee',
+            'unit_de_fba_fee' => 'DE FBA fee',
+            'unit_it_fba_fee' => 'IT FBA fee',
+            'unit_nl_fba_fee' => 'NL FBA fee',
+            'unit_es_fba_fee' => 'ES FBA fee',
+            'unit_se_fba_fee' => 'SE FBA fee'
         ]);
 
         $pricing->fill($request->only([
@@ -114,7 +128,18 @@ class ProductPricingController extends Controller
             'usd_fx_rate',
             'cad_fx_rate',
             'mxn_fx_rate',
-            'aud_fx_rate'
+            'aud_fx_rate',
+            'unit_uk_fba_fee',
+            'unit_se_fba_fee',
+            'unit_fr_fba_fee',
+            'unit_de_fba_fee',
+            'unit_es_fba_fee',
+            'unit_it_fba_fee',
+            'unit_nl_fba_fee',
+            'unit_usd_fba_fee',
+            'unit_cad_fba_fee',
+            'unit_mxn_fba_fee',
+            'unit_aud_fba_fee'
         ]));
 
         if($request->input(['submitted'])){

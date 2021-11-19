@@ -63,9 +63,19 @@ class ProductPricing extends BaseProductPricing
 		'usd_fx_rate',
 		'cad_fx_rate',
 		'mxn_fx_rate',
-        'aud_fx_rate'
+        'aud_fx_rate',
+        'unit_uk_fba_fee',
+        'unit_se_fba_fee',
+        'unit_fr_fba_fee',
+        'unit_de_fba_fee',
+        'unit_es_fba_fee',
+        'unit_it_fba_fee',
+        'unit_nl_fba_fee',
+        'unit_usd_fba_fee',
+        'unit_cad_fba_fee',
+        'unit_mxn_fba_fee',
+        'unit_aud_fba_fee',
 	];
-
 
     public function getCalculatedGrossProfitGbpAttribute()
     {

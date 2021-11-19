@@ -107,17 +107,6 @@ class ProductPricingExportController extends Controller
                 'unit_sf_cad_price',
                 'unit_sf_mxn_price',
                 'unit_sf_aud_price',
-                'unit_shipping_gbp',
-                'unit_fr_shipping',
-                'unit_de_shipping',
-                'unit_it_shipping',
-                'unit_nl_shipping',
-                'unit_es_shipping',
-                'unit_se_shipping',
-                'unit_usd_shipping',
-                'unit_cad_shipping',
-                'unit_mxn_shipping',
-                'unit_aud_shipping',
             ]));
 
             $csv->fputcsv($row->toArray());

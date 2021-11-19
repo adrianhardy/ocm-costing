@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="col-4">
                                     <b-form-group label="Referral Fee" label-cols="4" label-size="sm">
-                                        <b-input-group size="sm" class="w-30">
+                                        <b-input-group size="sm" class="w-70">
                                             <b-form-input v-model="value.marketplace_commission_pc"/>
                                             <b-input-group-append class="w-30">
                                                 <b-input-group-text class="w-100 text-center">
@@ -90,6 +90,7 @@
                                     <div class="col-12 col-md-3">
                                         <eu-product-pricing v-model="value" country="UK"
                                                             :marketplace-commission-pc="value.marketplace_commission_pc"
+                                                            fee-field="unit_uk_fba_fee"
                                                             sf-price-field="unit_sf_uk_price"
                                                             ship-field="unit_shipping_gbp" price-field="unit_price_gbp"
                                                             vat-field="uk_vat" :fx-rate="1"/>
@@ -98,6 +99,7 @@
                                         <eu-product-pricing v-model="value" country="FR"
                                                             :marketplace-commission-pc="value.marketplace_commission_pc"
                                                             sf-price-field="unit_sf_fr_price"
+                                                            fee-field="unit_fr_fba_fee"
                                                             ship-field="unit_fr_shipping" price-field="unit_fr_price"
                                                             vat-field="fr_vat" :fx-rate="value.eur_fx_rate"/>
                                     </div>
@@ -105,12 +107,14 @@
                                         <eu-product-pricing v-model="value" country="DE"
                                                             :marketplace-commission-pc="value.marketplace_commission_pc"
                                                             sf-price-field="unit_sf_de_price"
+                                                            fee-field="unit_de_fba_fee"
                                                             ship-field="unit_de_shipping" price-field="unit_de_price"
                                                             vat-field="de_vat" :fx-rate="value.eur_fx_rate"/>
                                     </div>
                                     <div class="col-12 col-md-3">
                                         <eu-product-pricing v-model="value" country="IT"
                                                             :marketplace-commission-pc="value.marketplace_commission_pc"
+                                                            fee-field="unit_it_fba_fee"
                                                             sf-price-field="unit_sf_it_price"
                                                             ship-field="unit_it_shipping" price-field="unit_it_price"
                                                             vat-field="it_vat" :fx-rate="value.eur_fx_rate"/>
@@ -118,6 +122,7 @@
                                     <div class="col-12 col-md-3">
                                         <eu-product-pricing v-model="value" country="ES"
                                                             :marketplace-commission-pc="value.marketplace_commission_pc"
+                                                            fee-field="unit_es_fba_fee"
                                                             sf-price-field="unit_sf_es_price"
                                                             ship-field="unit_es_shipping" price-field="unit_es_price"
                                                             vat-field="es_vat" :fx-rate="value.eur_fx_rate"/>
@@ -126,6 +131,7 @@
                                         <eu-product-pricing v-model="value" country="NL"
                                                             :marketplace-commission-pc="value.marketplace_commission_pc"
                                                             sf-price-field="unit_sf_nl_price"
+                                                            fee-field="unit_nl_fba_fee"
                                                             ship-field="unit_nl_shipping" price-field="unit_nl_price"
                                                             vat-field="nl_vat" :fx-rate="value.eur_fx_rate"/>
                                     </div>
@@ -133,6 +139,7 @@
                                         <eu-product-pricing v-model="value" country="SE"
                                                             :marketplace-commission-pc="value.marketplace_commission_pc"
                                                             sf-price-field="unit_sf_se_price"
+                                                            fee-field="unit_se_fba_fee"
                                                             ship-field="unit_se_shipping" price-field="unit_se_price"
                                                             vat-field="se_vat" :fx-rate="value.eur_fx_rate"/>
                                     </div>
@@ -144,12 +151,14 @@
                                                                    :marketplace-commission-pc="value.marketplace_commission_pc"
                                                                    sf-price-field="unit_sf_usd_price"
                                                                    ship-field="unit_usd_shipping"
+                                                                   fee-field="unit_usd_fba_fee"
                                                                    price-field="unit_usd_price" fx-field="usd_fx_rate"/>
                                 </div>
                                 <div class="col-12 col-md-3">
                                     <rest-of-world-product-pricing v-model="value" currency="CAD"
                                                                    :marketplace-commission-pc="value.marketplace_commission_pc"
                                                                    sf-price-field="unit_sf_cad_price"
+                                                                   fee-field="unit_cad_fba_fee"
                                                                    ship-field="unit_cad_shipping"
                                                                    price-field="unit_cad_price" fx-field="cad_fx_rate"/>
                                 </div>
@@ -157,6 +166,7 @@
                                     <rest-of-world-product-pricing v-model="value" currency="MXN"
                                                                    :marketplace-commission-pc="value.marketplace_commission_pc"
                                                                    sf-price-field="unit_sf_mxn_price"
+                                                                   fee-field="unit_mxn_fba_fee"
                                                                    ship-field="unit_mxn_shipping"
                                                                    price-field="unit_mxn_price" fx-field="mxn_fx_rate"/>
                                 </div>
@@ -165,6 +175,7 @@
                                                                    :marketplace-commission-pc="value.marketplace_commission_pc"
                                                                    sf-price-field="unit_sf_aud_price"
                                                                    ship-field="unit_aud_shipping"
+                                                                   fee-field="unit_aud_fba_fee"
                                                                    price-field="unit_aud_price" fx-field="aud_fx_rate"/>
                                 </div>
                             </div>
