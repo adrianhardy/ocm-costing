@@ -4,6 +4,21 @@
         <div>
             <div class="row">
                 <div class="col-12 col-md-3">
+                    <h5>Postage</h5>
+                    <table class="table table-sm small">
+                        <tr>
+                            <th class="w-50">UK Postage Method</th>
+                            <td>{{ value.product.uk_postage_method.toUpperCase().replaceAll('_', ' ') }}</td>
+                        </tr>
+                        <tr>
+                            <th class="w-50">EU Postage Method</th>
+                            <td>{{ value.product.eu_postage_method.toUpperCase().replace('_', ' ') }}</td>
+                        </tr>
+                        <tr>
+                            <th class="w-50">RoW Postage Method</th>
+                            <td>{{ value.product.row_postage_method.toUpperCase().replace('_', ' ') }}</td>
+                        </tr>
+                    </table>
                     <h5>Carton</h5>
                     <table class="table table-sm small">
                         <tr>
