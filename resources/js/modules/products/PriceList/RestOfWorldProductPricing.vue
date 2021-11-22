@@ -11,6 +11,17 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
+        <b-form-group class="mb-2" v-if="vatField">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">VAT</b-input-group-text>
+                </b-input-group-prepend>
+                <b-form-input v-model="value[vatField]" size="sm" />
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100">%</b-input-group-text>
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
         <b-form-group class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
@@ -104,6 +115,7 @@ export default {
         priceField: String,
         feeField: String,
         currency: String,
+        vatField: String,
         marketplaceCommissionPc: Number
     },
     computed: {

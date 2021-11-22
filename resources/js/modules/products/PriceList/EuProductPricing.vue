@@ -14,7 +14,12 @@
         <b-form-group class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">SF Price</b-input-group-text>
+                    <b-input-group-text class="w-100">
+                        <span>SF Price</span>
+                        <a href="#" v-if="country === 'UK'" v-b-tooltip title="Translate SF Price to other currencies" @click.prevent="$emit('copy-sf-price')">
+                            <b-icon-clipboard-check class="ml-1" />
+                        </a>
+                    </b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model="value[sfPriceField]" size="sm" />
                 <b-input-group-append class="w-15">
@@ -117,11 +122,11 @@ export default {
             return '&euro;'
         },
         fbaReferralFeeValue() {
-            const value = this.value[this.priceField] * (1 / this.marketplaceCommissionPc);
+            const value = this.value[this.priceField] * (this.marketplaceCommissionPc/100);
             return value.toFixed(2);
         },
         vatValue() {
-            const value = this.value[this.priceField] * (1 / this.value[this.vatField]);
+            const value = this.value[this.priceField] * (this.value[this.vatField]/100);
             return value.toFixed(2);
         },
         calculatedMargin() {
