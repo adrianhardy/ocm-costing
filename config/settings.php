@@ -42,10 +42,9 @@ return [
 
     'defaults' => [
         'cubic_metres_to_feet' => 35.3147,
-        'shipping_cost_per_cubic_foot_usd' => 2.50,
+        'shipping_cost_per_cubic_foot' => 6.50,
         'default_commission_rate_pc' => 4.0,
         'default_import_duty_pc' => 4.7,
-        'suggested_price_multiplier' => 3.5,
-        'default_marketplace_commission_pc' => 20.0
+        'default_marketplace_commission_pc' => 15.0
     ]
 ];

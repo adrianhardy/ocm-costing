@@ -9,6 +9,7 @@ namespace App\Models\Base;
 use App\Models\Country;
 use App\Models\ProductLandedCost;
 use App\Models\SalesOrder;
+use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|Country[] $countries_currency
  * @property Collection|ProductLandedCost[] $product_landed_costs_currency
  * @property Collection|SalesOrder[] $sales_orders_currency
+ * @property Collection|Supplier[] $suppliers_currency
  *
  * @package App\Models\Base
  */
@@ -50,5 +52,10 @@ class Currency extends Model
 	public function sales_orders_currency()
 	{
 		return $this->hasMany(SalesOrder::class);
+	}
+
+	public function suppliers_currency()
+	{
+		return $this->hasMany(Supplier::class);
 	}
 }

@@ -4,7 +4,7 @@
             <template #header>
                 <div>
                     <h4 class="m-0">
-                        Sales Order {{ salesOrder.sales_order_number }}
+                        Sales Order {{ salesOrder.reference }}
                     </h4>
                     <b-badge variant="success" v-if="salesOrder.is_finalised">
                         Finalised
@@ -27,14 +27,31 @@
                 </div>
             </template>
             <div class="row" v-if="!isSupplier ">
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-2">
                     <b-form-group label="Supplier">
                         <supplier-select v-model="salesOrder.supplier" @select="save()"/>
                     </b-form-group>
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-2">
+                    <b-form-group label="Factory">
+                        <factory-select v-model="salesOrder.factory" @select="save()" />
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-1">
+                    <b-form-group label="Shipping £/Cu.ft.">
+                        <b-input-group prepend="£">
+                            <b-form-input type="number" step="0.01" v-model="salesOrder.shipping_cost_per_cubic_foot" @change="save()"/>
+                        </b-input-group>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-1">
                     <b-form-group label="Reference">
                         <b-form-input v-model="salesOrder.reference" @change="save()"/>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-1">
+                    <b-form-group label="Supplier Reference">
+                        <b-form-input v-model="salesOrder.supplier_reference" @change="save()"/>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-2">
@@ -141,7 +158,7 @@
                         />
                     </b-form-group>
                     <div :class="['text-left', 'small', 'ml-1', (data.item.units_requested % data.item.units_per_case) > 0?'text-danger':'']">
-                        {{ Math.round(data.item.units_requested / data.item.units_per_case) }} Ctn
+                        {{ (data.item.units_requested / data.item.units_per_case).toFixed(2) }} Ctn
                     </div>
                 </template>
                 <template #cell(unit_price)="data">
@@ -159,7 +176,7 @@
                     <b-form-group>
                         <b-input-group
                             prepend="£ELC" size="sm" class="no-input" v-b-tooltip.hover title="Estimated Landed Cost">
-                            <b-input class="w-50" readonly :value="data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value"></b-input>
+                            <b-input class="w-50" readonly :value="data.item.est_landed_cost_per_unit_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
                     <b-form-group>
@@ -219,7 +236,7 @@
                     </b-button>
 
                     <b-dropdown v-if="salesOrder.id > 0" text="Export for Supplier" variant="secondary" size="lg">
-                        <b-dropdown-item :key="template" href="#" v-for="template in templates">{{ template }}</b-dropdown-item>
+                        <b-dropdown-item :key="template" :href="`/sales-orders/${ salesOrder.id }/export?template=${template}`" v-for="template in templates">{{ template }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
                 <div>
@@ -275,11 +292,13 @@ import SalesOrderHistoryModal from "./SalesOrderHistoryModal";
 import SupplierAccessModal from "./SupplierAccessModal";
 import ProductDimensionsInput from "../../components/ProductDimensionsInput";
 import SalesOrderLinePhotoChooser from "./SalesOrderLinePhotoChooser";
+import FactorySelect from "../../components/FactorySelect";
 
 
 export default {
     name: "EditSalesOrder",
     components: {
+        FactorySelect,
         SalesOrderLinePhotoChooser,
         ProductDimensionsInput,
         SupplierAccessModal,

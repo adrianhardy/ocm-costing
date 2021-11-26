@@ -1,7 +1,7 @@
 <template>
     <b-modal ref="modal" no-close-on-backdrop title="Create new Sales Order" @ok="save" ok-title="Create">
         <b-form-group label="Supplier" v-if="!isSupplier">
-            <supplier-select v-model="supplier"/>
+            <supplier-select v-model="supplier" response-include="currency" @input="currency = supplier.currency"/>
         </b-form-group>
         <b-form-group label="Currency">
             <currency-select v-model="currency"/>

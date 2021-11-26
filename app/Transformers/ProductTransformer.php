@@ -23,7 +23,7 @@ class ProductTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'quotes', 'media', 'supplier', 'comments', 'comments.author', 'factory',
+        'quotes', 'media', 'supplier', 'comments', 'comments.author', 'factories',
         'current_landed_cost_per_unit_gbp'
     ];
 
@@ -42,12 +42,9 @@ class ProductTransformer extends TransformerAbstract
         return $this->item($product->supplier, new SupplierTransformer);
     }
 
-    public function includeFactory(Product $product)
+    public function includeFactories(Product $product)
     {
-        if (!$product->factory) {
-            return $this->null();
-        }
-        return $this->item($product->factory, new FactoryTransformer());
+        return $this->collection($product->factories, new FactoryTransformer());
     }
 
     public function includeComments(Product $product)

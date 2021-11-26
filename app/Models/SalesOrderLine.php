@@ -55,9 +55,7 @@ class SalesOrderLine extends BaseSalesOrderLine
 
 	public function getEstimatedShippingCostGbpAttribute()
     {
-	    return $this->total_cubic_ft
-            * setting('shipping_cost_per_cubic_foot_usd')
-            * setting('exchange_rate_usd');
+	    return $this->total_cubic_ft * setting('shipping_cost_per_cubic_foot');
     }
 
     public function selected_media()

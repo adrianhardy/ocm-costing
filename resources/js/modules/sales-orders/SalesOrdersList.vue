@@ -32,6 +32,9 @@
                         <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
                     </div>
                 </template>
+                <template #cell(shipping_cost_per_cubic_foot)="data">
+                    {{ data.value | cash_value }}
+                </template>
                 <template #cell(reference)="data">
                     <a :href="`/sales-orders/${data.item.id}/edit`">{{ data.value }}</a>
                 </template>
@@ -93,6 +96,9 @@ export default {
                     key: 'reference',
                     label: 'Order #',
                     sortable: true,
+                }, {
+                    key: 'shipping_cost_per_cubic_foot',
+                    sortable: true
                 }, {
                     key: 'created_at',
                     sortable: true

@@ -13,8 +13,8 @@
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Factory" v-if="!isSupplier">
-                                <factory-select all v-model="product.factory"/>
+                            <b-form-group label="Factories" v-if="!isSupplier">
+                                <factory-select v-model="product.factories" multiple />
                             </b-form-group>
                         </div>
                     </div>
@@ -63,37 +63,6 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-4">
-                            <div>UK postage</div>
-                            <b-form-select class="md 1" v-model="product.uk_postage_method">
-                                <b-form-select-option value="small_letter">Small letter</b-form-select-option>
-                                <b-form-select-option value="large_letter_package">Large letter package</b-form-select-option>
-                                <b-form-select-option value="package">Package</b-form-select-option>
-                                <b-form-select-option value="dpd_small">DPD small</b-form-select-option>
-                                <b-form-select-option value="dpd_large">DPD large</b-form-select-option>
-                                <b-form-select-option value="parcel_force">Parcel force</b-form-select-option>
-                            </b-form-select>
-                        </div>
-                        <div class="col-4">
-                            <div>EU postage</div>
-                            <b-form-select class="md 1" v-model="product.eu_postage_method">
-                                <b-form-select-option value="lightweight_airmail">Lightweight airmail</b-form-select-option>
-                                <b-form-select-option value="standard_airmail">Standard airmail</b-form-select-option>
-                                <b-form-select-option value="signed_for">Signed for</b-form-select-option>
-                                <b-form-select-option value="parcel_force">Parcel force</b-form-select-option>
-                            </b-form-select>
-                        </div>
-                        <div class="col-4">
-                            <div>Worldwide postage</div>
-                            <b-form-select class="md 1" v-model="product.row_postage_method">
-                                <b-form-select-option value="lightweight_airmail">Lightweight airmail</b-form-select-option>
-                                <b-form-select-option value="standard_airmail">Standard airmail</b-form-select-option>
-                                <b-form-select-option value="signed_for">Signed for</b-form-select-option>
-                                <b-form-select-option value="parcel_force">Parcel force (check amount)</b-form-select-option>
-                            </b-form-select>
-                        </div>
-                    </div>
                     <h5>Images </h5>
                         <edit-product-media :disabled="disabled" :product="product" @updated="refresh()"/>
                     <div class="text-muted" v-if="!product.id">Image upload available once product has been created
@@ -120,13 +89,52 @@
                                     <span v-else>0 / 500</span>
                                 </template>
                             </b-form-group>
+
                             <b-button variant="outline-primary float-right" @click="save()">
                                 {{ this.productId ? 'Update' : 'Create' }} Product
                             </b-button>
 
                         </b-tab>
                         <b-tab title="Dimensions">
-                            <h5>Carton</h5>
+                            <h4>Postage</h4>
+                            <div class="row">
+                                <div class="col-4">
+                                    <b-form-group label="UK Postage">
+                                        <b-form-select class="md 1" v-model="product.uk_postage_method">
+                                            <b-form-select-option value="small_letter">Small letter</b-form-select-option>
+                                            <b-form-select-option value="large_letter_package">Large letter package</b-form-select-option>
+                                            <b-form-select-option value="package">Package</b-form-select-option>
+                                            <b-form-select-option value="dpd_small">DPD small</b-form-select-option>
+                                            <b-form-select-option value="dpd_large">DPD large</b-form-select-option>
+                                            <b-form-select-option value="parcel_force">Parcel force</b-form-select-option>
+                                        </b-form-select>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="EU Postage">
+                                        <b-form-select class="md 1" v-model="product.eu_postage_method">
+                                            <b-form-select-option value="lightweight_airmail">Lightweight airmail</b-form-select-option>
+                                            <b-form-select-option value="standard_airmail">Standard airmail</b-form-select-option>
+                                            <b-form-select-option value="signed_for">Signed for</b-form-select-option>
+                                            <b-form-select-option value="parcel_force">Parcel force</b-form-select-option>
+                                        </b-form-select>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Worldwide postage">
+                                        <b-form-select class="md 1" v-model="product.row_postage_method">
+                                            <b-form-select-option value="lightweight_airmail">Lightweight airmail</b-form-select-option>
+                                            <b-form-select-option value="standard_airmail">Standard airmail</b-form-select-option>
+                                            <b-form-select-option value="signed_for">Signed for</b-form-select-option>
+                                            <b-form-select-option value="parcel_force">Parcel force (check amount)</b-form-select-option>
+                                        </b-form-select>
+                                    </b-form-group>
+                                </div>
+                            </div>
+                            <h5>
+                                Carton
+                                <small><a href="#" @click="showTestCalculator = !showTestCalculator">{{ showTestCalculator?'Hide':'Show' }} Test Calculator</a></small>
+                            </h5>
                             <div class="row">
                                 <div class="col-4">
                                     <b-form-group label="Units Per Case">
@@ -163,6 +171,31 @@
                                 <div class="col-3">
                                     <b-form-group label="Volume (ft)" class="no-input">
                                         {{ product.case_cubic_ft | 2dp_value }}
+                                    </b-form-group>
+                                </div>
+                            </div>
+                            <div class="row" v-if="showTestCalculator">
+                                <div class="col-4">
+                                    <b-form-group label="Exchange Rate">
+                                        <b-input-group prepend="$ : £">
+                                            <b-form-input v-model="test.exchange_rate_usd "/>
+                                        </b-input-group>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Cost to ship / cu.ft.">
+                                        <b-input-group prepend="£">
+                                            <b-form-input v-model="test.shipping_cost_per_cubic_foot"/>
+                                        </b-input-group>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Est. Landed Cost">
+                                        <b-input-group prepend="£">
+                                            <div class="form-control">
+                                                {{ testLandedCost | cash_value }}
+                                            </div>
+                                        </b-input-group>
                                     </b-form-group>
                                 </div>
                             </div>
@@ -284,11 +317,16 @@ import EditProductMedia from "./EditProductMedia";
 import FactorySelect from "../../components/FactorySelect";
 import LandedCostHistoryTab from "./LandedCostHistoryTab";
 import ProductSkuTab from "./ProductSkuTab";
+import LandedCostCalculator from '../../library/LandedCostCalculator';
 
 export default {
     name: "EditProduct",
     components: {ProductSkuTab, LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
     props: {
+        importDutyPc: Number,
+        commissionRatePc: Number,
+        exchangeRateUsd: Number,
+        shippingCostPerCubicFoot: Number,
         showCosting: Boolean,
         productId: Number,
         isSupplier: Boolean
@@ -300,13 +338,28 @@ export default {
         if (this.productId) {
             this.refresh();
         }
+        this.test = {
+            shipping_cost_per_cubic_foot: this.shippingCostPerCubicFoot,
+            exchange_rate_usd: this.exchangeRateUsd
+        }
     },
     computed: {
+        testLandedCost() {
+            return LandedCostCalculator.calculate(
+                this.product.case_cubic_ft,
+                this.product.unit_price,
+                this.test.exchange_rate_usd,
+                this.test.shipping_cost_per_cubic_foot,
+                this.commissionRatePc,
+                this.importDutyPc,
+                this.product.units_per_case
+            );
+        },
         disabled() {
             return !(this.productId > 0);
         },
         include() {
-            return 'supplier,comments,comments.commentator,media,factory,current_landed_cost_per_unit_gbp';
+            return 'supplier,comments,comments.commentator,media,factories,current_landed_cost_per_unit_gbp';
         },
         productLogFields() {
             return [{
@@ -393,6 +446,7 @@ export default {
                 params: {include: this.include}
             }).then(response => {
                 this.product = response.data;
+                this.test.unit_price = this.product.unit_price;
                 loader.hide();
             }).catch(error => {
                 this.$handleExceptionResponse(error, true);
@@ -401,13 +455,17 @@ export default {
     },
     data() {
         return {
+            showTestCalculator: false,
+            test: {
+                exchange_rate_usd: this.exchangeRateUsd
+            },
+            recalculate_elc: false,
             note: '',
             product: {
                 product_description: '',
                 packing_instructions: '',
                 comments: [],
-                supplier: {},
-                factory: {}
+                supplier: {}
             }
         }
     }

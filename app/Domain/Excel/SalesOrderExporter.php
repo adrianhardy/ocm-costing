@@ -260,7 +260,7 @@ class SalesOrderExporter
                 $cell->setValue($salesOrder->supplier->name);
                 break;
             case '%SUPPLIER_TELEPHONE%':
-                $cell->setValue($salesOrder->supplier->contact_phone);
+                $cell->setValue("Tel: " . $salesOrder->supplier->contact_phone);
                 break;
             case '%SUPPLIER_ADDRESS_AS_LINE%':
                 $cell->setValue($salesOrder->supplier->delivery_address);

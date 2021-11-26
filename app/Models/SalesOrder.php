@@ -28,7 +28,9 @@ class SalesOrder extends BaseSalesOrder
         'finalised_at',
         'sent_at',
 		'fx_rate',
-		'supplier_id'
+		'supplier_id',
+        'shipping_cost_per_cubic_foot',
+        'supplier_reference'
 	];
 
 	public function getStageDescriptionAttribute()

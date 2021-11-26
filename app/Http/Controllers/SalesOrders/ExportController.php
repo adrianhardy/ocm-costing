@@ -22,10 +22,10 @@ class ExportController extends Controller
         );
         abort_unless($template->isFile() && $template->isReadable(), 400, 'Template not found');
         $exporter = new SalesOrderExporter($template);
-        $resource = $exporter->generate($salesOrder);
+        $blob = $exporter->generate($salesOrder);
 
-        return response()->streamDownload(function() use ($resource) {
-            fpassthru($resource);
+        return response()->streamDownload(function() use ($blob) {
+            echo $blob;
         }, "{$salesOrder->sales_order_number}.xlsx");
 
     }

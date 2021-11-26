@@ -1,5 +1,5 @@
 <template>
-  <vue-select :disabled="readonly" ref="select" :value="value" @input="$emit('selected', $event) && $emit('input', $event)" :options="options" :filterable="true" label="name" />
+  <vue-select :multiple="multiple" :disabled="readonly" ref="select" :value="value" @input="$emit('selected', $event) && $emit('input', $event)" :options="options" :filterable="true" label="name" />
 </template>
 
 <script>
@@ -8,6 +8,7 @@ export default {
   name: "FactorySelect",
   components: {VueSelect},
   props: {
+    multiple: Boolean,
     'readonly': Boolean,
     'response-include': {
       type: String,

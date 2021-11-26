@@ -21,6 +21,7 @@ class ProductsController extends Controller
      */
     public function show(Request $request, Product $product)
     {
+        // $this->authorize('view', $product);
         $product->load('comments', 'comments.commentator', 'media');
         return fractal($product, new ProductTransformer());
     }
@@ -42,7 +43,7 @@ class ProductsController extends Controller
 
         $this->validate($request, [
             'supplier.id'           => 'required|exists:suppliers,id',
-            'factory.id'            => 'nullable|exists:factories,id',
+            'factories.*.id'        => 'nullable|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => ['required', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
@@ -63,6 +64,9 @@ class ProductsController extends Controller
             'uk_postage_method'     => 'nullable|sometimes',
             'eu_postage_method'     => 'nullable|sometimes',
             'row_postage_method'    => 'nullable|sometimes'
+        ], [], [
+            'supplier.id' => 'Supplier',
+            'factories.*.id' => 'Factory'
         ]);
 
         $product->fill($request->only([
@@ -88,12 +92,10 @@ class ProductsController extends Controller
             'uk_postage_method',
             'eu_postage_method',
             'row_postage_method'
-        ]), [], [
-            'supplier.id' => 'Supplier',
-            'factory.id' => 'Factory'
-        ]);
+        ]));
+
         $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
-        $product->factory()->associate((Factory::find($request->input('factory.id'))));
+        $product->factories()->sync(Factory::query()->findMany($request->input('factories.*.id')));
         $product->save();
         return response()->json(fractal($product->fresh(), new ProductTransformer()));
     }

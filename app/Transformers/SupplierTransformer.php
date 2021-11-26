@@ -22,7 +22,7 @@ class SupplierTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        //
+        'currency'
     ];
     
     /**
@@ -41,5 +41,13 @@ class SupplierTransformer extends TransformerAbstract
             'contact_email',
             'contact_phone'
         ]);
+    }
+
+    public function includeCurrency(Supplier $supplier)
+    {
+        if (!$supplier->currency) {
+            return $this->null();
+        }
+        return $this->item($supplier->currency, new CurrencyTransformer);
     }
 }

@@ -6,9 +6,9 @@
 
 namespace App\Models\Base;
 
-use App\Models\Factory;
 use App\Models\ProductLandedCost;
 use App\Models\ProductPricing;
+use App\Models\ProductsFactory;
 use App\Models\QuoteLine;
 use App\Models\SalesOrderLine;
 use App\Models\Supplier;
@@ -43,7 +43,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $packing_instructions
  * @property string|null $product_description
  * @property string|null $deleted_at
- * @property int|null $factory_id
  * @property bool|null $is_excluded_from_commission
  * @property string|null $primary_sku
  * @property string|null $primary_asin
@@ -53,10 +52,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $eu_postage_method
  * @property string|null $row_postage_method
  * 
- * @property Factory|null $factory
  * @property Supplier $supplier
  * @property Collection|ProductLandedCost[] $product_landed_costs_product
  * @property Collection|ProductPricing[] $product_pricings_product
+ * @property Collection|ProductsFactory[] $products_factories_product
  * @property Collection|QuoteLine[] $quote_lines_product
  * @property Collection|SalesOrderLine[] $sales_order_lines_product
  *
@@ -81,14 +80,8 @@ class Product extends Model
 		'unit_width_m' => 'float',
 		'unit_price' => 'float',
 		'est_landed_cost_gbp' => 'float',
-		'factory_id' => 'int',
 		'is_excluded_from_commission' => 'bool'
 	];
-
-	public function factory()
-	{
-		return $this->belongsTo(Factory::class);
-	}
 
 	public function supplier()
 	{
@@ -103,6 +96,11 @@ class Product extends Model
 	public function product_pricings_product()
 	{
 		return $this->hasMany(ProductPricing::class);
+	}
+
+	public function products_factories_product()
+	{
+		return $this->hasMany(ProductsFactory::class);
 	}
 
 	public function quote_lines_product()

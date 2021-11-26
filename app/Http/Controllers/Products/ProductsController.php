@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Products;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -30,6 +31,11 @@ class ProductsController extends Controller
      */
     public function edit(Product $product)
     {
-        return response()->view('products.edit', ['product' => $product]);
+        return response()->view(
+            'products.edit', [
+                'product' => $product,
+                'shipping_cost_per_cubic_foot' => setting('shipping_cost_per_cubic_foot'),
+                'exchange_rate_usd' => Currency::query()->where('code', 'USD')->value('default_fx_to_gbp')
+            ]);
     }
 }

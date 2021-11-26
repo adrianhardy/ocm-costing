@@ -122,10 +122,10 @@ export default {
     return {
       expandedRows: {},
       fields: [
+        {key: 'item_number', label: 'Item #'},
+        {key: 'article_number', label: 'Art. #'},
         {key: 'product.name', label: 'name'},
         {key: 'units_requested', label: 'Requested'},
-        {key: 'article_number', label: 'Art. #'},
-        {key: 'item_number', label: 'Item #'},
         {key: 'unit_price', label: 'Unit Price'},
         {key: 'landed_cost.shipping_cost_gbp', label: 'Est Shipping Cost GBP'},
         {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Est Landed Cost / Unit GBP'},

@@ -180,4 +180,9 @@ class Product extends BaseProduct implements HasMedia
         return $this->hasMany(ProductLandedCost::class);
     }
 
+    public function factories()
+    {
+        return $this->belongsToMany(Factory::class, 'products_factories');
+    }
+
 }

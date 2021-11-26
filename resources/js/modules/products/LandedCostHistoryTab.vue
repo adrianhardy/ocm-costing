@@ -71,6 +71,9 @@
             <template #cell(length_cm)="data">
                 {{ data.item.length_cm }}x{{ data.item.width_cm }}x{{ data.item.height_cm }}
             </template>
+            <template #cell(shipping_cost_per_cuft_usd)="data">
+                {{ data.value * data.item.fx_rate | cash_value }}
+            </template>
             <template #cell(landed_cost_per_unit_gbp)="data">
                 {{ data.value | cash_value }}
             </template>
@@ -99,7 +102,7 @@ export default {
     },
     data() {
         return {
-            mode: 'add',
+            mode: '',
             cost: {
                 currency: {},
                 date: null,
@@ -124,7 +127,7 @@ export default {
                 label: 'FX'
             }, {
                 key: 'shipping_cost_per_cuft_usd',
-                label: 'USD/cuft'
+                label: 'GBP/cuft'
             }, {
                 key: 'case_cubic_ft',
                 label: 'Case cuft'

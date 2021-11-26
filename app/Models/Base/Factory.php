@@ -6,7 +6,8 @@
 
 namespace App\Models\Base;
 
-use App\Models\Product;
+use App\Models\ProductsFactory;
+use App\Models\SalesOrder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $contact_phone
  * @property string|null $country
  * 
- * @property Collection|Product[] $products_factory
+ * @property Collection|ProductsFactory[] $products_factories_factory
+ * @property Collection|SalesOrder[] $sales_orders_factory
  *
  * @package App\Models\Base
  */
@@ -32,8 +34,13 @@ class Factory extends Model
 {
 	protected $table = 'factories';
 
-	public function products_factory()
+	public function products_factories_factory()
 	{
-		return $this->hasMany(Product::class);
+		return $this->hasMany(ProductsFactory::class);
+	}
+
+	public function sales_orders_factory()
+	{
+		return $this->hasMany(SalesOrder::class);
 	}
 }
