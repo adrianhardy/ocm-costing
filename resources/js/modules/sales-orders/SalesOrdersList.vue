@@ -92,7 +92,7 @@ export default {
                     key: 'sent_at',
                     sortable: true
                 }, {
-                    key: 'status'
+                    key: 'status_description'
               }
             ]
         }

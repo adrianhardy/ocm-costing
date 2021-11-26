@@ -50,7 +50,9 @@ class SalesOrderLine extends BaseSalesOrderLine
         'unit_width_m',
         'unit_length_m',
         'unit_height_m',
-        'barcode'
+        'barcode',
+        'sales_order_notes'
+
 	];
 
 	public function getEstimatedShippingCostGbpAttribute()

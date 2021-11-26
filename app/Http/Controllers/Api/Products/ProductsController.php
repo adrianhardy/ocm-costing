@@ -163,6 +163,10 @@ class ProductsController extends Controller
         $paginator = $productRepository->paginate(
             $request->input('per_page', 100)
         );
+
+        if ($request->input('factory_id')) {
+
+        }
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductTransformer
         ));

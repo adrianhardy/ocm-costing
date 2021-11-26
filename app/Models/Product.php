@@ -61,7 +61,9 @@ class Product extends BaseProduct implements HasMedia
         'est_landed_cost_gbp',
         'is_excluded_from_commission',
         'primary_sku',
-        'primary_asin'
+        'primary_asin',
+        'additional_skus',
+        'additional_asins'
     ];
 
 	protected $fillable = [

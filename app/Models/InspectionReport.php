@@ -68,7 +68,8 @@ class InspectionReport extends BaseInspectionReport
 		'appearance_comments',
 		'comments',
 		'completed_at',
-		'approver_id'
+		'approver_id',
+        'sales_order_notes'
 	];
 
     /**

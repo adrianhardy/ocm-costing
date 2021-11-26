@@ -80,6 +80,7 @@ class SalesOrdersController extends Controller
         $so->supplier()->associate(Supplier::find($request->input('supplier.id')));
         $so->fx_rate = $so->currency->default_fx_to_gbp;
         $so->save();
+        $so->setStatus(SalesOrder::STATUS_DRAFT);
         return response()->json(fractal(
             $so, new SalesOrderTransformer
         ));
@@ -96,22 +97,28 @@ class SalesOrdersController extends Controller
         $this->authorize('view', $sales_order);
         if(!$request->input('finalised')){
             $request->validate([
-                'supplier.id' => 'required|exists:suppliers,id',
-                'currency.id' => 'required|exists:currencies,id',
-                'fx_rate' => 'required|min:0|numeric'
+                'supplier.id'       => 'required|exists:suppliers,id',
+                'currency.id'       => 'required|exists:currencies,id',
+                'fx_rate'           => 'required|min:0|numeric',
+                'status'            => 'nullable|sometimes|in:' . implode(',', array_keys(SalesOrder::STATUSES))
             ], [], [
-                'currency.id' => 'currency',
-                'supplier.id' => 'supplier',
-                'fx_rate' => 'FX (Foreign Exchange Rate)'
+                'currency.id'       => 'currency',
+                'supplier.id'       => 'supplier',
+                'fx_rate'           => 'FX (Foreign Exchange Rate)',
+                'sales_order_notes' => 'min:0|max:2000'
             ]);
             $currency = Currency::query()->findOrFail($request->input('currency.id'));
             $supplier = Supplier::query()->findOrFail($request->input('supplier.id'));
             $sales_order->currency()->associate($currency);
             $sales_order->supplier()->associate($supplier);
-
             $sales_order->fill($request->only([
-                'reference', 'fx_rate'
+                'reference', 'fx_rate', 'sales_order_notes'
             ]));
+
+            if ($request->input('status')) {
+                $sales_order->setStatus($request->input('status'));
+            }
+
 
         }
 

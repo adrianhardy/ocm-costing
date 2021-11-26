@@ -51,6 +51,7 @@
                     </b-form-group>
                 </div>
             </div>
+
             <b-table
                 show-empty
                 empty-text="No sales order lines to show"
@@ -104,6 +105,7 @@
                             size="sm"
                             :readonly="salesOrder.is_finalised"
                             v-model="data.item.product"
+                            :factory-id="salesOrder.factory.id"
                             @input="selectProduct($event, data.item)"
                         />
                         <div v-else>
@@ -194,18 +196,43 @@
                 </template>
                 <template #custom-foot>
                     <b-tr>
-                        <b-th colspan="10"></b-th>
-                        <b-th class="text-right"></b-th>
+                        <b-th colspan="3">
+                            <b-form-select v-model="salesOrder.status" class="mb-3" @change="save()">
+                                <b-form-select-option value="">[Not Set]</b-form-select-option>
+                                <b-form-select-option value="draft">Draft</b-form-select-option>
+                                <b-form-select-option value="quote">Quote</b-form-select-option>
+                                <b-form-select-option value="quote_request">Quote Request</b-form-select-option>
+                                <b-form-select-option value="sales_order">Sales Order</b-form-select-option>
+                                <b-form-select-option value="confirmed_sales_order">Confirmed Sales Order</b-form-select-option>
+                            </b-form-select>
+                        </b-th>
+                        <b-th colspan="4">
+                            <b-form-textarea
+                                id="textarea"
+                                v-model="salesOrder.sales_order_notes"
+                                placeholder="Please Place Any Notes Here"
+                                rows="4"
+                                size="md"
+                                @change="save()"
+                            ></b-form-textarea>
+                        </b-th>
                         <b-th></b-th>
+                        <b-td>
+                            <div><strong>Pieces</strong></div>
+                            {{ totalUnits }}
+                        </b-td>
+                        <b-td>
+                            <div><strong>Cartons</strong></div>
+                            {{ totalCartons }}
+                        </b-td>
                         <b-td>
                             <div><strong>Total ft <sup>3</sup></strong></div>
                             {{ totalCubicFeet }}
                         </b-td>
-                        <b-td>
+                        <b-td colspan="2" class="text-right">
                             <strong>Total</strong> <br/>
                             {{ salesOrder.currency.code }}
                             {{ salesOrder.goods_cost | 2dp_value }} <br/>
-                            GBP {{ salesOrder.goods_cost_gbp | 2dp_value }}
                         </b-td>
                     </b-tr>
                 </template>
@@ -303,10 +330,26 @@ export default {
         totalCubicFeet() {
             const cases = _.map(this.salesOrder.lines, line => {
                 const cases = Math.round(line.units_requested / line.units_per_case);
-                return line.case_cubic_ft * cases;
+                return line.units_per_case * cases;
             });
 
             return _.sum(cases).toFixed(2);
+        },
+        totalCartons() {
+            let count = 0;
+            for (let i  in this.salesOrder.lines) {
+                const line = this.salesOrder.lines[i];
+                count += line.units_requested / line.units_per_case;
+            }
+            return Math.round(count);
+        },
+        totalUnits() {
+            let count = 0;
+            for (let i  in this.salesOrder.lines) {
+                const line = this.salesOrder.lines[i];
+                count += line.units_requested;
+            }
+            return count;
         },
         urlPrefix() {
             return `/api/${this.isSupplier ? 'supplier/' : ''}sales-orders`
@@ -471,7 +514,6 @@ export default {
         },
 
         save(model = false) {
-            console.log(this.salesOrder.reference);
             const loader = this.$loading.show();
             this.$http.put(
                 `${this.urlPrefix}/${this.salesOrder.id}`, (model) ? model : this.salesOrder, {params: {include: this.include}}
