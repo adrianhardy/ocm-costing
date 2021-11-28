@@ -6,6 +6,7 @@ use anlutro\LaravelSettings\ServiceProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Currency;
+use App\Models\Factory;
 use App\Models\Repositories\SalesOrderRepository;
 use App\Models\SalesOrder;
 use App\Models\Supplier;
@@ -108,20 +109,24 @@ class SalesOrdersController extends Controller
         if(!$request->input('finalised')){
             $request->validate([
                 'supplier.id' => 'required|exists:suppliers,id',
+                'factory.id' => 'required|exists:factories,id',
                 'currency.id' => 'required|exists:currencies,id',
                 'fx_rate' => 'required|min:0|numeric'
             ], [], [
                 'currency.id' => 'currency',
                 'supplier.id' => 'supplier',
+                'factory.id' => 'factory',
                 'fx_rate' => 'FX (Foreign Exchange Rate)'
             ]);
             $currency = Currency::query()->findOrFail($request->input('currency.id'));
             $supplier = Supplier::query()->findOrFail($request->input('supplier.id'));
+            $factory = Factory::query()->findOrFail($request->input('factory.id'));
             $sales_order->currency()->associate($currency);
             $sales_order->supplier()->associate($supplier);
+            $sales_order->factory()->associate($factory);
 
             $sales_order->fill($request->only([
-                'reference', 'fx_rate'
+                'reference', 'fx_rate', 'supplier_reference'
             ]));
 
         }

@@ -6,19 +6,19 @@
                     <b-form-group label="Product Description">
                         <b-form-input v-model="product.name" required="required"/>
                     </b-form-group>
-                    <div class="row">
+                    <div class="row" v-if="!isSupplier">
                         <div class="col-6">
-                            <b-form-group label="Supplier" v-if="!isSupplier">
+                            <b-form-group label="Supplier">
                                 <supplier-select all v-model="product.supplier"/>
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Factories" v-if="!isSupplier">
+                            <b-form-group label="Factories" >
                                 <factory-select v-model="product.factories" multiple />
                             </b-form-group>
                         </div>
                     </div>
-                    <b-form-group description="When estimating landed costs, no commission will be added" v-if="showCosting">
+                    <b-form-group description="When estimating landed costs, no commission will be added" v-if="!isSupplier && showCosting">
                         <b-form-checkbox v-model="product.is_excluded_from_commission">Exclude from commission
                         </b-form-checkbox>
                     </b-form-group>
@@ -97,7 +97,7 @@
                         </b-tab>
                         <b-tab title="Dimensions">
                             <h4>Postage</h4>
-                            <div class="row">
+                            <div class="row" v-if="!isSupplier">
                                 <div class="col-4">
                                     <b-form-group label="UK Postage">
                                         <b-form-select class="md 1" v-model="product.uk_postage_method">
@@ -133,7 +133,9 @@
                             </div>
                             <h5>
                                 Carton
-                                <small><a href="#" @click="showTestCalculator = !showTestCalculator">{{ showTestCalculator?'Hide':'Show' }} Test Calculator</a></small>
+                                <small v-if="!isSupplier">
+                                    <a href="#" @click="showTestCalculator = !showTestCalculator">{{ showTestCalculator?'Hide':'Show' }} Test Calculator</a>
+                                </small>
                             </h5>
                             <div class="row">
                                 <div class="col-4">
@@ -174,7 +176,7 @@
                                     </b-form-group>
                                 </div>
                             </div>
-                            <div class="row" v-if="showTestCalculator">
+                            <div class="row" v-if="!isSupplier && showTestCalculator">
                                 <div class="col-4">
                                     <b-form-group label="Exchange Rate">
                                         <b-input-group prepend="$ : £">

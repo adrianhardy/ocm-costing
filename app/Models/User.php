@@ -25,6 +25,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $updated_at
  * @property Supplier $supplier
  *
+ * @property-read $is_supplier
+ *
  */
 class User extends Authenticatable
 {
@@ -93,6 +95,11 @@ class User extends Authenticatable
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function getIsSupplierAttribute()
+    {
+        return $this->supplier_id > 0 && $this->hasAnyRole(['supplier']);
     }
 
 }

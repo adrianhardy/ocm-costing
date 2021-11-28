@@ -1,11 +1,22 @@
 export default {
     install(Vue) {
-        Vue.prototype.$paginatedFetch = function(url, pagination, ctx, params = {})
+        /**
+         *
+         * @param url
+         * @param pagination
+         * @param ctx
+         * @param params
+         * @param mapping provide an option to map columns for sorting
+         * @returns {Promise<AxiosResponse<any>>}
+         */
+        Vue.prototype.$paginatedFetch = function(url, pagination, ctx, params = {}, mapping = {})
         {
+            const sortBy = mapping[ctx.sortBy]?mapping[ctx.sortBy]:ctx.sortBy;
+
             const payload = Object.assign({
                 page: pagination.currentPage,
                 sortedBy: ctx.sortDesc ? 'desc' : 'asc',
-                orderBy: ctx.sortBy
+                orderBy: sortBy
             }, params);
 
             if (pagination.perPage > 0) {

@@ -29,12 +29,12 @@
             <div class="row" v-if="!isSupplier ">
                 <div class="col-12 col-md-2">
                     <b-form-group label="Supplier">
-                        <supplier-select v-model="salesOrder.supplier" @select="save()"/>
+                        <supplier-select v-model="salesOrder.supplier" @selected="save()"/>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-2">
                     <b-form-group label="Factory">
-                        <factory-select v-model="salesOrder.factory" @select="save()" />
+                        <factory-select v-model="salesOrder.factory" @selected="save()" />
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-1">
@@ -117,6 +117,7 @@
                 </template>
                 <template #cell(product.name)="data">
                         <product-select
+                            :sales-order-id="salesOrder.id"
                             v-if="!salesOrder.finalised_at"
                             size="sm"
                             :readonly="salesOrder.is_finalised"
@@ -414,7 +415,7 @@ export default {
             }
         },
         include() {
-            return 'supplier,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost';
+            return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost';
         }
     },
     methods: {

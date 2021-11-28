@@ -58,7 +58,13 @@ class LinesController extends Controller
         ]));
 
         if ($request->input('product.id') && $request->input('product.id') != $line->product_id) {
+            /** @var Product $product */
             $product = Product::findOrFail($request->input('product.id'));
+
+            if (!$product->factories->contains($salesOrder->factory)) {
+                abort(400, 'You can only add products whose factories contain ' . $salesOrder->factory->name);
+            }
+
             $line->fill([
                 'name'                  => '' . $product->name,
                 'item_number'           => '' . $product->item_number,

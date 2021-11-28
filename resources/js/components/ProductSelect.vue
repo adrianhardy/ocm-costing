@@ -30,6 +30,7 @@ export default {
     name: "ProductSelect",
     components: {VueSelect},
     props: {
+        salesOrderId: Number,
         'readonly': Boolean,
         'size': String,
         'value': [Object, String, Array]
@@ -39,6 +40,7 @@ export default {
             if (search.length < 2) return;
 
             const params = {
+                sales_order_id: this.salesOrderId,
                 search: search,
                 page: 1,
                 per_page: 50,

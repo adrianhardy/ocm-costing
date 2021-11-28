@@ -68,30 +68,9 @@ export default {
     filters: {
         date: dateFilter
     },
-    methods: {
-        items(ctx) {
-
-            return this.$paginatedFetch(
-                `/api/${this.isSupplier?'supplier/':''}sales-orders`,
-                this.pagination,
-                ctx, {
-                    search: this.search,
-                    stage: this.stage,
-                    include: ''
-                }
-            );
-        }
-    },
-    data() {
-        return {
-            search: '',
-            stage: '',
-            pagination: {
-                total: 0,
-                perPage: 100,
-                currentPage: 1,
-            },
-            fields: [
+    computed: {
+        fields() {
+            const fields = [
                 {
                     key: 'reference',
                     label: 'Order #',
@@ -107,8 +86,53 @@ export default {
                     sortable: true
                 }, {
                     key: 'status'
-              }
-            ]
+                },
+                {
+                    key: 'factory.name',
+                    sortable: true,
+                    label: 'Factory'
+                }
+            ];
+
+            if (!this.isSupplier) {
+                fields.push({
+                    key: 'supplier.name',
+                    sortable: true,
+                    label: 'Supplier'
+                });
+            }
+
+            return fields;
+        }
+    },
+    methods: {
+        items(ctx) {
+            const isSupplier = this.isSupplier;
+            const url = `/api/${isSupplier?'supplier/':''}sales-orders`;
+            const include = isSupplier?'':'supplier,factory';
+            return this.$paginatedFetch(
+                url,
+                this.pagination,
+                ctx, {
+                    search: this.search,
+                    stage: this.stage,
+                    include
+                }, {
+                    'supplier.name': 'suppliers|name',
+                    'factory.name': 'factories|name'
+                }
+            );
+        }
+    },
+    data() {
+        return {
+            search: '',
+            stage: '',
+            pagination: {
+                total: 0,
+                perPage: 100,
+                currentPage: 1,
+            }
         }
     }
 }

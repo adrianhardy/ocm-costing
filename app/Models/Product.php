@@ -23,7 +23,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $unit_width_cm
  * @property $unit_height_cm
  * @property Collection|ProductLandedCost[] $landed_costs
-
+ * @property Collection|Factory[] $factories
  * @property-read $current_landed_cost_per_unit_gbp
  * @property-read $case_cubic_ft
  */
