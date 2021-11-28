@@ -92,6 +92,8 @@ class SalesOrderTransformer extends TransformerAbstract
             'goods_cost',
             'goods_cost_gbp',
             'status',
+            'status_description',
+            'sales_order_notes',
             'shipping_cost_per_cubic_foot',
             'supplier_reference'
         ]);

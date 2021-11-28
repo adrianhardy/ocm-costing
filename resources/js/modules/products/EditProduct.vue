@@ -288,6 +288,13 @@
                                 </template>
                                 <template #cell(extra)="data">
                                     <div v-if="data.item && data.item.attributes">
+                                        <span v-b-popover.hover="data.item.attributes.primary_asin"title="ASIN" style="cursor:pointer">
+                                        <b-icon-box-seam/>
+                                      </span>
+                                        <span v-b-popover.hover="data.item.attributes.primary_sku"
+                                              title="SKU" style="cursor:pointer">
+                                        <b-icon-box-seam/>
+                                      </span>
                                       <span v-b-popover.hover="data.item.attributes.packing_instructions"
                                             title="Packing Instructions" style="cursor:pointer">
                                         <b-icon-box-seam/>
@@ -375,7 +382,7 @@ export default {
                 label: 'ELC'
             }, {
                 key: 'attributes.units_per_case',
-                label: 'Qty/Ctn'
+                label: 'Q/Ctn'
             }, {
                 key: 'attributes.length_cm',
                 label: 'L'

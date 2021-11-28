@@ -33,7 +33,8 @@ export default {
         salesOrderId: Number,
         'readonly': Boolean,
         'size': String,
-        'value': [Object, String, Array]
+        'value': [Object, String, Array],
+        factoryId: Number
     },
     methods: {
         debounceFetch: _.debounce(async (search, loading, vm) => {
@@ -44,7 +45,8 @@ export default {
                 search: search,
                 page: 1,
                 per_page: 50,
-                include: 'media'
+                include: 'media',
+                factory_id: this.factoryId
             };
 
             loading(true);

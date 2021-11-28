@@ -92,6 +92,7 @@ class SalesOrdersController extends Controller
 
         $so->fx_rate = $so->currency->default_fx_to_gbp;
         $so->save();
+        $so->setStatus(SalesOrder::STATUS_DRAFT);
         return response()->json(fractal(
             $so, new SalesOrderTransformer
         ));
@@ -108,14 +109,16 @@ class SalesOrdersController extends Controller
         $this->authorize('view', $sales_order);
         if(!$request->input('finalised')){
             $request->validate([
-                'supplier.id' => 'required|exists:suppliers,id',
-                'factory.id' => 'required|exists:factories,id',
-                'currency.id' => 'required|exists:currencies,id',
-                'fx_rate' => 'required|min:0|numeric'
+                'supplier.id'       => 'required|exists:suppliers,id',
+                'factory.id'        => 'required|exists:factories,id',
+                'currency.id'       => 'required|exists:currencies,id',
+                'fx_rate'           => 'required|min:0|numeric',
+                'status'            => 'nullable|sometimes|in:' . implode(',', array_keys(SalesOrder::STATUSES)),
+                'sales_order_notes' => 'min:0|max:2000'
             ], [], [
-                'currency.id' => 'currency',
-                'supplier.id' => 'supplier',
-                'factory.id' => 'factory',
+                'currency.id'       => 'currency',
+                'supplier.id'       => 'supplier',
+                'factory.id'        => 'factory',
                 'fx_rate' => 'FX (Foreign Exchange Rate)'
             ]);
             $currency = Currency::query()->findOrFail($request->input('currency.id'));
@@ -126,9 +129,12 @@ class SalesOrdersController extends Controller
             $sales_order->factory()->associate($factory);
 
             $sales_order->fill($request->only([
-                'reference', 'fx_rate', 'supplier_reference'
+                'reference', 'fx_rate', 'sales_order_notes', 'supplier_reference'
             ]));
 
+            if ($request->input('status')) {
+                $sales_order->setStatus($request->input('status'));
+            }
         }
 
         if ($request->input('finalised')) {
