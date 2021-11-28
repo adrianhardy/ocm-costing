@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Api\SalesOrders;
 use anlutro\LaravelSettings\ServiceProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
+use App\Mail\SupplierSalesOrderFinalised;
 use App\Models\Currency;
 use App\Models\Factory;
 use App\Models\Repositories\SalesOrderRepository;
 use App\Models\SalesOrder;
 use App\Models\Supplier;
+use App\Models\User;
 use App\Services\RafService;
 use App\Transformers\SalesOrderTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class SalesOrdersController extends Controller
 {
@@ -140,6 +143,16 @@ class SalesOrdersController extends Controller
         if ($request->input('finalised')) {
             if (\Auth::user()->is_supplier) {
                 $sales_order->supplier_finalised_at = Carbon::now();
+                // Send an email to every super to say that the document has
+                // been finalised by the supplier:
+                foreach (User::query()->role(['super']) as $super) {
+                    $mail = new SupplierSalesOrderFinalised(
+                        $sales_order,
+                        \Auth::user()
+                    );
+                    $mail->to($super->email, $super->name);
+                    Mail::send($mail);
+                }
             } else {
                 $sales_order->finalised_at = Carbon::now();
                 foreach($sales_order->lines as $line) {
