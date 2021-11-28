@@ -49,7 +49,8 @@ class SalesOrder extends BaseSalesOrder
 		'supplier_id',
         'sales_order_notes',
         'shipping_cost_per_cubic_foot',
-        'supplier_reference'
+        'supplier_reference',
+        'supplier_finalised_at'
 	];
 
 	public function getStageDescriptionAttribute()
@@ -65,7 +66,13 @@ class SalesOrder extends BaseSalesOrder
         return $this->finalised_at !== null;
     }
 
-	public function getIsSentAttribute()
+    public function getIsSupplierFinalisedAttribute()
+    {
+        return $this->supplier_finalised_at !== null;
+    }
+
+
+    public function getIsSentAttribute()
     {
         return $this->sent_at !== null;
     }

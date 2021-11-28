@@ -138,12 +138,16 @@ class SalesOrdersController extends Controller
         }
 
         if ($request->input('finalised')) {
-            $sales_order->finalised_at = Carbon::now();
-            foreach($sales_order->lines as $line) {
-                try {
-                    $rafService->createProduct($line->product);
-                } catch (\Exception $ex) {
-                    // log exception here
+            if (\Auth::user()->is_supplier) {
+                $sales_order->supplier_finalised_at = Carbon::now();
+            } else {
+                $sales_order->finalised_at = Carbon::now();
+                foreach($sales_order->lines as $line) {
+                    try {
+                        $rafService->createProduct($line->product);
+                    } catch (\Exception $ex) {
+                        // log exception here
+                    }
                 }
             }
         }

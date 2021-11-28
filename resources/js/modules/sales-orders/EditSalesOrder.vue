@@ -258,7 +258,7 @@
             </b-table>
             <div class="d-flex justify-content-between w-100">
                 <div v-if="!isSupplier">
-                    <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg"
+                    <b-button v-if="showFinaliseButton" variant="primary" size="lg"
                               @click="finalise">
                         Finalise
                     </b-button>
@@ -349,6 +349,11 @@ export default {
         this.refresh();
     },
     computed: {
+        showFinaliseButton() {
+            return this.salesOrder.id > 0 && (
+                !this.salesOrder.is_finalised || (this.isSupplier && !this.salesOrder.is_supplier_finalised)
+            );
+        },
         totalCubicFeet() {
             const cases = _.map(this.salesOrder.lines, line => {
                 const cases = Math.round(line.units_requested / line.units_per_case);

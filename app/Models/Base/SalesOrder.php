@@ -38,6 +38,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float $shipping_cost_per_cubic_foot
  * @property string|null $supplier_reference
  * @property int|null $factory_id
+ * @property string|null $sales_order_notes
+ * @property Carbon|null $supplier_finalised_at
  * 
  * @property Currency|null $currency
  * @property Factory|null $factory
@@ -68,7 +70,8 @@ class SalesOrder extends Model
 
 	protected $dates = [
 		'sent_at',
-		'finalised_at'
+		'finalised_at',
+		'supplier_finalised_at'
 	];
 
 	public function currency()
