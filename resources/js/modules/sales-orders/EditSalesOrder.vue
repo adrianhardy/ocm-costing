@@ -178,12 +178,12 @@
                     </b-form-group>
                     <b-form-group>
                         <b-input-group
-                            prepend="£ELC" size="sm" class="no-input" v-b-tooltip.hover title="Estimated Landed Cost">
-                            <b-input class="w-50" readonly :value="data.item.est_landed_cost_per_unit_gbp | cash_value"></b-input>
+                            prepend="ELC" size="sm" class="no-input" v-b-tooltip.hover title="Estimated Landed Cost">
+                            <b-input class="w-50" readonly :value="data.item.product.est_landed_cost_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
                     <b-form-group>
-                        <b-input-group prepend="£CLC" size="sm" class="no-input" v-b-tooltip.hover title="Current Landed Cost"  >
+                        <b-input-group prepend="CLC" size="sm" class="no-input" v-b-tooltip.hover title="Current Landed Cost"  >
                             <b-input class="w-50" readonly :value="data.item.product.current_landed_cost_per_unit_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
@@ -271,7 +271,15 @@
                     <b-button class="mr-1" size="lg" variant="success" @click="add" v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
                         Add Line
                     </b-button>
-
+                    <b-button
+                        v-if="!isSupplier && salesOrder.is_finalised && !hasSelectedRows"
+                        variant="primary"
+                        class="mr-1"
+                        size="lg"
+                        @click="runLandedCostCalc()"
+                    >
+                        Run Landed Cost Calculation
+                    </b-button>
                     <b-button
                         class="mr-1"
                         size="lg"
@@ -306,6 +314,10 @@
             :order="salesOrder"
             :lines="selectedRows"
             ref="update-inbound-shipments-modal"
+            :init-fx-rate="salesOrder.fx_rate"
+            :init-shipping-cost-per-cubic-foot="salesOrder.shipping_cost_per_cubic_foot"
+            :commission-rate="state['commission_rate']"
+            :import-duty="state['import_duty']"
         />
     </div>
 </template>
@@ -315,7 +327,7 @@ import {dateFilter} from "vue-date-fns";
 import SupplierSelect from "../../components/SupplierSelect";
 import CurrencySelect from "../../components/CurrencySelect";
 import ProductSelect from "../../components/ProductSelect";
-import UpdateInboundShipmentsModal from "./UpdateInboundShipmentsModal";
+import UpdateInboundShipmentsModal from "./log-shipments/UpdateInboundShipmentsModal";
 import SalesOrderHistoryModal from "./SalesOrderHistoryModal";
 import SupplierAccessModal from "./SupplierAccessModal";
 import ProductDimensionsInput from "../../components/ProductDimensionsInput";
@@ -349,6 +361,9 @@ export default {
         this.refresh();
     },
     computed: {
+        state() {
+            return window.__state;
+        },
         showFinaliseButton() {
             return this.salesOrder.id > 0 && (
                 !this.salesOrder.is_finalised || (this.isSupplier && !this.salesOrder.is_supplier_finalised)
@@ -463,10 +478,22 @@ export default {
             }
         },
         include() {
-            return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost';
+            return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost,lines.received';
         }
     },
     methods: {
+        runLandedCostCalc() {
+            const loader = this.$loading.show();
+            this.$http
+                .post(`/api/sales-orders/${this.salesOrderId}/landed-costs`)
+                .then(() => {
+                    loader.hide();
+                    this.refresh();
+                }).catch(error => {
+                    loader.hide();
+                    this.$handleExceptionResponse(error, true);
+                });
+        },
         openSupplierAccessModal() {
             this.$refs['supplier-access-modal'].open();
         },

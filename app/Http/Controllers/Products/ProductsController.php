@@ -22,7 +22,9 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        return response()->view('products.create');
+        return response()->view('products.create', [
+            'exchange_rate_usd' => Currency::query()->where('code', 'USD')->value('default_fx_to_gbp')
+        ]);
     }
 
     /**

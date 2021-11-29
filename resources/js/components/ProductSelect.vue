@@ -41,12 +41,11 @@ export default {
             if (search.length < 2) return;
 
             const params = {
-                sales_order_id: this.salesOrderId,
+                sales_order_id: vm.salesOrderId,
                 search: search,
                 page: 1,
                 per_page: 50,
-                include: 'media',
-                factory_id: this.factoryId
+                include: 'media'
             };
 
             loading(true);

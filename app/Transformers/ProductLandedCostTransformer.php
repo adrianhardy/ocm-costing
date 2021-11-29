@@ -44,7 +44,7 @@ class ProductLandedCostTransformer extends TransformerAbstract
             'height_m',
             'width_m',
             'fx_rate',
-            'shipping_cost_per_cuft_usd',
+            'shipping_cost_per_cuft',
             'import_duty_pc',
             'commission_rate_pc',
             'landed_cost_per_unit',

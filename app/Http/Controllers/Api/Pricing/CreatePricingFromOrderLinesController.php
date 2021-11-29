@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class CreatePricingFromOrderLinesController extends Controller
 {
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
 

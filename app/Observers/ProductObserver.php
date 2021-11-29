@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Domain\LandedCostCalculator;
 use App\Models\Currency;
 use App\Models\Product;
 
@@ -23,21 +24,19 @@ class ProductObserver
         ]) || !$product->est_landed_cost_gbp) {
 
             if ($product->units_per_case > 0) {
-                /** @var Currency $usd */
-                $usd = Currency::query()->where('code', 'USD')->first();
-                $shippingCostUsd = (setting('shipping_cost_per_cubic_foot') / $usd->default_fx_to_gbp);
 
-                $commissionUplift = 1 + (setting('default_commission_rate_pc')/100);
-                $importDutyUplift = 1 + (setting('default_import_duty_pc')/100);
+                $calculator = new LandedCostCalculator(
+                    setting('shipping_cost_per_cubic_foot')
+                );
 
-                $importCostUsd = $product->unit_price  * $importDutyUplift;
-                $costToShipUsd = ($importCostUsd + ($product->case_cubic_ft * $shippingCostUsd)) / $product->units_per_case;
+                $shipping = $calculator->calculateWithDuties(
+                    $product->case_cubic_ft,
+                    $product->units_per_case,
+                    $product->unit_price,
+                    $product->is_excluded_from_commission
+                );
 
-                if (!$product->is_excluded_from_commission) {
-                    $costToShipUsd = $costToShipUsd * $commissionUplift;
-                }
-
-                $product->est_landed_cost_gbp = round($costToShipUsd * $usd->default_fx_to_gbp, 2);
+                $product->est_landed_cost_gbp = round($shipping['est_landed_cost_per_unit_gbp'], 2);
             }
         }
     }

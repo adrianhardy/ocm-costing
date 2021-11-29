@@ -6,6 +6,7 @@
 
 namespace App\Models\Base;
 
+use App\Models\Consignment;
 use App\Models\Currency;
 use App\Models\Factory;
 use App\Models\SalesOrderAuthentication;
@@ -44,6 +45,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Currency|null $currency
  * @property Factory|null $factory
  * @property Supplier $supplier
+ * @property Collection|Consignment[] $consignments_sales_order
  * @property Collection|SalesOrderAuthentication[] $sales_order_authentications_sales_order
  * @property Collection|SalesOrderLine[] $sales_order_lines_sales_order
  *
@@ -87,6 +89,11 @@ class SalesOrder extends Model
 	public function supplier()
 	{
 		return $this->belongsTo(Supplier::class);
+	}
+
+	public function consignments_sales_order()
+	{
+		return $this->hasMany(Consignment::class);
 	}
 
 	public function sales_order_authentications_sales_order()

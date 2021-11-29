@@ -139,13 +139,16 @@ class ProductsController extends Controller
             'inner_qty'             => 'sometimes|min:0|numeric',
             'packing_instructions'  => 'sometimes|max:500',
             'product_description'   => 'sometimes|max:500',
+            'uk_postage_method'     => 'nullable|sometimes',
+            'eu_postage_method'     => 'nullable|sometimes',
+            'row_postage_method'    => 'nullable|sometimes'
         ], [
             'item_number.unique' => 'The item number/barcode combination has already been taken'
         ], [
             'supplier.id' => 'Supplier',
             'factory.id' => 'Factory'
         ]);
-        $product = new Product($request->only([
+        $fields = [
             'item_number',
             'article_number',
             'name',
@@ -153,17 +156,29 @@ class ProductsController extends Controller
             'length_cm',
             'width_cm',
             'height_cm',
+            'unit_length_cm',
+            'unit_width_cm',
+            'unit_height_cm',
             'units_per_case',
             'inner_qty',
             'packing_instructions',
             'product_description',
             'unit_price',
             'case_weight_kg',
-            'is_excluded_from_commission'
-        ]));
+            'unit_weight_kg'
+        ];
+        if (!\Auth::user()->is_supplier) {
+            $fields = array_merge($fields, [
+                'is_excluded_from_commission',
+                'uk_postage_method',
+                'eu_postage_method',
+                'row_postage_method'
+            ]);
+        }
+        $product = new Product($request->only($fields));
         $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
-        $product->factory()->associate((Factory::find($request->input('factory.id'))));
-        $product->save();
+        $product->save(); // save product first, then attach to factories join table
+        $product->factories()->sync(Factory::query()->findMany($request->input('factories.*.id')));
         return fractal($product->fresh(), new ProductTransformer());
     }
 
@@ -178,21 +193,23 @@ class ProductsController extends Controller
             'sales_order_id' => 'nullable|sometimes|exists:sales_orders,id'
         ]);
 
-        $paginator = $productRepository->paginate(
-            $request->input('per_page', 100)
-        );
+        $paginator = $productRepository;
 
         // Restrict the catalogue of products that goes back to suppliers
         if (\Auth::user()->is_supplier) {
-            $paginator->where('supplier_id', \Auth::user()->supplier_id);
+            $paginator = $paginator->where('supplier_id', \Auth::user()->supplier_id);
         }
 
         if ($request->input('sales_order_id')) {
             $salesOrder = SalesOrder::query()->findOrFail($request->input('sales_order_id'));
-            $paginator->whereHas('factories', function($query) use ($salesOrder) {
+            $paginator = $paginator->whereHas('factories', function($query) use ($salesOrder) {
                 return $query->where('id', $salesOrder->factory->id);
             });
         }
+
+        $paginator = $paginator->paginate(
+            $request->input('per_page', 100)
+        );
 
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductTransformer

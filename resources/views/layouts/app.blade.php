@@ -42,7 +42,12 @@
     @include('layouts.partials.vue-alerts')
     @auth
         <script type="text/javascript">
-            window.__state = {!! json_encode(['api_token' => \Auth::user()->api_token]) !!};
+            window.__state = {!! json_encode([
+                'api_token' => \Auth::user()->api_token,
+                'shipping_cost_per_cubic_foot' => floatval(setting('shipping_cost_per_cubic_foot')),
+                'commission_rate' => floatval(setting('default_commission_rate_pc')),
+                'import_duty' => floatval(setting('default_import_duty_pc'))
+            ]) !!};
         </script>
     @endauth
     <script type="text/javascript" src="{{ mix('/js/manifest.js') }}"></script>

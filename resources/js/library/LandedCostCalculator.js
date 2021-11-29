@@ -1,35 +1,41 @@
 export default {
+
     /**
      *
-     * @param volume_cubic_ft
-     * @param unitPriceUsd
-     * @param exchange_rate_usd
-     * @param shipping_cost_per_cubic_foot
+     * @param cubicFeet
+     * @param unitPrice
+     * @param shippingCostPerCubicFoot
+     * @param gbpToUsdExchangeRate
      * @param commissionRatePc
      * @param importDutyPc
-     * @param unitsPerCase
-     * @returns {number}
+     * @param isExcludedFromCommission
+     * @param unitsPerVolume
+     * @returns {number} landed cost in gbp
      */
     calculate(
-        volume_cubic_ft,
-        unitPriceUsd,
-        exchange_rate_usd,
-        shipping_cost_per_cubic_foot,
+        cubicFeet,
+        unitPrice,
+        shippingCostPerCubicFoot,
+        gbpToUsdExchangeRate,
         commissionRatePc,
         importDutyPc,
-        unitsPerCase
+        isExcludedFromCommission,
+        unitsPerVolume
     ) {
-        const shippingCostUsd = shipping_cost_per_cubic_foot / exchange_rate_usd;
         const commissionUplift = 1 + (commissionRatePc/100);
         const importDutyUplift = 1 + (importDutyPc/100);
 
-        const importCostUsd = unitPriceUsd  * importDutyUplift;
-        let  costToShipUsd = (importCostUsd + (volume_cubic_ft * shippingCostUsd))  / unitsPerCase;
+        const shippingCostGbp = cubicFeet * shippingCostPerCubicFoot;
+        const shippingCostPerUnitGbp = shippingCostGbp / unitsPerVolume;
 
-        if (commissionRatePc > 0) {
-            costToShipUsd = costToShipUsd * commissionUplift;
+        let importCostGbp = (unitPrice / gbpToUsdExchangeRate);
+
+        if (commissionRatePc > 0 && !isExcludedFromCommission) {
+            importCostGbp = importCostGbp * commissionUplift;
         }
 
-        return costToShipUsd * exchange_rate_usd;
+        let  landedCost = importCostGbp + shippingCostPerUnitGbp ;
+
+        return landedCost * importDutyUplift;
     }
 }

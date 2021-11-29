@@ -32,12 +32,13 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
         Route::resource('sales-orders.lines.media', 'Api\SalesOrders\Lines\MediaController')->only(['store']);
         Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);
+        Route::resource('sales-orders.landed-costs', 'Api\SalesOrders\CalculateLandedCostController')->only(['store']);
         Route::resource('sales-orders.history', 'Api\SalesOrders\HistoryController')->only(['index']);
         Route::resource('sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['store', 'update', 'destroy']);
         Route::resource('sales-orders.tokens', 'Api\SalesOrders\AccessTokensController')->only(['index', 'store', 'destroy']);
         Route::resource('sales-orders/lines/shipments', 'Api\Shipments\CreateShipmentFromOrderLinesController')->only(['store', 'index']);
-        Route::resource('sales-orders.consignments', 'Api\SalesOrders\ConsignmentsController')->only(['index']);
-        Route::put('sales-orders/lines/{line}/consignments/{consignment}', 'Api\SalesOrders\ConsignmentsController@update');
+        Route::get('sales-orders/{sales_order}/consignments/report', 'Api\SalesOrders\ConsignmentsReportController@index');
+        Route::put('sales-orders/lines/{line}/consignments/{consignment}', 'Api\SalesOrders\ConsignmentsReportController@update');
         Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);
         Route::resource('admin/shipping/simple-calculator', 'Api\Calculator\SimpleShippingCalculator')->only(['store']);
         Route::resource('inspections', 'Api\InspectionReports\InspectionReportsController')->only(['show', 'update', 'index']);
@@ -56,6 +57,11 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('pricing','Api\Products\ProductPricingController')->only(['index','update','show']);
         Route::resource('pricing.history', 'Api\Products\ProductPricingHistoryController')->only(['index']);
     });
+
+    Route::group(['middleware' => ['auth:api', 'role:supplier|admin|super']], function() {
+        Route::resource('sales-orders.consignments', 'Api\SalesOrders\ConsignmentsController')->only(['index', 'store', 'update']);
+    });
+
 
     Route::group(['middleware' => ['auth:api', 'role:supplier']], function() {
         Route::resource('supplier/sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);

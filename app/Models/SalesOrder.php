@@ -13,6 +13,7 @@ use Spatie\ModelStatus\HasStatuses;
  * Class SalesOrder
  * @package App\Models
  * @property SalesOrderLine[] $lines
+ * @property Consignment[] $consignments
  * @property-read boolean $is_finalised
  * @property-read boolean $is_sent
  * @property SalesOrderAuthentication[] $authenticated_users
@@ -164,5 +165,10 @@ class SalesOrder extends BaseSalesOrder
                 ->whereNull('expires_at')
                 ->orWhere('expires_at', '>', Carbon::now());
         });
+    }
+
+    public function consignments()
+    {
+        return $this->hasMany(Consignment::class, 'sales_order_id', 'id');
     }
 }

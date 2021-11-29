@@ -133,7 +133,7 @@
                             </div>
                             <h5>
                                 Carton
-                                <small v-if="!isSupplier">
+                                <small v-if="!isSupplier && product.id > 0">
                                     <a href="#" @click="showTestCalculator = !showTestCalculator">{{ showTestCalculator?'Hide':'Show' }} Test Calculator</a>
                                 </small>
                             </h5>
@@ -357,10 +357,11 @@ export default {
             return LandedCostCalculator.calculate(
                 this.product.case_cubic_ft,
                 this.product.unit_price,
-                this.test.exchange_rate_usd,
                 this.test.shipping_cost_per_cubic_foot,
+                this.test.exchange_rate_usd,
                 this.commissionRatePc,
                 this.importDutyPc,
+                this.product.is_excluded_from_commission,
                 this.product.units_per_case
             );
         },

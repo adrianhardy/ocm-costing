@@ -44,6 +44,7 @@ class ConsignmentTransformer extends TransformerAbstract
             'id',
             'created_at',
             'updated_at',
+            'invoice_amt',
             'reference'
         ]);
     }
