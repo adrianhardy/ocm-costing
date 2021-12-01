@@ -76,11 +76,7 @@ class LinesController extends Controller
             $line->product()->associate($product);
         }
 
-        if (!$salesOrder->is_finalised &&
-            $line->product &&
-            $line->product->case_cubic_m > 0 &&
-            $line->product->units_per_case > 0
-        ) {
+        if (!$salesOrder->is_finalised && $line->product) {
             if ($line->units_per_case < 1) {
                 $cases = 0;
             } else {
