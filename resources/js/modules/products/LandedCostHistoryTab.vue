@@ -11,7 +11,7 @@
             </b-form-group>
             <b-form-group label="Shipping Rate / Cuft" label-cols-md="4">
                 <b-input-group prepend="$">
-                    <b-input v-model="cost.shipping_cost_per_cuft_usd" />
+                    <b-input v-model="cost.shipping_cost_per_cuft" />
                 </b-input-group>
             </b-form-group>
             <b-form-group label="Purchase Currency" label-cols-md="4">
@@ -71,7 +71,7 @@
             <template #cell(length_cm)="data">
                 {{ data.item.length_cm }}x{{ data.item.width_cm }}x{{ data.item.height_cm }}
             </template>
-            <template #cell(shipping_cost_per_cuft_usd)="data">
+            <template #cell(shipping_cost_per_cuft)="data">
                 {{ data.value * data.item.fx_rate | cash_value }}
             </template>
             <template #cell(landed_cost_per_unit_gbp)="data">
@@ -110,7 +110,7 @@ export default {
                 width_cm: null,
                 height_cm: null,
                 fx_rate: null,
-                shipping_cost_per_cuft_usd: null,
+                shipping_cost_per_cuft: null,
             }
         }
     },
@@ -126,7 +126,7 @@ export default {
                 key: 'fx_rate',
                 label: 'FX'
             }, {
-                key: 'shipping_cost_per_cuft_usd',
+                key: 'shipping_cost_per_cuft',
                 label: 'GBP/cuft'
             }, {
                 key: 'case_cubic_ft',

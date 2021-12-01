@@ -561,7 +561,7 @@ export default {
                 this.salesOrder = response.data;
                 loader.hide
             }).catch(error => {
-                this.$handleExceptionResponse(error);
+                this.$handleExceptionResponse(error, true);
                 loader.hide();
             });
 
@@ -575,7 +575,7 @@ export default {
                 this.salesOrder = response.data;
                 loader.hide();
             }).catch(error => {
-                this.$handleExceptionResponse(error);
+                this.$handleExceptionResponse(error, true);
                 loader.hide();
             });
         },
@@ -602,7 +602,7 @@ export default {
                     this.salesOrder = response.data;
                     loader.hide();
                 }).catch(error => {
-                    this.$handleExceptionResponse(error);
+                    this.$handleExceptionResponse(error, true);
                     loader.hide();
                 });
             })

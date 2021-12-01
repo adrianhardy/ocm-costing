@@ -27,7 +27,7 @@ class LandedCostsController extends Controller
     {
         $this->validate($request, [
             'date' => 'required|date_format:Y-m-d',
-            'shipping_cost_per_cuft_usd' => 'required|numeric|min:0',
+            'shipping_cost_per_cuft' => 'required|numeric|min:0',
             'currency.id' => 'required|exists:currencies,id',
             'fx_rate' => 'required|numeric|min:0',
             'import_duty_pc' => 'required|numeric|min:0',
@@ -43,7 +43,7 @@ class LandedCostsController extends Controller
             'units_per_case',
             'date',
             'fx_rate',
-            'shipping_cost_per_cuft_usd',
+            'shipping_cost_per_cuft',
             'import_duty_pc',
             'commission_rate_pc',
             'landed_cost_per_unit_gbp',
