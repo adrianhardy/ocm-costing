@@ -19,7 +19,7 @@ class ProductObserver
             'height_cm',
             'units_per_case',
             'case_weight_kg',
-            'unit_cost',
+            'unit_price',
             'is_excluded_from_commission'
         ]) || !$product->est_landed_cost_gbp) {
 

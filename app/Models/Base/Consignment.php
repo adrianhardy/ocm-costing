@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $docked_at
  * @property int|null $sales_order_id
  * @property float|null $invoice_amt
- * @property float|null $fx_rate
  * @property int|null $creator_id
  * 
  * @property User|null $creator
@@ -44,7 +43,6 @@ class Consignment extends Model
 		'est_cost_cuft_gbp' => 'float',
 		'sales_order_id' => 'int',
 		'invoice_amt' => 'float',
-		'fx_rate' => 'float',
 		'creator_id' => 'int'
 	];
 

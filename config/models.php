@@ -290,7 +290,9 @@ return [
             'products_factories',
             'products_factory',
             'product_factory',
-            'product_factories'
+            'product_factories',
+            'users_factories',
+            'user_factory'
         ],
 
         /*

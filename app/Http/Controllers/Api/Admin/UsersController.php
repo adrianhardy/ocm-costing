@@ -62,8 +62,10 @@ class UsersController extends Controller
                 $user->supplier()->associate(
                     Supplier::query()->findOrFail($request->input('supplier.id'))
                 );
+                $user->factories()->sync($request->input('factories.*.id'));
             } else {
                 $user->supplier()->dissociate();
+                $user->factories()->detach();
             }
         }
 

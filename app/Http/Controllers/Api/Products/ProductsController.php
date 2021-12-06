@@ -197,7 +197,11 @@ class ProductsController extends Controller
 
         // Restrict the catalogue of products that goes back to suppliers
         if (\Auth::user()->is_supplier) {
-            $paginator = $paginator->where('supplier_id', \Auth::user()->supplier_id);
+            $paginator = $paginator
+                ->where('supplier_id', \Auth::user()->supplier_id)
+                ->whereHas('factories', function($query) {
+                    $query->whereIn('id', \Auth::user()->factories->pluck('id'));
+                });
         }
 
         if ($request->input('sales_order_id')) {

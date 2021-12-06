@@ -30,8 +30,11 @@ class SalesOrderLoginController extends Controller
         }
 
         if (\Auth::check()) {
-            $this->authorize('view', $token->sales_order);
-            return response()->redirectToRoute('supplier.sales-orders.edit', $token->sales_order);
+            if ($token->sales_order) {
+                $this->authorize('view', $token->sales_order);
+                return response()->redirectToRoute('supplier.sales-orders.edit', $token->sales_order);
+            }
+            return response()->redirectToRoute('supplier.sales-orders.index');
         }
 
         abort(401, 'Unauthorised');

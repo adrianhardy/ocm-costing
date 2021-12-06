@@ -8,6 +8,7 @@ namespace App\Models\Base;
 
 use App\Models\ProductsFactory;
 use App\Models\SalesOrder;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property Collection|ProductsFactory[] $products_factories_factory
  * @property Collection|SalesOrder[] $sales_orders_factory
+ * @property Collection|User[] $users
  *
  * @package App\Models\Base
  */
@@ -42,5 +44,10 @@ class Factory extends Model
 	public function sales_orders_factory()
 	{
 		return $this->hasMany(SalesOrder::class);
+	}
+
+	public function users()
+	{
+		return $this->belongsToMany(User::class, 'user_factory');
 	}
 }
