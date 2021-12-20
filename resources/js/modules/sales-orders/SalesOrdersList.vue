@@ -11,7 +11,7 @@
                           <b-select-option value="sent">Sent</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button  @click="$refs['create'].open()">
+                        <b-button  @click="$refs['create'].open()" v-if="!isSupplier">
                             Create New Quote
                         </b-button>
                     </slot>

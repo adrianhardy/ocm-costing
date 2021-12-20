@@ -44,9 +44,10 @@ class ProductsController extends Controller
             ->where('barcode', $request->input('barcode'))
             ->ignoreModel($product);
 
+        $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
 
         $this->validate($request, [
-            'supplier.id'           => 'required|exists:suppliers,id',
+            'supplier.id'           => $supplierRequired . '|exists:suppliers,id',
             'factories.*.id'        => 'nullable|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => ['required', 'min:1', 'max:64'],
@@ -104,8 +105,11 @@ class ProductsController extends Controller
         }
 
         $product->fill($request->only($fields));
-
-        $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        if (\Auth::user()->hasRole(['supplier'])) {
+            $product->supplier()->associate(\Auth::user()->supplier);
+        } else {
+            $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        }
         $product->factories()->sync(Factory::query()->findMany($request->input('factories.*.id')));
         $product->save();
         return response()->json(fractal($product->fresh(), new ProductTransformer()));
@@ -123,8 +127,10 @@ class ProductsController extends Controller
             ->whereNotNull('barcode')
             ->where('barcode', $request->input('barcode'));
 
+        $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
+
         $this->validate($request, [
-            'supplier.id'           => 'required|exists:suppliers,id',
+            'supplier.id'           => $supplierRequired . '|exists:suppliers,id',
             'factory.id'            => 'nullable|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => 'required|min:1|max:64',
@@ -176,7 +182,11 @@ class ProductsController extends Controller
             ]);
         }
         $product = new Product($request->only($fields));
-        $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        if (\Auth::user()->hasRole(['supplier'])) {
+            $product->supplier()->associate(\Auth::user()->supplier);
+        } else {
+            $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        }
         $product->save(); // save product first, then attach to factories join table
         $product->factories()->sync(Factory::query()->findMany($request->input('factories.*.id')));
         return fractal($product->fresh(), new ProductTransformer());

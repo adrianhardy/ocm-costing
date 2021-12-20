@@ -18,6 +18,11 @@
                             </b-form-group>
                         </div>
                     </div>
+                    <div v-else>
+                        <b-form-group label="Factories" >
+                            <factory-select v-model="product.factories" multiple />
+                        </b-form-group>
+                    </div>
                     <b-form-group description="When estimating landed costs, no commission will be added" v-if="!isSupplier && showCosting">
                         <b-form-checkbox v-model="product.is_excluded_from_commission">Exclude from commission
                         </b-form-checkbox>
@@ -37,6 +42,15 @@
                         <div class="col-4">
                             <b-form-group label="Barcode">
                                 <b-form-input all v-model="product.barcode"/>
+                            </b-form-group>
+                        </div>
+                    </div>
+                    <div class="row" v-if="isSupplier">
+                        <div class="col-4">
+                            <b-form-group label="Unit Price">
+                                <b-input-group prepend="$">
+                                    <b-form-input v-model="product.unit_price"/>
+                                </b-input-group>
                             </b-form-group>
                         </div>
                     </div>

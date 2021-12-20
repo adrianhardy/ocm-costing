@@ -84,7 +84,19 @@ class CreatePricingFromOrderLinesController extends Controller
                 'eur_fx_rate' => $fr->currency->default_fx_to_gbp,
                 'usd_fx_rate' => $us->currency->default_fx_to_gbp,
                 'cad_fx_rate' => $ca->currency->default_fx_to_gbp,
-                'aud_fx_rate' => $au->currency->default_fx_to_gbp
+                'aud_fx_rate' => $au->currency->default_fx_to_gbp,
+                'unit_uk_fba_fee' => 0,
+                'unit_se_fba_fee' => 0,
+                'unit_fr_fba_fee' => 0,
+                'unit_de_fba_fee' => 0,
+                'unit_es_fba_fee' => 0,
+                'unit_it_fba_fee' => 0,
+                'unit_nl_fba_fee' => 0,
+                'unit_usd_fba_fee' => 0,
+                'unit_cad_fba_fee' => 0,
+                'unit_mxn_fba_fee' => 0,
+                'unit_aud_fba_fee' => 0,
+                'unit_pln_fba_fee' => 0
             ]);
             $pricing->save();
         }

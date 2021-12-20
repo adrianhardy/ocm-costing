@@ -86,14 +86,6 @@
                         @updated="refresh()"
                     />
                 </template>
-                <template #cell(article_number)="data">
-                    <b-form-input
-                        :readonly="salesOrder.is_finalised"
-                        size="sm"
-                        v-model="data.item.article_number"
-                        @change="updateLine(data.item)"
-                    />
-                </template>
                 <template #cell(unit_weight_kg)="data">
                     <b-form-group label="Unit" label-size="sm">
                         <b-input size="sm" v-model="data.item.unit_weight_kg" @change="updateLine(data.item)" />
@@ -176,13 +168,13 @@
                             />
                         </b-input-group>
                     </b-form-group>
-                    <b-form-group>
+                    <b-form-group v-if="!isSupplier">
                         <b-input-group
                             prepend="ELC" size="sm" class="no-input" v-b-tooltip.hover title="Estimated Landed Cost">
                             <b-input class="w-50" readonly :value="data.item.product.est_landed_cost_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
-                    <b-form-group>
+                    <b-form-group v-if="!isSupplier">
                         <b-input-group prepend="CLC" size="sm" class="no-input" v-b-tooltip.hover title="Current Landed Cost"  >
                             <b-input class="w-50" readonly :value="data.item.product.current_landed_cost_per_unit_gbp | cash_value"></b-input>
                         </b-input-group>
@@ -371,8 +363,7 @@ export default {
         },
         totalCubicFeet() {
             const cases = _.map(this.salesOrder.lines, line => {
-                const cases = Math.round(line.units_requested / line.units_per_case);
-                return line.units_per_case * cases;
+                return line.total_cubic_ft;
             });
 
             return _.sum(cases).toFixed(2);

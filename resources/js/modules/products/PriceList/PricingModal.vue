@@ -23,15 +23,15 @@
                     <table class="table table-sm small">
                         <tr>
                             <th class="w-50">UK Postage Method</th>
-                            <td>{{ value.product.uk_postage_method.toUpperCase().replaceAll('_', ' ') }}</td>
+                            <td>{{ ukPostageMethod }}</td>
                         </tr>
                         <tr>
                             <th class="w-50">EU Postage Method</th>
-                            <td>{{ value.product.eu_postage_method.toUpperCase().replace('_', ' ') }}</td>
+                            <td>{{ euPostageMethod }}</td>
                         </tr>
                         <tr>
                             <th class="w-50">RoW Postage Method</th>
-                            <td>{{ value.product.row_postage_method.toUpperCase().replace('_', ' ') }}</td>
+                            <td>{{ rowPostageMethod }}</td>
                         </tr>
                     </table>
                     <h5>Carton</h5>
@@ -526,6 +526,24 @@ export default {
     name: "PricingModal",
     components: {EuProductPricing, EuOfWorldProductPricing, RestOfWorldProductPricing},
     computed: {
+        ukPostageMethod() {
+            if (this.value.product.uk_postage_method) {
+                return this.value.product.uk_postage_method.toUpperCase().replaceAll('_', ' ');
+            }
+            return 'NOT SET';
+        },
+        euPostageMethod() {
+            if (this.value.product.eu_postage_method) {
+                return this.value.product.eu_postage_method.toUpperCase().replaceAll('_', ' ');
+            }
+            return 'NOT SET';
+        },
+        rowPostageMethod() {
+            if (this.value.product.row_postage_method) {
+                return this.value.product.row_postage_method.toUpperCase().replaceAll('_', ' ');
+            }
+            return 'NOT SET';
+        },
         product() {
             if (this.value.product) {
                 return this.value.product;

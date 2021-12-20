@@ -47,7 +47,7 @@ Route::group(['as' => 'api.'], function() {
     Route::group(['middleware' => ['auth:api', 'role:super']], function() {
         Route::resource('admin/suppliers', 'Api\Admin\SuppliersController')->only(['index', 'update', 'store', 'show']);
         Route::resource('admin/suppliers.files', 'Api\Admin\Suppliers\MediaController')->only(['index', 'store']);
-        Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['index', 'update', 'store', 'show']);
+        Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['update', 'store', 'show']);
         Route::resource('admin/factories.files', 'Api\Admin\Factories\MediaController')->only(['index', 'store']);
         Route::resource('admin/settings', 'Api\Admin\SettingsController')->only(['index', 'store']);
         Route::resource('admin/users', 'Api\Admin\UsersController')->only(['index', 'update', 'store', 'show']);
@@ -62,10 +62,13 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('sales-orders.consignments', 'Api\SalesOrders\ConsignmentsController')->only(['index', 'store', 'update']);
     });
 
+    Route::group(['middleware' => ['auth:api']], function() {
+        Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['index']);
+    });
 
     Route::group(['middleware' => ['auth:api', 'role:supplier']], function() {
-        Route::resource('supplier/sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);
-        Route::resource('supplier/sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['update', 'store', 'delete']);
+        Route::resource('supplier/sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'destroy']);
+        Route::resource('supplier/sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['update', 'store', 'destroy']);
     });
 });
 
