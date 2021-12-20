@@ -30,6 +30,7 @@ class PreviewController extends Controller
         ]);
 
         $parse = new ParseProductSheet();
+        $parse->skipImages();
         $parse->read($request->file('xlsx')->getFileInfo());
         $csv = new \SplTempFileObject();
         foreach ($parse->rows as $i => $row) {

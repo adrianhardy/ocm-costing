@@ -28,7 +28,7 @@ export default {
         const shippingCostGbp = cubicFeet * shippingCostPerCubicFoot;
         const shippingCostPerUnitGbp = shippingCostGbp / unitsPerVolume;
 
-        let importCostGbp = (unitPrice / gbpToUsdExchangeRate);
+        let importCostGbp = (unitPrice * gbpToUsdExchangeRate);
 
         if (commissionRatePc > 0 && !isExcludedFromCommission) {
             importCostGbp = importCostGbp * commissionUplift;

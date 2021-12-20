@@ -41,7 +41,9 @@ class FactoriesController extends Controller
             'delivery_address' => 'sometimes|max:255',
             'contact_name' => 'sometimes|max:255',
             'contact_email' => 'sometimes|email|max:255',
-            'contact_phone' => 'sometimes|max:64'
+            'contact_phone' => 'sometimes|max:64',
+            'shipping_name' => 'sometimes|max:128',
+            'products_description' => 'sometimes|max:128',
         ]);
 
         $factory->fill($request->only([
@@ -50,7 +52,9 @@ class FactoriesController extends Controller
             'delivery_address',
             'contact_name',
             'contact_email',
-            'contact_phone'
+            'contact_phone',
+            'shipping_name',
+            'products_description'
         ]));
 
         $factory->save();
@@ -66,7 +70,9 @@ class FactoriesController extends Controller
             'delivery_address' => 'sometimes|max:255',
             'contact_name' => 'sometimes|max:255',
             'contact_email' => 'sometimes|email|max:255',
-            'contact_phone' => 'required|max:64'
+            'contact_phone' => 'required|max:64',
+            'shipping_name' => 'sometimes|max:128',
+            'products_description' => 'sometimes|max:128',
         ]);
 
         $factory = new Factory();
@@ -77,7 +83,9 @@ class FactoriesController extends Controller
             'delivery_address',
             'contact_name',
             'contact_email',
-            'contact_phone'
+            'contact_phone',
+            'shipping_name',
+            'products_description'
         ]));
 
         $factory->save();

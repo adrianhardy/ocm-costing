@@ -16,6 +16,8 @@ class Factory extends BaseFactory implements HasMedia
 		'contact_name',
 		'contact_email',
 		'contact_phone',
-		'country'
+		'country',
+        'shipping_name',
+        'products_description'
 	];
 }

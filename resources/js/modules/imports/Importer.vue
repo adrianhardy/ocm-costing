@@ -2,9 +2,9 @@
     <div>
         <div class="row">
             <div class="col-12 col-md-4">
-                <b-form-group label="Import CSV">
+                <b-form-group label="Import XLSX Product Sheet">
                     <b-form-file
-                        accept="test/csv"
+                        accept=".xlsx, .xls"
                         v-model="file"
                         @input="preview()"
                         placeholder="Choose a file or drop it here..."
@@ -13,13 +13,13 @@
                 </b-form-group>
             </div>
             <div class="col-12 col-md-2">
-                <b-form-group label="Quote #">
-                    <b-form-input v-model.lazy="quoteReference" />
+                <b-form-group label="Supplier">
+                    <supplier-select v-model="supplier" />
                 </b-form-group>
             </div>
             <div class="col-12 col-md-2">
-                <b-form-group label="Supplier">
-                    <vue-select :options="suppliers" label="name" v-model="supplier" />
+                <b-form-group label="Factory">
+                    <factory-select v-model="factory" />
                 </b-form-group>
             </div>
             <div class="col-12 col-md-2">
@@ -108,11 +108,13 @@ import get from 'lodash/get';
 import _ from 'lodash';
 import format from 'date-fns/format';
 import ProductPreviewer from "./ProductPreviewer";
+import SupplierSelect from "../../components/SupplierSelect";
+import FactorySelect from "../../components/FactorySelect";
 
 
 export default {
     name: "Importer",
-    components: {ProductPreviewer},
+    components: {FactorySelect, SupplierSelect, ProductPreviewer},
     props: {'code': String, 'types': Object, 'accounts': Array, 'columns': Object, 'suppliers': Array},
     filters: {
         datetime(value) {
@@ -163,7 +165,10 @@ export default {
                 formData.append('supplier[id]', this.supplier.id);
                 formData.append('supplier[name]', this.supplier.name);
             }
-            formData.append('quote_reference', this.quoteReference);
+            if (this.factory && this.factory.id) {
+                formData.append('factory[id]', this.factory.id);
+                formData.append('factory[name]', this.factory.name);
+            }
             formData.append('mapping_name', this.mappingName);
             formData.append('csv', this.file);
             formData.append('skip_rows', this.headerRows);
@@ -215,10 +220,6 @@ export default {
                     timeout: 1000 * 60 * 5 // 5 minutes
                 })
                 .then(response => {
-                    console.log(response.headers);
-                    if (response.headers['x-quote-reference']) {
-                        this.quoteReference = response.headers['x-quote-reference'];
-                    }
                     this.raw = get(this.$papa.parse(response.data, {
                         skipEmptyLines: true
                     }), "data");
@@ -245,7 +246,8 @@ export default {
             manualMapping: '',
             file: null,
             raw: null,
-            supplier: {}
+            supplier: null,
+            factory: null
         }
     }
 }

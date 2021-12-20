@@ -9,6 +9,12 @@
                             <b-form-group label="Name">
                                 <b-form-input v-model="value.name"/>
                             </b-form-group>
+                            <b-form-group label="Shipping Name" v-if="isFactory" description="How is this factory identified on a Bill of Lading?">
+                                <b-form-input v-model="value.shipping_name"/>
+                            </b-form-group>
+                            <b-form-group label="Products Description" v-if="isFactory" description="What sort of products are produced here?">
+                                <b-form-input v-model="value.products_description"/>
+                            </b-form-group>
                             <b-form-group label="Country">
                                 <b-form-input v-model="value.country"/>
                             </b-form-group>

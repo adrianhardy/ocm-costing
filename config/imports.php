@@ -18,6 +18,7 @@ return [
             ],
             'general' => [
                 'name'                  => 'Product\'s Description',
+                'product_description'   => 'Product\'s Details',
                 'packing_instructions'  => 'Packing Instructions',
                 'barcode'               => 'Barcode',
             ],

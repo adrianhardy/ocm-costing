@@ -24,9 +24,16 @@ class ParseProductSheet
 
     public $quoteNumber;
 
+    protected $skipImages = false;
+
     public function __construct()
     {
         $this->log = Log::channel('import');
+    }
+
+    public function skipImages($skipImages = true)
+    {
+        $this->skipImages = $skipImages;
     }
 
 
@@ -70,7 +77,17 @@ class ParseProductSheet
             }
 
             $data = collect();
+            $likelyEnd = 'BA';
+            $hasHitLikelyEnd = false;
+
             foreach ($row->getCellIterator() as $column => $cell) {
+                if ($column == $likelyEnd && !$hasHitLikelyEnd) {
+                    $hasHitLikelyEnd = true;
+                }
+                if ($hasHitLikelyEnd) {
+                    continue;
+                }
+
                 try {
                     $formatted = $cell->getFormattedValue();
                 } catch (\Exception $ex) {

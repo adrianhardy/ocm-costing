@@ -39,7 +39,9 @@ class FactoryTransformer extends TransformerAbstract
             'delivery_address',
             'contact_name',
             'contact_email',
-            'contact_phone'
+            'contact_phone',
+            'shipping_name',
+            'products_description'
         ]);
     }
 }

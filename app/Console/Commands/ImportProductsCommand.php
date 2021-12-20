@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Domain\Excel\ParseProductSheet;
 use App\Domain\Excel\PrepareProductsForImport;
+use App\Models\Factory;
 use App\Models\Import;
 use App\Models\Product;
 use App\Models\Quote;
@@ -51,6 +52,7 @@ class ImportProductsCommand extends Command
         /** @var Import $import */
         $import = Import::query()->findOrFail($this->argument('import'));
         $supplier = Supplier::query()->findOrFail($import->config['supplier_id']);
+        $factory = Factory::query()->findOrFail($import->config['factory_id']);
         $this->setupLog($import);
 
         $this->log->info("STARTING IMPORT ...");
@@ -75,19 +77,6 @@ class ImportProductsCommand extends Command
         // Process the data in two phases
         DB::beginTransaction();
 
-        /*
-        $quote = Quote::query()->where('reference', $import->config['quote_reference'])->first();
-        if (!$quote) {
-            $quote = new Quote([
-                'reference' => Str::random(16)
-            ]);
-            if ($import->config['quote_reference']) {
-                $quote->reference = $import->config['quote_reference'];
-            }
-            $quote->save();
-        }
-        */
-
         foreach ($products as $data) {
             $validator = $this->createProductValidator($data);
             $import->current_line = $data['_source']['row'];
@@ -108,6 +97,8 @@ class ImportProductsCommand extends Command
             }
             $product->fill($data->only([
                 'name',
+                'product_description',
+                'item_number',
                 'article_number',
                 'barcode',
                 'packing_instructions',
@@ -133,35 +124,23 @@ class ImportProductsCommand extends Command
             }
 
             $product->save();
-            if ($data->get('image')) {
-                $product->clearMediaCollection('default');
-                $product->addMediaFromBase64(
-                    $data->get('image')
-                )
-                ->usingFileName('product-' . $product->id . '.png')
-                ->toMediaCollection('default');
+            if (!$product->factories->contains($factory)) {
+                $product->factories()->save($supplier);
+            }
+
+            if ($data->get('images') && $data->get('images')->isNotEmpty()) {
+                foreach ($data->get('images') as $i => $blob) {
+                    $product->clearMediaCollection('default');
+                    $product->addMediaFromBase64($blob)
+                        ->usingFileName("product-{$product->id}-{$i}.png")
+                        ->toMediaCollection('default');
+                }
             }
 
             if ($data->get('case_volume_cu_f') && !$data->get('case_volume_cu_m')) {
                 $data['case_volume_cu_m'] = $data->get('case_volume_cu_f') / settings('cubic_metres_to_feet');
             }
 
-            /*
-            $line = new QuoteLine([
-                'barcode' => $data->get('barcode'),
-                'packing_instructions' => $data->get('packing_instructions'),
-                'case_qty' => $data->get('case_qty'),
-                'case_inner_qty' => $data->get('case_inner_qty'),
-                'total_unit_qty' => $data->get('total_unit_qty'),
-                'unit_price' => $data->get('unit_price'),
-                'case_volume_cu_m' => $data->get('case_volume_cu_m'),
-                'case_height_m' => $data->get('case_height_m'),
-                'case_width_m' => $data->get('case_width_m'),
-                'case_depth_m' => $data->get('case_depth_m'),
-            ]);
-            $line->product()->associate($product);
-            $quote->lines()->save($line);
-            */
             $import->save();
         }
 

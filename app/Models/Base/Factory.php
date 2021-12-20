@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $contact_email
  * @property string|null $contact_phone
  * @property string|null $country
+ * @property string|null $shipping_name
+ * @property string|null $products_description
  * 
  * @property Collection|ProductsFactory[] $products_factories_factory
  * @property Collection|SalesOrder[] $sales_orders_factory

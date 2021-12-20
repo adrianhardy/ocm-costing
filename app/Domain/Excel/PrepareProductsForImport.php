@@ -64,8 +64,12 @@ class PrepareProductsForImport
                         && $image['coords']['row'] < $nextRow['_source']['row'];
                 });
 
+                // previously, this just used to map a single image:
+                // $row['image'] = $candidates->first() ...
                 if ($candidates->count() > 0) {
-                    $row['image'] = base64_encode($candidates->first()['blob']);
+                    $row['images'] = $candidates->map(function($image) {
+                        return base64_encode($image['blob']);
+                    });
                 }
             }
         }
