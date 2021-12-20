@@ -25,7 +25,7 @@ class SalesOrderLineTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'product', 'landed_cost', 'consignments', 'selected_media'
+        'product', 'landed_cost', 'consignments', 'selected_media', 'received'
     ];
 
     public function includeSelectedMedia(SalesOrderLine $line)
@@ -52,6 +52,13 @@ class SalesOrderLineTransformer extends TransformerAbstract
         }
 
         return $this->primitive($consignment->pivot);
+    }
+
+    public function includeReceived(SalesOrderLine $line)
+    {
+        return $this->primitive(
+            $line->consignments->sum('pivot.qty_shipped')
+        );
     }
 
     public function includeProduct(SalesOrderLine $line)

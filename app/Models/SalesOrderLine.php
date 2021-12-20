@@ -50,14 +50,14 @@ class SalesOrderLine extends BaseSalesOrderLine
         'unit_width_m',
         'unit_length_m',
         'unit_height_m',
-        'barcode'
+        'barcode',
+        'sales_order_notes'
+
 	];
 
 	public function getEstimatedShippingCostGbpAttribute()
     {
-	    return $this->total_cubic_ft
-            * setting('shipping_cost_per_cubic_foot_usd')
-            * setting('exchange_rate_usd');
+	    return $this->total_cubic_ft * setting('shipping_cost_per_cubic_foot');
     }
 
     public function selected_media()

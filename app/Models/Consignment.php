@@ -10,6 +10,7 @@ class Consignment extends BaseConsignment
 		'reference',
 		'est_cost_cuft_gbp',
 		'departed_at',
-		'docked_at'
+		'docked_at',
+        'invoice_amt'
 	];
 }

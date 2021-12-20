@@ -4,7 +4,7 @@
             <template #header>
                 <div>
                     <h4 class="m-0">
-                        Sales Order {{ salesOrder.sales_order_number }}
+                        Sales Order {{ salesOrder.reference }}
                     </h4>
                     <b-badge variant="success" v-if="salesOrder.is_finalised">
                         Finalised
@@ -27,14 +27,31 @@
                 </div>
             </template>
             <div class="row" v-if="!isSupplier ">
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-2">
                     <b-form-group label="Supplier">
-                        <supplier-select v-model="salesOrder.supplier" @select="save()"/>
+                        <supplier-select v-model="salesOrder.supplier" @selected="save()"/>
                     </b-form-group>
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-2">
+                    <b-form-group label="Factory">
+                        <factory-select v-model="salesOrder.factory" @selected="save()" />
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-1">
+                    <b-form-group label="Shipping £/Cu.ft.">
+                        <b-input-group prepend="£">
+                            <b-form-input type="number" step="0.01" v-model="salesOrder.shipping_cost_per_cubic_foot" @change="save()"/>
+                        </b-input-group>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-1">
                     <b-form-group label="Reference">
                         <b-form-input v-model="salesOrder.reference" @change="save()"/>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-1">
+                    <b-form-group label="Supplier Reference">
+                        <b-form-input v-model="salesOrder.supplier_reference" @change="save()"/>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-2">
@@ -51,6 +68,7 @@
                     </b-form-group>
                 </div>
             </div>
+
             <b-table
                 show-empty
                 empty-text="No sales order lines to show"
@@ -66,14 +84,6 @@
                         :order="salesOrder"
                         :line="data.item"
                         @updated="refresh()"
-                    />
-                </template>
-                <template #cell(article_number)="data">
-                    <b-form-input
-                        :readonly="salesOrder.is_finalised"
-                        size="sm"
-                        v-model="data.item.article_number"
-                        @change="updateLine(data.item)"
                     />
                 </template>
                 <template #cell(unit_weight_kg)="data">
@@ -100,10 +110,12 @@
                 </template>
                 <template #cell(product.name)="data">
                         <product-select
+                            :sales-order-id="salesOrder.id"
                             v-if="!salesOrder.finalised_at"
                             size="sm"
                             :readonly="salesOrder.is_finalised"
                             v-model="data.item.product"
+                            :factory-id="salesOrder.factory.id"
                             @input="selectProduct($event, data.item)"
                         />
                         <div v-else>
@@ -141,7 +153,7 @@
                         />
                     </b-form-group>
                     <div :class="['text-left', 'small', 'ml-1', (data.item.units_requested % data.item.units_per_case) > 0?'text-danger':'']">
-                        {{ Math.round(data.item.units_requested / data.item.units_per_case) }} Ctn
+                        {{ (data.item.units_requested / data.item.units_per_case).toFixed(2) }} Ctn
                     </div>
                 </template>
                 <template #cell(unit_price)="data">
@@ -156,14 +168,14 @@
                             />
                         </b-input-group>
                     </b-form-group>
-                    <b-form-group>
+                    <b-form-group v-if="!isSupplier">
                         <b-input-group
-                            prepend="£ELC" size="sm" class="no-input" v-b-tooltip.hover title="Estimated Landed Cost">
-                            <b-input class="w-50" readonly :value="data.item.landed_cost.est_landed_cost_per_unit_gbp | cash_value"></b-input>
+                            prepend="ELC" size="sm" class="no-input" v-b-tooltip.hover title="Estimated Landed Cost">
+                            <b-input class="w-50" readonly :value="data.item.product.est_landed_cost_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
-                    <b-form-group>
-                        <b-input-group prepend="£CLC" size="sm" class="no-input" v-b-tooltip.hover title="Current Landed Cost"  >
+                    <b-form-group v-if="!isSupplier">
+                        <b-input-group prepend="CLC" size="sm" class="no-input" v-b-tooltip.hover title="Current Landed Cost"  >
                             <b-input class="w-50" readonly :value="data.item.product.current_landed_cost_per_unit_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
@@ -195,38 +207,71 @@
                 </template>
                 <template #custom-foot>
                     <b-tr>
-                        <b-th colspan="10"></b-th>
-                        <b-th class="text-right"></b-th>
+                        <b-th colspan="3">
+                            <b-form-select v-model="salesOrder.status" class="mb-3" @change="save()">
+                                <b-form-select-option value="">[Not Set]</b-form-select-option>
+                                <b-form-select-option value="draft">Draft</b-form-select-option>
+                                <b-form-select-option value="quote">Quote</b-form-select-option>
+                                <b-form-select-option value="quote_request">Quote Request</b-form-select-option>
+                                <b-form-select-option value="sales_order">Sales Order</b-form-select-option>
+                                <b-form-select-option value="confirmed_sales_order">Confirmed Sales Order</b-form-select-option>
+                            </b-form-select>
+                        </b-th>
+                        <b-th colspan="4">
+                            <b-form-textarea
+                                id="textarea"
+                                v-model="salesOrder.sales_order_notes"
+                                placeholder="Please Place Any Notes Here"
+                                rows="4"
+                                size="md"
+                                @change="save()"
+                            ></b-form-textarea>
+                        </b-th>
                         <b-th></b-th>
+                        <b-td>
+                            <div><strong>Pieces</strong></div>
+                            {{ totalUnits }}
+                        </b-td>
+                        <b-td>
+                            <div><strong>Cartons</strong></div>
+                            {{ totalCartons }}
+                        </b-td>
                         <b-td>
                             <div><strong>Total ft <sup>3</sup></strong></div>
                             {{ totalCubicFeet }}
                         </b-td>
-                        <b-td>
+                        <b-td colspan="2" class="text-right">
                             <strong>Total</strong> <br/>
                             {{ salesOrder.currency.code }}
                             {{ salesOrder.goods_cost | 2dp_value }} <br/>
-                            GBP {{ salesOrder.goods_cost_gbp | 2dp_value }}
                         </b-td>
                     </b-tr>
                 </template>
             </b-table>
             <div class="d-flex justify-content-between w-100">
                 <div v-if="!isSupplier">
-                    <b-button v-if="salesOrder.id > 0 && !salesOrder.is_finalised" variant="primary" size="lg"
+                    <b-button v-if="showFinaliseButton" variant="primary" size="lg"
                               @click="finalise">
                         Finalise
                     </b-button>
 
                     <b-dropdown v-if="salesOrder.id > 0" text="Export for Supplier" variant="secondary" size="lg">
-                        <b-dropdown-item :key="template" href="#" v-for="template in templates">{{ template }}</b-dropdown-item>
+                        <b-dropdown-item :key="template" :href="`/sales-orders/${ salesOrder.id }/export?template=${template}`" v-for="template in templates">{{ template }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
                 <div>
                     <b-button class="mr-1" size="lg" variant="success" @click="add" v-if="salesOrder.id > 0 && !salesOrder.is_finalised">
                         Add Line
                     </b-button>
-
+                    <b-button
+                        v-if="!isSupplier && salesOrder.is_finalised && !hasSelectedRows"
+                        variant="primary"
+                        class="mr-1"
+                        size="lg"
+                        @click="runLandedCostCalc()"
+                    >
+                        Run Landed Cost Calculation
+                    </b-button>
                     <b-button
                         class="mr-1"
                         size="lg"
@@ -261,6 +306,10 @@
             :order="salesOrder"
             :lines="selectedRows"
             ref="update-inbound-shipments-modal"
+            :init-fx-rate="salesOrder.fx_rate"
+            :init-shipping-cost-per-cubic-foot="salesOrder.shipping_cost_per_cubic_foot"
+            :commission-rate="state['commission_rate']"
+            :import-duty="state['import_duty']"
         />
     </div>
 </template>
@@ -270,16 +319,18 @@ import {dateFilter} from "vue-date-fns";
 import SupplierSelect from "../../components/SupplierSelect";
 import CurrencySelect from "../../components/CurrencySelect";
 import ProductSelect from "../../components/ProductSelect";
-import UpdateInboundShipmentsModal from "./UpdateInboundShipmentsModal";
+import UpdateInboundShipmentsModal from "./log-shipments/UpdateInboundShipmentsModal";
 import SalesOrderHistoryModal from "./SalesOrderHistoryModal";
 import SupplierAccessModal from "./SupplierAccessModal";
 import ProductDimensionsInput from "../../components/ProductDimensionsInput";
 import SalesOrderLinePhotoChooser from "./SalesOrderLinePhotoChooser";
+import FactorySelect from "../../components/FactorySelect";
 
 
 export default {
     name: "EditSalesOrder",
     components: {
+        FactorySelect,
         SalesOrderLinePhotoChooser,
         ProductDimensionsInput,
         SupplierAccessModal,
@@ -302,13 +353,36 @@ export default {
         this.refresh();
     },
     computed: {
+        state() {
+            return window.__state;
+        },
+        showFinaliseButton() {
+            return this.salesOrder.id > 0 && (
+                !this.salesOrder.is_finalised || (this.isSupplier && !this.salesOrder.is_supplier_finalised)
+            );
+        },
         totalCubicFeet() {
             const cases = _.map(this.salesOrder.lines, line => {
-                const cases = Math.round(line.units_requested / line.units_per_case);
-                return line.case_cubic_ft * cases;
+                return line.total_cubic_ft;
             });
 
             return _.sum(cases).toFixed(2);
+        },
+        totalCartons() {
+            let count = 0;
+            for (let i  in this.salesOrder.lines) {
+                const line = this.salesOrder.lines[i];
+                count += line.units_requested / line.units_per_case;
+            }
+            return Math.round(count);
+        },
+        totalUnits() {
+            let count = 0;
+            for (let i  in this.salesOrder.lines) {
+                const line = this.salesOrder.lines[i];
+                count += line.units_requested;
+            }
+            return count;
         },
         urlPrefix() {
             return `/api/${this.isSupplier ? 'supplier/' : ''}sales-orders`
@@ -395,10 +469,22 @@ export default {
             }
         },
         include() {
-            return 'supplier,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost';
+            return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost,lines.received';
         }
     },
     methods: {
+        runLandedCostCalc() {
+            const loader = this.$loading.show();
+            this.$http
+                .post(`/api/sales-orders/${this.salesOrderId}/landed-costs`)
+                .then(() => {
+                    loader.hide();
+                    this.refresh();
+                }).catch(error => {
+                    loader.hide();
+                    this.$handleExceptionResponse(error, true);
+                });
+        },
         openSupplierAccessModal() {
             this.$refs['supplier-access-modal'].open();
         },
@@ -466,14 +552,13 @@ export default {
                 this.salesOrder = response.data;
                 loader.hide
             }).catch(error => {
-                this.$handleExceptionResponse(error);
+                this.$handleExceptionResponse(error, true);
                 loader.hide();
             });
 
         },
 
         save(model = false) {
-            console.log(this.salesOrder.reference);
             const loader = this.$loading.show();
             this.$http.put(
                 `${this.urlPrefix}/${this.salesOrder.id}`, (model) ? model : this.salesOrder, {params: {include: this.include}}
@@ -481,7 +566,7 @@ export default {
                 this.salesOrder = response.data;
                 loader.hide();
             }).catch(error => {
-                this.$handleExceptionResponse(error);
+                this.$handleExceptionResponse(error, true);
                 loader.hide();
             });
         },
@@ -508,7 +593,7 @@ export default {
                     this.salesOrder = response.data;
                     loader.hide();
                 }).catch(error => {
-                    this.$handleExceptionResponse(error);
+                    this.$handleExceptionResponse(error, true);
                     loader.hide();
                 });
             })

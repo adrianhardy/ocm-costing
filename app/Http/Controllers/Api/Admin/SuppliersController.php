@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
+use App\Models\Currency;
 use App\Models\Repositories\SupplierRepository;
 use App\Models\Supplier;
 use App\Transformers\SupplierTransformer;
@@ -32,7 +33,8 @@ class SuppliersController extends Controller
             'delivery_address' => 'sometimes|max:255',
             'contact_name' => 'sometimes|max:255',
             'contact_email' => 'sometimes|max:255',
-            'contact_phone' => 'sometimes|max:64'
+            'contact_phone' => 'sometimes|max:64',
+            'currency.id' => 'required|exists:currencies,id'
         ]);
 
         $supplier->fill($request->only([
@@ -44,6 +46,7 @@ class SuppliersController extends Controller
             'contact_phone'
         ]));
 
+        $supplier->currency()->associate(Currency::query()->findOrFail($request->input('currency.id')));
         $supplier->save();
 
         return response(fractal($supplier->fresh(), new SupplierTransformer));
@@ -57,7 +60,8 @@ class SuppliersController extends Controller
             'delivery_address' => 'sometimes|max:255',
             'contact_name' => 'sometimes|max:255',
             'contact_email' => 'sometimes|max:255',
-            'contact_phone' => 'required|max:64'
+            'contact_phone' => 'required|max:64',
+            'currency.id' => 'required|exists:currencies,id'
         ]);
 
         $supplier = new Supplier();
@@ -70,6 +74,7 @@ class SuppliersController extends Controller
             'contact_email',
             'contact_phone'
         ]));
+        $supplier->currency()->associate(Currency::query()->findOrFail($request->input('currency.id')));
 
         $supplier->save();
 

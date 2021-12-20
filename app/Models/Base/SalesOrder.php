@@ -6,7 +6,9 @@
 
 namespace App\Models\Base;
 
+use App\Models\Consignment;
 use App\Models\Currency;
+use App\Models\Factory;
 use App\Models\SalesOrderAuthentication;
 use App\Models\SalesOrderLine;
 use App\Models\Supplier;
@@ -34,9 +36,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $fx_rate
  * @property int $supplier_id
  * @property Carbon|null $finalised_at
+ * @property float $shipping_cost_per_cubic_foot
+ * @property string|null $supplier_reference
+ * @property int|null $factory_id
+ * @property string|null $sales_order_notes
+ * @property Carbon|null $supplier_finalised_at
  * 
  * @property Currency|null $currency
+ * @property Factory|null $factory
  * @property Supplier $supplier
+ * @property Collection|Consignment[] $consignments_sales_order
  * @property Collection|SalesOrderAuthentication[] $sales_order_authentications_sales_order
  * @property Collection|SalesOrderLine[] $sales_order_lines_sales_order
  *
@@ -56,12 +65,15 @@ class SalesOrder extends Model
 		'total_gbp' => 'float',
 		'currency_id' => 'int',
 		'fx_rate' => 'float',
-		'supplier_id' => 'int'
+		'supplier_id' => 'int',
+		'shipping_cost_per_cubic_foot' => 'float',
+		'factory_id' => 'int'
 	];
 
 	protected $dates = [
 		'sent_at',
-		'finalised_at'
+		'finalised_at',
+		'supplier_finalised_at'
 	];
 
 	public function currency()
@@ -69,9 +81,19 @@ class SalesOrder extends Model
 		return $this->belongsTo(Currency::class);
 	}
 
+	public function factory()
+	{
+		return $this->belongsTo(Factory::class);
+	}
+
 	public function supplier()
 	{
 		return $this->belongsTo(Supplier::class);
+	}
+
+	public function consignments_sales_order()
+	{
+		return $this->hasMany(Consignment::class);
 	}
 
 	public function sales_order_authentications_sales_order()

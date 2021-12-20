@@ -7,18 +7,37 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Mpociot\Versionable\VersionableTrait;
 use Ramsey\Uuid\Uuid;
+use Spatie\ModelStatus\HasStatuses;
 
 /**
  * Class SalesOrder
  * @package App\Models
  * @property SalesOrderLine[] $lines
+ * @property Consignment[] $consignments
  * @property-read boolean $is_finalised
  * @property-read boolean $is_sent
  * @property SalesOrderAuthentication[] $authenticated_users
+ * @property-read $status
+ * @proeprty-read $status_description
  */
 class SalesOrder extends BaseSalesOrder
 {
     use SoftDeletes;
+    use HasStatuses;
+
+    const STATUS_DRAFT = 'draft';
+    const STATUS_QUOTE_REQUEST = 'quote_request';
+    const STATUS_QUOTE = 'quote';
+    const STATUS_SALES_ORDER = 'sales_order';
+    const STATUS_CONFIRMED_SALES_ORDER = 'confirmed_sales_order';
+
+    const STATUSES = [
+        self::STATUS_DRAFT => 'Draft',
+        self::STATUS_QUOTE_REQUEST => 'Quote Request',
+        self::STATUS_QUOTE => 'Quote',
+        self::STATUS_SALES_ORDER => 'Sales Order',
+        self::STATUS_CONFIRMED_SALES_ORDER => 'Confirmed Sales Order',
+    ];
 
 	protected $fillable = [
 		'sent_at',
@@ -28,7 +47,11 @@ class SalesOrder extends BaseSalesOrder
         'finalised_at',
         'sent_at',
 		'fx_rate',
-		'supplier_id'
+		'supplier_id',
+        'sales_order_notes',
+        'shipping_cost_per_cubic_foot',
+        'supplier_reference',
+        'supplier_finalised_at'
 	];
 
 	public function getStageDescriptionAttribute()
@@ -44,25 +67,48 @@ class SalesOrder extends BaseSalesOrder
         return $this->finalised_at !== null;
     }
 
-	public function getIsSentAttribute()
+    public function getIsSupplierFinalisedAttribute()
+    {
+        return $this->supplier_finalised_at !== null;
+    }
+
+
+    public function getIsSentAttribute()
     {
         return $this->sent_at !== null;
     }
 
+    /**
+     * @return string
+     */
     public function getStatusAttribute()
     {
-        switch(true)
-        {
+        $status = $this->latestStatus();
+        return $status?$status->name:null;
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusDescriptionAttribute()
+    {
+
+        $description = 'Unknown';
+        if (array_key_exists($this->status, self::STATUSES)) {
+            $description = self::STATUSES[$this->status];
+        }
+
+        switch(true) {
             case $this->is_sent:
-                return 'Sent';
+                $description .= ' : Sent';
                 break;
             case $this->is_finalised:
-                return 'Finalised';
-                break;
-            default:
-                return 'Quote';
+                $description .= ' : Finalised';
                 break;
         }
+
+        return $description;
     }
 
     public function getSalesOrderNumberAttribute()
@@ -119,5 +165,10 @@ class SalesOrder extends BaseSalesOrder
                 ->whereNull('expires_at')
                 ->orWhere('expires_at', '>', Carbon::now());
         });
+    }
+
+    public function consignments()
+    {
+        return $this->hasMany(Consignment::class, 'sales_order_id', 'id');
     }
 }

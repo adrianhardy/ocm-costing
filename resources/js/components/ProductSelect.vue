@@ -30,15 +30,18 @@ export default {
     name: "ProductSelect",
     components: {VueSelect},
     props: {
+        salesOrderId: Number,
         'readonly': Boolean,
         'size': String,
-        'value': [Object, String, Array]
+        'value': [Object, String, Array],
+        factoryId: Number
     },
     methods: {
         debounceFetch: _.debounce(async (search, loading, vm) => {
             if (search.length < 2) return;
 
             const params = {
+                sales_order_id: vm.salesOrderId,
                 search: search,
                 page: 1,
                 per_page: 50,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\SalesOrders;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
@@ -58,7 +59,13 @@ class LinesController extends Controller
         ]));
 
         if ($request->input('product.id') && $request->input('product.id') != $line->product_id) {
+            /** @var Product $product */
             $product = Product::findOrFail($request->input('product.id'));
+
+            if (!$product->factories->contains($salesOrder->factory)) {
+                abort(400, 'You can only add products whose factories contain ' . $salesOrder->factory->name);
+            }
+
             $line->fill([
                 'name'                  => '' . $product->name,
                 'item_number'           => '' . $product->item_number,
@@ -70,10 +77,7 @@ class LinesController extends Controller
             $line->product()->associate($product);
         }
 
-        if (!$salesOrder->is_finalised &&
-            $line->product->case_cubic_m > 0 &&
-            $line->product->units_per_case > 0
-        ) {
+        if (!$salesOrder->is_finalised && $line->product) {
             if ($line->units_per_case < 1) {
                 $cases = 0;
             } else {

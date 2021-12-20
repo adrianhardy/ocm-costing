@@ -1,144 +1,135 @@
 <template>
-<div>
-  <b-card class="shadow-sm" header-class="justify-content-between">
-    <template #header>
-      <div>
-        <slot name="title"/>
-      </div>
-      <div>
-        <b-button variant="outline-primary" :href="`/sales-orders/${orderId}/edit`">Back to Sales Order</b-button>
-      </div>
-    </template>
     <div>
-      <b-table
-          small
-          ref="table"
-          :fields="fields"
-          :items="items"
-          :sort-by="pagination.sort_by"
-          :sort-desc="pagination.sort_desc"
-          :current-page="pagination.current_page"
-          :per-page="pagination.per_page"
-      >
-        <template #cell(expand)="data">
-          <div>
-            <b-button variant="transparent" size="sm" @click="data.toggleDetails(); $set(expandedRows, data.item.id, data.item._showDetails)">
-              <b-icon-chevron-down v-if="data.detailsShowing"/>
-              <b-icon-chevron-left v-else />
-            </b-button>
-          </div>
-        </template>
-        <template #row-details="row">
-          <b-table-simple striped borderless outlined class="p-8">
-            <b-tr>
-              <b-th class="w-15">Reference</b-th>
-              <b-th class="w-10">Goods Cost</b-th>
-              <b-th class="w-10"></b-th>
-              <b-th class="w-10">Shipping Cost</b-th>
-              <b-th class="w-10"></b-th>
-              <b-th>Ship' &pound;/Unit</b-th>
-              <b-th class="text-nowrap">Qty Shipped</b-th>
-              <b-th class="text-nowrap">Invoice Amt</b-th>
-            </b-tr>
-            <b-tbody>
-              <b-tr v-if="row.item.consignments.length < 1">
-                <b-td colspan="7" class="text-center">No shipments recorded yet</b-td>
-              </b-tr>
-              <b-tr v-for="consignment in row.item.consignments" :key="consignment.id +':'+ row.item.id">
-                <b-td class="w-15">{{ consignment.reference }}</b-td>
-                <b-td>{{consignment.pivot.goods_cost}}</b-td>
-                <b-td>{{consignment.pivot.goods_cost_gbp | cash_value}}</b-td>
-                <b-td>{{ (consignment.pivot.invoice_amt - consignment.pivot.goods_cost) | 2dp_value}}</b-td>
-                <b-td>{{consignment.pivot.shipping_cost_gbp | cash_value}}</b-td>
-                <b-td>{{consignment.pivot.shipping_cost_gbp_per_unit | cash_value}}</b-td>
-                <b-td class="w-10">
-                  <b-form-input size="sm" @change="updateConsignment(row.item, consignment)" v-model="consignment.pivot.qty_shipped"/>
-                </b-td>
-                <b-td class="w-10">
-                    <b-form-input size="sm" @change="updateConsignment(row.item, consignment)" v-model="consignment.pivot.invoice_amt"/>
-                </b-td>
-              </b-tr>
-            </b-tbody>
-          </b-table-simple>
-        </template>
-      </b-table>
+        <b-card class="shadow-sm" header-class="justify-content-between">
+            <template #header>
+                <div>
+                    <slot name="title"/>
+                </div>
+                <div>
+                    <b-button variant="outline-primary" :href="`/sales-orders/${orderId}/edit`">Back to Sales Order
+                    </b-button>
+                </div>
+            </template>
+            <div>
+                <b-table
+                    small
+                    ref="table"
+                    :fields="fields"
+                    :items="items"
+                    :sort-by="pagination.sort_by"
+                    :sort-desc="pagination.sort_desc"
+                    :current-page="pagination.current_page"
+                    :per-page="pagination.per_page"
+                >
+                    <template #cell(expand)="data">
+                        <div>
+                            <b-button variant="transparent" size="sm"
+                                      @click="data.toggleDetails(); $set(expandedRows, data.item.id, data.item._showDetails)">
+                                <b-icon-chevron-down v-if="data.detailsShowing"/>
+                                <b-icon-chevron-left v-else/>
+                            </b-button>
+                        </div>
+                    </template>
+                    <template #row-details="row">
+                        <b-table-simple striped borderless outlined class="p-8">
+                            <b-tr>
+                                <b-th class="w-35">Reference</b-th>
+                                <b-th>Total Invoice Amt</b-th>
+                                <b-th class="text-nowrap">Qty Shipped</b-th>
+                            </b-tr>
+                            <b-tbody>
+                                <b-tr v-if="row.item.consignments.length < 1">
+                                    <b-td colspan="4" class="text-center">No shipments recorded yet</b-td>
+                                </b-tr>
+                                <b-tr v-for="consignment in row.item.consignments" :key="consignment.id +':'+ row.item.id">
+                                    <b-td class="w-15">{{ consignment.reference }}</b-td>
+                                    <b-td>{{ consignment.invoice_amt | cash_value }}</b-td>
+                                    <b-td class="w-10">
+                                        <b-form-input size="sm" @change="updateConsignment(row.item, consignment)"
+                                                      v-model="consignment.pivot.qty_shipped"/>
+                                    </b-td>
+                                </b-tr>
+                            </b-tbody>
+                        </b-table-simple>
+                    </template>
+                </b-table>
+            </div>
+        </b-card>
     </div>
-  </b-card>
-</div>
 </template>
 
 <script>
 export default {
-  name: "ConsignmentsList",
-  props: {orderId: Number},
-  computed: {
-    include() {
-      return 'product,landed_cost,consignments,consignments.pivot';
-    }
-  },
-  methods: {
-    updateConsignment(line, consignment){
-      const loader = this.$loading.show();
-      const url = `/api/sales-orders/lines/${line.id}/consignments/${consignment.id}`
-      this.$http.put(url, consignment, {
-        params: {include: this.include}
-      }).then(response => {
-        consignment = response.data;
-        loader.hide();
-        this.$bvToast.toast('Consignment Updated', {
-          variant: 'success'
-        });
-        this.$refs['table'].refresh();
-      }).catch(error => {
-        loader.hide();
-        console.log(error);
-        this.$handleExceptionResponse(error, true)
-      })
+    name: "ConsignmentsList",
+    props: {orderId: Number},
+    computed: {
+        include() {
+            return 'product,landed_cost,consignments,consignments.pivot';
+        }
     },
-    /**
-     * @param ctx
-     * @returns {Promise<*|*|Array>}
-     */
-    async items(ctx) {
-      const url = `/api/sales-orders/${this.orderId}/consignments`;
-      const payload = {
-        include: this.include
-      }
-      return this.$paginatedFetch(
-          url,
-          this.pagination,
-          ctx, payload
-      ).then(items => {
-        _.each(items, item => {
-          if (this.expandedRows[item.id]) {
-            item._showDetails = true;
-          }
-        });
-        return items;
-      });
+    methods: {
+        updateConsignment(line, consignment) {
+            const loader = this.$loading.show();
+            const url = `/api/sales-orders/lines/${line.id}/consignments/${consignment.id}`
+            this.$http.put(url, consignment, {
+                params: {include: this.include}
+            }).then(response => {
+                consignment = response.data;
+                loader.hide();
+                this.$bvToast.toast('Consignment Updated', {
+                    variant: 'success'
+                });
+                this.$refs['table'].refresh();
+            }).catch(error => {
+                loader.hide();
+                console.log(error);
+                this.$handleExceptionResponse(error, true)
+            })
+        },
+        /**
+         * @param ctx
+         * @returns {Promise<*|*|Array>}
+         */
+        async items(ctx) {
+            const url = `/api/sales-orders/${this.orderId}/consignments/report`;
+            const payload = {
+                include: this.include
+            }
+            return this.$paginatedFetch(
+                url,
+                this.pagination,
+                ctx, payload
+            ).then(items => {
+                _.each(items, item => {
+                    if (this.expandedRows[item.id]) {
+                        item._showDetails = true;
+                    }
+                });
+                return items;
+            });
+        }
+    },
+    data() {
+        return {
+            expandedRows: {},
+            fields: [
+                {key: 'item_number', label: 'Item #'},
+                {key: 'article_number', label: 'Art. #'},
+                {key: 'product.name', label: 'name'},
+                {key: 'units_requested', label: 'Requested'},
+                {key: 'unit_price', label: 'Unit Price'},
+                {key: 'landed_cost.shipping_cost_gbp', label: 'Est Shipping Cost GBP'},
+                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Est Landed Cost / Unit GBP'},
+                {key: 'expand', label: ''},
+            ],
+            pagination: {
+                perPage: 10,
+                currentPage: 1,
+                sort_by: 'id',
+                sort_desc: true
+            }
+        }
     }
-  },
-  data(){
-    return {
-      expandedRows: {},
-      fields: [
-        {key: 'product.name', label: 'name'},
-        {key: 'units_requested', label: 'Requested'},
-        {key: 'article_number', label: 'Art. #'},
-        {key: 'item_number', label: 'Item #'},
-        {key: 'unit_price', label: 'Unit Price'},
-        {key: 'landed_cost.shipping_cost_gbp', label: 'Est Shipping Cost GBP'},
-        {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Est Landed Cost / Unit GBP'},
-        {key: 'expand', label: ''},
-      ],
-      pagination: {
-        perPage: 10,
-        currentPage: 1,
-        sort_by: 'id',
-        sort_desc: true
-      }
-    }
-  }
 }
 </script>
 

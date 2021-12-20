@@ -5,8 +5,8 @@
                 <table-header v-model="pagination">
                     <slot>
                         <search-input v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button @click="location.href='/admin/imports/create'">Import</b-button>
-                        <b-button variant="primary" @click="createProduct()">Create</b-button>
+                        <b-button href="/admin/imports/create">Import</b-button>
+                        <b-button variant="primary" href="/products/create">Create</b-button>
                     </slot>
                 </table-header>
             </template>
@@ -40,6 +40,41 @@ import SearchInput from "../../components/SearchInput";
 export default {
     name: "ProductsList",
     components: {SearchInput, TableHeader},
+    props: {
+        isSupplier: Boolean
+    },
+    computed: {
+        fields() {
+            let fields = [
+                {
+                    key: 'article_number',
+                    sortable: true
+
+                },{
+                    key: 'item_number',
+                    sortable: true
+                },{
+                    key: 'image',
+                },{
+                    key: 'name',
+                    sortable: true
+                },{
+                    key: 'barcode',
+                    sortable: true
+                }
+            ];
+
+            if (!this.isSupplier) {
+                fields.push({
+                    key: 'est_landed_cost_gbp',
+                    label: 'ELC GBP',
+                    sortable: true
+                });
+            }
+
+            return fields;
+        }
+    },
     methods: {
         items(ctx) {
             return this.$paginatedFetch(
@@ -60,29 +95,7 @@ export default {
                 perPage: 100,
                 currentPage: 1,
             },
-            loading: false,
-            fields: [
-                {
-                    key: 'article_number',
-                    sortable: true
-
-                },{
-                    key: 'item_number',
-                    sortable: true
-                },{
-                    key: 'image',
-                },{
-                    key: 'name',
-                    sortable: true
-                },{
-                    key: 'barcode',
-                    sortable: true
-                },{
-                    key: 'est_landed_cost_gbp',
-                    label: 'ELC GBP',
-                    sortable: true
-                }
-            ]
+            loading: false
         }
     }
 }

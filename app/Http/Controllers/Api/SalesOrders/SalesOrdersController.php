@@ -5,14 +5,18 @@ namespace App\Http\Controllers\Api\SalesOrders;
 use anlutro\LaravelSettings\ServiceProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
+use App\Mail\SupplierSalesOrderFinalised;
 use App\Models\Currency;
+use App\Models\Factory;
 use App\Models\Repositories\SalesOrderRepository;
 use App\Models\SalesOrder;
 use App\Models\Supplier;
+use App\Models\User;
 use App\Services\RafService;
 use App\Transformers\SalesOrderTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class SalesOrdersController extends Controller
 {
@@ -91,6 +95,7 @@ class SalesOrdersController extends Controller
 
         $so->fx_rate = $so->currency->default_fx_to_gbp;
         $so->save();
+        $so->setStatus(SalesOrder::STATUS_DRAFT);
         return response()->json(fractal(
             $so, new SalesOrderTransformer
         ));
@@ -107,32 +112,55 @@ class SalesOrdersController extends Controller
         $this->authorize('view', $sales_order);
         if(!$request->input('finalised')){
             $request->validate([
-                'supplier.id' => 'required|exists:suppliers,id',
-                'currency.id' => 'required|exists:currencies,id',
-                'fx_rate' => 'required|min:0|numeric'
+                'supplier.id'       => 'required|exists:suppliers,id',
+                'factory.id'        => 'required|exists:factories,id',
+                'currency.id'       => 'required|exists:currencies,id',
+                'fx_rate'           => 'required|min:0|numeric',
+                'status'            => 'nullable|sometimes|in:' . implode(',', array_keys(SalesOrder::STATUSES)),
+                'sales_order_notes' => 'min:0|max:2000'
             ], [], [
-                'currency.id' => 'currency',
-                'supplier.id' => 'supplier',
+                'currency.id'       => 'currency',
+                'supplier.id'       => 'supplier',
+                'factory.id'        => 'factory',
                 'fx_rate' => 'FX (Foreign Exchange Rate)'
             ]);
             $currency = Currency::query()->findOrFail($request->input('currency.id'));
             $supplier = Supplier::query()->findOrFail($request->input('supplier.id'));
+            $factory = Factory::query()->findOrFail($request->input('factory.id'));
             $sales_order->currency()->associate($currency);
             $sales_order->supplier()->associate($supplier);
+            $sales_order->factory()->associate($factory);
 
             $sales_order->fill($request->only([
-                'reference', 'fx_rate'
+                'reference', 'fx_rate', 'sales_order_notes', 'supplier_reference'
             ]));
 
+            if ($request->input('status')) {
+                $sales_order->setStatus($request->input('status'));
+            }
         }
 
         if ($request->input('finalised')) {
-            $sales_order->finalised_at = Carbon::now();
-            foreach($sales_order->lines as $line) {
-                try {
-                    $rafService->createProduct($line->product);
-                } catch (\Exception $ex) {
-                    // log exception here
+            if (\Auth::user()->is_supplier) {
+                $sales_order->supplier_finalised_at = Carbon::now();
+                // Send an email to every super to say that the document has
+                // been finalised by the supplier:
+                foreach (User::query()->role(['super']) as $super) {
+                    $mail = new SupplierSalesOrderFinalised(
+                        $sales_order,
+                        \Auth::user()
+                    );
+                    $mail->to($super->email, $super->name);
+                    Mail::send($mail);
+                }
+            } else {
+                $sales_order->finalised_at = Carbon::now();
+                foreach($sales_order->lines as $line) {
+                    try {
+                        $rafService->createProduct($line->product);
+                    } catch (\Exception $ex) {
+                        // log exception here
+                    }
                 }
             }
         }

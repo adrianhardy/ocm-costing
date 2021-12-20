@@ -23,7 +23,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $unit_width_cm
  * @property $unit_height_cm
  * @property Collection|ProductLandedCost[] $landed_costs
-
+ * @property Collection|Factory[] $factories
  * @property-read $current_landed_cost_per_unit_gbp
  * @property-read $case_cubic_ft
  */
@@ -61,7 +61,9 @@ class Product extends BaseProduct implements HasMedia
         'est_landed_cost_gbp',
         'is_excluded_from_commission',
         'primary_sku',
-        'primary_asin'
+        'primary_asin',
+        'additional_skus',
+        'additional_asins'
     ];
 
 	protected $fillable = [
@@ -178,6 +180,11 @@ class Product extends BaseProduct implements HasMedia
     public function landed_costs()
     {
         return $this->hasMany(ProductLandedCost::class);
+    }
+
+    public function factories()
+    {
+        return $this->belongsToMany(Factory::class, 'products_factories');
     }
 
 }

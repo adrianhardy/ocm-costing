@@ -7,6 +7,7 @@ use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Factory;
 use App\Models\Product;
 use App\Models\Repositories\ProductRepository;
+use App\Models\SalesOrder;
 use App\Models\Supplier;
 use App\Transformers\ProductTransformer;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class ProductsController extends Controller
      */
     public function show(Request $request, Product $product)
     {
+        $this->authorize('view', $product);
         $product->load('comments', 'comments.commentator', 'media');
         return fractal($product, new ProductTransformer());
     }
@@ -34,15 +36,19 @@ class ProductsController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+
+        $this->authorize('update', $product);
+
         $unique = Rule::unique('products', 'item_number')
             ->whereNotNull('barcode')
             ->where('barcode', $request->input('barcode'))
             ->ignoreModel($product);
 
+        $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
 
         $this->validate($request, [
-            'supplier.id'           => 'required|exists:suppliers,id',
-            'factory.id'            => 'nullable|exists:factories,id',
+            'supplier.id'           => $supplierRequired . '|exists:suppliers,id',
+            'factories.*.id'        => 'nullable|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => ['required', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
@@ -63,9 +69,12 @@ class ProductsController extends Controller
             'uk_postage_method'     => 'nullable|sometimes',
             'eu_postage_method'     => 'nullable|sometimes',
             'row_postage_method'    => 'nullable|sometimes'
+        ], [], [
+            'supplier.id' => 'Supplier',
+            'factories.*.id' => 'Factory'
         ]);
 
-        $product->fill($request->only([
+        $fields = [
             'item_number',
             'article_number',
             'name',
@@ -84,16 +93,24 @@ class ProductsController extends Controller
             'unit_price',
             'case_weight_kg',
             'unit_weight_kg',
-            'is_excluded_from_commission',
-            'uk_postage_method',
-            'eu_postage_method',
-            'row_postage_method'
-        ]), [], [
-            'supplier.id' => 'Supplier',
-            'factory.id' => 'Factory'
-        ]);
-        $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
-        $product->factory()->associate((Factory::find($request->input('factory.id'))));
+        ];
+
+        if (!\Auth::user()->is_supplier) {
+            $fields = array_merge($fields, [
+                'is_excluded_from_commission',
+                'uk_postage_method',
+                'eu_postage_method',
+                'row_postage_method'
+            ]);
+        }
+
+        $product->fill($request->only($fields));
+        if (\Auth::user()->hasRole(['supplier'])) {
+            $product->supplier()->associate(\Auth::user()->supplier);
+        } else {
+            $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        }
+        $product->factories()->sync(Factory::query()->findMany($request->input('factories.*.id')));
         $product->save();
         return response()->json(fractal($product->fresh(), new ProductTransformer()));
     }
@@ -105,12 +122,15 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Product::class);
         $unique = Rule::unique('products', 'item_number')
             ->whereNotNull('barcode')
             ->where('barcode', $request->input('barcode'));
 
+        $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
+
         $this->validate($request, [
-            'supplier.id'           => 'required|exists:suppliers,id',
+            'supplier.id'           => $supplierRequired . '|exists:suppliers,id',
             'factory.id'            => 'nullable|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => 'required|min:1|max:64',
@@ -125,13 +145,16 @@ class ProductsController extends Controller
             'inner_qty'             => 'sometimes|min:0|numeric',
             'packing_instructions'  => 'sometimes|max:500',
             'product_description'   => 'sometimes|max:500',
+            'uk_postage_method'     => 'nullable|sometimes',
+            'eu_postage_method'     => 'nullable|sometimes',
+            'row_postage_method'    => 'nullable|sometimes'
         ], [
             'item_number.unique' => 'The item number/barcode combination has already been taken'
         ], [
             'supplier.id' => 'Supplier',
             'factory.id' => 'Factory'
         ]);
-        $product = new Product($request->only([
+        $fields = [
             'item_number',
             'article_number',
             'name',
@@ -139,17 +162,33 @@ class ProductsController extends Controller
             'length_cm',
             'width_cm',
             'height_cm',
+            'unit_length_cm',
+            'unit_width_cm',
+            'unit_height_cm',
             'units_per_case',
             'inner_qty',
             'packing_instructions',
             'product_description',
             'unit_price',
             'case_weight_kg',
-            'is_excluded_from_commission'
-        ]));
-        $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
-        $product->factory()->associate((Factory::find($request->input('factory.id'))));
-        $product->save();
+            'unit_weight_kg'
+        ];
+        if (!\Auth::user()->is_supplier) {
+            $fields = array_merge($fields, [
+                'is_excluded_from_commission',
+                'uk_postage_method',
+                'eu_postage_method',
+                'row_postage_method'
+            ]);
+        }
+        $product = new Product($request->only($fields));
+        if (\Auth::user()->hasRole(['supplier'])) {
+            $product->supplier()->associate(\Auth::user()->supplier);
+        } else {
+            $product->supplier()->associate(Supplier::find($request->input('supplier.id')));
+        }
+        $product->save(); // save product first, then attach to factories join table
+        $product->factories()->sync(Factory::query()->findMany($request->input('factories.*.id')));
         return fractal($product->fresh(), new ProductTransformer());
     }
 
@@ -160,13 +199,31 @@ class ProductsController extends Controller
      */
     public function index(Request $request, ProductRepository $productRepository)
     {
-        $paginator = $productRepository->paginate(
+        $this->validate($request, [
+            'sales_order_id' => 'nullable|sometimes|exists:sales_orders,id'
+        ]);
+
+        $paginator = $productRepository;
+
+        // Restrict the catalogue of products that goes back to suppliers
+        if (\Auth::user()->is_supplier) {
+            $paginator = $paginator
+                ->where('supplier_id', \Auth::user()->supplier_id)
+                ->whereHas('factories', function($query) {
+                    $query->whereIn('id', \Auth::user()->factories->pluck('id'));
+                });
+        }
+
+        if ($request->input('sales_order_id')) {
+            $salesOrder = SalesOrder::query()->findOrFail($request->input('sales_order_id'));
+            $paginator = $paginator->whereHas('factories', function($query) use ($salesOrder) {
+                return $query->where('id', $salesOrder->factory->id);
+            });
+        }
+
+        $paginator = $paginator->paginate(
             $request->input('per_page', 100)
         );
-
-        if (\Auth::user()->hasAnyRole(['supplier'])) {
-            $paginator->where('supplier_id', \Auth::user()->supplier_id);
-        }
 
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductTransformer

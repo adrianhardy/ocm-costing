@@ -22,7 +22,7 @@ class SalesOrderTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'lines', 'supplier', 'currency'
+        'lines', 'supplier', 'currency', 'factory'
     ];
 
 
@@ -42,6 +42,19 @@ class SalesOrderTransformer extends TransformerAbstract
     public function includeCurrency(SalesOrder $so)
     {
         return $this->item($so->currency, new CurrencyTransformer());
+    }
+
+
+    /**
+     * @param SalesOrder $so
+     * @return \League\Fractal\Resource\Item|\League\Fractal\Resource\NullResource
+     */
+    public function includeFactory(SalesOrder $so)
+    {
+        if (!$so->factory) {
+            return $this->null();
+        }
+        return $this->item($so->factory, new FactoryTransformer());
     }
 
 
@@ -69,8 +82,10 @@ class SalesOrderTransformer extends TransformerAbstract
             'updated_at',
             'is_sent',
             'is_finalised',
+            'is_supplier_finalised',
             'sent_at',
             'finalised_at',
+            'supplier_finalised_at',
             'fx_rate',
             'total',
             'total_gbp',
@@ -78,7 +93,11 @@ class SalesOrderTransformer extends TransformerAbstract
             'shipping_cost_gbp',
             'goods_cost',
             'goods_cost_gbp',
-            'status'
+            'status',
+            'status_description',
+            'sales_order_notes',
+            'shipping_cost_per_cubic_foot',
+            'supplier_reference'
         ]);
     }
 }

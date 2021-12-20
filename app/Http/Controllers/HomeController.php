@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     public function index() {
+
+        if (\Auth::user()->hasRole(['supplier'])) {
+            return response()->redirectToRoute('sales-orders.index');
+        }
+
         $user = User::query()->first();
         $comments = $user->comments()
             ->orderBy('created_at', 'DESC')

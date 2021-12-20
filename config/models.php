@@ -286,7 +286,13 @@ return [
             'versions', 'statuses', 'settings', 'roles', 'failed_jobs', 'comments', 'activity_log',
 
             'sales_order_lines_consignments',
-            'sales_order_authentications'
+            'sales_order_authentications',
+            'products_factories',
+            'products_factory',
+            'product_factory',
+            'product_factories',
+            'users_factories',
+            'user_factory'
         ],
 
         /*
@@ -391,7 +397,6 @@ return [
         |
         */
         'override_pluralize_for' => [
-
         ],
     ],
 

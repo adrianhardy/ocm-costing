@@ -11,7 +11,7 @@
                           <b-select-option value="sent">Sent</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button  @click="$refs['create'].open()">
+                        <b-button  @click="$refs['create'].open()" v-if="!isSupplier">
                             Create New Quote
                         </b-button>
                     </slot>
@@ -31,6 +31,9 @@
                     <div class="text-center my-2">
                         <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
                     </div>
+                </template>
+                <template #cell(shipping_cost_per_cubic_foot)="data">
+                    {{ data.value | cash_value }}
                 </template>
                 <template #cell(reference)="data">
                     <a :href="`/sales-orders/${data.item.id}/edit`">{{ data.value }}</a>
@@ -65,16 +68,58 @@ export default {
     filters: {
         date: dateFilter
     },
+    computed: {
+        fields() {
+            const fields = [
+                {
+                    key: 'reference',
+                    label: 'Order #',
+                    sortable: true,
+                }, {
+                    key: 'shipping_cost_per_cubic_foot',
+                    sortable: true
+                }, {
+                    key: 'created_at',
+                    sortable: true
+                }, {
+                    key: 'sent_at',
+                    sortable: true
+                }, {
+                    key: 'status_description'
+                },
+                {
+                    key: 'factory.name',
+                    sortable: true,
+                    label: 'Factory'
+                }
+            ];
+
+            if (!this.isSupplier) {
+                fields.push({
+                    key: 'supplier.name',
+                    sortable: true,
+                    label: 'Supplier'
+                });
+            }
+
+            return fields;
+        }
+    },
     methods: {
         items(ctx) {
-
+            const isSupplier = this.isSupplier;
+            const url = `/api/${isSupplier?'supplier/':''}sales-orders`;
+            const include = isSupplier?'':'supplier,factory';
             return this.$paginatedFetch(
-                `/api/${this.isSupplier?'supplier/':''}sales-orders`,
+                url,
                 this.pagination,
                 ctx, {
                     search: this.search,
                     stage: this.stage,
-                    include: ''
+                    include
+                }, {
+                    'supplier.name': 'suppliers|name',
+                    'factory.name': 'factories|name'
                 }
             );
         }
@@ -87,22 +132,7 @@ export default {
                 total: 0,
                 perPage: 100,
                 currentPage: 1,
-            },
-            fields: [
-                {
-                    key: 'reference',
-                    label: 'Order #',
-                    sortable: true,
-                }, {
-                    key: 'created_at',
-                    sortable: true
-                }, {
-                    key: 'sent_at',
-                    sortable: true
-                }, {
-                    key: 'status'
-              }
-            ]
+            }
         }
     }
 }

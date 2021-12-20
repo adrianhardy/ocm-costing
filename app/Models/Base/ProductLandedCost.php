@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $height_m
  * @property float $width_m
  * @property float $fx_rate
- * @property float $shipping_cost_per_cuft_usd
+ * @property float $shipping_cost_per_cuft
  * @property float $import_duty_pc
  * @property float $commission_rate_pc
  * @property float $landed_cost_per_unit
@@ -50,7 +50,7 @@ class ProductLandedCost extends Model
 		'height_m' => 'float',
 		'width_m' => 'float',
 		'fx_rate' => 'float',
-		'shipping_cost_per_cuft_usd' => 'float',
+		'shipping_cost_per_cuft' => 'float',
 		'import_duty_pc' => 'float',
 		'commission_rate_pc' => 'float',
 		'landed_cost_per_unit' => 'float',

@@ -57,17 +57,19 @@ class UsersController extends Controller
         }
         if ($request->input('role')) {
             $user->syncRoles($request->input('role'));
-
-            if ($request->input('role') == 'supplier') {
-                $user->supplier()->associate(
-                    Supplier::query()->findOrFail($request->input('supplier.id'))
-                );
-            } else {
-                $user->supplier()->dissociate();
-            }
         }
 
-        $user->syncRoles([$request->input('role')]);
+        if ($request->input('role') == 'supplier') {
+            $user->password = User::USER_LOCKED;
+            $user->supplier()->associate(
+                Supplier::query()->findOrFail($request->input('supplier.id'))
+            );
+            $user->factories()->sync($request->input('factories.*.id'));
+        } else {
+            $user->supplier()->dissociate();
+            $user->factories()->detach();
+        }
+
         $user->save();
 
         return response()->json(
@@ -75,23 +77,38 @@ class UsersController extends Controller
         );
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request)
     {
         $required = $request->input('role') !== 'supplier'?'required|confirmed|password|min:8':'nullable';
         $this->validate($request, [
-            'name'     => 'required|max:255',
-            'password' => $required,
-            'email'    => ['required', Rule::unique('users','email'), 'max:128'],
-            'role'     => 'required|in:super,admin,supplier'
+            'name'          => 'required|max:255',
+            'password'      => $required,
+            'supplier.id'   => $request->input('role') === 'supplier'?'required|exists:suppliers,id':'nullable',
+            'email'         => ['required', Rule::unique('users','email'), 'max:128'],
+            'role'          => 'required|in:super,admin,supplier'
         ]);
 
         $user = new User();
         $user->fill($request->only([
             'name',
-            'email',
+            'email'
         ]));
-        $user->syncRoles($request->input('role'));
         $user->password = bcrypt($request->input('password'));
+        $user->save();
+        if ($request->input('role') == 'supplier') {
+            $user->password = User::USER_LOCKED;
+            $user->supplier()->associate(
+                Supplier::query()->findOrFail($request->input('supplier.id'))
+            );
+            $user->factories()->sync($request->input('factories.*.id'));
+        }
+
+        $user->syncRoles($request->input('role'));
         $user->save();
 
         return response(fractal($user->fresh(), new UserTransformer));

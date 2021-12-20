@@ -32,6 +32,9 @@
                         <b-form-group label="Supplier">
                             <supplier-select v-model="user.supplier"></supplier-select>
                         </b-form-group>
+                        <b-form-group label="Factory">
+                            <factory-select multiple v-model="user.factories" />
+                        </b-form-group>
                         <div class="alert alert-warning">
                             Please note that suppliers can <strong>only</strong> access the system
                             using time limited URLs. You can provide access to specific Sales Orders
@@ -47,8 +50,9 @@
 
 <script>
 import SupplierSelect from "../../components/SupplierSelect";
+import FactorySelect from "../../components/FactorySelect";
 export default {
-    components: {SupplierSelect},
+    components: {FactorySelect, SupplierSelect},
     props: ['user-id', 'roles', 'current-user'],
     name: "EditUser",
     mounted() {
@@ -83,7 +87,7 @@ export default {
                 method: method,
                 data: payload,
                 params: {
-                    include: 'roles,supplier'
+                    include: 'roles,supplier,factories'
                 }
             }).then(response => {
                 this.user = response.data
@@ -108,7 +112,7 @@ export default {
         async refresh() {
             const loader = this.$loading.show();
             const url = `/api/admin/users/${this.userId}`;
-            this.$http.get(url, {params: {include: 'roles,supplier'}}).then(response => {
+            this.$http.get(url, {params: {include: 'roles,supplier,factories'}}).then(response => {
                 this.user = response.data;
                 if (response.data.roles && response.data.roles[0]) {
                     this.user.role = response.data.roles[0].name;

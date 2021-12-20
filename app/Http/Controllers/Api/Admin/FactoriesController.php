@@ -13,7 +13,16 @@ class FactoriesController extends Controller
 {
     public function index(FactoryRepository $factoryRepository)
     {
-        $paginator = $factoryRepository->paginate();
+        $paginator = $factoryRepository;
+
+        if (\Auth::user()->hasRole(['supplier'])) {
+            $paginator->whereHas('users', function($query) {
+                return $query->where('id', \Auth::id());
+            });
+        }
+
+        $paginator = $paginator->paginate();
+
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new FactoryTransformer()
         ));

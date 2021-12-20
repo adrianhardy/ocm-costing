@@ -24,6 +24,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Supplier $supplier
+ * @property \Illuminate\Support\Collection|Factory[] $factories
+ *
+ * @property-read $is_supplier
  *
  */
 class User extends Authenticatable
@@ -90,9 +93,25 @@ class User extends Authenticatable
         return $this->roles->first();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function factories()
+    {
+	   return $this->belongsToMany(Factory::class, 'user_factory');
+    }
+
+    public function getIsSupplierAttribute()
+    {
+        return $this->supplier_id > 0 && $this->hasAnyRole(['supplier']);
     }
 
 }
