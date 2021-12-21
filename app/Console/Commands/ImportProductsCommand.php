@@ -124,13 +124,16 @@ class ImportProductsCommand extends Command
             }
 
             $product->save();
-            if (!$product->factories->contains($factory)) {
-                $product->factories()->save($supplier);
+            if (!$product->factories->pluck('id')->contains($factory->id)) {
+                $product->factories()->save($factory);
             }
 
             if ($data->get('images') && $data->get('images')->isNotEmpty()) {
+                $product->clearMediaCollection('default');
+                if (count($data->get('images')) > 1) {
+                    xdebug_break();
+                }
                 foreach ($data->get('images') as $i => $blob) {
-                    $product->clearMediaCollection('default');
                     $product->addMediaFromBase64($blob)
                         ->usingFileName("product-{$product->id}-{$i}.png")
                         ->toMediaCollection('default');
@@ -160,12 +163,14 @@ class ImportProductsCommand extends Command
             'article_number'        => $data->get('article_number'),
             'name'                  => $data->get('name'),
             'unit_price'            => $data->get('unit_price'),
+            'product_details'       => $data->get('product_details'),
             'packing_instructions'  => $data->get('packing_instructions'),
             'barcode'               => $data->get('barcode')
         ],[
             'item_number'           => 'min:0|max:200',
             'article_number'        => 'required|min:2|max:200',
             'name'                  => 'required|min:2|max:200',
+            'product_details'       => 'sometimes|min:0|max:512',
             'packing_instructions'  => 'sometimes|min:0|max:512',
             'unit_price'            => 'required|numeric|min:0',
             'barcode'               => 'sometimes|min:0|max:32'
