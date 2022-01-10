@@ -71,6 +71,8 @@ new Vue().$mount('#app');
 
 document.querySelectorAll('.custom-file-input').forEach(element => {
     element.addEventListener('change',function(e) {
-        e.target.previousElementSibling.innerText = e.target.files[0].name;
+        if (e.target.previousElementSibling) {
+            e.target.previousElementSibling.innerText = e.target.files[0].name;
+        }
     });
 });

@@ -22,9 +22,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $date
  * @property int $units_per_case
  * @property float $unit_price
- * @property float $length_m
- * @property float $height_m
- * @property float $width_m
+ * @property float|null $length_m
+ * @property float|null $height_m
+ * @property float|null $width_m
  * @property float $fx_rate
  * @property float $shipping_cost_per_cuft
  * @property float $import_duty_pc

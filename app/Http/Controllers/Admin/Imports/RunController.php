@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Imports;
 use App\Http\Controllers\Controller;
+use App\Models\Factory;
 use App\Models\Import;
 use App\Models\ImportMapping;
 use App\Models\Supplier;
@@ -57,13 +58,14 @@ class RunController extends Controller
             'supplier.id'        => 'required|exists:suppliers,id',
             'mapping_name'       => 'nullable|min:0|max:100',
             'skip_rows'          => 'sometimes|min:0',
-            'quote_reference'    => 'required|min:0|max:100'
+//            'factory.id'         => 'required|exists:factories,id'
         ]);
 
         $skipRows       = $request->input('skip_rows', 0);
         $mappingName    = $request->input('mapping_name');
         $csv            = $request->file('csv');
         $supplier       = Supplier::query()->findOrFail($request->input('supplier.id'));
+        $factory       =  Factory::query()->findOrFail($request->input('factory.id'));
 
         DB::beginTransaction();
 
@@ -88,7 +90,8 @@ class RunController extends Controller
             'config'        => [
                 'supplier_id'       => $supplier->id,
                 'supplier'          => $supplier->only(['id', 'name']),
-                'quote_reference'   => $request->input('quote_reference')
+                'factory_id'        => $factory->id,
+                'factory'           => $factory->only(['id', 'name']),
             ],
             'skip_header_rows' => intval($skipRows),
             'log_path'      => $filename . ".log"
