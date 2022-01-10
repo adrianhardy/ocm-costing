@@ -17,8 +17,12 @@
                 <b-td>{{ product.article_number }}</b-td>
             </b-tr>
             <b-tr>
-                <b-th>Name</b-th>
+                <b-th>Description</b-th>
                 <b-td class="truncated" v-b-tooltip.hover :title="product.name">{{ product.name }}</b-td>
+            </b-tr>
+            <b-tr>
+              <b-th>Details</b-th>
+              <b-td class="truncated" v-b-tooltip.hover :title="product.product_description">{{ product.product_description }}</b-td>
             </b-tr>
             <b-tr>
                 <b-th>Packing</b-th>

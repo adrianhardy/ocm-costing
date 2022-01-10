@@ -130,9 +130,6 @@ class ImportProductsCommand extends Command
 
             if ($data->get('images') && $data->get('images')->isNotEmpty()) {
                 $product->clearMediaCollection('default');
-                if (count($data->get('images')) > 1) {
-                    xdebug_break();
-                }
                 foreach ($data->get('images') as $i => $blob) {
                     $product->addMediaFromBase64($blob)
                         ->usingFileName("product-{$product->id}-{$i}.png")

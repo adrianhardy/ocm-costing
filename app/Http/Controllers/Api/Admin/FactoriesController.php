@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class FactoriesController extends Controller
 {
-    public function index(FactoryRepository $factoryRepository)
+    public function index(Request $request, FactoryRepository $factoryRepository)
     {
         $paginator = $factoryRepository;
 
@@ -21,7 +21,13 @@ class FactoriesController extends Controller
             });
         }
 
-        $paginator = $paginator->paginate();
+        $perPage = null;
+        if ($request->input('all')) {
+            $perPage = 999999;
+        }
+        $paginator = $paginator
+            ->orderBy('name')
+            ->paginate($perPage);
 
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new FactoryTransformer()
