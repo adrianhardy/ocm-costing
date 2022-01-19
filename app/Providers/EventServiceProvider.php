@@ -22,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         \Illuminate\Auth\Events\Logout::class => [
             Listeners\UnsetAuthenticatedUserCookie::class
         ],
+        \App\Events\ShippingCostSettingChanged::class => [
+            \App\Listeners\UpdateAllCurrentEstimatedLandedCosts::class
+        ]
     ];
 
     /**

@@ -41,6 +41,12 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'elc' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/elc.log'),
+            'level' => 'debug',
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),

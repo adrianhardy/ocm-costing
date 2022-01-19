@@ -147,10 +147,10 @@ export default {
         save() {
             const loader = this.$loading.show();
             this.$http.post(`/api/products/${this.product.id}/landed-costs`, this.cost).then(response => {
-                this.$refs['table'].refresh();
                 loader.hide();
                 this.mode = '';
             }).catch(error => {
+                console.log(error);
                 loader.hide();
                 this.$handleExceptionResponse(error, true);
             })
