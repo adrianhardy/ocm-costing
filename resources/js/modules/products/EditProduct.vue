@@ -297,12 +297,17 @@
                                 <template #cell(unit_price)="data">
                                     {{ data.value | 2dp_value }}
                                 </template>
+                                <template #cell(attributes.case_cubic_ft)="data">
+                                    <span v-b-popover.hover="`${data.item.attributes.length_cm}cm x ${data.item.attributes.width_cm}cm x ${data.item.attributes.height_cm}cm`" title="LxWxH" style="cursor:pointer">
+                                        {{ data.value }}
+                                    </span>
+                                </template>
                                 <template #cell(landed_cost_per_unit_gbp)="data">
                                     {{ data.value | cash_value }}
                                 </template>
                                 <template #cell(extra)="data">
                                     <div v-if="data.item && data.item.attributes">
-                                        <span v-b-popover.hover="data.item.attributes.primary_asin"title="ASIN" style="cursor:pointer">
+                                        <span v-b-popover.hover="data.item.attributes.primary_asin" title="ASIN" style="cursor:pointer">
                                         <b-icon-box-seam/>
                                       </span>
                                         <span v-b-popover.hover="data.item.attributes.primary_sku"
@@ -391,22 +396,16 @@ export default {
                 label: 'When',
             }, {
                 key: 'attributes.case_weight_kg',
-                label: 'Ctn Kg'
+                label: 'KG/Ctn'
             }, {
                 key: 'attributes.est_landed_cost_gbp',
-                label: 'ELC'
+                label: '£ELC'
             }, {
                 key: 'attributes.units_per_case',
-                label: 'Q/Ctn'
+                label: 'QTY/Ctn'
             }, {
-                key: 'attributes.length_cm',
-                label: 'L'
-            }, {
-                key: 'attributes.width_cm',
-                label: 'W'
-            }, {
-                key: 'attributes.height_cm',
-                label: 'H'
+                key: 'attributes.case_cubic_ft',
+                label: 'Cuft/Ctn'
             }, {
                 key: 'attributes.unit_price',
                 label: 'U/Price'

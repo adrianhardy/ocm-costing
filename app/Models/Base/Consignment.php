@@ -27,6 +27,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $sales_order_id
  * @property float|null $invoice_amt
  * @property int|null $creator_id
+ * @property string|null $supplier_ref
+ * @property string|null $our_order_number
+ * @property string|null $vessel_name
+ * @property string|null $container_number
+ * @property string|null $bl_number
+ * @property string|null $shipping_agent_reference
  * 
  * @property User|null $creator
  * @property SalesOrder|null $sales_order

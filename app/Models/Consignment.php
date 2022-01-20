@@ -11,6 +11,14 @@ class Consignment extends BaseConsignment
 		'est_cost_cuft_gbp',
 		'departed_at',
 		'docked_at',
-        'invoice_amt'
+		'sales_order_id',
+		'invoice_amt',
+		'creator_id',
+		'supplier_ref',
+		'our_order_number',
+		'vessel_name',
+		'container_number',
+		'bl_number',
+		'shipping_agent_ref'
 	];
 }

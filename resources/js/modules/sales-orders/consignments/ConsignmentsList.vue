@@ -33,16 +33,28 @@
                     <template #row-details="row">
                         <b-table-simple striped borderless outlined class="p-8">
                             <b-tr>
-                                <b-th class="w-35">Reference</b-th>
-                                <b-th>Total Invoice Amt</b-th>
+                                <b-th>Reference</b-th>
+                                <b-th>Supplier Ref</b-th>
+                                <b-th>Our Order #</b-th>
+                                <b-th>Vessel Name</b-th>
+                                <b-th>Container #</b-th>
+                                <b-th>B/L Number</b-th>
+                                <b-th>Ship/Agent Ref</b-th>
+                                <b-th class="text-nowrap w-1">Total Invoice Amt</b-th>
                                 <b-th class="text-nowrap">Qty Shipped</b-th>
                             </b-tr>
                             <b-tbody>
                                 <b-tr v-if="row.item.consignments.length < 1">
-                                    <b-td colspan="4" class="text-center">No shipments recorded yet</b-td>
+                                    <b-td colspan="8" class="text-center">No shipments recorded yet</b-td>
                                 </b-tr>
                                 <b-tr v-for="consignment in row.item.consignments" :key="consignment.id +':'+ row.item.id">
                                     <b-td class="w-15">{{ consignment.reference }}</b-td>
+                                    <b-td>{{ consignment.supplier_ref }}</b-td>
+                                    <b-td>{{ consignment.our_order_number }}</b-td>
+                                    <b-td>{{ consignment.vessel_name }}</b-td>
+                                    <b-td>{{ consignment.container_number }}</b-td>
+                                    <b-td>{{ consignment.bl_number }}</b-td>
+                                    <b-td>{{ consignment.shipping_agent_ref }}</b-td>
                                     <b-td>{{ consignment.invoice_amt | cash_value }}</b-td>
                                     <b-td class="w-10">
                                         <b-form-input size="sm" @change="updateConsignment(row.item, consignment)"

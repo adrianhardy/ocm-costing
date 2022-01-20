@@ -12,9 +12,27 @@
             <b-form-radio size="lg" name="selected_shipment_id" @change="$emit('selected', data.item)" />
         </template>
         <template #custom-foot>
-            <b-tr>
+            <b-tr class="footer">
                 <b-td>
-                    <b-form-input size="sm" placeholder="New shipment reference" v-model="reference" />
+                    <b-form-input size="sm" placeholder="" v-model="reference" />
+                </b-td>
+                <b-td>
+                    <b-form-input size="sm" placeholder="" v-model="supplierRef" />
+                </b-td>
+                <b-td>
+                    <b-form-input size="sm" placeholder="" v-model="ourOrderNumber" />
+                </b-td>
+                <b-td>
+                    <b-form-input size="sm" placeholder="" v-model="vesselName" />
+                </b-td>
+                <b-td>
+                    <b-form-input size="sm" placeholder="" v-model="containerNumber" />
+                </b-td>
+                <b-td>
+                    <b-form-input size="sm" placeholder="" v-model="blNumber" />
+                </b-td>
+                <b-td>
+                    <b-form-input size="sm" placeholder="" v-model="shippingAgentRef" />
                 </b-td>
                 <b-td>
                     <b-input-group prepend="£" size="sm">
@@ -22,7 +40,9 @@
                     </b-input-group>
                 </b-td>
                 <b-td>
-                    <b-button size="sm" variant="primary" class="text-nowrap" @click="saveNew()">Create New</b-button>
+                    <b-button size="sm" variant="primary" class="text-nowrap" @click="saveNew()">
+                        <b-icon-plus />
+                    </b-button>
                 </b-td>
             </b-tr>
         </template>
@@ -43,10 +63,36 @@ export default {
         fields() {
             return [{
                 key: 'reference',
-                label: 'Reference'
+                label: 'Reference',
+                thClass: 'text-nowrap'
+            },{
+                key: 'supplier_ref',
+                label: 'Supplier Ref.',
+                thClass: 'text-nowrap'
+            },{
+                key: 'our_order_number',
+                label: 'Our Order #',
+                thClass: 'text-nowrap'
+            },{
+                key: 'vessel_name',
+                label: 'Vessel Name',
+                thClass: 'text-nowrap'
+            },{
+                key: 'container_number',
+                label: 'Container #',
+                thClass: 'text-nowrap'
+            },{
+                key: 'bl_number',
+                label: 'B/L Number',
+                thClass: 'text-nowrap'
+            },{
+                key: 'shipping_agent_ref',
+                label: 'Ship/Agent Ref.',
+                thClass: 'w-10 text-nowrap'
             },{
                 key: 'invoice_amt',
-                label: 'Invoice Amt'
+                label: 'Invoice Amt.',
+                thClass: 'text-nowrap'
             },{
                 key: 'id',
                 label: '',
@@ -59,11 +105,23 @@ export default {
         saveNew() {
             this.$http.post(this.url, {
                 reference: this.reference,
-                invoice_amt: this.invoiceAmt
+                invoice_amt: this.invoiceAmt,
+                supplier_ref: this.supplierRef,
+                shipping_agent_ref: this.shippingAgentRef,
+                bl_number: this.blNumber,
+                container_number: this.containerNumber,
+                our_order_number: this.ourOrderNumber,
+                vessel_name: this.vesselName
             }).then(() => {
                 this.$refs['table'].refresh();
                 this.reference = '';
-                this.invoiceAmt = false;
+                this.invoiceAmt = 0;
+                this.supplierRef = '';
+                this.shippingAgentRef = '';
+                this.blNumber = '';
+                this.containerNumber = '';
+                this.ourOrderNumber = '';
+                this.vesselName = '';
             }).catch(error => {
                 this.$handleExceptionResponse(error, true);
             });
@@ -78,6 +136,12 @@ export default {
         return {
             reference: '',
             invoiceAmt: 0,
+            supplierRef: '',
+            blNumber: '',
+            shippingAgentRef: '',
+            vesselNumber: '',
+            ourOrderNumber: '',
+            containerNumber: '',
             pagination: {},
             value: {}
         }
@@ -86,5 +150,10 @@ export default {
 </script>
 
 <style scoped>
-
+    .b-table {
+        font-size: 90%;
+    }
+    .b-table tr.footer {
+        font-size: 100%;
+    }
 </style>

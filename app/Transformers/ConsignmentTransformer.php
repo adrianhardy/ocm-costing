@@ -45,7 +45,13 @@ class ConsignmentTransformer extends TransformerAbstract
             'created_at',
             'updated_at',
             'invoice_amt',
-            'reference'
+            'reference',
+            'supplier_ref',
+            'our_order_number',
+            'vessel_name',
+            'container_number',
+            'bl_number',
+            'shipping_agent_ref'
         ]);
     }
 }

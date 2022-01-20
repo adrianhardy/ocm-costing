@@ -28,10 +28,26 @@ class ConsignmentsController extends Controller
      */
     public function store(Request $request, SalesOrder $salesOrder)
     {
-        $consignment = new Consignment($request->only([
-            'invoice_amt',
-            'reference'
-        ]));
+        $this->validate($request, [
+            'invoice_amt'       => 'required|numeric|min:0|max:99999999',
+            'reference'         => 'required|min:0|max:30',
+            'supplier_ref'      => 'sometimes|min:0|max:30',
+            'our_order_number'  => 'sometimes|min:0|max:30',
+            'vessel_name'       => 'sometimes|min:0|max:30',
+            'container_number'  => 'sometimes|min:0|max:30',
+            'bl_number'         => 'sometimes|min:0|max:30',
+            'shipping_agent_ref' => 'sometimes|min:0|max:30'
+        ]);
+
+        $consignment = new Consignment([
+            'reference'                 => $request->input('reference', ''),
+            'supplier_ref'              => $request->input('supplier_ref', ''),
+            'our_order_number'          => $request->input('our_order_number', ''),
+            'vessel_name'               => $request->input('vessel_name', ''),
+            'container_number'          => $request->input('container_number', ''),
+            'bl_number'                 => $request->input('bl_number', ''),
+            'shipping_agent_ref'        => $request->input('shipping_agent_ref', '')
+        ]);
         $consignment->sales_order()->associate($salesOrder);
         $consignment->creator()->associate(\Auth::user());
         $consignment->save();

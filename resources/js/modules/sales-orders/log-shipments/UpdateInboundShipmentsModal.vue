@@ -1,7 +1,7 @@
 <template>
     <b-modal
         ref="modal"
-        size="lg"
+        size="xl"
         title="Update shipment information"
         ok-title="Log Shipment"
         @ok="save($event)"

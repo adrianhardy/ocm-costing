@@ -48,6 +48,7 @@ class Product extends BaseProduct implements HasMedia
         'unit_length_cm',
         'unit_width_cm',
         'unit_height_cm',
+        'case_cubic_ft',
         'length_cm',
         'width_cm',
         'height_cm',
