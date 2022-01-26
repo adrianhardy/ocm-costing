@@ -4,12 +4,16 @@ namespace App\Console\Commands;
 
 use App\Domain\Excel\ParseProductSheet;
 use App\Domain\Excel\PrepareProductsForImport;
+use App\Domain\LandedCostCalculator;
+use App\Models\Currency;
 use App\Models\Factory;
 use App\Models\Import;
 use App\Models\Product;
+use App\Models\ProductLandedCost;
 use App\Models\Quote;
 use App\Models\QuoteLine;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +36,7 @@ class ImportProductsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'import:products {import} {--skip-images}';
+    protected $signature = 'import:products {import} {--landed-cost-date=} {--skip-images}';
 
     /**
      * The console command description.
@@ -40,6 +44,13 @@ class ImportProductsCommand extends Command
      * @var string
      */
     protected $description = 'Import Products';
+
+    /**
+     * @var Carbon
+     */
+    protected $lcdate = null;
+
+    protected $updateHistoricLCOnly = false;
 
     /**
      * Execute the console command.
@@ -56,6 +67,16 @@ class ImportProductsCommand extends Command
         $this->setupLog($import);
 
         $this->log->info("STARTING IMPORT ...");
+
+        if ($this->option('landed-cost-date')) {
+            $this->lcdate = Carbon::parse($this->option('landed-cost-date'));
+            $this->updateHistoricLCOnly = true;
+            if (!$this->lcdate) {
+                $this->log->critical("Failed to parse landed cost date");
+                die();
+            }
+            $this->log->info("Only importing historic landed cost data");
+        }
 
         if (!Storage::disk('imports')->exists($import->path)) {
             // SET STATUS ERROR
@@ -90,11 +111,53 @@ class ImportProductsCommand extends Command
             }
 
             /** @var Product $product */
-            $product = Product::query()->where('article_number', $data['article_number'])->first();
+            $product = Product::query()
+                ->where('article_number', $data['article_number'])
+                ->first();
+
             if (!$product) {
                 $product = new Product();
                 $product->supplier()->associate($supplier);
             }
+
+            if ($this->updateHistoricLCOnly) {
+                /** @var Currency $usd */
+                $usd = Currency::query()->where('code', 'USD')->first();
+
+                $lc = ProductLandedCost::query()
+                    ->where('product_id', $product->id)
+                    ->where('currency_id', $usd->id)
+                    ->where('date', $this->lcdate)
+                    ->first();
+
+                if (!$lc) {
+                    $lc = new ProductLandedCost();
+                    $lc->date = $this->lcdate;
+                    $lc->product()->associate($product);
+                    $lc->currency()->associate($usd);
+                }
+                $lc->fill($data->only([
+                    'units_per_case',
+                    'length_m',
+                    'height_m',
+                    'width_m',
+                    'unit_price',
+                ]));
+                $shippingCosts = (new LandedCostCalculator($lc->shipping_cost_per_cuft))
+                            ->calculateWithDuties(
+                                $lc->case_cubic_ft,
+                                $lc->units_per_case,
+                                $lc->unit_price,
+                                $product->is_excluded_from_commission
+                            );
+
+                $lc->landed_cost_per_unit_gbp = $shippingCosts['est_landed_cost_per_unit_gbp'];
+                $lc->landed_cost_per_unit = $lc->landed_cost_per_unit_gbp * $usd->default_fx_to_gbp;
+                $lc->save();
+                $import->save();
+                continue;
+            }
+
             $product->fill($data->only([
                 'name',
                 'product_description',

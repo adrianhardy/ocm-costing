@@ -4,6 +4,9 @@ namespace App\Models;
 
 use App\Models\Base\ProductLandedCost as BaseProductLandedCost;
 
+/**
+ * @property-read $case_cubic_ft
+ */
 class ProductLandedCost extends BaseProductLandedCost
 {
     use Traits\ProductDimensionMutators;
