@@ -214,6 +214,13 @@ class ProductsController extends Controller
                 });
         }
 
+
+         if($request->input('search_factory_id')) {
+            $paginator = $paginator->whereHas('factories', function($query) use ($request) {
+                $query->where('factories.id', $request->input('search_factory_id'));
+            });
+        }
+
         if ($request->input('sales_order_id')) {
             $salesOrder = SalesOrder::query()->findOrFail($request->input('sales_order_id'));
             $paginator = $paginator->whereHas('factories', function($query) use ($salesOrder) {

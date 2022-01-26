@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Domain\LandedCostCalculator;
+use App\Domain\SortedArticleNumberGenerator;
 use App\Models\Currency;
 use App\Models\Product;
 
@@ -10,6 +11,10 @@ class ProductObserver
 {
     public function saving(Product $product)
     {
+
+        $product->sorted_article_number = SortedArticleNumberGenerator::convert($product->article_number);
+
+
         if ($product->isDirty([
             'length_m',
             'width_m',

@@ -36,10 +36,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $fx_rate
  * @property int $supplier_id
  * @property Carbon|null $finalised_at
+ * @property string|null $sales_order_notes
  * @property float $shipping_cost_per_cubic_foot
  * @property string|null $supplier_reference
  * @property int|null $factory_id
- * @property string|null $sales_order_notes
  * @property Carbon|null $supplier_finalised_at
  * 
  * @property Currency|null $currency
