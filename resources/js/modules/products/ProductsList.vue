@@ -4,20 +4,19 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
-                        <div class="w-20">
-                            <b-select placeholder="Filter" v-model="searchField" @change="$refs['table'].refresh()">
-                                <b-select-option value="article_number:like">By Article #</b-select-option>
-                                <b-select-option value="item_number:like">By Item #</b-select-option>
-                                <b-select-option value="name:like">By Name</b-select-option>
-                                <b-select-option value="barcode:like">By Barcode</b-select-option>
-                            </b-select>
-                        </div>
-                        <div class="w-20">
-                            <factory-select v-model="searchFactory" @selected="$refs['table'].refresh()"/>
-                        </div>
                         <div class="w-30">
                             <search-input v-model="search" @search="$refs['table'].refresh()"/>
                         </div>
+                        <b-dropdown class="align-middle float-right" size="lg" text="" variant="outline-secondary" right>
+                            <b-dropdown-form style="width:400px">
+                                <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="$refs['table'].refresh()">By Article #</b-form-radio>
+                                <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="$refs['table'].refresh()">By Item #</b-form-radio>
+                                <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="$refs['table'].refresh()">By Name</b-form-radio>
+                                <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="$refs['table'].refresh()">By Barcode</b-form-radio>
+                                <b-dropdown-divider/>
+                                <factory-select v-model="searchFactory" @selected="$refs['table'].refresh()"/>
+                            </b-dropdown-form>
+                        </b-dropdown>
                         <b-button href="/admin/imports/create">Import</b-button>
                         <b-button variant="primary" href="/products/create">Create</b-button>
                     </slot>
