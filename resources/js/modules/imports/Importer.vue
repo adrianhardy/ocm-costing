@@ -1,13 +1,13 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <b-form-group label="Import XLSX Product Sheet">
                     <b-form-file
                         accept=".xlsx, .xls"
                         v-model="file"
                         @input="preview()"
-                        placeholder="Choose a file or drop it here..."
+                        placeholder="Choose / drop a file here..."
                         drop-placeholder="Drop file here..."
                     />
                 </b-form-group>
@@ -17,7 +17,7 @@
                     <supplier-select v-model="supplier" />
                 </b-form-group>
             </div>
-            <div class="col-12 col-md-2">
+            <div class="col-12 col-md-3">
                 <b-form-group label="Factory">
                     <factory-select v-model="factory" />
                 </b-form-group>
@@ -34,6 +34,42 @@
                             {{ mapping.name }}
                         </b-select-option>
                     </b-select>
+                </b-form-group>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-2">
+                <b-form-group label="Import Type">
+                    <b-form-checkbox label="Date" v-model="historic" @change="updateHistoric">Historic Landed Cost Only</b-form-checkbox>
+                </b-form-group>
+            </div>
+            <div class="col-12 col-md-2">
+                <b-form-group label="Date">
+                    <b-form-datepicker :disabled="historic === false" v-model="date" placeholder="Please select" :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"/>
+                </b-form-group>
+            </div>
+            <div class="col-12 col-md-2">
+                <b-form-group label="FX Rate">
+                    <b-form-input :disabled="historic === false" v-model="fxRate"/>
+                </b-form-group>
+            </div>
+            <div class="col-12 col-md-2">
+                <b-form-group label="Ship Cost Per Cu.ft.">
+                    <b-form-input :disabled="historic === false" v-model="cuft"/>
+                </b-form-group>
+            </div>
+            <div class="col-12 col-md-2">
+                <b-form-group label="Commission">
+                    <b-input-group prepend="%">
+                        <b-form-input :disabled="historic === false" v-model="commissionRate"/>
+                    </b-input-group>
+                </b-form-group>
+            </div>
+            <div class="col-12 col-md-2">
+                <b-form-group label="Import Duty">
+                    <b-input-group prepend="%">
+                        <b-form-input :disabled="historic === false" v-model="importDuty"/>
+                    </b-input-group>
                 </b-form-group>
             </div>
         </div>
@@ -144,6 +180,15 @@ export default {
         this.refreshMappingList();
     },
     methods: {
+        updateHistoric(){
+            if(this.historic === false){
+                this.date = '';
+                this.fxRate = '';
+                this.commissionRate = '';
+                this.importDuty = '';
+                this.cuft = '';
+            }
+        },
         updateManualMapping() {
             this.$set(this, 'mapping', JSON.parse(this.manualMapping));
         },
@@ -173,6 +218,14 @@ export default {
             formData.append('csv', this.file);
             formData.append('skip_rows', this.headerRows);
             formData.append('code', this.code);
+            if(this.historic){
+                formData.append('historic', this.historic)
+                formData.append('date', this.date);
+                formData.append('fxRate', this.fxRate);
+                formData.append('cuft',this.cuft);
+                formData.append('commissionRate', this.commissionRate);
+                formData.append('importDuty', this.importDuty);
+            }
             _.each(this.mapping, (value, column) => {
                 formData.append(`mapping[${column}]`, value);
             });
@@ -247,7 +300,14 @@ export default {
             file: null,
             raw: null,
             supplier: null,
-            factory: null
+            factory: null,
+            date: '',
+            fxRate: '',
+            cuft: '',
+            commissionRate: '',
+            importDuty: '',
+            historic: false
+
         }
     }
 }

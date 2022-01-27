@@ -4,12 +4,16 @@ namespace App\Console\Commands;
 
 use App\Domain\Excel\ParseProductSheet;
 use App\Domain\Excel\PrepareProductsForImport;
+use App\Domain\LandedCostCalculator;
+use App\Models\Currency;
 use App\Models\Factory;
 use App\Models\Import;
 use App\Models\Product;
+use App\Models\ProductLandedCost;
 use App\Models\Quote;
 use App\Models\QuoteLine;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +24,7 @@ use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Spatie\MediaLibrary\Models\Media;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ImportProductsCommand extends Command
 {
@@ -32,7 +37,7 @@ class ImportProductsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'import:products {import} {--skip-images}';
+    protected $signature = 'import:products {import} {--landed-cost-date=} {--skip-images}';
 
     /**
      * The console command description.
@@ -42,13 +47,20 @@ class ImportProductsCommand extends Command
     protected $description = 'Import Products';
 
     /**
+     * @var Carbon
+     */
+    protected $lcdate = null;
+
+    protected $updateHistoricLCOnly = false;
+
+    /**
      * Execute the console command.
      */
     public function handle()
     {
 
         set_time_limit(0);
-
+        ini_set('memory_limit', '1G');
         /** @var Import $import */
         $import = Import::query()->findOrFail($this->argument('import'));
         $supplier = Supplier::query()->findOrFail($import->config['supplier_id']);
@@ -56,6 +68,16 @@ class ImportProductsCommand extends Command
         $this->setupLog($import);
 
         $this->log->info("STARTING IMPORT ...");
+
+        if ($this->option('landed-cost-date')) {
+            $this->lcdate = Carbon::parse($this->option('landed-cost-date'));
+            $this->updateHistoricLCOnly = true;
+            if (!$this->lcdate) {
+                $this->log->critical("Failed to parse landed cost date");
+                die();
+            }
+            $this->log->info("Only importing historic landed cost data");
+        }
 
         if (!Storage::disk('imports')->exists($import->path)) {
             // SET STATUS ERROR
@@ -90,11 +112,73 @@ class ImportProductsCommand extends Command
             }
 
             /** @var Product $product */
-            $product = Product::query()->where('article_number', $data['article_number'])->first();
+            $product = Product::query()
+                ->where('article_number', $data['article_number'])
+                ->first();
+
             if (!$product) {
                 $product = new Product();
                 $product->supplier()->associate($supplier);
             }
+
+            if ($this->updateHistoricLCOnly) {
+                /** @var Currency $usd */
+                $usd = Currency::query()->where('code', 'USD')->first();
+
+                $lc = ProductLandedCost::query()
+                    ->where('product_id', $product->id)
+                    ->where('currency_id', $usd->id)
+                    ->where('date', $this->lcdate)
+                    ->first();
+
+                if (!$lc) {
+                    $lc = new ProductLandedCost();
+                    $lc->date = $this->lcdate;
+                    $lc->product()->associate($product);
+                    $lc->currency()->associate($usd);
+                }
+
+                $lc->unit_price = $data['unit_price'];
+                if(isset($data['case_depth_m'])) {
+                    $lc->length_m = $data['case_depth_m'];
+                } else {
+                    $lc->length_m = 0;
+                }
+
+                if(isset($data['case_height_m'])){
+                    $lc->height_m = $data['case_height_m'];
+                } else {
+                    $lc->height_m = 0;
+                }
+
+                if(isset($data['case_width_m'])) {
+                    $lc->width_m = $data['case_width_m'];
+                } else {
+                    $lc->width_m = 0;
+                }
+
+                $lc->units_per_case = $data['case_qty'];
+                $lc->fx_rate = $import->config['fxRate'];
+                $lc->shipping_cost_per_cuft = $import->config['cuft'];
+                $lc->import_duty_pc = $import->config['importDuty'];
+                $lc->commission_rate_pc = $import->config['commissionRate'];
+                $lc->product()->associate($product);
+
+                $shippingCosts = (new LandedCostCalculator($lc->shipping_cost_per_cuft))
+                            ->calculateWithDuties(
+                                $lc->case_cubic_ft,
+                                $lc->units_per_case,
+                                $lc->unit_price,
+                                $product->is_excluded_from_commission
+                            );
+
+                $lc->landed_cost_per_unit_gbp = $shippingCosts['est_landed_cost_per_unit_gbp'];
+                $lc->landed_cost_per_unit = $lc->landed_cost_per_unit_gbp * $usd->default_fx_to_gbp;
+                $lc->save();
+                $import->save();
+                continue;
+            }
+
             $product->fill($data->only([
                 'name',
                 'product_description',
@@ -107,7 +191,7 @@ class ImportProductsCommand extends Command
                 'case_weight_kg',
                 'unit_weight_kg',
                 'unit_height_m',
-                'unit_width_m'
+                'unit_width_m',
             ])->toArray());
 
             $product->fill([

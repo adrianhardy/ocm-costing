@@ -54,12 +54,21 @@ class RunController extends Controller
      */
     public function store(Request $request)
     {
+
         $this->validate($request, [
             'supplier.id'        => 'required|exists:suppliers,id',
             'mapping_name'       => 'nullable|min:0|max:100',
             'skip_rows'          => 'sometimes|min:0',
-//            'factory.id'         => 'required|exists:factories,id'
+            'date'               => 'required_if:historic,true',
+            'fxRate'             => 'required_if:historic,true',
+            'cuft'               => 'required_if:historic,true',
+            'commissionRate'     => 'required_if:historic,true',
+            'importDuty'         => 'required_if:historic,true'
+            ], [], [
+                'cuft' => 'shipping cost per cu.ft'
         ]);
+
+
 
         $skipRows       = $request->input('skip_rows', 0);
         $mappingName    = $request->input('mapping_name');
@@ -92,17 +101,23 @@ class RunController extends Controller
                 'supplier'          => $supplier->only(['id', 'name']),
                 'factory_id'        => $factory->id,
                 'factory'           => $factory->only(['id', 'name']),
+                'fxRate'            => $request->input('fxRate'),
+                'cuft'              => $request->input('cuft'),
+                'commissionRate'    => $request->input('commissionRate'),
+                'importDuty'        => $request->input('importDuty')
             ],
             'skip_header_rows' => intval($skipRows),
             'log_path'      => $filename . ".log"
         ]);
+
         $import->creator()->associate(\Auth::user());
         $import->save();
         $import->setStatus(Import::STATUS_PENDING);
 
         DB::commit();
+
         set_time_limit(0);
-        Artisan::call("import:products", ['import' => $import->id]);
+        Artisan::call("import:products", ['import' => $import->id, '--landed-cost-date' => $request->input('date')]);
         return response()->json(
             fractal($import->fresh(), new ImportTransformer()),
             200
