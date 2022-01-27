@@ -4,13 +4,26 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
-                        <search-input v-model="search" @search="$refs['table'].refresh()"/>
+                        <div class="w-20">
+                            <b-select placeholder="Filter" v-model="searchField" @change="$refs['table'].refresh()">
+                                <b-select-option value="article_number:like">By Article #</b-select-option>
+                                <b-select-option value="item_number:like">By Item #</b-select-option>
+                                <b-select-option value="name:like">By Name</b-select-option>
+                                <b-select-option value="barcode:like">By Barcode</b-select-option>
+                            </b-select>
+                        </div>
+                        <div class="w-20">
+                            <factory-select v-model="searchFactory" @selected="$refs['table'].refresh()"/>
+                        </div>
+                        <div class="w-30">
+                            <search-input v-model="search" @search="$refs['table'].refresh()"/>
+                        </div>
                         <b-button href="/admin/imports/create">Import</b-button>
                         <b-button variant="primary" href="/products/create">Create</b-button>
                     </slot>
                 </table-header>
             </template>
-            <b-table ref="table" :current-page="pagination.currentPage" hover :busy.sync="loading" :fields="fields" :items="items" sort-by="name">
+            <b-table ref="table" :current-page="pagination.currentPage" hover :busy.sync="loading" :fields="fields" :items="items" sort-by="article_number">
                 <template #table-busy>
                     <div class="text-center my-2">
                         <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
@@ -37,9 +50,10 @@
 <script>
 import TableHeader from '../../components/table/TableHeader';
 import SearchInput from "../../components/SearchInput";
+import FactorySelect from "../../components/FactorySelect";
 export default {
     name: "ProductsList",
-    components: {SearchInput, TableHeader},
+    components: {FactorySelect, SearchInput, TableHeader},
     props: {
         isSupplier: Boolean
     },
@@ -81,8 +95,12 @@ export default {
                 '/api/products',
                 this.pagination,
                 ctx, {
-                    search:this.search,
+                    search: this.search,
+                    searchFields: this.searchField,
+                    search_factory_id: this.searchFactory.id,
                     include: 'quotes_lines,media'
+                },{
+                    'article_number' : 'sorted_article_number'
                 }
             );
         }
@@ -90,10 +108,13 @@ export default {
     data() {
         return {
             search: '',
+            searchField: null,
+            searchFactory: {},
             pagination: {
                 total: 0,
                 perPage: 100,
                 currentPage: 1,
+
             },
             loading: false
         }

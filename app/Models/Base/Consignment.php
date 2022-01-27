@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $vessel_name
  * @property string|null $container_number
  * @property string|null $bl_number
- * @property string|null $shipping_agent_reference
+ * @property string|null $shipping_agent_ref
  * 
  * @property User|null $creator
  * @property SalesOrder|null $sales_order
