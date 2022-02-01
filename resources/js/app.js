@@ -17,6 +17,8 @@ import TextFilters from './plugins/TextFilters';
 import VuePapaParse from 'vue-papa-parse';
 import vueDebounce from 'vue-debounce';
 import VueSmoothScroll from 'vue2-smooth-scroll';
+import VueRouter from 'vue-router';
+
 
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
@@ -36,6 +38,7 @@ Vue.use(Loading);
 Vue.use(VueSmoothScroll, {
     offset: -100
 });
+Vue.use(VueRouter);
 
 Vue.use(require('./plugins/DateFilter').default);
 
@@ -67,7 +70,12 @@ Vue.component('settings-list', require('./modules/settings/SettingsList.vue').de
 
 window.Vue = Vue;
 
-new Vue().$mount('#app');
+const router = new VueRouter({
+    mode: 'history',
+    base: __dirname,
+});
+
+new Vue({router}).$mount('#app');
 
 document.querySelectorAll('.custom-file-input').forEach(element => {
     element.addEventListener('change',function(e) {

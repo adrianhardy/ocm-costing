@@ -3,6 +3,9 @@
         <b-form-group label="Supplier" v-if="!isSupplier">
             <supplier-select v-model="supplier" response-include="currency" @input="currency = supplier.currency"/>
         </b-form-group>
+        <b-form-group label="Factory">
+            <factory-select v-model="factory"></factory-select>
+        </b-form-group>
         <b-form-group label="Currency">
             <currency-select v-model="currency"/>
         </b-form-group>
@@ -15,11 +18,12 @@
 <script>
 import SupplierSelect from "../../components/SupplierSelect";
 import CurrencySelect from "../../components/CurrencySelect";
+import FactorySelect from "../../components/FactorySelect";
 
 export default {
     name: "CreateSalesOrderModal",
-    components: {CurrencySelect, SupplierSelect},
-    props: {isSupplier: Boolean},
+    components: {CurrencySelect, SupplierSelect, FactorySelect},
+    props: {isSupplier: Boolean, selected: Array},
     methods: {
         open() {
             this.reference = '';
@@ -36,7 +40,9 @@ export default {
             this.$http.post(`/api/sales-orders`, {
                 reference: this.reference,
                 supplier: this.supplier,
-                currency: this.currency
+                currency: this.currency,
+                factory: this.factory,
+                products_ids: this.selected?this.selected:''
             }).then(response => {
                 window.location.href = `/sales-orders/${response.data.id}/edit`;
             }).catch(error => {
@@ -49,7 +55,8 @@ export default {
         return {
             currency: {},
             supplier: {},
-            reference: ''
+            reference: '',
+            factory: {}
         }
     }
 }
