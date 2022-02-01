@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Currencies;
 
+use App\Events\ShippingCostSettingChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Transformers\CurrencyTransformer;
@@ -24,6 +25,7 @@ class CurrencyController extends Controller
     {
         $currency->fill($request->only('default_fx_to_gbp'));
         $currency->save();
+        event(new ShippingCostSettingChanged());
         return response()->json();
     }
 }
