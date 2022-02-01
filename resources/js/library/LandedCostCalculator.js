@@ -25,17 +25,16 @@ export default {
         const commissionUplift = 1 + (commissionRatePc/100);
         const importDutyUplift = 1 + (importDutyPc/100);
 
-        const shippingCostGbp = cubicFeet * shippingCostPerCubicFoot * gbpToUsdExchangeRate;
+        const shippingCostGbp = cubicFeet * shippingCostPerCubicFoot;
         const shippingCostPerUnitGbp = shippingCostGbp / unitsPerVolume;
 
         let importCostGbp = (unitPrice * gbpToUsdExchangeRate);
+        let shippedCostGbp = importCostGbp + shippingCostPerUnitGbp;
 
         if (commissionRatePc > 0 && !isExcludedFromCommission) {
-            importCostGbp = importCostGbp * commissionUplift;
+            shippedCostGbp = shippedCostGbp * commissionUplift;
         }
 
-        let  landedCost = importCostGbp + shippingCostPerUnitGbp ;
-
-        return landedCost * importDutyUplift;
+        return shippedCostGbp * importDutyUplift;
     }
 }

@@ -16,6 +16,11 @@ class AddSortedArticleNumberFieldToProducts extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->string('sorted_article_number', 64);
         });
+        \App\Models\Product::query()->chunk(500, function($products) {
+            foreach ($products as $product) {
+                $product->touch();
+            }
+        });
     }
 
     /**

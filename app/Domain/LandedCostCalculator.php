@@ -7,9 +7,15 @@ use App\Models\Currency;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
+use Illuminate\Support\Facades\Log;
 
 class LandedCostCalculator
 {
+
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $log;
 
     /**
      * @var
@@ -19,6 +25,7 @@ class LandedCostCalculator
     public function __construct(
         $shippingCostPerCubicFootGbp
     ) {
+        $this->log = Log::channel('elc');
         $this->shippingCostPerCubicFootGbp = $shippingCostPerCubicFootGbp;
     }
 
@@ -48,7 +55,6 @@ class LandedCostCalculator
         $excludedFromCommission
     ) {
         $shipping = $this->calculate($cubicFeet, $unitCount);
-
         $shippingCostPerUnitGbp = $shipping['shipping_cost_per_unit_gbp'];
 
         $commissionUplift = 1 + (setting('default_commission_rate_pc')/100);
