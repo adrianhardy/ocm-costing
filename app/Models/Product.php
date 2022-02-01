@@ -22,6 +22,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $unit_length_cm
  * @property $unit_width_cm
  * @property $unit_height_cm
+ * @property $unit_weight_g
  * @property Collection|ProductLandedCost[] $landed_costs
  * @property Collection|Factory[] $factories
  * @property-read $current_landed_cost_per_unit_gbp
@@ -187,5 +188,19 @@ class Product extends BaseProduct implements HasMedia
     {
         return $this->belongsToMany(Factory::class, 'products_factories');
     }
+
+
+
+
+    public function getUnitWeightGAttribute()
+    {
+        return round($this->unit_weight_kg * 100, 2);
+    }
+
+    public function setUnitWeightGAttribute($g)
+    {
+        $this->unit_weight_kg = $g/100;
+    }
+
 
 }
