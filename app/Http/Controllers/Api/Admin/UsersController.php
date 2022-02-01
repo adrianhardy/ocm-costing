@@ -39,7 +39,7 @@ class UsersController extends Controller
         $unique = Rule::unique('users','email')->ignoreModel($user);
         $this->validate($request, [
            'name'           => 'required|max:255',
-           'password'       => 'sometimes|nullable|confirmed|password|min:8',
+           'password'       => 'sometimes|nullable|confirmed|min:8',
            'email'          => ['required', $unique, 'email', 'max:128'],
            'role'           => 'required|in:super,admin,supplier',
            'supplier.id'    => 'nullable|required_if:role,supplier|exists:suppliers,id'
@@ -84,7 +84,7 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $required = $request->input('role') !== 'supplier'?'required|confirmed|password|min:8':'nullable';
+        $required = $request->input('role') !== 'supplier'?'required|confirmed|min:8':'nullable';
         $this->validate($request, [
             'name'          => 'required|max:255',
             'password'      => $required,
