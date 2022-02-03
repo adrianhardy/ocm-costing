@@ -112,17 +112,17 @@ class SalesOrdersController extends Controller
         $this->authorize('view', $sales_order);
         if(!$request->input('finalised')){
             $request->validate([
-                'supplier.id'       => 'required|exists:suppliers,id',
-                'factory.id'        => 'required|exists:factories,id',
-                'currency.id'       => 'required|exists:currencies,id',
-                'fx_rate'           => 'required|min:0|numeric',
-                'status'            => 'nullable|sometimes|in:' . implode(',', array_keys(SalesOrder::STATUSES)),
-                'sales_order_notes' => 'min:0|max:2000'
+                'supplier.id'           => 'required|exists:suppliers,id',
+                'factory.id'            => 'required|exists:factories,id',
+                'currency.id'           => 'required|exists:currencies,id',
+                'sales_order_fx_rate'   => 'required|min:0|numeric',
+                'status'                => 'nullable|sometimes|in:' . implode(',', array_keys(SalesOrder::STATUSES)),
+                'sales_order_notes'     => 'min:0|max:2000'
             ], [], [
-                'currency.id'       => 'currency',
-                'supplier.id'       => 'supplier',
-                'factory.id'        => 'factory',
-                'fx_rate' => 'FX (Foreign Exchange Rate)'
+                'currency.id'           => 'currency',
+                'supplier.id'           => 'supplier',
+                'factory.id'            => 'factory',
+                'sales_order_fx_rate'   => 'FX (Foreign Exchange Rate)'
             ]);
             $currency = Currency::query()->findOrFail($request->input('currency.id'));
             $supplier = Supplier::query()->findOrFail($request->input('supplier.id'));
@@ -130,9 +130,10 @@ class SalesOrdersController extends Controller
             $sales_order->currency()->associate($currency);
             $sales_order->supplier()->associate($supplier);
             $sales_order->factory()->associate($factory);
+            $sales_order->setSalesOrderFxRateAttribute($request->input('sales_order_fx_rate'));
 
             $sales_order->fill($request->only([
-                'reference', 'fx_rate', 'sales_order_notes', 'supplier_reference'
+                'reference', 'sales_order_notes', 'supplier_reference'
             ]));
 
             if ($request->input('status')) {

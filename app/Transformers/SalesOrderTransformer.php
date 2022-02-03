@@ -97,7 +97,8 @@ class SalesOrderTransformer extends TransformerAbstract
             'status_description',
             'sales_order_notes',
             'shipping_cost_per_cubic_foot',
-            'supplier_reference'
+            'supplier_reference',
+            'sales_order_fx_rate'
         ]);
     }
 }

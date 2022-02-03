@@ -17,6 +17,7 @@ use Spatie\ModelStatus\HasStatuses;
  * @property-read boolean $is_finalised
  * @property-read boolean $is_sent
  * @property SalesOrderAuthentication[] $authenticated_users
+ * @property $sales_order_fx_rate
  * @property-read $status
  * @proeprty-read $status_description
  */
@@ -51,8 +52,19 @@ class SalesOrder extends BaseSalesOrder
         'sales_order_notes',
         'shipping_cost_per_cubic_foot',
         'supplier_reference',
-        'supplier_finalised_at'
+        'supplier_finalised_at',
+        'sales_order_fx_rate'
 	];
+
+	public function setSalesOrderFxRateAttribute($value)
+    {
+        $this->attributes['fx_rate'] = round(1/$value, 4);
+    }
+
+	public function getSalesOrderFxRateAttribute()
+    {
+        return round(1 / $this->fx_rate,2);
+    }
 
 	public function getStageDescriptionAttribute()
     {

@@ -22,7 +22,7 @@ class CurrencyController extends Controller
 
     public function update(Request $request, Currency $currency)
     {
-        $currency->fill($request->only('default_fx_to_gbp'));
+        $currency->setCurrencyFxRateAttribute($request->input('currency_fx_rate'));
         $currency->save();
         return response()->json();
     }

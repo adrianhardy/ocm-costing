@@ -36,7 +36,8 @@ class CurrencyTransformer extends TransformerAbstract
             'id',
             'code',
             'name',
-            'default_fx_to_gbp'
+            'default_fx_to_gbp',
+            'currency_fx_rate'
         ]);
     }
 }

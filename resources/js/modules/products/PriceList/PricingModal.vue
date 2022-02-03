@@ -105,7 +105,7 @@
                                 <div class="col-4">
                                     <b-form-group label="EU Rate" label-cols="4" label-size="sm">
                                         <b-input-group size="sm">
-                                            <b-form-input v-model.number="value.eur_fx_rate"/>
+                                            <b-form-input v-model.number="value.current_eur_fx_rate"/>
                                             <b-input-group-append class="w-30">
                                                 <b-input-group-text class="w-100">
                                                     : £1
@@ -175,7 +175,7 @@
                                            ship-field="unit_se_shipping"
                                            fee-field="unit_se_fba_fee"
                                            price-field="unit_se_price"
-                                           fx-field="sek_fx_rate"
+                                           fx-field="current_sek_fx_rate"
                                            vat-field="se_vat"
                                         />
                                     </div>
@@ -186,7 +186,7 @@
                                                                        ship-field="unit_pln_shipping"
                                                                        fee-field="unit_pln_fba_fee"
                                                                        price-field="unit_pln_price"
-                                                                       fx-field="pln_fx_rate"
+                                                                       fx-field="current_pln_fx_rate"
                                                                        vat-field="pl_vat"
                                         />
                                     </div>
@@ -199,7 +199,7 @@
                                                                    sf-price-field="unit_sf_usd_price"
                                                                    ship-field="unit_usd_shipping"
                                                                    fee-field="unit_usd_fba_fee"
-                                                                   price-field="unit_usd_price" fx-field="usd_fx_rate"/>
+                                                                   price-field="unit_usd_price" fx-field="current_usd_fx_rate"/>
                                 </div>
                                 <div class="col-12 col-md-3">
                                     <rest-of-world-product-pricing v-model="value" currency="CAD"
@@ -207,7 +207,7 @@
                                                                    sf-price-field="unit_sf_cad_price"
                                                                    fee-field="unit_cad_fba_fee"
                                                                    ship-field="unit_cad_shipping"
-                                                                   price-field="unit_cad_price" fx-field="cad_fx_rate"/>
+                                                                   price-field="unit_cad_price" fx-field="current_cad_fx_rate"/>
                                 </div>
                                 <div class="col-12 col-md-3">
                                     <rest-of-world-product-pricing v-model="value" currency="MXN"
@@ -215,7 +215,7 @@
                                                                    sf-price-field="unit_sf_mxn_price"
                                                                    fee-field="unit_mxn_fba_fee"
                                                                    ship-field="unit_mxn_shipping"
-                                                                   price-field="unit_mxn_price" fx-field="mxn_fx_rate"/>
+                                                                   price-field="unit_mxn_price" fx-field="current_mxn_fx_rate"/>
                                 </div>
                                 <div class="col-12 col-md-3">
                                     <rest-of-world-product-pricing v-model="value" currency="AUD"
@@ -223,7 +223,7 @@
                                                                    sf-price-field="unit_sf_aud_price"
                                                                    ship-field="unit_aud_shipping"
                                                                    fee-field="unit_aud_fba_fee"
-                                                                   price-field="unit_aud_price" fx-field="aud_fx_rate"/>
+                                                                   price-field="unit_aud_price" fx-field="current_aud_fx_rate"/>
                                 </div>
                             </div>
                         </b-tab>
