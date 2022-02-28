@@ -153,12 +153,13 @@ class SalesOrdersController extends Controller
                 'currency.id'       => 'required|exists:currencies,id',
                 'fx_rate'           => 'required|min:0|numeric',
                 'status'            => 'nullable|sometimes|in:' . implode(',', array_keys(SalesOrder::STATUSES)),
-                'sales_order_notes' => 'min:0|max:2000'
+                'sales_order_notes' => 'min:0|max:2000',
+                'shipping_cost_per_cubic_foot' => 'nullable|numeric|min:0'
             ], [], [
                 'currency.id'       => 'currency',
                 'supplier.id'       => 'supplier',
                 'factory.id'        => 'factory',
-                'fx_rate' => 'FX (Foreign Exchange Rate)'
+                'fx_rate'           => 'FX (Foreign Exchange Rate)'
             ]);
             $currency = Currency::query()->findOrFail($request->input('currency.id'));
             $supplier = Supplier::query()->findOrFail($request->input('supplier.id'));
@@ -170,6 +171,10 @@ class SalesOrdersController extends Controller
             $sales_order->fill($request->only([
                 'reference', 'fx_rate', 'sales_order_notes', 'supplier_reference'
             ]));
+
+            if ($request->input('shipping_cost_per_cubic_foot')) {
+                $sales_order->shipping_cost_per_cubic_foot = $request->input('shipping_cost_per_cubic_foot');
+            }
 
             if ($request->input('status')) {
                 $sales_order->setStatus($request->input('status'));

@@ -15,19 +15,28 @@ class SalesOrderObserver
         $salesOrder->fx_rate = $salesOrder->currency->default_fx_to_gbp;
     }
 
+    /**
+     * Re-total the shipment based on line totals and current
+     * shipping_cost_per_cubic_foot
+     *
+     * @param SalesOrder $salesOrder
+     * @return void
+     */
     public function saving(SalesOrder $salesOrder)
     {
         $salesOrder->goods_cost = $salesOrder->lines()->sum('total');
         $salesOrder->goods_cost_gbp = $salesOrder->lines()->sum('total_gbp');
         $salesOrder->shipping_cost_gbp = $salesOrder->lines()->sum('total_cubic_m')
             * setting('cubic_metres_to_feet')
-            * setting('shipping_cost_per_cubic_foot');
+            * $salesOrder->shipping_cost_per_cubic_foot;
 
         $salesOrder->shipping_cost = $salesOrder->shipping_cost_gbp / $salesOrder->fx_rate;
         $salesOrder->total = $salesOrder->goods_cost + $salesOrder->shipping_cost;
         $salesOrder->total_gbp = $salesOrder->goods_cost_gbp + $salesOrder->shipping_cost_gbp;
 
-        $salesOrder->shipping_cost_per_cubic_foot = setting('shipping_cost_per_cubic_foot');
+        if (!$salesOrder->shipping_cost_per_cubic_foot) {
+            $salesOrder->shipping_cost_per_cubic_foot = setting('shipping_cost_per_cubic_foot');
+        }
     }
 
     /**

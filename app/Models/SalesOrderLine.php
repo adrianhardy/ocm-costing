@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Domain\LandedCostCalculator;
 use App\Models\Base\SalesOrderLine as BaseSalesOrderLine;
+use Illuminate\Support\Facades\Log;
 use Spatie\MediaLibrary\Models\Media;
 
 /**
@@ -13,6 +15,7 @@ use Spatie\MediaLibrary\Models\Media;
  * @property-read $case_cubic_m
  * @property-read $case_cubic_ft
  * @property $total_cubic_ft
+ * @property-read float $live_estimated_landed_cost
  */
 class SalesOrderLine extends BaseSalesOrderLine
 {
@@ -98,4 +101,23 @@ class SalesOrderLine extends BaseSalesOrderLine
         return optional($consignment)->pivot;
     }
 
+    public function getLiveEstimatedLandedCostAttribute()
+    {
+        $calculator = new LandedCostCalculator(
+            $this->sales_order->shipping_cost_per_cubic_foot
+        );
+
+        try {
+            $shipping = $calculator->calculateWithDuties(
+                $this->product->case_cubic_ft,
+                $this->product->units_per_case,
+                $this->product->unit_price,
+                $this->product->is_excluded_from_commission
+            );
+        } catch (\Exception $ex) {
+            throw $ex;
+        }
+
+        return round($shipping['est_landed_cost_per_unit_gbp'], 2);
+    }
 }

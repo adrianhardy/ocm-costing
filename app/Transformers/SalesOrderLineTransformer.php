@@ -25,7 +25,8 @@ class SalesOrderLineTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'product', 'landed_cost', 'consignments', 'selected_media', 'received'
+        'product', 'landed_cost', 'consignments', 'selected_media', 'received',
+        'live_estimated_landed_cost'
     ];
 
     public function includeSelectedMedia(SalesOrderLine $line)
@@ -39,6 +40,15 @@ class SalesOrderLineTransformer extends TransformerAbstract
                 'url' => $media->getFullUrl()
             ];
         });
+    }
+
+    /**
+     * @param SalesOrderLine $line
+     * @return \League\Fractal\Resource\Primitive
+     */
+    public function includeLiveEstimatedLandedCost(SalesOrderLine $line)
+    {
+        return $this->primitive($line->live_estimated_landed_cost);
     }
 
     public function includeLandedCost(SalesOrderLine $line)

@@ -170,10 +170,17 @@
                     </b-form-group>
                     <b-form-group v-if="!isSupplier">
                         <b-input-group
-                            prepend="ELC" size="sm" class="no-input" v-b-tooltip.hover title="Estimated Landed Cost">
+                            prepend="P'ELC" size="sm" class="no-input" v-b-tooltip.hover title="Product Estimated Landed Cost">
                             <b-input class="w-50" readonly :value="data.item.product.est_landed_cost_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
+                    <b-form-group v-if="!isSupplier">
+                        <b-input-group
+                            prepend="L'ELC" size="sm" class="no-input" v-b-tooltip.hover title="Live Estimated Landed Cost">
+                            <b-input class="w-50" readonly :value="data.item.live_estimated_landed_cost | cash_value"></b-input>
+                        </b-input-group>
+                    </b-form-group>
+
                     <b-form-group v-if="!isSupplier">
                         <b-input-group prepend="CLC" size="sm" class="no-input" v-b-tooltip.hover title="Current Landed Cost"  >
                             <b-input class="w-50" readonly :value="data.item.product.current_landed_cost_per_unit_gbp | cash_value"></b-input>
@@ -469,7 +476,7 @@ export default {
             }
         },
         include() {
-            return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost,lines.received';
+            return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost,lines.received,lines.live_estimated_landed_cost';
         }
     },
     methods: {
