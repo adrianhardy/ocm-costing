@@ -46,7 +46,8 @@ class ConsignmentsController extends Controller
             'vessel_name'               => $request->input('vessel_name', ''),
             'container_number'          => $request->input('container_number', ''),
             'bl_number'                 => $request->input('bl_number', ''),
-            'shipping_agent_ref'        => $request->input('shipping_agent_ref', '')
+            'shipping_agent_ref'        => $request->input('shipping_agent_ref', ''),
+            'invoice_amt'               => $request->input('invoice_amt', ''),
         ]);
         $consignment->sales_order()->associate($salesOrder);
         $consignment->creator()->associate(\Auth::user());
