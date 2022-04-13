@@ -62,7 +62,7 @@
                 <div class="col-12 col-md-2">
                     <b-form-group label="FX Rate : GBP">
                         <b-input-group :prepend="`${salesOrder.currency.code}:GBP`">
-                            <b-form-input class="no-stepper" type="number" v-model.number="salesOrder.fx_rate"
+                            <b-form-input class="no-stepper" type="number" v-model.number="salesOrder.sales_order_fx_rate"
                                           @change="save()"/>
                         </b-input-group>
                     </b-form-group>

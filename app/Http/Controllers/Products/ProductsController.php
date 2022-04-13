@@ -23,7 +23,10 @@ class ProductsController extends Controller
     public function create()
     {
         return response()->view('products.create', [
-            'exchange_rate_usd' => Currency::query()->where('code', 'USD')->value('default_fx_to_gbp')
+            'exchange_rate_usd' => round(1/Currency::query()
+                ->where('code', 'USD')
+                ->value('default_fx_to_gbp'),
+            2)
         ]);
     }
 
@@ -37,7 +40,10 @@ class ProductsController extends Controller
             'products.edit', [
                 'product' => $product,
                 'shipping_cost_per_cubic_foot' => setting('shipping_cost_per_cubic_foot'),
-                'exchange_rate_usd' => Currency::query()->where('code', 'USD')->value('default_fx_to_gbp')
+                'exchange_rate_usd' => round(
+                    1/Currency::query()->where('code', 'USD')->value('default_fx_to_gbp'),
+                    2
+                )
             ]);
     }
 }

@@ -4,6 +4,16 @@ namespace App\Models;
 
 use App\Models\Base\ProductPricing as BaseProductPricing;
 
+/**
+ * Class ProductPricing
+ * @package App\Models
+ * @property $current_eur_fx_rate
+ * @property $current_usd_fx_rate
+ * @property $current_cad_fx_rate
+ * @property $current_mxn_fx_rate
+ * @property $current_aud_fx_rate
+ */
+
 class ProductPricing extends BaseProductPricing
 {
 	protected $fillable = [
@@ -82,6 +92,82 @@ class ProductPricing extends BaseProductPricing
         'unit_aud_fba_fee',
         'unit_pln_fba_fee',
 	];
+
+
+	//All of these are neccessary, as you need to save the values before you can autogenerate pricing, and while we
+    //we could just change the maths on the vue, it would make the data in the product pricing table inconsistent
+    //with the rest of the database when we save them.
+
+
+	public function getCurrentEurFxRateAttribute()
+    {
+        return round(1 / $this->eur_fx_rate, 2);
+    }
+
+    public function setCurrentEurFxRateAttribute($value)
+    {
+        $this->attributes['usd_fx_rate'] = round(1 / $value,4);
+    }
+
+    public function getCurrentUsdFxRateAttribute()
+    {
+        return round(1 / $this->eur_fx_rate, 2);
+    }
+
+    public function setCurrentUsdFxRateAttribute($value)
+    {
+        $this->attributes['usd_fx_rate'] = round(1 / $value,4);
+    }
+
+    public function getCurrentMxnFxRateAttribute()
+    {
+        return round(1 / $this->mxn_fx_rate, 2);
+    }
+
+    public function setCurrentMxnFxRateAttribute($value)
+    {
+        $this->attributes['mxn_fx_rate'] = round(1 / $value, 4);
+    }
+
+    public function getCurrentCadFxRateAttribute()
+    {
+        return round(1 / $this->cad_fx_rate,2);
+    }
+
+    public function setCurrentCadFxRateAttribute($value)
+    {
+        $this->attributes['cad_fx_rate'] = round(1 / $value, 4);
+    }
+
+    public function getCurrentAudFxRateAttribute()
+    {
+	    return round(1 / $this->aud_fx_rate, 2);
+    }
+
+    public function setCurrentAudFxRateAttribute($value)
+    {
+        $this->attributes['aud_fx_rate'] = round(1 / $value, 4);
+    }
+
+    public function getCurrentSekFxRateAttribute()
+    {
+        return round(1 / $this->sek_fx_rate, 2);
+    }
+
+    public function setCurrentSekFxRateAttribute($value)
+    {
+        $this->attributes['sek_fx_rate'] = round(1 / $value,4);
+    }
+
+    public function getCurrentPlnFxRateAttribute()
+    {
+        return round(1/ $this->pln_fx_rate, 2);
+    }
+
+    public function setCurrentPlnFxRateAttribute($value)
+    {
+        $this->attributes['pln_fx_rate'] = round(1 / $value, 4);
+    }
 
     public function getCalculatedGrossProfitGbpAttribute()
     {

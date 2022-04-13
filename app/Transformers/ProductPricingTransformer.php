@@ -150,7 +150,14 @@ class ProductPricingTransformer extends TransformerAbstract
             'unit_cad_fba_fee',
             'unit_mxn_fba_fee',
             'unit_aud_fba_fee',
-            'unit_pln_fba_fee'
+            'unit_pln_fba_fee',
+            'current_eur_fx_rate',
+            'current_usd_fx_rate',
+            'current_cad_fx_rate',
+            'current_mxn_fx_rate',
+            'current_aud_fx_rate',
+            'current_pln_fx_rate',
+            'current_sek_fx_rate'
         ]);
 
         foreach ($this->moneyFields as $field) {

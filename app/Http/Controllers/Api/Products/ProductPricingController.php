@@ -129,7 +129,6 @@ class ProductPricingController extends Controller
             'unit_mxn_price',
             'unit_aud_price',
             'unit_pln_price',
-            'eur_fx_rate',
             'usd_fx_rate',
             'cad_fx_rate',
             'mxn_fx_rate',
@@ -148,6 +147,10 @@ class ProductPricingController extends Controller
             'unit_aud_fba_fee',
             'unit_pln_fba_fee',
         ]));
+
+        $pricing->setCurrentEurFxRateAttribute($request->input('current_eur_fx_rate'));
+        $pricing->setCurrentUsdFxRateAttribute($request->input('current_usd_fx_rate'));
+
 
         if($request->input(['submitted'])){
             $pricing->approved_at = Carbon::now();
