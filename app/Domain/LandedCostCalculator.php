@@ -63,12 +63,10 @@ class LandedCostCalculator
         /** @var Currency $usd */
         $usd = Currency::query()->where('code', 'USD')->first();
 
-        $importCostGbp = ($unitPrice * $usd->default_fx_to_gbp);
-        $costToShipGbp = $importCostGbp + $shippingCostPerUnitGbp;
-        if (!$excludedFromCommission) {
-            $costToShipGbp = $costToShipGbp * $commissionUplift;
-        }
+        $commissionMultiplier = $excludedFromCommission?1:$commissionUplift;
+        $importCostGbp = (($unitPrice * $commissionMultiplier) * $usd->default_fx_to_gbp);
 
+        $costToShipGbp = $importCostGbp + $shippingCostPerUnitGbp;
         $costToShipGbp = $costToShipGbp * $importDutyUplift;
 
         return [

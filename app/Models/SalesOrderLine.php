@@ -112,9 +112,9 @@ class SalesOrderLine extends BaseSalesOrderLine
 
         try {
             $shipping = $calculator->calculateWithDuties(
-                $this->product->case_cubic_ft,
-                $this->product->units_per_case,
-                $this->product->unit_price,
+                $this->case_cubic_ft,
+                $this->units_per_case,
+                $this->unit_price,
                 $this->product->is_excluded_from_commission
             );
         } catch (\Exception $ex) {
