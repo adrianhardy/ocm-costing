@@ -103,6 +103,9 @@ class SalesOrderLine extends BaseSalesOrderLine
 
     public function getLiveEstimatedLandedCostAttribute()
     {
+        if ($this->product_id < 1) {
+            return 0;
+        }
         $calculator = new LandedCostCalculator(
             $this->sales_order->shipping_cost_per_cubic_foot
         );

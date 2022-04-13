@@ -151,15 +151,15 @@ class SalesOrdersController extends Controller
                 'supplier.id'       => 'required|exists:suppliers,id',
                 'factory.id'        => 'required|exists:factories,id',
                 'currency.id'       => 'required|exists:currencies,id',
-                'fx_rate'           => 'required|min:0|numeric',
                 'status'            => 'nullable|sometimes|in:' . implode(',', array_keys(SalesOrder::STATUSES)),
                 'sales_order_notes' => 'min:0|max:2000',
-                'shipping_cost_per_cubic_foot' => 'nullable|numeric|min:0'
+                'shipping_cost_per_cubic_foot'  => 'nullable|numeric|min:0',
+                'sales_order_fx_rate'           => 'required|min:0|numeric'
             ], [], [
-                'currency.id'       => 'currency',
-                'supplier.id'       => 'supplier',
-                'factory.id'        => 'factory',
-                'fx_rate'           => 'FX (Foreign Exchange Rate)'
+                'currency.id'           => 'currency',
+                'supplier.id'           => 'supplier',
+                'factory.id'            => 'factory',
+                'sales_order_fx_rate'   => 'FX (Foreign Exchange Rate)'
             ]);
             $currency = Currency::query()->findOrFail($request->input('currency.id'));
             $supplier = Supplier::query()->findOrFail($request->input('supplier.id'));
@@ -167,9 +167,10 @@ class SalesOrdersController extends Controller
             $sales_order->currency()->associate($currency);
             $sales_order->supplier()->associate($supplier);
             $sales_order->factory()->associate($factory);
+            $sales_order->sales_order_fx_rate = $request->input('sales_order_fx_rate');
 
             $sales_order->fill($request->only([
-                'reference', 'fx_rate', 'sales_order_notes', 'supplier_reference'
+                'reference', 'sales_order_notes', 'supplier_reference'
             ]));
 
             if ($request->input('shipping_cost_per_cubic_foot')) {
@@ -198,7 +199,7 @@ class SalesOrdersController extends Controller
                 $sales_order->finalised_at = Carbon::now();
                 foreach($sales_order->lines as $line) {
                     try {
-                        $rafService->createProduct($line->product);
+                        // $rafService->createProduct($line->product);
                     } catch (\Exception $ex) {
                         // log exception here
                     }

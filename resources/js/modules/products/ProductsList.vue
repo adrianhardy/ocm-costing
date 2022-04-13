@@ -171,15 +171,21 @@ export default {
         },
 
         items(ctx) {
+
+            const payload = {
+                search: this.search,
+                search_factory_id: this.searchFactory.id,
+                include: 'quotes_lines,media,factories'
+            };
+
+            if (this.searchField) {
+                payload.searchFields = this.searchField;
+            }
+
             const products =  this.$paginatedFetch(
                 '/api/products',
                 this.pagination,
-                ctx, {
-                    search: this.search,
-                    searchFields: this.searchField,
-                    search_factory_id: this.searchFactory.id,
-                    include: 'quotes_lines,media,factories'
-                },{
+                ctx, payload,{
                     'article_number' : 'sorted_article_number'
                 }
             );

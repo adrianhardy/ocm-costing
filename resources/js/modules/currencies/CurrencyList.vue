@@ -8,9 +8,9 @@
                         <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
                     </div>
                 </template>
-                <template #cell(default_fx_to_gbp)="data">
+                <template #cell(currency_fx_rate)="data">
                     <b-input-group prepend="£" v-if="currentEdit === data.item" >
-                        <b-form-input v-model="currentEdit.default_fx_to_gbp" @change="update(data.item, $event)" />
+                        <b-form-input v-model="currentEdit.currency_fx_rate" @change="update(data.item, $event)" />
                     </b-input-group>
                     <div v-else>
                         <a href="#" @click.prevent="currentEdit = data.item">{{ data.value | cash_value }}</a>
@@ -39,7 +39,7 @@ export default {
         update(currency, value) {
             const loader = this.$loading.show();
             this.$http.put(`/api/currencies/${currency.id}`, {
-                default_fx_to_gbp: this.currentEdit.default_fx_to_gbp
+                currency_fx_rate: this.currentEdit.currency_fx_rate
             }).then(response => {
                 loader.hide();
                 currency.default_fx_to_gbp = value;
@@ -67,7 +67,7 @@ export default {
             fields: [
                 {key: 'name', label: 'Name', sortable: true},
                 {key: 'code', label: 'Code'},
-                {key: 'default_fx_to_gbp', thClass:'w-15', label: 'Exchange Rate'}
+                {key: 'currency_fx_rate', thClass:'w-15', label: 'Exchange Rate'},
             ]
         }
     }
