@@ -35,6 +35,7 @@ class ProductPricingExportController extends Controller
             'unit_cad_price',
             'unit_mxn_price',
             'unit_aud_price',
+            'unit_pln_price',
             'unit_sf_uk_price',
             'unit_sf_fr_price',
             'unit_sf_fr_price',
@@ -48,6 +49,7 @@ class ProductPricingExportController extends Controller
             'unit_sf_cad_price',
             'unit_sf_mxn_price',
             'unit_sf_aud_price',
+            'unit_sf_pln_price',
             'unit_fr_shipping',
             'unit_de_shipping',
             'unit_it_shipping',
@@ -58,6 +60,7 @@ class ProductPricingExportController extends Controller
             'unit_cad_shipping',
             'unit_mxn_shipping',
             'unit_aud_shipping',
+            'unit_pln_shipping',
         ];
 
         $csv = new \SplTempFileObject(256 * 1024 * 1024);
@@ -93,6 +96,7 @@ class ProductPricingExportController extends Controller
                 'unit_cad_price',
                 'unit_mxn_price',
                 'unit_aud_price',
+                'unit_pln_price',
                 'unit_sf_price',
                 'unit_sf_uk_price',
                 'unit_sf_fr_price',
@@ -107,6 +111,7 @@ class ProductPricingExportController extends Controller
                 'unit_sf_cad_price',
                 'unit_sf_mxn_price',
                 'unit_sf_aud_price',
+                'unit_sf_pln_price'
             ]));
 
             $csv->fputcsv($row->toArray());

@@ -1,0 +1,364 @@
+<template>
+    <table class="table table-sm table-striped table-bordered">
+        <tbody>
+        <tr>
+            <td></td>
+            <td>DE/IT/ES/N</td>
+            <td>FR</td>
+            <td>SE</td>
+            <td>PL</td>
+        </tr>
+        <tr>
+            <th colspan="5">Small Envelope:<br/>Dimensions ≤ 20 X 15 X 1 cm</th>
+        </tr>
+        <tr>
+            <td>≤80g</td>
+            <td>€4.79</td>
+            <td>€4.93</td>
+            <td>46.16kr</td>
+            <td>20.05zl</td>
+        </tr>
+        <tr>
+            <th colspan="5">Standard Envelope:<br/>Dimensions ≤ 33 X 23 X 2.5 cm</th>
+        </tr>
+        <tr>
+            <td>≤60g</td>
+            <td>€4.94</td>
+            <td>€5.09</td>
+            <td>48.62kr</td>
+            <td>20.91zl</td>
+        </tr>
+        <tr>
+            <td>≤210g</td>
+            <td>€5.28</td>
+            <td>€5.43</td>
+            <td>51.87kr</td>
+            <td>22.38zl</td>
+        </tr>
+        <tr>
+            <td>≤460g</td>
+            <td>€5.31</td>
+            <td>€5.48</td>
+            <td>52.18kr</td>
+            <td>22.72zl</td>
+        </tr>
+        <tr>
+            <th colspan="5">Large Envelope:<br/>Dimensions ≤ 33 X 23 X 4 cm</th>
+        </tr>
+        <tr>
+            <td>≤960g</td>
+            <td>€5.84</td>
+            <td>€6.02</td>
+            <td>56.26kr</td>
+            <td>24.33zl</td>
+        </tr>
+        <tr>
+            <th colspan="5">Extra Large Envelope:<br/>Dimensions ≤ 33 X 23 X 6 cm</th>
+        </tr>
+        <tr>
+            <td>≤960g</td>
+            <td>€6.44</td>
+            <td>€6.63</td>
+            <td>62.10kr</td>
+            <td>29.68zl</td>
+        </tr>
+        <tr>
+            <th colspan="5">Small Parcel:<br/>Dimensions ≤ 35 X 25 X 12 cm</th>
+        </tr>
+        <tr>
+            <td>≤150g</td>
+            <td>€5.03</td>
+            <td>€6.01</td>
+            <td>56.17kr</td>
+            <td>29.99zl</td>
+        </tr>
+        <tr>
+            <td>≤400g</td>
+            <td>€7.05</td>
+            <td>€7.26</td>
+            <td>67.95kr</td>
+            <td>32.33zl</td>
+        </tr>
+        <tr>
+            <td>≤900g</td>
+            <td>€8.45</td>
+            <td>€8.70</td>
+            <td>81.39kr</td>
+            <td>38.43zl</td>
+        </tr>
+        <tr>
+            <td>≤1.40kg</td>
+            <td>€9.28</td>
+            <td>€9.56</td>
+            <td>89.49kr</td>
+            <td>42.11zl</td>
+        </tr>
+        <tr>
+            <td>≤1.90kg</td>
+            <td>€10.58</td>
+            <td>€10.89</td>
+            <td>101.90kr</td>
+            <td>47.74zl</td>
+        </tr>
+        <tr>
+            <td>≤3.90kg</td>
+            <td>€13.42</td>
+            <td>€13.82</td>
+            <td>129.32kr</td>
+            <td>60.18zl</td>
+        </tr>
+        <tr>
+            <th colspan="5">Standard Parcel:<br/>Dimensions ≤ 45 X 34 X 26 cm</th>
+        </tr>
+        <tr>
+            <td>≤150g</td>
+            <td>€6.21</td>
+            <td>€6.39</td>
+            <td>59.80kr</td>
+            <td>27.14zl</td>
+        </tr>
+        <tr>
+            <td>≤400g</td>
+            <td>€7.73</td>
+            <td>€7.96</td>
+            <td>74.45kr</td>
+            <td>33.08zl</td>
+        </tr>
+        <tr>
+            <td>≤900g</td>
+            <td>€9.19</td>
+            <td>€9.47</td>
+            <td>88.56kr</td>
+            <td>38.98zl</td>
+        </tr>
+        <tr>
+            <td>≤1.40kg</td>
+            <td>€10.43</td>
+            <td>€10.74</td>
+            <td>100.50kr</td>
+            <td>42.80zl</td>
+        </tr>
+        <tr>
+            <td>≤1.90kg</td>
+            <td>€11.97</td>
+            <td>€12.33</td>
+            <td>115.35kr</td>
+            <td>49.14zl</td>
+        </tr>
+        <tr>
+            <td>≤2.90kg</td>
+            <td>€13.42</td>
+            <td>€13.82</td>
+            <td>129.32kr</td>
+            <td>54.68zl</td>
+        </tr>
+        <tr>
+            <td>≤3.90kg</td>
+            <td>€15.80</td>
+            <td>€16.28</td>
+            <td>152.29kr</td>
+            <td>64.60zl</td>
+        </tr>
+        <tr>
+            <td>≤5.90kg</td>
+            <td>€16.67</td>
+            <td>€17.17</td>
+            <td>160.60kr</td>
+            <td>67.88zl</td>
+        </tr>
+        <tr>
+            <td>≤8.90kg</td>
+            <td>€18.06</td>
+            <td>€18.61</td>
+            <td>174.03kr</td>
+            <td>73.47zl</td>
+        </tr>
+        <tr>
+            <td>≤11.90kg</td>
+            <td>€21.24</td>
+            <td>€21.87</td>
+            <td>204.58kr</td>
+            <td>88.03zl</td>
+        </tr>
+        <tr>
+            <th colspan="5">Small Oversize:<br/>Dimensions ≤ 61 X 46 X 46 cm, Unit Weight <1.76 and Dimesional Weight
+                <25.82 Kg
+            </th>
+        </tr>
+        <tr>
+            <td>≤760g</td>
+            <td>€13.38</td>
+            <td>€13.78</td>
+            <td>133.93kr</td>
+            <td>60.51zl</td>
+        </tr>
+        <tr>
+            <td>≤1.26kg</td>
+            <td>€13.83</td>
+            <td>€14.25</td>
+            <td>139.26kr</td>
+            <td>62.97zl</td>
+        </tr>
+        <tr>
+            <td>≤1.76kg</td>
+            <td>€13.93</td>
+            <td>€14.35</td>
+            <td>140.31kr</td>
+            <td>63.45zl</td>
+        </tr>
+        <tr>
+            <td>>1.76kg</td>
+            <td>£0.01 per <br/>inc. Kg</td>
+            <td>€0.01 per <br/>inc. Kg</td>
+            <td>0.1 kr per <br/>inc. Kg</td>
+            <td>0.05 zl per<br/>inc. Kg</td>
+        </tr>
+        <tr>
+            <th colspan="5">Standard Oversize:<br/>Dimensions ≤ 120 X 60 X 60 cm, Unit Weight <29.76 and Dimesional
+                Weight <86.4 Kg
+            </th>
+        </tr>
+        <tr>
+            <td>≤760g</td>
+            <td>€16.75</td>
+            <td>€17.25</td>
+            <td>161.44kr</td>
+            <td>73.26zl</td>
+        </tr>
+        <tr>
+            <td>≤1.76kg</td>
+            <td>€17.24</td>
+            <td>€17.76</td>
+            <td>166.15kr</td>
+            <td>75.40zl</td>
+        </tr>
+        <tr>
+            <td>≤2.76kg</td>
+            <td>€18.40</td>
+            <td>€18.95</td>
+            <td>177.26kr</td>
+            <td>80.44zl</td>
+        </tr>
+        <tr>
+            <td>≤3.76kg</td>
+            <td>€18.50</td>
+            <td>€19.06</td>
+            <td>178.26kr</td>
+            <td>80.89zl</td>
+        </tr>
+        <tr>
+            <td>≤4.76kg</td>
+            <td>€18.64</td>
+            <td>€19.20</td>
+            <td>179.62kr</td>
+            <td>81.51zl</td>
+        </tr>
+        <tr>
+            <td>≤9.76kg</td>
+            <td>€21.28</td>
+            <td>€21.92</td>
+            <td>205.06kr</td>
+            <td>93.05zl</td>
+        </tr>
+        <tr>
+            <td>≤14.76kg</td>
+            <td>€22.36</td>
+            <td>€23.04</td>
+            <td>215.52kr</td>
+            <td>97.80zl</td>
+        </tr>
+        <tr>
+            <td>≤19.76kg</td>
+            <td>€24.34</td>
+            <td>€25.07</td>
+            <td>234.53kr</td>
+            <td>106.43zl</td>
+        </tr>
+        <tr>
+            <td>≤24.76kg</td>
+            <td>€26.10</td>
+            <td>€26.88</td>
+            <td>251.42kr</td>
+            <td>114.09zl</td>
+        </tr>
+        <tr>
+            <td>≤29.76kg</td>
+            <td>€26.48</td>
+            <td>€27.27</td>
+            <td>255.15kr</td>
+            <td>118.78zl</td>
+        </tr>
+        <tr>
+            <td>>29.76kg</td>
+            <td>£0.01 per <br/>inc. Kg</td>
+            <td>€0.01 per <br/>inc. Kg</td>
+            <td>0.1 kr per <br/>inc. Kg</td>
+            <td>0.05 zl per<br/>inc. Kg</td>
+        </tr>
+        <tr>
+            <th colspan="5">lARGE Oversize:<br/>Dimensions ≤ 150 X 60 X 60 cm, Unit Weight <31.5 and Dimesional Weight
+                <108 Kg
+            </th>
+        </tr>
+        <tr>
+            <td>≤4.76kg</td>
+            <td>€24.94</td>
+            <td>€25.68</td>
+            <td>244.27kr</td>
+            <td>110.03zl</td>
+        </tr>
+        <tr>
+            <td>≤9.76kg</td>
+            <td>€29.86</td>
+            <td>€30.76</td>
+            <td>291.76kr</td>
+            <td>131.58zl</td>
+        </tr>
+        <tr>
+            <td>≤14.76kg</td>
+            <td>€31.74</td>
+            <td>€32.69</td>
+            <td>309.81kr</td>
+            <td>139.77zl</td>
+        </tr>
+        <tr>
+            <td>≤19.76kg</td>
+            <td>€35.00</td>
+            <td>€36.06</td>
+            <td>341.27kr</td>
+            <td>154.05zl</td>
+        </tr>
+        <tr>
+            <td>≤24.76kg</td>
+            <td>€37.98</td>
+            <td>€39.12</td>
+            <td>369.97kr</td>
+            <td>167.07zl</td>
+        </tr>
+        <tr>
+            <td>≤31.50kg</td>
+            <td>€37.98</td>
+            <td>€39.12</td>
+            <td>369.97kr</td>
+            <td>167.07zl</td>
+        </tr>
+        <tr>
+            <td>>31.50kg</td>
+            <td>£0.01 per <br/>inc. Kg</td>
+            <td>€0.01 per <br/>inc. Kg</td>
+            <td>0.1 kr per <br/>inc. Kg</td>
+            <td>0.05 zl per<br/>inc. Kg</td>
+        </tr>
+        </tbody>
+    </table>
+</template>
+
+<script>
+export default {
+    name: "EFNFBA"
+}
+</script>
+
+<style scoped>
+
+</style>

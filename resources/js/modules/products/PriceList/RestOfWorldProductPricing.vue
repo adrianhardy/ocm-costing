@@ -47,7 +47,7 @@
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
-                    <b-input-group-text class="w-100">Shipping</b-input-group-text>
+                    <b-input-group-text class="w-100">FBA Ship.</b-input-group-text>
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[shipField]" size="sm" />
                 <b-input-group-append class="w-20">
@@ -89,16 +89,30 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
+
         <b-form-group size="sm" class="mb-2">
+            <div class="d-flex justify-content-around">
+                <div class="small">FBA £</div>
+                <div class="small">FBA %</div>
+                <div class="small">SF £</div>
+                <div class="small">SF %</div>
+            </div>
             <b-input-group size="sm">
-                <b-input-group-prepend class="w-40">
-                    <b-input-group-text class="w-100">Profit</b-input-group-text>
-                </b-input-group-prepend>
                 <div class="form-control bg-light">
-                    {{ calculatedMargin | cash_value }}
+                    {{ calculatedMargin }}
+                </div>
+                <div class="form-control bg-light">
+                    {{ calculatedMargin }}
+                </div>
+                <div class="form-control bg-light">
+                    {{ calculatedMargin }}
+                </div>
+                <div class="form-control bg-light">
+                    {{ calculatedMargin }}
                 </div>
             </b-input-group>
         </b-form-group>
+
     </div>
 </template>
 

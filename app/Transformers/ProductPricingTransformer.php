@@ -146,6 +146,7 @@ class ProductPricingTransformer extends TransformerAbstract
             'unit_es_fba_fee',
             'unit_it_fba_fee',
             'unit_nl_fba_fee',
+            'unit_se_fba_fee',
             'unit_usd_fba_fee',
             'unit_cad_fba_fee',
             'unit_mxn_fba_fee',

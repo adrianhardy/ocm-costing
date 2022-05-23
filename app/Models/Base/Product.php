@@ -52,6 +52,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $eu_postage_method
  * @property string|null $row_postage_method
  * @property string $sorted_article_number
+ * @property string|null $pricing_notes
  * 
  * @property Supplier $supplier
  * @property Collection|ProductLandedCost[] $product_landed_costs_product

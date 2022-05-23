@@ -99,7 +99,8 @@ class Product extends BaseProduct implements HasMedia
         'is_excluded_from_commission',
         'uk_postage_method',
         'eu_postage_method',
-        'row_postage_method'
+        'row_postage_method',
+        'pricing_notes'
     ];
 
 	protected $casts = [

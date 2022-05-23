@@ -112,7 +112,8 @@ class ProductTransformer extends TransformerAbstract
             'additional_skus',
             'uk_postage_method',
             'eu_postage_method',
-            'row_postage_method'
+            'row_postage_method',
+            'pricing_notes'
         ]);
     }
 }

@@ -28,6 +28,6 @@ class Currency extends BaseCurrency
     }
 
     public function getCurrencyFxRateAttribute() {
-        return 1/$this->default_fx_to_gbp;
+        return round(1/$this->default_fx_to_gbp, 2);
     }
 }
