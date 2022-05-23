@@ -39,18 +39,33 @@ export default {
     },
     computed: {
         sfProfit() {
+
+            if (this.sfPrice <= 0) {
+                return 0;
+            }
+
             return (this.sfPrice -
                 (this.landedCostPerUnitGbp / this.fxRate) -
                 this.sfVat -
                 (this.fee / this.fxRate)).toFixed(2);
         },
         sfMargin() {
+            if (this.sfPrice <= 0) {
+                return 0;
+            }
             return (100*(this.sfProfit / this.sfPrice)).toFixed(2);
         },
         fbaMargin() {
+            if (this.fbaPrice <= 0) {
+                return 0;
+            }
             return (100*(this.fbaProfit / this.fbaPrice)).toFixed(2);
         },
         fbaProfit() {
+            if (this.sfPrice <= 0) {
+                return 0;
+            }
+
             return (this.fbaPrice -
                 (this.landedCostPerUnitGbp / this.fxRate) -
                 this.fbaVat -
