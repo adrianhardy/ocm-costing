@@ -35,19 +35,19 @@ export default {
         fbaPrice: [Number, String],
         sfPrice: [Number, String],
         fbaReferralFee: [Number, String],
+        sfReferralFee: [Number, String],
         currencySymbol: String
     },
     computed: {
         sfProfit() {
-
             if (this.sfPrice <= 0) {
                 return 0;
             }
-
             return (this.sfPrice -
                 (this.landedCostPerUnitGbp / this.fxRate) -
                 this.sfVat -
-                (this.fee / this.fxRate)).toFixed(2);
+                (this.sfReferralFee / this.fxRate)
+            ).toFixed(2);
         },
         sfMargin() {
             if (this.sfPrice <= 0) {

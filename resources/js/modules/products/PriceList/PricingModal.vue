@@ -65,7 +65,8 @@
                         </tr>
                     </table>
                     <h5>Unit</h5>
-                    <table class="table table-sm small">
+                    <table class="table table-sm small" v-if="line">
+                        <b-tr><b-td colspan="2">From Sales Order Line</b-td></b-tr>
                         <b-tr>
                             <th class="w-50">Weight (kg)</th>
                             <td>{{ line.unit_weight_kg }}</td>
@@ -75,6 +76,20 @@
                             <td>{{ line.unit_length_cm }} x
                                 {{ line.unit_width_cm }} x
                                 {{ line.unit_height_cm }} cm
+                            </td>
+                        </b-tr>
+                    </table>
+                    <table class="table table-sm small" v-else>
+                        <b-tr><b-td colspan="2">From Product</b-td></b-tr>
+                        <b-tr>
+                            <th class="w-50">Weight (kg)</th>
+                            <td>{{ product.unit_weight_kg }}</td>
+                        </b-tr>
+                        <b-tr>
+                            <th>Dimensions (LxWxH)</th>
+                            <td>{{ product.unit_length_cm }} x
+                                {{ product.unit_width_cm }} x
+                                {{ product.unit_height_cm }} cm
                             </td>
                         </b-tr>
                     </table>

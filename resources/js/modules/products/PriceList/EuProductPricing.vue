@@ -90,9 +90,20 @@
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">Ref' Fee</b-input-group-text>
+                    <b-input-group-text class="w-100">FBA Ref' Fee</b-input-group-text>
                 </b-input-group-prepend>
                 <div class="form-control bg-light">{{ fbaReferralFeeValue }}</div>
+                <b-input-group-append class="w-15">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+        <b-form-group size="sm" class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-50">
+                    <b-input-group-text class="w-100">SF Ref' Fee</b-input-group-text>
+                </b-input-group-prepend>
+                <div class="form-control bg-light">{{ sfReferralFeeValue }}</div>
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
@@ -104,6 +115,7 @@
             :fba-vat="fbaVat"
             :fba-shipping="value[shipField]"
             :fba-referral-fee="fbaReferralFeeValue"
+            :sf-referral-fee="sfReferralFeeValue"
             :fee="value[feeField]"
             :sf-price="value[sfPriceField]"
             :sf-vat="sfVat"
@@ -149,7 +161,12 @@ export default {
         fbaReferralFeeValue() {
             const value = this.value[this.priceField] * (this.marketplaceCommissionPc/100);
             return value.toFixed(2);
+        },
+        sfReferralFeeValue() {
+            const value = this.value[this.sfPriceField] * (this.marketplaceCommissionPc/100);
+            return value.toFixed(2);
         }
+
     }
 }
 </script>

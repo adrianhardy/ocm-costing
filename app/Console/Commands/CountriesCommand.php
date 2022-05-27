@@ -68,29 +68,26 @@ class CountriesCommand extends Command
                     'vat_rate' => $vat,
                     'iso_2_code' => $country['alpha-2']
                 ]);
+                if ($vat >= 20 && $cn->iso_2_code != 'GB') {
+                    $cn->currency()->associate($eur);
+                }
+
+                if ($cn->iso_2_code == 'GB') {
+                    $cn->currency()->associate($gbp);
+                }
+
+                if ($cn->iso_2_code == 'US') {
+                    $cn->currency()->associate($usd);
+                }
+
+                if ($cn->iso_2_code == 'MX') {
+                    $cn->currency()->associate($mxn);
+                }
+
+                if ($cn->iso_2_code == 'CA') {
+                    $cn->currency()->associate($cad);
+                }
             }
-
-            if ($vat >= 20 && $cn->iso_2_code != 'GB') {
-                $cn->currency()->associate($eur);
-            }
-
-            if ($cn->iso_2_code == 'GB') {
-                $cn->currency()->associate($gbp);
-            }
-
-            if ($cn->iso_2_code == 'US') {
-                $cn->currency()->associate($usd);
-            }
-
-            if ($cn->iso_2_code == 'MX') {
-                $cn->currency()->associate($mxn);
-            }
-
-            if ($cn->iso_2_code == 'CA') {
-                $cn->currency()->associate($cad);
-            }
-
-
             $cn->save();
 
         }

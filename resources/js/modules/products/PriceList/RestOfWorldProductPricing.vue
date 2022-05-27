@@ -90,37 +90,30 @@
             </b-input-group>
         </b-form-group>
 
-        <b-form-group size="sm" class="mb-2">
-            <div class="d-flex justify-content-around">
-                <div class="small">FBA £</div>
-                <div class="small">FBA %</div>
-                <div class="small">SF £</div>
-                <div class="small">SF %</div>
-            </div>
-            <b-input-group size="sm">
-                <div class="form-control bg-light">
-                    {{ calculatedMargin }}
-                </div>
-                <div class="form-control bg-light">
-                    {{ calculatedMargin }}
-                </div>
-                <div class="form-control bg-light">
-                    {{ calculatedMargin }}
-                </div>
-                <div class="form-control bg-light">
-                    {{ calculatedMargin }}
-                </div>
-            </b-input-group>
-        </b-form-group>
+        <pricing-profit-summary
+            :fba-price="value[priceField]"
+            :fba-vat="0"
+            :fba-shipping="value[shipField]"
+            :fba-referral-fee="fbaReferralFeeValue"
+            :sf-referral-fee="sfReferralFeeValue"
+            :fee="value[feeField]"
+            :sf-price="value[sfPriceField]"
+            :sf-vat="0"
+            :fx-rate="value[fxField]"
+            :currency-symbol="currencySymbol"
+            :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
+        />
 
     </div>
 </template>
 
 <script>
 import getSymbolFromCurrency from 'currency-symbol-map';
+import PricingProfitSummary from "./PricingProfitSummary";
 
 export default {
     name: "RestOfWorldProductPricing",
+    components: {PricingProfitSummary},
     props: {
         value: Object,
         shipField: String,
@@ -138,6 +131,10 @@ export default {
         },
         fbaReferralFeeValue() {
             const value = this.value[this.priceField] * (1 / this.marketplaceCommissionPc);
+            return value.toFixed(2);
+        },
+        sfReferralFeeValue() {
+            const value = this.value[this.sfPriceField] * (1 / this.marketplaceCommissionPc);
             return value.toFixed(2);
         },
         currencySymbol() {
