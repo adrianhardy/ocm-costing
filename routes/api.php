@@ -21,7 +21,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
         Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
-        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index']);
+        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index', 'store']);
     });
 
     Route::group(['middleware' => ['auth:api', 'role:admin|super']], function() {

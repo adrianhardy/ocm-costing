@@ -68,6 +68,9 @@ Vue.component('confirm-navigation-modal', require('./components/ConfirmNavigatio
 
 Vue.component('settings-list', require('./modules/settings/SettingsList.vue').default);
 
+
+Vue.component('create-currency', require('./modules/currencies/CreateCurrency.vue').default);
+
 window.Vue = Vue;
 
 const router = new VueRouter({
