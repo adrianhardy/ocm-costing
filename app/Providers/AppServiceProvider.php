@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models;
 use App\Models\User;
+use App\Observers\CurrencyObserver;
 use App\Observers\ProductObserver;
 use App\Observers\SalesOrderLineObserver;
 use App\Observers\SalesOrderObserver;
@@ -41,5 +42,6 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('current_password', function ($attribute, $value, $parameters, $validator) {
             return \Auth::user() && Hash::check($value, \Auth::user()->password);
         });
+        Models\Currency::observe(CurrencyObserver::class);
     }
 }
