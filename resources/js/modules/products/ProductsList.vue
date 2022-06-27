@@ -198,8 +198,8 @@ export default {
             selected: [],
             selectedForExport: [],
             search: '',
-            searchField: null,
-            searchFactory: {},
+            searchField: 'article_number',
+            searchFactory: null,
             products: [],
             pagination: {
                 total: 0,

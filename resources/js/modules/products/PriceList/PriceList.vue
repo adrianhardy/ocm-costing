@@ -147,7 +147,7 @@ export default {
             todoOnly: true,
             pagination: {
                 total: 0,
-                perPage: 2,
+                perPage: 50,
                 currentPage: 1,
             },
             selectedForExport: [],

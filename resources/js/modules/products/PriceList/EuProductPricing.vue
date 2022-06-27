@@ -21,29 +21,56 @@
                         </a>
                     </b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model="value[sfPriceField]" size="sm" />
+                <b-form-input v-model.number="value[sfPriceField]" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
+
+        <b-form-group class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-50">
+                    <b-input-group-text class="w-100">SF VAT</b-input-group-text>
+                </b-input-group-prepend>
+                <div class="form-control bg-light">{{ sfVat }}</div>
+                <b-input-group-append class="w-15">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+
+
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA Price</b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model="value[priceField]" size="sm" />
+                <b-form-input v-model.number="value[priceField]" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
+
+        <b-form-group class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-50">
+                    <b-input-group-text class="w-100">FBA VAT</b-input-group-text>
+                </b-input-group-prepend>
+                <div class="form-control bg-light">{{ fbaVat }}</div>
+                <b-input-group-append class="w-15">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">Shipping</b-input-group-text>
+                    <b-input-group-text class="w-100">FBA Ship.</b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model="value[shipField]" size="sm" />
+                <b-form-input v-model.number="value[shipField]" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100">&pound;</b-input-group-text>
                 </b-input-group-append>
@@ -54,7 +81,7 @@
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA Fee</b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model="value[feeField]" size="sm" />
+                <b-form-input v-model.number="value[feeField]" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100">&pound;</b-input-group-text>
                 </b-input-group-append>
@@ -63,7 +90,7 @@
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">Ref' Fee</b-input-group-text>
+                    <b-input-group-text class="w-100">FBA Ref' Fee</b-input-group-text>
                 </b-input-group-prepend>
                 <div class="form-control bg-light">{{ fbaReferralFeeValue }}</div>
                 <b-input-group-append class="w-15">
@@ -71,36 +98,40 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
-
-        <b-form-group class="mb-2">
+        <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">VAT</b-input-group-text>
+                    <b-input-group-text class="w-100">SF Ref' Fee</b-input-group-text>
                 </b-input-group-prepend>
-                <div class="form-control bg-light">{{ vatValue }}</div>
+                <div class="form-control bg-light">{{ sfReferralFeeValue }}</div>
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
 
-
-        <b-form-group size="sm" class="mb-2">
-            <b-input-group size="sm">
-                <b-input-group-prepend class="w-50">
-                    <b-input-group-text class="w-100">Profit</b-input-group-text>
-                </b-input-group-prepend>
-                <div class="form-control bg-light">
-                    {{ calculatedMargin | cash_value }}
-                </div>
-            </b-input-group>
-        </b-form-group>
+        <pricing-profit-summary
+            :fba-price="value[priceField]"
+            :fba-vat="fbaVat"
+            :fba-shipping="value[shipField]"
+            :fba-referral-fee="fbaReferralFeeValue"
+            :sf-referral-fee="sfReferralFeeValue"
+            :fee="value[feeField]"
+            :sf-price="value[sfPriceField]"
+            :sf-vat="sfVat"
+            :fx-rate="fxRate"
+            :currency-symbol="currencySymbol"
+            :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
+        />
     </div>
 </template>
 
 <script>
+import PricingProfitSummary from "./PricingProfitSummary";
+
 export default {
     name: "EuProductPricing",
+    components: {PricingProfitSummary},
     props: {
         value: Object,
         vatField: String,
@@ -121,28 +152,21 @@ export default {
 
             return '&euro;'
         },
+        sfVat() {
+            return (this.value[this.sfPriceField] * (this.value[this.vatField] / 100)).toFixed(2);
+        },
+        fbaVat() {
+            return (this.value[this.priceField] * (this.value[this.vatField] / 100)).toFixed(2);
+        },
         fbaReferralFeeValue() {
             const value = this.value[this.priceField] * (this.marketplaceCommissionPc/100);
             return value.toFixed(2);
         },
-        vatValue() {
-            const value = this.value[this.priceField] * (this.value[this.vatField]/100);
+        sfReferralFeeValue() {
+            const value = this.value[this.sfPriceField] * (this.marketplaceCommissionPc/100);
             return value.toFixed(2);
-        },
-        calculatedMargin() {
-            if (!this.fxRate) {
-                return 0;
-            }
-
-            const localMargin = (this.value[this.priceField]) -
-                (this.value.est_landed_cost_per_unit_gbp / this.fxRate) -
-                this.vatValue -
-                (this.value[this.feeField] / this.fxRate) -
-                this.fbaReferralFeeValue -
-                (this.value[this.shipField] / this.fxRate) ;
-
-            return (localMargin * this.fxRate).toFixed(2);
         }
+
     }
 }
 </script>

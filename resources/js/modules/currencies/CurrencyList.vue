@@ -9,11 +9,14 @@
                     </div>
                 </template>
                 <template #cell(currency_fx_rate)="data">
-                    <b-input-group prepend="£" v-if="currentEdit === data.item" >
+                    <b-input-group v-if="currentEdit === data.item" >
                         <b-form-input v-model="currentEdit.currency_fx_rate" @change="update(data.item, $event)" />
                     </b-input-group>
                     <div v-else>
-                        <a href="#" @click.prevent="currentEdit = data.item">{{ data.value | cash_value }}</a>
+                        <a href="#" @click.prevent="currentEdit = data.item">
+                            {{ data.value | 2dp_value }}
+                            {{ data.item.code }}
+                        </a>
                     </div>
                 </template>
             </b-table>

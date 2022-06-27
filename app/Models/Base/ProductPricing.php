@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $nl_vat
  * @property float|null $es_vat
  * @property float $unit_aud_fba_fee
+ * @property float|null $unit_sek_fba_fee
  * @property float $unit_mxn_fba_fee
  * @property float $unit_cad_fba_fee
  * @property float $unit_usd_fba_fee
@@ -73,6 +74,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_se_shipping
  * @property float|null $unit_aud_price
  * @property float|null $unit_aud_shipping
+ * @property float|null $unit_sek_price
+ * @property float|null $unit_sek_shipping
  * @property float|null $aud_fx_rate
  * @property float|null $unit_sf_uk_price
  * @property float|null $unit_sf_fr_price
@@ -85,6 +88,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_sf_cad_price
  * @property float|null $unit_sf_mxn_price
  * @property float|null $unit_sf_aud_price
+ * @property float|null $unit_sf_sek_price
  * @property float|null $pl_vat
  * @property float|null $pln_fx_rate
  * @property float|null $sek_fx_rate
@@ -120,6 +124,7 @@ class ProductPricing extends Model
 		'nl_vat' => 'float',
 		'es_vat' => 'float',
 		'unit_aud_fba_fee' => 'float',
+		'unit_sek_fba_fee' => 'float',
 		'unit_mxn_fba_fee' => 'float',
 		'unit_cad_fba_fee' => 'float',
 		'unit_usd_fba_fee' => 'float',
@@ -156,6 +161,8 @@ class ProductPricing extends Model
 		'unit_se_shipping' => 'float',
 		'unit_aud_price' => 'float',
 		'unit_aud_shipping' => 'float',
+		'unit_sek_price' => 'float',
+		'unit_sek_shipping' => 'float',
 		'aud_fx_rate' => 'float',
 		'unit_sf_uk_price' => 'float',
 		'unit_sf_fr_price' => 'float',
@@ -168,6 +175,7 @@ class ProductPricing extends Model
 		'unit_sf_cad_price' => 'float',
 		'unit_sf_mxn_price' => 'float',
 		'unit_sf_aud_price' => 'float',
+		'unit_sf_sek_price' => 'float',
 		'pl_vat' => 'float',
 		'pln_fx_rate' => 'float',
 		'sek_fx_rate' => 'float',

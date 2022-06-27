@@ -55,6 +55,7 @@ class CreatePricingFromOrderLinesController extends Controller
             $uk = Country::where('iso_2_code', 'GB')->first();
             $de = Country::where('iso_2_code', 'DE')->first();
             $es = Country::where('iso_2_code', 'ES')->first();
+            $pl = Country::where('iso_2_code', 'PL')->first();
             $it = Country::where('iso_2_code', 'IT')->first();
             $nl = Country::where('iso_2_code', 'NL')->first();
             $us = Country::where('iso_2_code', 'US')->first();
@@ -80,11 +81,14 @@ class CreatePricingFromOrderLinesController extends Controller
                 'nl_vat' => $nl->vat_rate,
                 'se_vat' => $se->vat_rate,
                 'au_vat' => $au->vat_rate,
+                'pl_vat' => $pl->vat_rate,
                 'mxn_fx_rate' => $mx->currency->default_fx_to_gbp,
                 'eur_fx_rate' => $fr->currency->default_fx_to_gbp,
                 'usd_fx_rate' => $us->currency->default_fx_to_gbp,
                 'cad_fx_rate' => $ca->currency->default_fx_to_gbp,
                 'aud_fx_rate' => $au->currency->default_fx_to_gbp,
+                'pln_fx_rate' => $pl->currency->default_fx_to_gbp,
+                'sek_fx_rate' => $se->currency->default_fx_to_gbp,
                 'unit_uk_fba_fee' => 0,
                 'unit_se_fba_fee' => 0,
                 'unit_fr_fba_fee' => 0,

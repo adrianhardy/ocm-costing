@@ -62,16 +62,19 @@ class ProductPricing extends BaseProductPricing
         'unit_mxn_shipping',
         'unit_aud_shipping',
         'unit_pln_shipping',
+        'unit_sek_shipping',
         'unit_sf_usd_price',
         'unit_sf_cad_price',
         'unit_sf_mxn_price',
         'unit_sf_aud_price',
         'unit_sf_pln_price',
-		'unit_usd_price',
+        'unit_sf_sek_price',
+        'unit_usd_price',
 		'unit_cad_price',
 		'unit_mxn_price',
         'unit_aud_price',
         'unit_pln_price',
+        'unit_sek_price',
 		'eur_fx_rate',
 		'usd_fx_rate',
 		'cad_fx_rate',
@@ -91,6 +94,7 @@ class ProductPricing extends BaseProductPricing
         'unit_mxn_fba_fee',
         'unit_aud_fba_fee',
         'unit_pln_fba_fee',
+        'unit_sek_fba_fee'
 	];
 
 
@@ -101,6 +105,9 @@ class ProductPricing extends BaseProductPricing
 
 	public function getCurrentEurFxRateAttribute()
     {
+        if ($this->eur_fx_rate == 0) {
+            return round(0, 2);
+        }
         return round(1 / $this->eur_fx_rate, 2);
     }
 
@@ -111,7 +118,10 @@ class ProductPricing extends BaseProductPricing
 
     public function getCurrentUsdFxRateAttribute()
     {
-        return round(1 / $this->eur_fx_rate, 2);
+        if ($this->usd_fx_rate == 0) {
+            return round(0, 2);
+        }
+        return round(1 / $this->usd_fx_rate, 2);
     }
 
     public function setCurrentUsdFxRateAttribute($value)
@@ -121,6 +131,9 @@ class ProductPricing extends BaseProductPricing
 
     public function getCurrentMxnFxRateAttribute()
     {
+        if ($this->mxn_fx_rate == 0) {
+            return round(0, 2);
+        }
         return round(1 / $this->mxn_fx_rate, 2);
     }
 
@@ -131,6 +144,9 @@ class ProductPricing extends BaseProductPricing
 
     public function getCurrentCadFxRateAttribute()
     {
+        if ($this->cad_fx_rate == 0) {
+            return round(0, 2);
+        }
         return round(1 / $this->cad_fx_rate,2);
     }
 
@@ -141,6 +157,9 @@ class ProductPricing extends BaseProductPricing
 
     public function getCurrentAudFxRateAttribute()
     {
+        if ($this->aud_fx_rate == 0) {
+            return round(0, 2);
+        }
 	    return round(1 / $this->aud_fx_rate, 2);
     }
 
@@ -151,6 +170,9 @@ class ProductPricing extends BaseProductPricing
 
     public function getCurrentSekFxRateAttribute()
     {
+        if ($this->sek_fx_rate == 0) {
+            return round(0, 2);
+        }
         return round(1 / $this->sek_fx_rate, 2);
     }
 
@@ -161,6 +183,9 @@ class ProductPricing extends BaseProductPricing
 
     public function getCurrentPlnFxRateAttribute()
     {
+        if ($this->pln_fx_rate == 0) {
+            return round(0, 2);
+        }
         return round(1/ $this->pln_fx_rate, 2);
     }
 

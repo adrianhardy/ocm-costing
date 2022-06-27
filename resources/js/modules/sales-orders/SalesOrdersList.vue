@@ -77,6 +77,7 @@ export default {
                     sortable: true,
                 }, {
                     key: 'shipping_cost_per_cubic_foot',
+                    label: 'Cost / Cu.ft',
                     sortable: true
                 }, {
                     key: 'created_at',

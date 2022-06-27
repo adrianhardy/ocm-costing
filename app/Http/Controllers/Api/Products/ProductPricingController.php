@@ -118,21 +118,25 @@ class ProductPricingController extends Controller
             'unit_cad_shipping',
             'unit_mxn_shipping',
             'unit_aud_shipping',
+            'unit_sek_shipping',
             'unit_pln_shipping',
             'unit_sf_usd_price',
             'unit_sf_cad_price',
             'unit_sf_mxn_price',
             'unit_sf_aud_price',
+            'unit_sf_sek_price',
             'unit_sf_pln_price',
             'unit_usd_price',
             'unit_cad_price',
             'unit_mxn_price',
             'unit_aud_price',
+            'unit_sek_price',
             'unit_pln_price',
             'usd_fx_rate',
             'cad_fx_rate',
             'mxn_fx_rate',
             'aud_fx_rate',
+            'sek_fx_rate',
             'pln_fx_rate',
             'unit_uk_fba_fee',
             'unit_se_fba_fee',
@@ -145,12 +149,17 @@ class ProductPricingController extends Controller
             'unit_cad_fba_fee',
             'unit_mxn_fba_fee',
             'unit_aud_fba_fee',
+            'unit_sek_fba_fee',
             'unit_pln_fba_fee',
         ]));
 
         $pricing->setCurrentEurFxRateAttribute($request->input('current_eur_fx_rate'));
         $pricing->setCurrentUsdFxRateAttribute($request->input('current_usd_fx_rate'));
 
+        if ($request->input('product.pricing_notes') !== null) {
+            $pricing->product->pricing_notes = $request->input('product.pricing_notes');
+            $pricing->product->save();
+        }
 
         if($request->input(['submitted'])){
             $pricing->approved_at = Carbon::now();
