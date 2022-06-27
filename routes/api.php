@@ -27,6 +27,7 @@ Route::group(['as' => 'api.'], function() {
     Route::group(['middleware' => ['auth:api', 'role:admin|super']], function() {
         Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);
         Route::resource('settings', 'Api\Settings\SettingsController')->only(['index']);
+        Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
         Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['index', 'store']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['update']);
         Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
@@ -54,6 +55,7 @@ Route::group(['as' => 'api.'], function() {
     });
 
     Route::group(['as' => 'api.', 'middleware' => ['auth:api', 'role:super|pricing']], function() {
+        Route::resource('guidance', 'Api\Pricing\AmazonGuidanceController')->only(['index']);
         Route::resource('pricing','Api\Products\ProductPricingController')->only(['index','update','show']);
         Route::resource('pricing.history', 'Api\Products\ProductPricingHistoryController')->only(['index']);
     });

@@ -20,5 +20,6 @@
                 </b-card>
             </div>
         </div>
+        <amazon-guidance-upload></amazon-guidance-upload>
     </div>
 @endsection
