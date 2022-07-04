@@ -67,6 +67,7 @@ Vue.component('confirm-navigation-modal', require('./components/ConfirmNavigatio
 // for raising toasts, etc
 
 Vue.component('settings-list', require('./modules/settings/SettingsList.vue').default);
+Vue.component('amazon-guidance-upload', require('./modules/settings/AmazonGuidanceUpload').default)
 
 window.Vue = Vue;
 

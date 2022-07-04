@@ -291,17 +291,17 @@
                         </b-tab>
                         <b-tab title="Small & Light">
                             <div style="max-height: 650px; overflow: auto">
-                                <small-light />
+                                <img v-if="images" :src="images.sl" height="650" />
                             </div>
                         </b-tab>
                         <b-tab title="Local FBA">
                             <div style="max-height: 650px; overflow: auto">
-                                <local-f-b-a />
+                                <img v-if="images" :src="images.local_fba" height="650"/>
                             </div>
                         </b-tab>
                         <b-tab title="EFN FBA">
                             <div style="max-height: 650px; overflow: auto">
-                                <e-f-n-f-b-a />
+                                <img v-if="images" :src="images.enf_fba" height="650" />
                             </div>
                         </b-tab>
                     </b-tabs>
@@ -322,6 +322,9 @@ import EFNFBA from "./AmazonShippingRates/EFNFBA";
 export default {
     name: "PricingModal",
     components: {EFNFBA, LocalFBA, SmallLight, EuProductPricing, EuOfWorldProductPricing, RestOfWorldProductPricing},
+    mounted(){
+        this.getGuidance();
+    },
     computed: {
         ukPostageMethod() {
             if (this.product.uk_postage_method) {
@@ -355,6 +358,18 @@ export default {
         }
     },
     methods: {
+        getGuidance(){
+            const loading = this.$loading.show();
+            const url = '/api/guidance'
+            this.$http.get(url).then(response => {
+                this.images = response.data
+                console.log(this.images);
+                loading.hide();
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true)
+                loading.hide();
+            })
+        },
         copySfPrice() {
             const euPrice = (this.value['unit_sf_uk_price'] / this.value['eur_fx_rate']).toFixed(2);
             this.value['unit_sf_fr_price'] = euPrice;
@@ -422,6 +437,7 @@ export default {
                 currentPage: 1,
                 sortBy: 'approved_at'
             },
+            images: {},
             fields: [
                 {key: 'approved_at', label: 'Approved At', sortable: true},
                 {key: 'approver.name', label: 'Approved By', sortable: true},
