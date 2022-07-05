@@ -5,9 +5,6 @@
                 <table-header v-model="pagination">
                     <slot>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button>
-                            Create New Shipment
-                        </b-button>
                     </slot>
                 </table-header>
             </template>
@@ -23,9 +20,18 @@
                         {{data.value}}
                     </b-link>
                 </template>
-                <template #cell(departed_at)="data">
-                    <span v-if="data.value">
-                        {{ data.value | date_dmY }}
+                <template #cell(dates)="data">
+                    <span>
+                        ETD: <b-badge v-if="data.item.estimated_departure_at" size="sm">{{ data.item.estimated_departure_at | date_dmY }}</b-badge> <br/>
+                    </span>
+                    <span>
+                        Departed: <b-badge v-if="data.item.departed_at" size="sm">{{ data.item.departed_at | date_dmY }}</b-badge> <br/>
+                    </span>
+                    <span>
+                        ETA: <b-badge v-if="data.item.estimated_arrival_at" size="sm">{{ data.item.estimated_arrival_at | date_dmY }}</b-badge> <br/>
+                    </span>
+                    <span>
+                        Docked: <b-badge v-if="data.item.docked_at" size="sm">{{ data.item.docked_at | date_dmY }}</b-badge> <br/>
                     </span>
                 </template>
                 <template #cell(sales_order.sales_order_number)="data">
@@ -53,7 +59,8 @@ export default {
             return [
                 {key: 'reference', label: 'Reference'},
                 {key: 'sales_order.sales_order_number', label: 'Sales Order #'},
-                {key: 'departed_at', label: 'Departed'},
+                {key: 'our_order_number', label: 'Order #'},
+                {key: 'dates', label: 'Dates'},
                 {key: 'bl_number', label: 'BL #'},
                 {key: 'container_number', label: 'Container #'},
                 {key: 'vessel_name', label: 'Vessel'},

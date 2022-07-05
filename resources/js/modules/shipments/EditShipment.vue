@@ -7,7 +7,6 @@
                     <b-form-group label="Reference">
                         <b-form-input v-model="shipment.reference"/>
                     </b-form-group>
-                    <!-- @todo make a new 'sales order select' for this, readonly for now -->
                     <b-form-group v-if="shipment.sales_order" label="Sales Order">
                         <b-form-input readonly v-model="shipment.sales_order.sales_order_number"/>
                     </b-form-group>
@@ -42,6 +41,19 @@
             </div>
             <div class="row">
                 <div class="col-12 col-md-6">
+                    <h4>Dates</h4>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <b-form-group label="ETA">
+                                <b-form-datepicker v-model="shipment.estimated_arrival_at" />
+                            </b-form-group>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <b-form-group label="ETD">
+                                <b-form-datepicker v-model="shipment.estimated_departure_at" />
+                            </b-form-group>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <b-form-group label="Departed At">
@@ -54,6 +66,32 @@
                             </b-form-group>
                         </div>
                     </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <h4>Files</h4>
+                    <b-tabs>
+                        <b-tab title="Upload">
+                            <div class="d-flex justify-content-between">
+                                <b-form-file class="w-50 mt-3" v-model="file" />
+                                <b-button class="mt-3 mr-3" @click="uploadFile">Upload</b-button>
+                            </div>
+                        </b-tab>
+                        <b-tab title="Existing">
+                            <b-table
+                                :items="shipment.media"
+                                :fields="[{key: 'file_name', label: 'File'}, {key: 'delete', label: ''}]"
+                            >
+                                <template #cell(file_name)="data">
+                                    <b-link :href="data.item.url">
+                                        {{data.value}}
+                                    </b-link>
+                                </template>
+                                <template #cell(delete)="data">
+                                    <b-button size="sm" @click="deleteFile(data.item)" variant="danger">Delete</b-button>
+                                </template>
+                            </b-table>
+                        </b-tab>
+                    </b-tabs>
                 </div>
             </div>
             <h4>
@@ -93,7 +131,7 @@ export default {
     },
     computed: {
         include() {
-            return 'sales_order,sales_order_lines,sales_order_lines.landed_cost'
+            return 'sales_order,sales_order_lines,sales_order_lines.landed_cost,media'
         },
         fields() {
             return [
@@ -117,6 +155,35 @@ export default {
                 loading.hide();
             })
         },
+        uploadFile(){
+            const formData = new FormData()
+            formData.append('file', this.file);
+
+            const loader = this.$loading.show();
+            this.$http.post(`/api/shipments/${this.shipment.id}/media`, formData, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'multipart/form-data'
+                }
+            }).then(() => {
+                this.refresh();
+                loader.hide();
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true);
+                loader.hide();
+            })
+        },
+        deleteFile(media){
+            const loading = this.$loading.show();
+            const url = `/api/shipments/${this.shipment.id}/media/${media.id}`
+            this.$http.delete(url).then(() => {
+                this.refresh();
+                loading.hide();
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true);
+                loading.hide();
+            })
+        },
         refresh() {
             const loading = this.$loading.show()
             const url = `/api/shipments/${this.shipmentId}`
@@ -131,7 +198,8 @@ export default {
     },
     data() {
         return {
-            shipment: {}
+            shipment: {},
+            file: null
         }
     }
 

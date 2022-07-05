@@ -7,6 +7,7 @@ use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Consignment;
 use App\Models\Repositories\ConsignmentRepository;
 use App\Transformers\ConsignmentTransformer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ShipmentsController extends Controller
@@ -48,13 +49,12 @@ class ShipmentsController extends Controller
             'container_number',
             'bl_number',
             'shipping_agent_ref',
-            'departed_at',
-            'docked_at'
         ]));
 
-        foreach ($shipment->sales_order_lines as $line) {
-            $consignment = $line->consignments[0];
-        }
+        $shipment->departed_at = Carbon::parse($request->input('departed_at'));
+        $shipment->docked_at = Carbon::parse($request->input('docked_at'));
+        $shipment->estimated_arrival_at = Carbon::parse($request->input('estimated_arrival_at'));
+        $shipment->estimated_departure_at = Carbon::parse($request->input('estimated_departure_at'));
 
         $shipment->save();
     }

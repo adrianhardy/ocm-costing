@@ -13,7 +13,8 @@ class ConsignmentRepository extends BaseRepository
     protected $fieldSearchable = [
         'reference' => 'like',
         'vessel_name' => 'like',
-        'bl_number' => 'like'
+        'bl_number' => 'like',
+        'our_order_number' => 'like'
     ];
     public function model()
     {

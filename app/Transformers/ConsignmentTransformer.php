@@ -4,6 +4,7 @@ namespace App\Transformers;
 
 use App\Models\Consignment;
 use League\Fractal\TransformerAbstract;
+use Spatie\MediaLibrary\Models\Media;
 
 class ConsignmentTransformer extends TransformerAbstract
 {
@@ -22,8 +23,19 @@ class ConsignmentTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'pivot', 'sales_order', 'sales_order_lines'
+        'pivot', 'sales_order', 'sales_order_lines', 'media'
     ];
+
+    public function includeMedia(Consignment $consignment){
+        return $this->collection($consignment->getMedia('default'), function (Media $media) {
+            return [
+                'id' => $media->id,
+                'url' => $media->getFullUrl(),
+                'file_name' => $media->file_name,
+                'type' => $media->getTypeFromExtension()
+            ];
+        });
+    }
 
     public function includeSalesOrder(Consignment $consignment){
         if(!$consignment->sales_order) {
@@ -68,7 +80,9 @@ class ConsignmentTransformer extends TransformerAbstract
             'shipping_agent_ref',
             'est_cost_cuft_gbp',
             'departed_at',
-            'docked_at'
+            'docked_at',
+            'estimated_arrival_at',
+            'estimated_departure_at'
         ]);
     }
 }
