@@ -13,12 +13,20 @@ class CreateProductPricingCurrencies extends Migration
      */
     public function up()
     {
-        Schema::create('product_pricing_currencies', function (Blueprint $table) {
+        Schema::create('product_pricing_countries', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->unsignedBigInteger('currency_id');
-
-            $table->foreign('currency_id')->references('id')->on('currencies');
+            $table->unsignedBigInteger('country_id');
+            $table->unsignedBigInteger('product_pricing_id');
+            $table->unsignedDecimal('gbp_fx_rate')->nullable();
+            $table->unsignedDecimal('vat_rate')->nullable();
+            $table->unsignedDecimal('unit_fba_price')->nullable();
+            $table->unsignedDecimal('unit_fba_fee')->nullable();
+            $table->unsignedDecimal('unit_sf_price')->nullable();
+            $table->unsignedDecimal('unit_sf_shipping')->nullable();
+            $table->unsignedDecimal('unit_fba_shipping')->nullable();
+            $table->foreign('country_id')->references('id')->on('countries');
+            $table->foreign('product_pricing_id')->references('id')->on('product_pricing');
         });
     }
 

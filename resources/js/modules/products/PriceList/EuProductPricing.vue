@@ -109,7 +109,6 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
-
         <pricing-profit-summary
             :fba-price="value[priceField]"
             :fba-vat="fbaVat"
@@ -121,7 +120,7 @@
             :sf-vat="sfVat"
             :fx-rate="fxRate"
             :currency-symbol="currencySymbol"
-            :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
+            :landed-cost-per-unit-gbp="landedCostPerUnitGbp"
         />
     </div>
 </template>
@@ -142,7 +141,8 @@ export default {
         feeField: String,
         fxRate: Number,
         marketplaceCommissionPc: Number,
-        fbaReferralFee: Number
+        fbaReferralFee: Number,
+        landedCostPerUnitGbp: Number
     },
     computed: {
         currencySymbol() {
