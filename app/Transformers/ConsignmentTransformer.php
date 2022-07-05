@@ -22,8 +22,22 @@ class ConsignmentTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'pivot'
+        'pivot', 'sales_order', 'sales_order_lines'
     ];
+
+    public function includeSalesOrder(Consignment $consignment){
+        if(!$consignment->sales_order) {
+            return $this->null();
+        }
+        return $this->item($consignment->sales_order, new SalesOrderTransformer);
+    }
+
+    public function includeSalesOrderLines(Consignment $consignment){
+        if(!$consignment->sales_order || !$consignment->sales_order_lines) {
+            return $this->null();
+        }
+        return $this->collection($consignment->sales_order_lines, new SalesOrderLineTransformer());
+    }
 
     public function includePivot(Consignment $consignment)
     {
@@ -51,7 +65,10 @@ class ConsignmentTransformer extends TransformerAbstract
             'vessel_name',
             'container_number',
             'bl_number',
-            'shipping_agent_ref'
+            'shipping_agent_ref',
+            'est_cost_cuft_gbp',
+            'departed_at',
+            'docked_at'
         ]);
     }
 }

@@ -16,6 +16,14 @@
             </a>
         </li>
         @endrole
+        @role('super|admin')
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('shipments.index') }}">
+                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                Shipments
+            </a>
+        </li>
+        @endrole
         @role('super|admin|supplier')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('sales-orders.index') }}">
