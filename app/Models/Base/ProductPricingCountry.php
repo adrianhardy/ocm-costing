@@ -20,9 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $country_id
  * @property int $product_pricing_id
  * @property float|null $gbp_fx_rate
- * @property float|null $inv_gbp_fx_rate
  * @property float|null $vat_rate
- * @property float|null $unit_vat
  * @property float|null $unit_fba_price
  * @property float|null $unit_fba_fee
  * @property float|null $unit_sf_price
@@ -42,9 +40,7 @@ class ProductPricingCountry extends Model
 		'country_id' => 'int',
 		'product_pricing_id' => 'int',
 		'gbp_fx_rate' => 'float',
-		'inv_gbp_fx_rate' => 'float',
 		'vat_rate' => 'float',
-		'unit_vat' => 'float',
 		'unit_fba_price' => 'float',
 		'unit_fba_fee' => 'float',
 		'unit_sf_price' => 'float',
