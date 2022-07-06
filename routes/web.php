@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
     Route::resource('sales-orders.export', 'SalesOrders\ExportController')->only(['index']);
     Route::resource('sales-orders.consignments', 'SalesOrders\ConsignmentsController')->only(['index']);
     Route::resource('/inspections', 'InspectionReports\InspectionReportsController')->only(['edit', 'index']);
+    Route::resource('/shipments', 'Shipments\ShipmentsController')->only(['index', 'show']);
 });
 
 Route::group(['middleware' => ['auth', 'role:super']], function() {

@@ -3,10 +3,19 @@
 namespace App\Models;
 
 use App\Models\Base\Consignment as BaseConsignment;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class Consignment extends BaseConsignment
+class Consignment extends BaseConsignment implements HasMedia
 {
-	protected $fillable = [
+    use HasMediaTrait;
+
+    public function registerMediaCollections()
+    {
+        $this->addMediaCollection('default');
+    }
+
+    protected $fillable = [
 		'reference',
 		'est_cost_cuft_gbp',
 		'departed_at',
@@ -19,6 +28,7 @@ class Consignment extends BaseConsignment
 		'vessel_name',
 		'container_number',
 		'bl_number',
-		'shipping_agent_ref'
+		'shipping_agent_ref',
+        'estimated_arrival_at'
 	];
 }

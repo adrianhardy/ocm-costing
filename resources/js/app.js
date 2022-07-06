@@ -61,6 +61,8 @@ Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersLi
 Vue.component('edit-sales-order', require('./modules/sales-orders/EditSalesOrder.vue').default);
 Vue.component('edit-inspection-report-modal', require('./modules/inspection/EditInspectionReportModal').default);
 Vue.component('inspection-report-list', require('./modules/inspection/InspectionReportList').default);
+Vue.component('shipments-list', require('./modules/shipments/ShipmentsList').default);
+Vue.component('edit-shipment', require('./modules/shipments/EditShipment').default);
 
 Vue.component('confirm-navigation-modal', require('./components/ConfirmNavigationModal').default);
 // make available to the footer scripts which are used
