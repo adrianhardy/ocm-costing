@@ -42,6 +42,8 @@ class ProductPricingTransformer extends TransformerAbstract
             'marketplace_commission_pc',
             'suggested_unit_price_gbp',
             'gross_unit_cost_gbp',
+            'margin_pc',
+            'submitted_at',
             'approved_at',
             'superseded_at',
             'eur_fx_rate',

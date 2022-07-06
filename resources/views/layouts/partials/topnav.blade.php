@@ -32,7 +32,7 @@
             </a>
         </li>
         @endrole
-        @role('super|pricing|admin')
+        @role('super|pricing|admin|pricing_approver')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('price-list.index') }}">
                 <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>

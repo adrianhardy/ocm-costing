@@ -24,20 +24,27 @@ class ProductPricingController extends Controller
 
         $paginator = $productPricingRepository;
 
+
+        $paginator = $paginator->whereNull('superseded_at');
+
+
         if ($request->query->getBoolean('todo_only', false)) {
             // Pricing's to be approved/done:
-            $paginator = $paginator
-                ->whereNull('superseded_at')
-                ->whereNull('approved_at')
-                ->paginate($request->input('per_page', 100));
-        } else {
-            $paginator = $paginator
-                ->whereNull('superseded_at')
-                ->paginate($request->input('per_page', 100));
+
+            if(auth()->user()->hasRole(['pricing_approver'])) {
+                $paginator
+                    ->whereNull('approved_at')
+                    ->whereNotNull('submitted_at');
+            } elseif (auth()->user()->hasRole(['pricing'])) {
+                $paginator = $paginator
+                    ->whereNull('submitted_at')
+                    ->whereNull('approved_at');
+            }
         }
 
-        $paginator->load($with);
+        $paginator = $paginator->paginate($request->input('per_page', 100));
 
+        $paginator->load($with);
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductPricingTransformer()
         ));
@@ -109,8 +116,13 @@ class ProductPricingController extends Controller
         }
 
         if($request->input(['submitted'])){
-            $pricing->approved_at = Carbon::now();
-            $pricing->approver()->associate(\Auth::user());
+            if(auth()->user()->HasRole('pricing_approver') || auth()->user()->hasRole('admin')) {
+                $pricing->approved_at = Carbon::now();
+                $pricing->approver()->associate(auth()->user());
+            } else {
+                $pricing->submitted_at = Carbon::now();
+                $pricing->submitter()->associate(auth()->user());
+            }
         }
 
         $pricing->save();

@@ -33,7 +33,8 @@
                     <a href="#" @click.prevent="selectAllForExport(true)">All</a>
                 </template>
                 <template #cell(selected_for_export)="data">
-                    <b-form-checkbox size="lg" :checked="selectedForExport.indexOf(data.item.id) >= 0" @change="selectForExport(data.item, $event)" />
+                    <b-form-checkbox size="lg" :checked="selectedForExport.indexOf(data.item.id) >= 0"
+                                     @change="selectForExport(data.item, $event)"/>
                 </template>
                 <template #cell(product.image)="data">
                     <b-avatar v-if="data.item.product.media[0]">
@@ -43,6 +44,16 @@
                 <template #cell(created_at)="data">
                     {{ data.value | date_dmY }}
                 </template>
+                <template #cell(submitted_at)="data">
+                    <span v-if="data.item.submitted_at">
+                        {{ data.value | date_dmY }}
+                    </span>
+                </template>
+                <template #cell(approved_at)="data">
+                    <span v-if="data.item.approved_at">
+                        {{ data.value | date_dmY }}
+                    </span>
+                </template>
                 <template #cell(profit)="data">
                     {{ data.value | cash_value }}
                 </template>
@@ -50,8 +61,15 @@
                     <a href="#" @click.prevent="openModal(data.item)">{{ data.value | cash_value }}</a>
                 </template>
                 <template #cell(button)="data">
-                    <div v-if="!data.item.approved_at">
-                        <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Submit</a>
+                    <div v-if="!isApprover">
+                        <div v-if="!data.item.submitted_at">
+                            <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Submit</a>
+                        </div>
+                    </div>
+                    <div v-if="isApprover && data.item.submitted_at && !data.item.approved_at">
+                        <div>
+                            <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Approve</a>
+                        </div>
                     </div>
                 </template>
             </b-table>
@@ -75,15 +93,16 @@ import TableHeader from "../../../components/table/TableHeader";
 
 export default {
     name: "PriceList",
+    props: {
+        isApprover: Boolean,
+        euroCountries: Array,
+        rowCountries: Array,
+        uk: Object
+    },
     components: {
         TableHeader,
         SearchInput,
         'pricing-modal': PricingModal
-    },
-    props: {
-        euroCountries: Array,
-        rowCountries: Array,
-        uk: Object
     },
     methods: {
         selectAllForExport(value) {
@@ -104,7 +123,7 @@ export default {
             return this.items.filter(item => item.selected)
         },
         exportSelected() {
-            window.location.href=`/price-list/export/?product_pricing_ids=${this.selectedForExport.join(',')}`;
+            window.location.href = `/price-list/export/?product_pricing_ids=${this.selectedForExport.join(',')}`;
         },
         toggleSelectAll(all) {
             if (all) {
@@ -169,6 +188,8 @@ export default {
                 {key: 'product.primary_sku', label: 'SKU', tdClass: 'align-middle'},
                 {key: 'product.primary_asin', label: 'ASIN', tdClass: 'align-middle'},
                 {key: 'created_at', label: 'Created At', tdClass: 'align-middle'},
+                {key: 'submitted_at', label: 'Submitted At', tdClass: 'align-middle'},
+                {key: 'approved_at', label: 'Approved At', tdClass: 'align-middle'},
                 {key: 'unit_price_gbp', label: 'U/Price', tdClass: 'align-middle'},
                 {key: 'est_landed_cost_per_unit_gbp', label: 'Est. LC', tdClass: 'align-middle'},
                 {key: 'button', label: '', tdClass: 'align-middle'}
