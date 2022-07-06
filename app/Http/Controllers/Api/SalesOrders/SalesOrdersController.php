@@ -48,6 +48,9 @@ class SalesOrdersController extends Controller
 
         switch($request->query('stage'))
         {
+            case 'deleted':
+                $paginator = $paginator->withTrashed()->whereNotNull('deleted_at');
+                break;
             case 'quote':
                 $paginator = $paginator->whereNull('finalised_at')->whereNull('sent_at');
                 break;
@@ -216,5 +219,9 @@ class SalesOrdersController extends Controller
         return response()->json(fractal(
             $sales_order->fresh(), new SalesOrderTransformer
         ));
+    }
+
+    public function destroy(Request $request, SalesOrder $salesOrder){
+        $salesOrder->delete();
     }
 }
