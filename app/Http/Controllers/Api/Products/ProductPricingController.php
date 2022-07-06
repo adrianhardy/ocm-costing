@@ -36,13 +36,15 @@ class ProductPricingController extends Controller
                     ->whereNull('approved_at')
                     ->whereNotNull('submitted_at');
             } elseif (auth()->user()->hasRole(['pricing'])) {
-                $paginator = $paginator->whereNull('submitted_at');
+                $paginator = $paginator
+                    ->whereNull('submitted_at')
+                    ->whereNull('approved_at');
             }
         }
 
-        $paginator->load($with);
         $paginator = $paginator->paginate($request->input('per_page', 100));
 
+        $paginator->load($with);
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new ProductPricingTransformer()
         ));

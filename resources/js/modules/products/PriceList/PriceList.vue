@@ -62,7 +62,7 @@
                 </template>
                 <template #cell(button)="data">
                     <div v-if="!isApprover">
-                        <div v-if="!data.item.approved_at">
+                        <div v-if="!data.item.submitted_at">
                             <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Submit</a>
                         </div>
                     </div>
