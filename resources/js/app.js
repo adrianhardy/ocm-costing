@@ -55,6 +55,7 @@ Vue.component('suppliers-list', require('./modules/suppliers/SuppliersList.vue')
 Vue.component('edit-supplier', require('./modules/suppliers/EditSupplier.vue').default);
 Vue.component('factories-list', require('./modules/factories/FactoryList.vue').default);
 Vue.component('currency-list', require('./modules/currencies/CurrencyList.vue').default);
+Vue.component('country-list', require('./modules/countries/CountryList.vue').default);
 Vue.component('price-list', require('./modules/products/PriceList/PriceList').default);
 
 Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersList.vue').default);

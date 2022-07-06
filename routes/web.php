@@ -42,6 +42,7 @@ Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
 
 Route::group(['middleware' => ['auth', 'role:super']], function() {
     Route::resource('/admin/currencies', 'Admin\Currencies\CurrencyController')->only(['index', 'create']);
+    Route::resource('/admin/countries', 'Admin\Countries\CountriesController')->only(['index']);
     Route::resource('/admin/users', 'Admin\UsersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/suppliers', 'Admin\SuppliersController')->only(['index', 'edit', 'create']);
     Route::resource('/admin/factories', 'Admin\FactoriesController')->only(['index', 'edit', 'create']);
