@@ -14,7 +14,7 @@ class SendProductsToPricingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'pricing:products:send --pretend';
+    protected $signature = 'pricing:products:send {--pretend}';
 
     /**
      * The console command description.

@@ -1,13 +1,14 @@
 <template>
-    <b-modal id="pricing"
-             :title="product.name"
-             ref="modal"
-             ok-title="Save"
-             @ok="save($event)"
-             cancel-title="Close"
-             ok-title-html="Update"
-             centered
-             size="xl"
+    <b-modal
+        id="pricing"
+         :title="product.name"
+         ref="modal"
+         ok-title="Save"
+         @ok="save($event)"
+         cancel-title="Close"
+         ok-title-html="Update"
+         centered
+         size="xl"
     >
         <div>
             <div class="row">
@@ -103,7 +104,7 @@
                 </div>
                 <div class="col-12 col-md-9">
                     <b-tabs content-class="pt-3">
-                        <b-tab title="UK/EU Pricing">
+                        <b-tab title="UK/EUR Pricing">
                             <div class="row">
                                 <div class="col-4">
                                     <b-form-group label="Est. L' Cost" label-cols="4" label-size="sm">
@@ -140,78 +141,37 @@
                             <div class="overflow-auto">
                                 <div class="row flex-row flex-nowrap">
                                     <div class="col-12 col-md-3">
-                                        <eu-product-pricing v-model="value" country="UK"
-                                                            :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                            fee-field="unit_uk_fba_fee"
-                                                            sf-price-field="unit_sf_uk_price"
-                                                            ship-field="unit_shipping_gbp" price-field="unit_price_gbp"
-                                                            vat-field="uk_vat"
-                                                            :fx-rate="1"
-                                                            @copy-sf-price="copySfPrice()"
+                                        <eu-product-pricing
+                                            v-if="value && value.countries && value['countries']['gb']"
+                                            v-model="value['countries']['gb']"
+                                            country="UK"
+                                            :marketplace-commission-pc="value.marketplace_commission_pc"
+                                            :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
+                                            fee-field="unit_fba_fee"
+                                            sf-price-field="unit_sf_price"
+                                            ship-field="unit_fba_shipping"
+                                            price-field="unit_fba_price"
+                                            vat-field="vat_rate"
+                                            :fx-rate="1"
+                                            @copy-sf-price="copySfPrice()"
                                         />
                                     </div>
-                                    <div class="col-12 col-md-3">
-                                        <eu-product-pricing v-model="value" country="FR"
-                                                            :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                            sf-price-field="unit_sf_fr_price"
-                                                            fee-field="unit_fr_fba_fee"
-                                                            ship-field="unit_fr_shipping" price-field="unit_fr_price"
-                                                            vat-field="fr_vat" :fx-rate="value.eur_fx_rate"/>
-                                    </div>
-                                    <div class="col-12 col-md-3">
-                                        <eu-product-pricing v-model="value" country="DE"
-                                                            :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                            sf-price-field="unit_sf_de_price"
-                                                            fee-field="unit_de_fba_fee"
-                                                            ship-field="unit_de_shipping" price-field="unit_de_price"
-                                                            vat-field="de_vat" :fx-rate="value.eur_fx_rate"/>
-                                    </div>
-                                    <div class="col-12 col-md-3">
-                                        <eu-product-pricing v-model="value" country="IT"
-                                                            :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                            fee-field="unit_it_fba_fee"
-                                                            sf-price-field="unit_sf_it_price"
-                                                            ship-field="unit_it_shipping" price-field="unit_it_price"
-                                                            vat-field="it_vat" :fx-rate="value.eur_fx_rate"/>
-                                    </div>
-                                    <div class="col-12 col-md-3">
-                                        <eu-product-pricing v-model="value" country="ES"
-                                                            :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                            fee-field="unit_es_fba_fee"
-                                                            sf-price-field="unit_sf_es_price"
-                                                            ship-field="unit_es_shipping" price-field="unit_es_price"
-                                                            vat-field="es_vat" :fx-rate="value.eur_fx_rate"/>
-                                    </div>
-                                    <div class="col-12 col-md-3">
-                                        <eu-product-pricing v-model="value" country="NL"
-                                                            :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                            sf-price-field="unit_sf_nl_price"
-                                                            fee-field="unit_nl_fba_fee"
-                                                            ship-field="unit_nl_shipping" price-field="unit_nl_price"
-                                                            vat-field="nl_vat" :fx-rate="value.eur_fx_rate"/>
-                                    </div>
-                                    <div class="col-12 col-md-3">
-                                        <rest-of-world-product-pricing v-model="value" currency="SEK"
-                                           :marketplace-commission-pc="value.marketplace_commission_pc"
-                                           sf-price-field="unit_sf_se_price"
-                                           ship-field="unit_se_shipping"
-                                           fee-field="unit_se_fba_fee"
-                                           price-field="unit_se_price"
-                                           fx-field="current_sek_fx_rate"
-                                           vat-field="se_vat"
+                                    <div class="col-12 col-md-3" v-for="country in euroCountries">
+                                        <eu-product-pricing
+                                            v-if="value && value.countries && value.countries[country.iso_2_code.toLowerCase()]"
+                                            v-model="value['countries'][country.iso_2_code.toLowerCase()]"
+                                            :country="country.iso_2_code"
+                                            :marketplace-commission-pc="value.marketplace_commission_pc"
+                                            :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
+                                            fee-field="unit_fba_fee"
+                                            sf-price-field="unit_sf_price"
+                                            ship-field="unit_fba_shipping"
+                                            price-field="unit_fba_price"
+                                            vat-field="vat_rate"
+                                            :fx-rate="value.current_eur_fx_rate"
                                         />
                                     </div>
-                                    <div class="col-12 col-md-3">
-                                        <rest-of-world-product-pricing v-model="value" currency="PLN"
-                                                                       :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                                       sf-price-field="unit_sf_pln_price"
-                                                                       ship-field="unit_pln_shipping"
-                                                                       fee-field="unit_pln_fba_fee"
-                                                                       price-field="unit_pln_price"
-                                                                       fx-field="current_pln_fx_rate"
-                                                                       vat-field="pl_vat"
-                                        />
-                                    </div>
+
                                 </div>
                             </div>
                             <div v-if="value.product">
@@ -244,38 +204,24 @@
                                     </b-form-group>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-12 col-md-3">
-                                    <rest-of-world-product-pricing v-model="value" currency="USD"
-                                                                   :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                                   sf-price-field="unit_sf_usd_price"
-                                                                   ship-field="unit_usd_shipping"
-                                                                   fee-field="unit_usd_fba_fee"
-                                                                   price-field="unit_usd_price" fx-field="current_usd_fx_rate"/>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <rest-of-world-product-pricing v-model="value" currency="CAD"
-                                                                   :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                                   sf-price-field="unit_sf_cad_price"
-                                                                   fee-field="unit_cad_fba_fee"
-                                                                   ship-field="unit_cad_shipping"
-                                                                   price-field="unit_cad_price" fx-field="current_cad_fx_rate"/>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <rest-of-world-product-pricing v-model="value" currency="MXN"
-                                                                   :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                                   sf-price-field="unit_sf_mxn_price"
-                                                                   fee-field="unit_mxn_fba_fee"
-                                                                   ship-field="unit_mxn_shipping"
-                                                                   price-field="unit_mxn_price" fx-field="current_mxn_fx_rate"/>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <rest-of-world-product-pricing v-model="value" currency="AUD"
-                                                                   :marketplace-commission-pc="value.marketplace_commission_pc"
-                                                                   sf-price-field="unit_sf_aud_price"
-                                                                   ship-field="unit_aud_shipping"
-                                                                   fee-field="unit_aud_fba_fee"
-                                                                   price-field="unit_aud_price" fx-field="current_aud_fx_rate"/>
+                            <div class="overflow-auto">
+                                <div class="row flex-row flex-nowrap">
+                                    <div class="col-12 col-md-3" v-for="country in rowCountries">
+                                        <rest-of-world-product-pricing
+                                            v-if="value && value.countries"
+                                            v-model="value['countries'][country.iso_2_code.toLowerCase()]"
+                                            :currency="country.currency.code"
+                                            :country="country.iso_2_code"
+                                            :marketplace-commission-pc="value.marketplace_commission_pc"
+                                            :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
+                                            fee-field="unit_fba_fee"
+                                            sf-price-field="unit_sf_price"
+                                            ship-field="unit_fba_shipping"
+                                            price-field="unit_fba_price"
+                                            vat-field="vat_rate"
+                                            fx-field="current_gbp_fx_rate"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </b-tab>
@@ -291,17 +237,17 @@
                         </b-tab>
                         <b-tab title="Small & Light">
                             <div style="max-height: 650px; overflow: auto">
-                                <img v-if="images" :src="images.sl" height="650" />
+                                <small-light />
                             </div>
                         </b-tab>
                         <b-tab title="Local FBA">
                             <div style="max-height: 650px; overflow: auto">
-                                <img v-if="images" :src="images.local_fba" height="650"/>
+                                <local-f-b-a />
                             </div>
                         </b-tab>
                         <b-tab title="EFN FBA">
                             <div style="max-height: 650px; overflow: auto">
-                                <img v-if="images" :src="images.enf_fba" height="650" />
+                                <e-f-n-f-b-a />
                             </div>
                         </b-tab>
                     </b-tabs>
@@ -322,8 +268,10 @@ import EFNFBA from "./AmazonShippingRates/EFNFBA";
 export default {
     name: "PricingModal",
     components: {EFNFBA, LocalFBA, SmallLight, EuProductPricing, EuOfWorldProductPricing, RestOfWorldProductPricing},
-    mounted(){
-        this.getGuidance();
+    props: {
+        uk: Object,
+        rowCountries: Array,
+        euroCountries: Array
     },
     computed: {
         ukPostageMethod() {
@@ -358,18 +306,6 @@ export default {
         }
     },
     methods: {
-        getGuidance(){
-            const loading = this.$loading.show();
-            const url = '/api/guidance'
-            this.$http.get(url).then(response => {
-                this.images = response.data
-                console.log(this.images);
-                loading.hide();
-            }).catch(error => {
-                this.$handleExceptionResponse(error, true)
-                loading.hide();
-            })
-        },
         copySfPrice() {
             const euPrice = (this.value['unit_sf_uk_price'] / this.value['eur_fx_rate']).toFixed(2);
             this.value['unit_sf_fr_price'] = euPrice;
@@ -379,11 +315,11 @@ export default {
             this.value['unit_sf_nl_price'] = euPrice;
 
             this.value['unit_sf_se_price'] = (this.value['unit_sf_uk_price'] / this.value['sek_fx_rate']).toFixed(2);
-            this.value['unit_sf_pln_price'] = (this.value['unit_sf_uk_price'] / this.value['pln_fx_rate']).toFixed(2);
-            this.value['unit_sf_aud_price'] = (this.value['unit_sf_uk_price'] / this.value['aud_fx_rate']).toFixed(2);
-            this.value['unit_sf_mxn_price'] = (this.value['unit_sf_uk_price'] / this.value['mxn_fx_rate']).toFixed(2);
-            this.value['unit_sf_usd_price'] = (this.value['unit_sf_uk_price'] / this.value['usd_fx_rate']).toFixed(2);
-            this.value['unit_sf_cad_price'] = (this.value['unit_sf_uk_price'] / this.value['cad_fx_rate']).toFixed(2);
+            this.value['unit_sf_pl_price'] = (this.value['unit_sf_uk_price'] / this.value['pln_fx_rate']).toFixed(2);
+            this.value['unit_sf_au_price'] = (this.value['unit_sf_uk_price'] / this.value['aud_fx_rate']).toFixed(2);
+            this.value['unit_sf_mx_price'] = (this.value['unit_sf_uk_price'] / this.value['mxn_fx_rate']).toFixed(2);
+            this.value['unit_sf_us_price'] = (this.value['unit_sf_uk_price'] / this.value['usd_fx_rate']).toFixed(2);
+            this.value['unit_sf_ca_price'] = (this.value['unit_sf_uk_price'] / this.value['cad_fx_rate']).toFixed(2);
 
         },
         save(event) {
@@ -393,7 +329,7 @@ export default {
         update() {
             this.$http.put(`/api/pricing/${this.value.id}`, {...this.value, pricing_notes: this.notes}, {
                 params: {
-                    include: `product,product.media,sales_order_line`
+                    include: `product,product.media,sales_order_line,countries`
                 }
             }).then(response => {
                 this.value = response.data;
@@ -406,7 +342,7 @@ export default {
             this.value = line;
             this.$http.get(`/api/pricing/${this.value.id}`, {
                 params: {
-                    include: `product,product.media,sales_order_line`
+                    include: `product,product.media,sales_order_line,countries`
                 }
             }).then(response => {
                 this.value = response.data
@@ -437,7 +373,6 @@ export default {
                 currentPage: 1,
                 sortBy: 'approved_at'
             },
-            images: {},
             fields: [
                 {key: 'approved_at', label: 'Approved At', sortable: true},
                 {key: 'approver.name', label: 'Approved By', sortable: true},

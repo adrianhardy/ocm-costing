@@ -11,8 +11,16 @@
         @role('super|admin|supplier')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('products.index') }}">
-                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                <b-icon-flower-3 scale="0.8"></b-icon-flower-3>
                 Products
+            </a>
+        </li>
+        @endrole
+        @role('super|admin')
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('shipments.index') }}">
+                <b-icon-box-seam scale="0.8"></b-icon-box-seam>
+                Shipments
             </a>
         </li>
         @endrole
@@ -21,14 +29,6 @@
             <a class="nav-link" href="{{ route('sales-orders.index') }}">
                 <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
                 Sales Orders
-            </a>
-        </li>
-        @endrole
-        @role('super|admin')
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('inspections.index') }}">
-                <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
-                Inspections
             </a>
         </li>
         @endrole

@@ -1,7 +1,9 @@
 <template>
     <div>
         <b-card class="shadow-sm">
-            <table-header v-model="pagination" />
+            <table-header v-model="pagination">
+                <b-button href="/admin/currencies/create" >Create new Currency</b-button>
+            </table-header>
             <b-table ref="table" :current-page="pagination.currentPage" hover :busy.sync="loading" :fields="fields" :items="items" sort-by="name">
                 <template #table-busy>
                     <div class="text-center my-2">

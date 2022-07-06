@@ -12,4 +12,9 @@ class CurrencyController extends Controller
     {
         return response()->view('admin.currencies.index');
     }
+
+    public function create(Request $request)
+    {
+        return response()->view('admin.currencies.create');
+    }
 }

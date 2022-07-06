@@ -2,53 +2,13 @@
 
 namespace App\Transformers;
 
+use App\Models\Country;
 use App\Models\ProductPricing;
+use App\Models\ProductPricingCurrency;
 use League\Fractal\TransformerAbstract;
 
 class ProductPricingTransformer extends TransformerAbstract
 {
-
-    protected $moneyFields = [
-        'unit_fr_price',
-        'unit_de_price',
-        'unit_it_price',
-        'unit_nl_price',
-        'unit_es_price',
-        'unit_se_price',
-        'unit_sf_uk_price',
-        'unit_sf_fr_price',
-        'unit_sf_fr_price',
-        'unit_sf_de_price',
-        'unit_sf_it_price',
-        'unit_sf_nl_price',
-        'unit_sf_es_price',
-        'unit_sf_au_price',
-        'unit_sf_se_price',
-        'unit_fr_shipping',
-        'unit_de_shipping',
-        'unit_it_shipping',
-        'unit_nl_shipping',
-        'unit_es_shipping',
-        'unit_usd_shipping',
-        'unit_cad_shipping',
-        'unit_mxn_shipping',
-        'unit_se_shipping',
-        'unit_aud_shipping',
-        'unit_sf_usd_price',
-        'unit_sf_cad_price',
-        'unit_sf_mxn_price',
-        'unit_sf_aud_price',
-        'unit_usd_price',
-        'unit_cad_price',
-        'unit_mxn_price',
-        'unit_aud_price',
-        'eur_fx_rate',
-        'usd_fx_rate',
-        'cad_fx_rate',
-        'mxn_fx_rate',
-        'aud_fx_rate'
-    ];
-
     /**
      * List of resources to automatically include
      *
@@ -64,7 +24,7 @@ class ProductPricingTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'product', 'approver', 'sales_order_line', 'selected_for_export'
+        'product', 'approver', 'sales_order_line', 'selected_for_export', 'countries'
     ];
 
     /**
@@ -81,93 +41,46 @@ class ProductPricingTransformer extends TransformerAbstract
             'est_landed_cost_per_unit_gbp',
             'marketplace_commission_pc',
             'suggested_unit_price_gbp',
-            'unit_shipping_gbp',
-            'unit_price_gbp',
             'gross_unit_cost_gbp',
             'margin_pc',
             'submitted_at',
             'approved_at',
             'superseded_at',
-            'uk_vat',
-            'fr_vat',
-            'de_vat',
-            'it_vat',
-            'nl_vat',
-            'es_vat',
-            'au_vat',
-            'se_vat',
-            'pl_vat',
-            'unit_fr_price',
-            'unit_de_price',
-            'unit_it_price',
-            'unit_nl_price',
-            'unit_es_price',
-            'unit_se_price',
-            'unit_sf_uk_price',
-            'unit_sf_fr_price',
-            'unit_sf_fr_price',
-            'unit_sf_de_price',
-            'unit_sf_it_price',
-            'unit_sf_nl_price',
-            'unit_sf_es_price',
-            'unit_sf_au_price',
-            'unit_sf_se_price',
-            'unit_fr_shipping',
-            'unit_de_shipping',
-            'unit_it_shipping',
-            'unit_nl_shipping',
-            'unit_es_shipping',
-            'unit_se_shipping',
-            'unit_usd_shipping',
-            'unit_cad_shipping',
-            'unit_mxn_shipping',
-            'unit_aud_shipping',
-            'unit_pln_shipping',
-            'unit_sf_usd_price',
-            'unit_sf_cad_price',
-            'unit_sf_mxn_price',
-            'unit_sf_aud_price',
-            'unit_sf_pln_price',
-            'unit_usd_price',
-            'unit_cad_price',
-            'unit_mxn_price',
-            'unit_aud_price',
-            'unit_pln_price',
             'eur_fx_rate',
-            'usd_fx_rate',
-            'cad_fx_rate',
-            'mxn_fx_rate',
-            'aud_fx_rate',
-            'pln_fx_rate',
-            'sek_fx_rate',
-            'unit_uk_fba_fee',
-            'unit_se_fba_fee',
-            'unit_fr_fba_fee',
-            'unit_de_fba_fee',
-            'unit_es_fba_fee',
-            'unit_it_fba_fee',
-            'unit_nl_fba_fee',
-            'unit_se_fba_fee',
-            'unit_usd_fba_fee',
-            'unit_cad_fba_fee',
-            'unit_mxn_fba_fee',
-            'unit_aud_fba_fee',
-            'unit_pln_fba_fee',
-            'current_eur_fx_rate',
-            'current_usd_fx_rate',
-            'current_cad_fx_rate',
-            'current_mxn_fx_rate',
-            'current_aud_fx_rate',
-            'current_pln_fx_rate',
-            'current_sek_fx_rate'
+            'current_eur_fx_rate'
         ]);
 
-        foreach ($this->moneyFields as $field) {
-            $json[$field] = floatval(number_format($json[$field], 2, '.', ''));
-        }
-
         return $json;
+    }
 
+    public function includeCountries(ProductPricing $pricing)
+    {
+        /** @var Country[] $countries */
+        $countries = Country::query()
+            ->where('has_pricing', '1')
+            ->get();
+
+        $json = [];
+
+        foreach ($countries as $country) {
+            $code = strtolower($country->iso_2_code);
+            $countryPrice = $pricing
+                ->product_pricing_countries()
+                ->where('country_id', $country->id)
+                ->first();
+
+            $json[$code] = $countryPrice->only([
+                'unit_fba_fee',
+                'unit_fba_price',
+                'unit_sf_price',
+                'unit_sf_shipping',
+                'unit_fba_shipping',
+                'vat_rate',
+                'gbp_fx_rate',
+                'current_gbp_fx_rate'
+            ]);
+        };
+        return $this->primitive($json);
     }
 
     /**

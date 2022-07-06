@@ -33,7 +33,8 @@
                     <a href="#" @click.prevent="selectAllForExport(true)">All</a>
                 </template>
                 <template #cell(selected_for_export)="data">
-                    <b-form-checkbox size="lg" :checked="selectedForExport.indexOf(data.item.id) >= 0" @change="selectForExport(data.item, $event)" />
+                    <b-form-checkbox size="lg" :checked="selectedForExport.indexOf(data.item.id) >= 0"
+                                     @change="selectForExport(data.item, $event)"/>
                 </template>
                 <template #cell(product.image)="data">
                     <b-avatar v-if="data.item.product.media[0]">
@@ -74,7 +75,13 @@
             </b-table>
         </b-card>
         <b-button variant="primary" @click="exportSelected()">Export</b-button>
-        <pricing-modal ref="pricing-modal" @updated="updatePricing"/>
+        <pricing-modal
+            :euro-countries="euroCountries"
+            :row-countries="rowCountries"
+            :uk="uk"
+            ref="pricing-modal"
+            @updated="updatePricing"
+        />
     </div>
 </template>
 
@@ -85,9 +92,12 @@ import SearchInput from "../../../components/common/SearchInput";
 import TableHeader from "../../../components/table/TableHeader";
 
 export default {
-    name: "PriceList.vue",
+    name: "PriceList",
     props: {
-      isApprover: Boolean
+        isApprover: Boolean,
+        euroCountries: Array,
+        rowCountries: Array,
+        uk: Object
     },
     components: {
         TableHeader,
@@ -113,7 +123,7 @@ export default {
             return this.items.filter(item => item.selected)
         },
         exportSelected() {
-            window.location.href=`/price-list/export/?product_pricing_ids=${this.selectedForExport.join(',')}`;
+            window.location.href = `/price-list/export/?product_pricing_ids=${this.selectedForExport.join(',')}`;
         },
         toggleSelectAll(all) {
             if (all) {

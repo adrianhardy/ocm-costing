@@ -21,7 +21,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
         Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
-        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index']);
+        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index', 'store']);
     });
 
     Route::group(['middleware' => ['auth:api', 'role:admin|super']], function() {
@@ -30,6 +30,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
         Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['index', 'store']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['update']);
+        Route::resource('countries', 'Api\Countries\CountriesController')->only(['index', 'update']);
         Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
         Route::resource('sales-orders.lines.media', 'Api\SalesOrders\Lines\MediaController')->only(['store']);
         Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);
@@ -40,6 +41,8 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('sales-orders/lines/shipments', 'Api\Shipments\CreateShipmentFromOrderLinesController')->only(['store', 'index']);
         Route::get('sales-orders/{sales_order}/consignments/report', 'Api\SalesOrders\ConsignmentsReportController@index');
         Route::put('sales-orders/lines/{line}/consignments/{consignment}', 'Api\SalesOrders\ConsignmentsReportController@update');
+        Route::resource('shipments', 'Api\Shipments\ShipmentsController')->only(['index', 'show', 'update']);
+        Route::resource('shipments.media', 'Api\Shipments\MediaController')->only(['store', 'destroy']);
         Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);
         Route::resource('admin/shipping/simple-calculator', 'Api\Calculator\SimpleShippingCalculator')->only(['store']);
         Route::resource('inspections', 'Api\InspectionReports\InspectionReportsController')->only(['show', 'update', 'index']);

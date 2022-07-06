@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api\Products;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
+use App\Models\Country;
+use App\Models\Currency;
 use App\Models\ProductPricing;
 use App\Models\Repositories\ProductPricingRepository;
 use App\Transformers\ProductPricingTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductPricingController extends Controller
 {
@@ -16,10 +19,14 @@ class ProductPricingController extends Controller
         Request $request,
         ProductPricingRepository $productPricingRepository
     ) {
+
+        $with = ['product'];
+
         $paginator = $productPricingRepository;
 
 
         $paginator = $paginator->whereNull('superseded_at');
+
 
         if ($request->query->getBoolean('todo_only', false)) {
             // Pricing's to be approved/done:
@@ -33,6 +40,7 @@ class ProductPricingController extends Controller
             }
         }
 
+        $paginator->load($with);
         $paginator = $paginator->paginate($request->input('per_page', 100));
 
         return response()->json(new SerializeLengthAwarePaginator(
@@ -40,124 +48,65 @@ class ProductPricingController extends Controller
         ));
     }
 
-    public function show(ProductPricing $pricing){
-        return response()->json(fractal($pricing, new ProductPricingTransformer()));
+    public function show(ProductPricing $pricing)
+    {
+        $transformer = new ProductPricingTransformer();
+        return response()->json(fractal(
+            $pricing,
+            $transformer
+        ));
     }
 
+    /**
+     * @param Request $request
+     * @param ProductPricing $pricing
+     * @return \Spatie\Fractal\Fractal
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(Request $request, ProductPricing $pricing)
     {
         $this->validate($request, [
-            'unit_price_gbp' => 'required|numeric',
-            'marketplace_commission_pc' => 'required|numeric',
-            'unit_shipping_gbp' => 'required|numeric',
-            'unit_sf_uk_price' => 'numeric|min:0|max:99999',
-            'unit_sf_fr_price' => 'numeric|min:0|max:99999',
-            'unit_sf_de_price' => 'numeric|min:0|max:99999',
-            'unit_sf_it_price' => 'numeric|min:0|max:99999',
-            'unit_sf_nl_price' => 'numeric|min:0|max:99999',
-            'unit_sf_es_price' => 'numeric|min:0|max:99999',
-            'unit_sf_se_price' => 'numeric|min:0|max:99999',
-            'unit_uk_fba_fee' => 'numeric|min:0|max:99999',
-            'unit_fr_fba_fee' => 'numeric|min:0|max:99999',
-            'unit_de_fba_fee' => 'numeric|min:0|max:99999',
-            'unit_it_fba_fee' => 'numeric|min:0|max:99999',
-            'unit_nl_fba_fee' => 'numeric|min:0|max:99999',
-            'unit_es_fba_fee' => 'numeric|min:0|max:99999',
-            'unit_se_fba_fee' => 'numeric|min:0|max:99999',
+            'marketplace_commission_pc' => 'required|numeric|min:0',
+            'current_eur_fx_rate' => 'required|numeric|min:0',
+            'countries.*.current_gbp_fx_rate' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_fba_fee' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_fba_price' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_sf_price' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_sf_shipping' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_fba_shipping' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_vat' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.vat_rate' => 'sometimes|nullable|numeric|min:0',
         ],[
 
         ],[
-            'unit_sf_uk_price' => 'UK seller-fulfilled price',
-            'unit_sf_fr_price' => 'FR seller-fulfilled price',
-            'unit_sf_de_price' => 'DE seller-fulfilled price',
-            'unit_sf_it_price' => 'IT seller-fulfilled price',
-            'unit_sf_nl_price' => 'NL seller-fulfilled price',
-            'unit_sf_es_price' => 'ES seller-fulfilled price',
-            'unit_sf_se_price' => 'SE seller-fulfilled price',
-            'unit_uk_fba_fee' => 'UK FBA fee',
-            'unit_fr_fba_fee' => 'FR FBA fee',
-            'unit_de_fba_fee' => 'DE FBA fee',
-            'unit_it_fba_fee' => 'IT FBA fee',
-            'unit_nl_fba_fee' => 'NL FBA fee',
-            'unit_es_fba_fee' => 'ES FBA fee',
-            'unit_se_fba_fee' => 'SE FBA fee'
+            'countries.*.unit_fba_fee' => 'FBA fee',
+            'countries.*.unit_fba_price' => 'FBA price',
+            'countries.*.unit_sf_price' => 'seller-fulfilled price',
+            'countries.*.vat_rate' => 'VAT Rate %',
+            'countries.*.unit_vat' => 'Unit VAT',
         ]);
 
-        $pricing->fill($request->only([
-            'unit_price_gbp',
-            'marketplace_fee',
-            'marketplace_commission_pc',
-            'unit_shipping_gbp',
-            'uk_vat',
-            'fr_vat',
-            'de_vat',
-            'it_vat',
-            'nl_vat',
-            'es_vat',
-            'au_vat',
-            'se_vat',
-            'pl_vat',
-            'unit_fr_price',
-            'unit_de_price',
-            'unit_it_price',
-            'unit_nl_price',
-            'unit_es_price',
-            'unit_se_price',
-            'unit_sf_uk_price',
-            'unit_sf_fr_price',
-            'unit_sf_fr_price',
-            'unit_sf_de_price',
-            'unit_sf_it_price',
-            'unit_sf_nl_price',
-            'unit_sf_es_price',
-            'unit_sf_se_price',
-            'unit_fr_shipping',
-            'unit_de_shipping',
-            'unit_it_shipping',
-            'unit_nl_shipping',
-            'unit_es_shipping',
-            'unit_se_shipping',
-            'unit_usd_shipping',
-            'unit_cad_shipping',
-            'unit_mxn_shipping',
-            'unit_aud_shipping',
-            'unit_sek_shipping',
-            'unit_pln_shipping',
-            'unit_sf_usd_price',
-            'unit_sf_cad_price',
-            'unit_sf_mxn_price',
-            'unit_sf_aud_price',
-            'unit_sf_sek_price',
-            'unit_sf_pln_price',
-            'unit_usd_price',
-            'unit_cad_price',
-            'unit_mxn_price',
-            'unit_aud_price',
-            'unit_sek_price',
-            'unit_pln_price',
-            'usd_fx_rate',
-            'cad_fx_rate',
-            'mxn_fx_rate',
-            'aud_fx_rate',
-            'sek_fx_rate',
-            'pln_fx_rate',
-            'unit_uk_fba_fee',
-            'unit_se_fba_fee',
-            'unit_fr_fba_fee',
-            'unit_de_fba_fee',
-            'unit_es_fba_fee',
-            'unit_it_fba_fee',
-            'unit_nl_fba_fee',
-            'unit_usd_fba_fee',
-            'unit_cad_fba_fee',
-            'unit_mxn_fba_fee',
-            'unit_aud_fba_fee',
-            'unit_sek_fba_fee',
-            'unit_pln_fba_fee',
-        ]));
-
-        $pricing->setCurrentEurFxRateAttribute($request->input('current_eur_fx_rate'));
-        $pricing->setCurrentUsdFxRateAttribute($request->input('current_usd_fx_rate'));
+        DB::beginTransaction();
+        $pricing->current_eur_fx_rate = $request->input('current_eur_fx_rate');
+        $pricing->marketplace_commission_pc = $request->input('marketplace_commission_pc');
+        // copy the global "EUR" rate, set on ProductPricing, down to
+        // all the ProductPricingCountry objects related to this $pricing
+        foreach ($pricing->product_pricing_countries as $price) {
+            if ($price->country->currency->code == 'EUR') {
+                $price->gbp_fx_rate = $pricing->eur_fx_rate;
+            }
+            $data = $request->input(
+                'countries.' . strtolower($price->country->iso_2_code)
+            );
+            $price->fill(collect($data)->only([
+                'vat_rate',
+                'unit_fba_price',
+                'unit_sf_price',
+                'unit_fba_fee',
+                'unit_fba_shipping'
+            ])->toArray());
+            $price->save();
+        }
 
         if ($request->input('product.pricing_notes') !== null) {
             $pricing->product->pricing_notes = $request->input('product.pricing_notes');
@@ -175,7 +124,7 @@ class ProductPricingController extends Controller
         }
 
         $pricing->save();
-
+        DB::commit();
         return fractal($pricing->fresh(), new ProductPricingTransformer());
     }
 }

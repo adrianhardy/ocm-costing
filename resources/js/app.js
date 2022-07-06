@@ -55,12 +55,15 @@ Vue.component('suppliers-list', require('./modules/suppliers/SuppliersList.vue')
 Vue.component('edit-supplier', require('./modules/suppliers/EditSupplier.vue').default);
 Vue.component('factories-list', require('./modules/factories/FactoryList.vue').default);
 Vue.component('currency-list', require('./modules/currencies/CurrencyList.vue').default);
+Vue.component('country-list', require('./modules/countries/CountryList.vue').default);
 Vue.component('price-list', require('./modules/products/PriceList/PriceList').default);
 
 Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersList.vue').default);
 Vue.component('edit-sales-order', require('./modules/sales-orders/EditSalesOrder.vue').default);
 Vue.component('edit-inspection-report-modal', require('./modules/inspection/EditInspectionReportModal').default);
 Vue.component('inspection-report-list', require('./modules/inspection/InspectionReportList').default);
+Vue.component('shipments-list', require('./modules/shipments/ShipmentsList').default);
+Vue.component('edit-shipment', require('./modules/shipments/EditShipment').default);
 
 Vue.component('confirm-navigation-modal', require('./components/ConfirmNavigationModal').default);
 // make available to the footer scripts which are used
@@ -68,6 +71,9 @@ Vue.component('confirm-navigation-modal', require('./components/ConfirmNavigatio
 
 Vue.component('settings-list', require('./modules/settings/SettingsList.vue').default);
 Vue.component('amazon-guidance-upload', require('./modules/settings/AmazonGuidanceUpload').default)
+
+
+Vue.component('create-currency', require('./modules/currencies/CreateCurrency.vue').default);
 
 window.Vue = Vue;
 
