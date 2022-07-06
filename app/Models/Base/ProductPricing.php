@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_shipping_gbp
  * @property float|null $unit_price_gbp
  * @property float|null $gross_unit_cost_gbp
+ * @property Carbon|null $submitted_at
+ * @property int|null $submitter_id
  * @property Carbon|null $approved_at
  * @property int|null $approver_id
  * @property Carbon|null $superseded_at
@@ -100,6 +102,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property User|null $approver
  * @property Product $product
  * @property SalesOrderLine|null $sales_order_line
+ * @property User|null $submitter
  *
  * @package App\Models\Base
  */
@@ -115,6 +118,7 @@ class ProductPricing extends Model
 		'unit_shipping_gbp' => 'float',
 		'unit_price_gbp' => 'float',
 		'gross_unit_cost_gbp' => 'float',
+		'submitter_id' => 'int',
 		'approver_id' => 'int',
 		'sales_order_line_id' => 'int',
 		'uk_vat' => 'float',
@@ -186,6 +190,7 @@ class ProductPricing extends Model
 	];
 
 	protected $dates = [
+		'submitted_at',
 		'approved_at',
 		'superseded_at'
 	];
@@ -203,5 +208,10 @@ class ProductPricing extends Model
 	public function sales_order_line()
 	{
 		return $this->belongsTo(SalesOrderLine::class);
+	}
+
+	public function submitter()
+	{
+		return $this->belongsTo(User::class, 'submitter_id');
 	}
 }

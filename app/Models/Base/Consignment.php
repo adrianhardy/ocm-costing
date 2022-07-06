@@ -33,6 +33,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $container_number
  * @property string|null $bl_number
  * @property string|null $shipping_agent_ref
+ * @property Carbon|null $estimated_arrival_at
+ * @property Carbon|null $estimated_departure_at
  * 
  * @property User|null $creator
  * @property SalesOrder|null $sales_order
@@ -54,7 +56,9 @@ class Consignment extends Model
 
 	protected $dates = [
 		'departed_at',
-		'docked_at'
+		'docked_at',
+		'estimated_arrival_at',
+		'estimated_departure_at'
 	];
 
 	public function creator()

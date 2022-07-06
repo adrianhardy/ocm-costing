@@ -85,6 +85,7 @@ class ProductPricingTransformer extends TransformerAbstract
             'unit_price_gbp',
             'gross_unit_cost_gbp',
             'margin_pc',
+            'submitted_at',
             'approved_at',
             'superseded_at',
             'uk_vat',

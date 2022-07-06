@@ -43,6 +43,16 @@
                 <template #cell(created_at)="data">
                     {{ data.value | date_dmY }}
                 </template>
+                <template #cell(submitted_at)="data">
+                    <span v-if="data.item.submitted_at">
+                        {{ data.value | date_dmY }}
+                    </span>
+                </template>
+                <template #cell(approved_at)="data">
+                    <span v-if="data.item.approved_at">
+                        {{ data.value | date_dmY }}
+                    </span>
+                </template>
                 <template #cell(profit)="data">
                     {{ data.value | cash_value }}
                 </template>
@@ -50,8 +60,15 @@
                     <a href="#" @click.prevent="openModal(data.item)">{{ data.value | cash_value }}</a>
                 </template>
                 <template #cell(button)="data">
-                    <div v-if="!data.item.approved_at">
-                        <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Submit</a>
+                    <div v-if="!isApprover">
+                        <div v-if="!data.item.approved_at">
+                            <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Submit</a>
+                        </div>
+                    </div>
+                    <div v-if="isApprover && data.item.submitted_at && !data.item.approved_at">
+                        <div>
+                            <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Approve</a>
+                        </div>
                     </div>
                 </template>
             </b-table>
@@ -69,6 +86,9 @@ import TableHeader from "../../../components/table/TableHeader";
 
 export default {
     name: "PriceList.vue",
+    props: {
+      isApprover: Boolean
+    },
     components: {
         TableHeader,
         SearchInput,
@@ -158,6 +178,8 @@ export default {
                 {key: 'product.primary_sku', label: 'SKU', tdClass: 'align-middle'},
                 {key: 'product.primary_asin', label: 'ASIN', tdClass: 'align-middle'},
                 {key: 'created_at', label: 'Created At', tdClass: 'align-middle'},
+                {key: 'submitted_at', label: 'Submitted At', tdClass: 'align-middle'},
+                {key: 'approved_at', label: 'Approved At', tdClass: 'align-middle'},
                 {key: 'unit_price_gbp', label: 'U/Price', tdClass: 'align-middle'},
                 {key: 'est_landed_cost_per_unit_gbp', label: 'Est. LC', tdClass: 'align-middle'},
                 {key: 'button', label: '', tdClass: 'align-middle'}

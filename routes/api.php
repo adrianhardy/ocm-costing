@@ -54,7 +54,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('admin/users', 'Api\Admin\UsersController')->only(['index', 'update', 'store', 'show']);
     });
 
-    Route::group(['as' => 'api.', 'middleware' => ['auth:api', 'role:super|pricing']], function() {
+    Route::group(['as' => 'api.', 'middleware' => ['auth:api', 'role:super|pricing|pricing_approver']], function() {
         Route::resource('guidance', 'Api\Pricing\AmazonGuidanceController')->only(['index']);
         Route::resource('pricing','Api\Products\ProductPricingController')->only(['index','update','show']);
         Route::resource('pricing.history', 'Api\Products\ProductPricingHistoryController')->only(['index']);

@@ -50,7 +50,7 @@ Route::group(['middleware' => ['auth', 'role:super']], function() {
     Route::get('/admin/export-templates/delete', 'Admin\ExportTemplatesController@destroy')->name('settings.export-templates.destroy');
 });
 
-Route::group(['middleware' => ['auth', 'role:super|pricing']], function() {
+Route::group(['middleware' => ['auth', 'role:super|pricing|pricing_approver']], function() {
     Route::resource('price-list', 'Products\ProductPricingController')->only(['index']);
     Route::resource('price-list/export', 'Products\ProductPricingExportController', ['as' => 'price-list'])->only(['index']);
 });
