@@ -57,7 +57,13 @@
             </b-table>
         </b-card>
         <b-button variant="primary" @click="exportSelected()">Export</b-button>
-        <pricing-modal ref="pricing-modal" @updated="updatePricing"/>
+        <pricing-modal
+            :euro-countries="euroCountries"
+            :row-countries="rowCountries"
+            :uk="uk"
+            ref="pricing-modal"
+            @updated="updatePricing"
+        />
     </div>
 </template>
 
@@ -68,11 +74,16 @@ import SearchInput from "../../../components/common/SearchInput";
 import TableHeader from "../../../components/table/TableHeader";
 
 export default {
-    name: "PriceList.vue",
+    name: "PriceList",
     components: {
         TableHeader,
         SearchInput,
         'pricing-modal': PricingModal
+    },
+    props: {
+        euroCountries: Array,
+        rowCountries: Array,
+        uk: Object
     },
     methods: {
         selectAllForExport(value) {

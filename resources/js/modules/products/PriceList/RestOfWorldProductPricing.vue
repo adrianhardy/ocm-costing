@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-form-group :label="currency" label-size="sm" class="mb-2">
+        <b-form-group :label="`${country} (${currency})`" label-size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
                     <b-input-group-text class="w-100">Rate</b-input-group-text>
@@ -101,7 +101,7 @@
             :sf-vat="0"
             :fx-rate="value[fxField]"
             :currency-symbol="currencySymbol"
-            :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
+            :landed-cost-per-unit-gbp="landedCostPerUnitGbp"
         />
 
     </div>
@@ -122,8 +122,10 @@ export default {
         priceField: String,
         feeField: String,
         currency: String,
+        country: String,
         vatField: String,
-        marketplaceCommissionPc: Number
+        marketplaceCommissionPc: Number,
+        landedCostPerUnitGbp: Number
     },
     computed: {
         referralTaxValue() {
