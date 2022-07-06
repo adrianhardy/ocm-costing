@@ -21,6 +21,9 @@ export default {
     props: {
         product: Object
     },
+    mounted() {
+        this.setup(this.product);
+    },
     methods: {
         update() {
             const loader = this.$loading.show();

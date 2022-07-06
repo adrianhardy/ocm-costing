@@ -131,15 +131,15 @@ export default {
     },
     computed: {
         include() {
-            return 'sales_order,sales_order_lines,sales_order_lines.landed_cost,media'
+            return 'sales_order,sales_order_lines,sales_order_lines.product,sales_order_lines.landed_cost,media'
         },
         fields() {
             return [
-                {key: 'id', label: 'ID'},
-                {key: 'landed_cost.shipping_cost_gbp', label: 'Shipping Cost £'},
-                {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Shipping Cost per Unit £'},
-                {key: 'landed_cost.est_landed_cost_per_unit', label: 'Landed Cost per Unit'},
-                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Landed Cost per Unit £'},
+                {key: 'article_number', label: 'Product', tdClass: 'align-middle'},
+                {key: 'landed_cost.shipping_cost_gbp', label: 'Shipping Cost £', tdClass: 'w-15 align-middle'},
+                {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Shipping Cost/Unit £', tdClass: 'w-15 align-middle'},
+                {key: 'landed_cost.est_landed_cost_per_unit', label: 'Landed Cost/Unit', tdClass: 'w-15 align-middle'},
+                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Landed Cost/Unit £', tdClass: 'w-15 align-middle'},
             ]
         }
     },

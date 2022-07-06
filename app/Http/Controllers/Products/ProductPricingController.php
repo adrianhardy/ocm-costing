@@ -23,6 +23,7 @@ class ProductPricingController extends Controller
 
         $row = Country::query()
             ->whereNotIn('iso_2_code', $euroCountries->pluck('iso_2_code'))
+            ->where('id', '!=', $uk->id)
             ->where('has_pricing', '1')
             ->orderBy('name')
             ->get();

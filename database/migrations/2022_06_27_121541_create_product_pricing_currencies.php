@@ -28,7 +28,7 @@ class CreateProductPricingCurrencies extends Migration
             $table->foreign('country_id')->references('id')->on('countries');
             $table->foreign('product_pricing_id')->references('id')->on('product_pricing');
         });
-        
+
         Schema::table('product_pricing', function(Blueprint $table) {
             $table->dropColumn('uk_vat');
             $table->dropColumn('fr_vat');
@@ -46,8 +46,6 @@ class CreateProductPricingCurrencies extends Migration
             $table->dropColumn('unit_es_price');
             $table->dropColumn( 'unit_se_price');
             $table->dropColumn('unit_sf_uk_price');
-            $table->dropColumn('unit_sf_fr_price');
-            $table->dropColumn('unit_sf_fr_price');
             $table->dropColumn('unit_sf_de_price');
             $table->dropColumn('unit_sf_it_price');
             $table->dropColumn('unit_sf_nl_price');
