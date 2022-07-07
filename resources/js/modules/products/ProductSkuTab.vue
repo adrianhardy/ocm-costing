@@ -7,10 +7,10 @@
             <b-form-input v-model="primary_sku" @change="update()" />
         </b-form-group>
         <b-form-group label="Additional ASINs">
-            <b-tags placeholder="Add ASIN" v-model="additional_asins" @input="update()" />
+            <b-tags placeholder="Add ASIN" v-model="additional_asins" @change="update()" />
         </b-form-group>
         <b-form-group label="Additional SKUs">
-            <b-tags placeholder="Add SKU" v-model="additional_skus" @input="update()" />
+            <b-tags placeholder="Add SKU" v-model="additional_skus" @change="update()" />
         </b-form-group>
     </b-tab>
 </template>

@@ -13,17 +13,18 @@
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Factories" >
-                                <factory-select v-model="product.factories" multiple />
+                            <b-form-group label="Factories">
+                                <factory-select v-model="product.factories" multiple/>
                             </b-form-group>
                         </div>
                     </div>
                     <div v-else>
-                        <b-form-group label="Factories" >
-                            <factory-select v-model="product.factories" multiple />
+                        <b-form-group label="Factories">
+                            <factory-select v-model="product.factories" multiple/>
                         </b-form-group>
                     </div>
-                    <b-form-group description="When estimating landed costs, no commission will be added" v-if="!isSupplier && showCosting">
+                    <b-form-group description="When estimating landed costs, no commission will be added"
+                                  v-if="!isSupplier && showCosting">
                         <b-form-checkbox v-model="product.is_excluded_from_commission">Exclude from commission
                         </b-form-checkbox>
                     </b-form-group>
@@ -60,6 +61,7 @@
                                 <b-input-group prepend="$">
                                     <b-form-input v-model="product.unit_price"/>
                                 </b-input-group>
+                                </b-input-group>
                             </b-form-group>
                         </div>
                         <div class="col-4">
@@ -78,7 +80,7 @@
                         </div>
                     </div>
                     <h5>Images </h5>
-                        <edit-product-media :disabled="disabled" :product="product" @updated="refresh()"/>
+                    <edit-product-media :disabled="disabled" :product="product" @updated="refresh()"/>
                     <div class="text-muted" v-if="!product.id">Image upload available once product has been created
                     </div>
                 </div>
@@ -108,6 +110,10 @@
                                 {{ this.productId ? 'Update' : 'Create' }} Product
                             </b-button>
 
+                            <b-button @click="sendToPricing" v-if="this.productId"
+                                      variant="outline-secondary float-right" class="mr-2">
+                                Send To Pricing
+                            </b-button>
                         </b-tab>
                         <b-tab title="Dimensions">
                             <h4>Postage</h4>
@@ -115,32 +121,41 @@
                                 <div class="col-4">
                                     <b-form-group label="UK Postage">
                                         <b-form-select class="md 1" v-model="product.uk_postage_method">
-                                            <b-form-select-option value="small_letter">Small letter</b-form-select-option>
-                                            <b-form-select-option value="large_letter_package">Large letter package</b-form-select-option>
+                                            <b-form-select-option value="small_letter">Small letter
+                                            </b-form-select-option>
+                                            <b-form-select-option value="large_letter_package">Large letter package
+                                            </b-form-select-option>
                                             <b-form-select-option value="package">Package</b-form-select-option>
                                             <b-form-select-option value="dpd_small">DPD small</b-form-select-option>
                                             <b-form-select-option value="dpd_large">DPD large</b-form-select-option>
-                                            <b-form-select-option value="parcel_force">Parcel force</b-form-select-option>
+                                            <b-form-select-option value="parcel_force">Parcel force
+                                            </b-form-select-option>
                                         </b-form-select>
                                     </b-form-group>
                                 </div>
                                 <div class="col-4">
                                     <b-form-group label="EU Postage">
                                         <b-form-select class="md 1" v-model="product.eu_postage_method">
-                                            <b-form-select-option value="lightweight_airmail">Lightweight airmail</b-form-select-option>
-                                            <b-form-select-option value="standard_airmail">Standard airmail</b-form-select-option>
+                                            <b-form-select-option value="lightweight_airmail">Lightweight airmail
+                                            </b-form-select-option>
+                                            <b-form-select-option value="standard_airmail">Standard airmail
+                                            </b-form-select-option>
                                             <b-form-select-option value="signed_for">Signed for</b-form-select-option>
-                                            <b-form-select-option value="parcel_force">Parcel force</b-form-select-option>
+                                            <b-form-select-option value="parcel_force">Parcel force
+                                            </b-form-select-option>
                                         </b-form-select>
                                     </b-form-group>
                                 </div>
                                 <div class="col-4">
                                     <b-form-group label="Worldwide postage">
                                         <b-form-select class="md 1" v-model="product.row_postage_method">
-                                            <b-form-select-option value="lightweight_airmail">Lightweight airmail</b-form-select-option>
-                                            <b-form-select-option value="standard_airmail">Standard airmail</b-form-select-option>
+                                            <b-form-select-option value="lightweight_airmail">Lightweight airmail
+                                            </b-form-select-option>
+                                            <b-form-select-option value="standard_airmail">Standard airmail
+                                            </b-form-select-option>
                                             <b-form-select-option value="signed_for">Signed for</b-form-select-option>
-                                            <b-form-select-option value="parcel_force">Parcel force (check amount)</b-form-select-option>
+                                            <b-form-select-option value="parcel_force">Parcel force (check amount)
+                                            </b-form-select-option>
                                         </b-form-select>
                                     </b-form-group>
                                 </div>
@@ -148,7 +163,9 @@
                             <h5>
                                 Carton
                                 <small v-if="!isSupplier && product.id > 0">
-                                    <a href="#" @click.prevent="showTestCalculator = !showTestCalculator">{{ showTestCalculator?'Hide':'Show' }} Test Calculator</a>
+                                    <a href="#" @click.prevent="showTestCalculator = !showTestCalculator">{{
+                                            showTestCalculator ? 'Hide' : 'Show'
+                                        }} Test Calculator</a>
                                 </small>
                             </h5>
                             <div class="row">
@@ -249,7 +266,7 @@
                                 {{ this.productId ? 'Update' : 'Create' }} Product
                             </b-button>
                         </b-tab>
-                        <product-sku-tab v-if="!isSupplier && product.id" :product="product" />
+                        <product-sku-tab v-if="!isSupplier && product.id" :product="product"/>
                         <b-tab v-if="product.id">
                             <template #title>
                                 <div>
@@ -298,7 +315,9 @@
                                     {{ data.value | 2dp_value }}
                                 </template>
                                 <template #cell(attributes.case_cubic_ft)="data">
-                                    <span v-b-popover.hover="`${data.item.attributes.length_cm}cm x ${data.item.attributes.width_cm}cm x ${data.item.attributes.height_cm}cm`" title="LxWxH" style="cursor:pointer">
+                                    <span
+                                        v-b-popover.hover="`${data.item.attributes.length_cm}cm x ${data.item.attributes.width_cm}cm x ${data.item.attributes.height_cm}cm`"
+                                        title="LxWxH" style="cursor:pointer">
                                         {{ data.value }}
                                     </span>
                                 </template>
@@ -307,15 +326,16 @@
                                 </template>
                                 <template #cell(extra)="data">
                                     <div v-if="data.item && data.item.attributes">
-                                        <span v-b-popover.hover="data.item.attributes.primary_asin" title="ASIN" style="cursor:pointer">
+                                        <span v-b-popover.hover="data.item.attributes.primary_asin" title="ASIN"
+                                              style="cursor:pointer">
                                         <b-icon-box-seam/>
                                       </span>
                                         <span v-b-popover.hover="data.item.attributes.primary_sku"
                                               title="SKU" style="cursor:pointer">
                                         <b-icon-box-seam/>
                                       </span>
-                                      <span v-b-popover.hover="data.item.attributes.packing_instructions"
-                                            title="Packing Instructions" style="cursor:pointer">
+                                        <span v-b-popover.hover="data.item.attributes.packing_instructions"
+                                              title="Packing Instructions" style="cursor:pointer">
                                         <b-icon-box-seam/>
                                       </span>
                                         <span v-b-popover.hover="data.item.attributes.product_description"
@@ -330,7 +350,8 @@
                                 </template>
                             </b-table>
                         </b-tab>
-                        <landed-cost-history-tab v-if="!isSupplier && product.id" :product="product" :disabled="!showCosting" />
+                        <landed-cost-history-tab v-if="!isSupplier && product.id" :product="product"
+                                                 :disabled="!showCosting"/>
                     </b-tabs>
                 </div>
             </div>
@@ -418,6 +439,26 @@ export default {
         }
     },
     methods: {
+        sendToPricing() {
+            this.$bvModal.msgBoxConfirm('Are you sure you want to send this product to pricing?', {
+                title: 'Send to pricing',
+                okTitle: 'Yes',
+            }).then(response => {
+                if (!response) {
+                    return;
+                }
+                const loading = this.$loading.show();
+                const url = `/api/products/${this.product.id}/pricing`
+                this.$http.post(url).then(() => {
+                    this.refresh();
+                    loading.hide();
+                }).catch(error => {
+                    this.$handleExceptionResponse(error, true);
+                    loading.hide();
+                })
+            })
+
+        },
         productLog() {
             const url = `/api/products/${this.productId}/history`;
             return this.$http.get(url).then(response => {
