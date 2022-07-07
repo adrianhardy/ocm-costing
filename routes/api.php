@@ -46,6 +46,8 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);
         Route::resource('admin/shipping/simple-calculator', 'Api\Calculator\SimpleShippingCalculator')->only(['store']);
         Route::resource('inspections', 'Api\InspectionReports\InspectionReportsController')->only(['show', 'update', 'index']);
+        Route::resource('/admin/import/unit-dimensions', 'Api\Admin\Imports\UnitDimensionsImportController')->only(['store']);
+        Route::resource('/admin/import/products', 'Api\Admin\Imports\ProductsImportController')->only(['store']);
     });
 
     Route::group(['middleware' => ['auth:api', 'role:super']], function() {
