@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
-class ProductsImportController extends Controller
+class ProductASINImportController extends Controller
 {
     public function store(Request $request){
         $this->validate($request, [
@@ -14,11 +14,11 @@ class ProductsImportController extends Controller
             'skip' => 'required|boolean'
         ]);
 
-        $csv = file_get_contents($request->file()['file']->getRealPath());
+        $csv = $request->file()['file'];
         $skip = $request->input('skip');
-//
-//        Artisan::call('import:products', [
-//            'csv' => $csv, '--skip-first-row' => $skip
-//        ]);
+
+        Artisan::call('import:asin', [
+            'csv' => $csv, '--skip-first-row' => $skip,
+        ]);
     }
 }

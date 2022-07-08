@@ -36,7 +36,7 @@ Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
     Route::resource('/admin/imports/preview', 'Admin\Imports\PreviewController')->only(['store', 'update']);
     Route::resource('/admin/imports', 'Admin\Imports\RunController')->only(['create', 'store']);
     Route::resource('/admin/imports/unit-dimensions', 'Admin\Imports\UnitDimensionsImportController')->only(['index']);
-    Route::resource('/admin/imports/products', 'Admin\Imports\ProductImportController')->only(['index']);
+    Route::resource('/admin/imports/product-asin', 'Admin\Imports\ProductASINImportController')->only(['index']);
     Route::resource('sales-orders.export', 'SalesOrders\ExportController')->only(['index']);
     Route::resource('sales-orders.consignments', 'SalesOrders\ConsignmentsController')->only(['index']);
     Route::resource('/inspections', 'InspectionReports\InspectionReportsController')->only(['edit', 'index']);

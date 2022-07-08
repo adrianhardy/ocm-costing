@@ -14,18 +14,20 @@ class UnitDimensionsImportController extends Controller
             'skip' => 'required|boolean'
         ]);
 
-        $csv = file_get_contents($request->file()['file']->getRealPath());
-        $skip = $request->input('skip');
 
-        dd($skip);
+        $csv = $request->file()['file'];
+        $skip = $request->input('skip');
 
 
         // we have the csv here, so this is your 'insert code here'
         // I imagine it'll be something like this?
 
 
-//        Artisan::call('import:dimensions', [
-//            'csv' => $csv, '--skip-first-row' => $request->input('skip_first_row')
-//        ]);
+        Artisan::call('import:dimensions', [
+            'csv' => $csv, '--skip-first-row' => $skip,
+            '--pretend' => true
+        ]);
+
+        dd(Artisan::output());
     }
 }

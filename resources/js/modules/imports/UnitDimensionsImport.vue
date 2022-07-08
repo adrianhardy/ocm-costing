@@ -10,9 +10,27 @@
                     <b-form-checkbox v-model="skip" :value="1" :unchecked-value="0">Skip First Row</b-form-checkbox>
                 </b-form-group>
             </div>
+
             <div class="d-flex justify-content-end">
                 <b-button variant="primary" @click="upload">Upload</b-button>
             </div>
+        </b-card>
+        <b-card class="shadow-sm mt-2">
+            <span>CSV Format should look like this... <br/></span>
+
+            <ul>
+                <li>article_number</li>
+                <li>length_cm</li>
+                <li>width_cm</li>
+                <li>height_cm</li>
+                <li>unit_length_cm</li>
+                <li>unit_width_cm</li>
+                <li>unit_height_cm</li>
+                <li>case_weight_kg</li>
+                <li>unit_weight_kg</li>
+                <li>units_per_case</li>
+                <li>inner_qty</li>
+            </ul>
         </b-card>
     </div>
 </template>

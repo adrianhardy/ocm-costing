@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
     <div class="container">
-        <products-import></products-import>
+        <product-asin-import></product-asin-import>
     </div>
 @endsection

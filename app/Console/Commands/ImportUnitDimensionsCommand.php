@@ -24,8 +24,11 @@ class ImportUnitDimensionsCommand extends Command
     protected $description = 'Process the csv file, importing the unit dimensions';
 
     protected $columns = [
-        'article_number', 'description', 'length_cm', 'width_cm', 'height_cm',
-        'measurement_unit', 'weight', 'weight_unit', 'postage_method'
+        'article_number',
+        'length_cm', 'width_cm', 'height_cm',
+        'unit_length_cm', 'unit_width_cm', 'unit_height_cm',
+        'case_weight_kg', 'unit_weight_kg',
+        'units_per_case', 'inner_qty'
     ];
 
     /**
@@ -46,11 +49,17 @@ class ImportUnitDimensionsCommand extends Command
             $csv->fgetcsv();
         }
 
-        $super = User::query()->role('super')->first();
-        Auth::login($super);
+//
+//        $super = User::query()->role('super')->first();
+//        Auth::login($super);
 
         while (!$csv->eof()) {
             $row = $csv->fgetcsv();
+
+            if (strlen(trim(implode('', $row))) == 0) {
+                continue;
+            }
+
             $row = array_combine($this->columns, array_map('trim', $row));
 
             $products = Product::query()
@@ -68,15 +77,20 @@ class ImportUnitDimensionsCommand extends Command
             }
 
             $product = $products->first();
+
             $product->fill([
-                'length_cm' => $row['length_cm'],
-                'width_cm' => $row['width_cm'],
-                'height_cm' => $row['height_cm'],
-                'weight_g' => $row['weight'],
-                'uk_postage_method' => $row['postage_method'],
-                'eu_postage_method' => $row['postage_method'],
-                'row_postage_method' => $row['postage_method'],
+                'length_m' => $row['length_cm'] / 100,
+                'width_m' => $row['width_cm'] / 100,
+                'height_m' => $row['height_cm'] / 100,
+                'unit_length_m' => $row['unit_length_cm'] / 100,
+                'unit_width_m' => $row['unit_width_cm'] / 100,
+                'unit_height_m' => $row['unit_height_cm'] / 100,
+                'unit_weight_kg' => $row['unit_weight_kg'],
+                'case_weight_kg' => $row['case_weight_kg'],
+                'units_per_case' => $row['units_per_case'],
+                'inner_qty' => $row['inner_qty']
             ]);
+
             $this->comment("Updating {$row['article_number']}...");
             if (!$this->option('pretend')) {
                 $product->save();
