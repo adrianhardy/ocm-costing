@@ -14,7 +14,8 @@ class ConsignmentRepository extends BaseRepository
         'reference' => 'like',
         'vessel_name' => 'like',
         'bl_number' => 'like',
-        'our_order_number' => 'like'
+        'our_order_number' => 'like',
+        'container_number' => 'like'
     ];
     public function model()
     {

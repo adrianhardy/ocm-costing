@@ -22,27 +22,16 @@
             >
                 <template #cell(reference)="data">
                     <b-link :href="`/shipments/${data.item.id}`">
-                        {{data.value}}
+                        {{ data.value }}
                     </b-link>
-                </template>
-                <template #cell(dates)="data">
-                    <span>
-                        ETD: <b-badge v-if="data.item.estimated_departure_at" size="sm">{{ data.item.estimated_departure_at | date_dmY }}</b-badge> <br/>
-                    </span>
-                    <span>
-                        Departed: <b-badge v-if="data.item.departed_at" size="sm">{{ data.item.departed_at | date_dmY }}</b-badge> <br/>
-                    </span>
-                    <span>
-                        ETA: <b-badge v-if="data.item.estimated_arrival_at" size="sm">{{ data.item.estimated_arrival_at | date_dmY }}</b-badge> <br/>
-                    </span>
-                    <span>
-                        Docked: <b-badge v-if="data.item.docked_at" size="sm">{{ data.item.docked_at | date_dmY }}</b-badge> <br/>
-                    </span>
                 </template>
                 <template #cell(sales_order.sales_order_number)="data">
                     <b-link :href="`/sales-orders/${data.value}/edit`">
-                        {{data.value}}
+                        {{ data.value }}
                     </b-link>
+                </template>
+                <template #cell(export)="data">
+                    <a :href="`/shipments/${data.item.id}/generate-inspection-report`">Download</a>
                 </template>
             </b-table>
         </b-card>
@@ -62,18 +51,33 @@ export default {
         TableHeader
     },
     computed: {
-        fields(){
+        fields() {
             return [
                 {key: 'reference', label: 'Reference'},
-                {key: 'sales_order.sales_order_number', label: 'Sales Order #'},
                 {key: 'our_order_number', label: 'Order #'},
-                {key: 'dates', label: 'Dates'},
-                {key: 'bl_number', label: 'BL #'},
                 {key: 'container_number', label: 'Container #'},
+                {key: 'bl_number', label: 'BL #'},
                 {key: 'vessel_name', label: 'Vessel'},
+                {
+                    key: 'estimated_departure_at', label: 'ETD', formatter: value => {
+                        if (!value) {
+                            return '';
+                        }
+                        return this.$options.filters.date_dmY(value);
+                    }, sortable: true
+                },
+                {
+                    key: 'estimated_arrival_at', label: 'ETA', formatter: value => {
+                        if (!value) {
+                            return '';
+                        }
+                        return this.$options.filters.date_dmY(value);
+                    }, sortable: true
+                },
+                {key: 'export', label: ''}
             ]
         },
-        include(){
+        include() {
             return 'sales_order,sales_order_lines'
         }
     },
@@ -90,7 +94,7 @@ export default {
                 })
         }
     },
-    data(){
+    data() {
         return {
             search: '',
             pagination: {

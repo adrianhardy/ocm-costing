@@ -4,23 +4,26 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
-                        <b-button @click="sendAllToPricing">Send All To Pricing</b-button>
-                        <div class="w-30">
-                            <search-input v-model="search" @search="updateHash()"/>
-                        </div>
-                        <b-dropdown class="align-middle float-right" size="lg" text="" variant="outline-secondary" right>
-                            <b-dropdown-form style="width:400px">
-                                <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
-                                <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
-                                <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
-                                <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
-                                <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
-                                <b-dropdown-divider/>
-                                <factory-select v-model="searchFactory" @selected="factorySelect"/>
-                            </b-dropdown-form>
+                        <search-input class="w-50" v-model="search" @search="updateHash()">
+                            <slot>
+                                <b-dropdown class="align-middle float-right" size="lg" text="" variant="outline-secondary" right>
+                                    <b-dropdown-form style="width:400px">
+                                        <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
+                                        <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
+                                        <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
+                                        <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
+                                        <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
+                                        <b-dropdown-divider/>
+                                        <factory-select v-model="searchFactory" @selected="factorySelect"/>
+                                    </b-dropdown-form>
+                                </b-dropdown>
+                            </slot>
+                        </search-input>
+                        <b-dropdown size="lg" variant="primary" right text="Actions" class="ml-2">
+                            <b-dropdown-item href="/products/create">Create Product</b-dropdown-item>
+                            <b-dropdown-item href="/admin/imports/create">Import Products</b-dropdown-item>
+                            <b-dropdown-item @click="sendAllToPricing">Send All To Pricing</b-dropdown-item>
                         </b-dropdown>
-                        <b-button href="/admin/imports/create">Import</b-button>
-                        <b-button variant="primary" href="/products/create">Create</b-button>
                     </slot>
                 </table-header>
             </template>
@@ -83,7 +86,7 @@ export default {
         this.updateSearch();
     },
     watch: {
-        $route($to, $from){
+        $route($to, $from) {
             this.updateSearch();
             this.$refs['table'].refresh();
         }
@@ -166,27 +169,37 @@ export default {
         factorySelect(){
             this.$nextTick(() => {
                 this.updateHash();
-                }
-            )
+            });
         },
-        updateHash(){
+        // when we click "search" we change the fragment in the url bar
+        // based on our current selection - we also request a navigation
+        // purely to plonk it in history
+        updateHash() {
+            this.$refs['table'].refresh();
             this.$nextTick(() => {
-                const params = new URLSearchParams(this.localSearchPayload)
-                window.location.hash = params.toString()
+                const params = new URLSearchParams(this.localSearchPayload);
+                window.location.hash = params.toString();
             })
         },
         updateSearch(){
             const parsedHash = new URLSearchParams(window.location.hash.substr(1))
             this.search = parsedHash.get('search')?parsedHash.get('search'):'';
             this.searchField = parsedHash.get('searchField')?parsedHash.get('searchField'):'';
-            this.searchFactory = {id: parsedHash.get('searchFactoryID'), name: parsedHash.get('searchFactoryName')};
+            this.searchFactory = null;
+            if (parsedHash.get('searchFactoryID')) {
+                this.searchFactory = {
+                    id: parsedHash.get('searchFactoryID'),
+                    name: parsedHash.get('searchFactoryName')
+                };
+            }
+
         },
 
         items(ctx) {
 
             const payload = {
                 search: this.search,
-                search_factory_id: this.searchFactory.id,
+                search_factory_id: this.searchFactory?this.searchFactory.id:null,
                 include: 'quotes_lines,media,factories'
             };
 

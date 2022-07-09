@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Shipments;
 
+use App\Domain\Excel\InspectionSheetBuilder;
 use App\Http\Controllers\Controller;
 use App\Models\Consignment;
 use Illuminate\Http\Request;
@@ -16,5 +17,19 @@ class ShipmentsController extends Controller
         return view('shipments.edit', [
             'shipment' => $shipment
         ]);
+    }
+
+    /**
+     * @param Consignment $consignment
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function download(Consignment $consignment)
+    {
+        $builder = new InspectionSheetBuilder();
+        $fp = $builder->build($consignment);
+        return response()->streamDownload(function () use ($fp) {
+            rewind($fp);
+            echo stream_get_contents($fp);
+        }, 'inspection-report.xlsx');
     }
 }

@@ -2,7 +2,7 @@
     <div>
         <b-form-group>
             <b-input-group class="mt-2">
-                <b-form-file :disabled="disabled" v-model="file" ref="file"/>
+                <b-form-file :disabled="disabled" v-model="file" ref="file" accept=".jpeg,.jpg"/>
                 <b-button size="sm" variant="success" :disabled="disabled || !file" @click="addMedia">Upload</b-button>
             </b-input-group>
         </b-form-group>

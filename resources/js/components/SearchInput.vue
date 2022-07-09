@@ -12,8 +12,8 @@
             <b-input-group-text class="bg-white">
                 <b-icon-search class="search-action" @click="$emit('search', value)" />
             </b-input-group-text>
+            <slot></slot>
         </b-input-group-append>
-        <slot name="right"></slot>
     </b-input-group>
 </template>
 
