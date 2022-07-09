@@ -5,13 +5,14 @@
                 <table-header v-model="pagination">
                     <slot>
                         <b-select v-model="stage" style="width:20% !important" @change="$refs['table'].refresh()">
-                          <b-select-option value="">All</b-select-option>
-                          <b-select-option value="quote">Quotes</b-select-option>
-                          <b-select-option value="finalised">Finalised</b-select-option>
-                          <b-select-option value="sent">Sent</b-select-option>
+                            <b-select-option value="">All</b-select-option>
+                            <b-select-option value="quote">Quotes</b-select-option>
+                            <b-select-option value="finalised">Finalised</b-select-option>
+                            <b-select-option value="sent">Sent</b-select-option>
+                            <b-select-option value="deleted">Deleted</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button  @click="$refs['create'].open()" v-if="!isSupplier">
+                        <b-button @click="$refs['create'].open()" v-if="!isSupplier">
                             Create New Quote
                         </b-button>
                     </slot>
@@ -36,7 +37,10 @@
                     {{ data.value | cash_value }}
                 </template>
                 <template #cell(reference)="data">
-                    <a :href="`/sales-orders/${data.item.id}/edit`">{{ data.value }}</a>
+                    <a v-if="!data.item.deleted_at" :href="`/sales-orders/${data.item.id}/edit`">{{ data.value }}</a>
+                    <b-link v-else @click="restoreSalesOrder(data.item)">
+                        {{ data.value }}
+                    </b-link>
                 </template>
                 <template #cell(created_at)="data">
                     <span>{{ new Date(data.value) | date('dd/MM/yy HH:mm') }}</span>
@@ -107,10 +111,30 @@ export default {
         }
     },
     methods: {
+        restoreSalesOrder(order){
+            this.$bvModal.msgBoxConfirm('Are you sure you want to restore this sales order?', {
+                title: 'Restore',
+                okTitle: 'Restore',
+                okVariant: 'primary'
+            }).then(response => {
+                if(!response) {
+                    return;
+                }
+                const loading = this.$loading.show();
+                const url = `/api/sales-orders/restore`
+                this.$http.post(url, order).then(() => {
+                    this.$refs['table'].refresh();
+                    loading.hide();
+                }).catch(error => {
+                    this.$handleExceptionResponse(error, true);
+                    loading.hide();
+                })
+            })
+        },
         items(ctx) {
             const isSupplier = this.isSupplier;
-            const url = `/api/${isSupplier?'supplier/':''}sales-orders`;
-            const include = isSupplier?'':'supplier,factory';
+            const url = `/api/${isSupplier ? 'supplier/' : ''}sales-orders`;
+            const include = isSupplier ? '' : 'supplier,factory';
             return this.$paginatedFetch(
                 url,
                 this.pagination,

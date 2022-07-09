@@ -33,7 +33,8 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('countries', 'Api\Countries\CountriesController')->only(['index', 'update']);
         Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
         Route::resource('sales-orders.lines.media', 'Api\SalesOrders\Lines\MediaController')->only(['store']);
-        Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'delete']);
+        Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'destroy']);
+        Route::post('sales-orders/restore', 'Api\Admin\RestoreSalesOrderController@restore');
         Route::resource('sales-orders.landed-costs', 'Api\SalesOrders\CalculateLandedCostController')->only(['store']);
         Route::resource('sales-orders.history', 'Api\SalesOrders\HistoryController')->only(['index']);
         Route::resource('sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['store', 'update', 'destroy']);

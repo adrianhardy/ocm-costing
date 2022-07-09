@@ -261,6 +261,10 @@
                         Finalise
                     </b-button>
 
+                    <b-button variant="danger" size="lg" v-if="salesOrder.id > 0 && !salesOrder.finalised_at" @click="deleteSalesOrder">
+                        Delete
+                    </b-button>
+
                     <b-dropdown v-if="salesOrder.id > 0" text="Export for Supplier" variant="secondary" size="lg">
                         <b-dropdown-item :key="template" :href="`/sales-orders/${ salesOrder.id }/export?template=${template}`" v-for="template in templates">{{ template }}</b-dropdown-item>
                     </b-dropdown>
@@ -628,6 +632,25 @@ export default {
                 loader.hide();
             }).catch(error => {
                 this.$handleExceptionResponse(error, true);
+            })
+        },
+        deleteSalesOrder(){
+            this.$bvModal.msgBoxConfirm('Are you sure that you want to delete this Sales Order', {
+                title: 'Delete',
+                okTitle: 'Yes',
+                okVariant: 'danger'
+            }).then(response => {
+                if(!response) {
+                    return;
+                }
+                const loader = this.$loading.show();
+                this.$http.delete(`/api/sales-orders/${this.salesOrder.id}`).then(() => {
+                    loader.hide();
+                    window.location.href = "/sales-orders"
+                }).catch(error => {
+                    this.$handleExceptionResponse(error, true)
+                    loader.hide()
+                })
             })
         }
     },

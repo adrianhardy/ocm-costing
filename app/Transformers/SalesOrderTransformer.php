@@ -80,6 +80,7 @@ class SalesOrderTransformer extends TransformerAbstract
             'reference',
             'created_at',
             'updated_at',
+            'deleted_at',
             'is_sent',
             'is_finalised',
             'is_supplier_finalised',
