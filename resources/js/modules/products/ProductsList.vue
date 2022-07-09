@@ -4,6 +4,7 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
+                        <b-button @click="sendAllToPricing">Send All To Pricing</b-button>
                         <div class="w-30">
                             <search-input v-model="search" @search="updateHash()"/>
                         </div>
@@ -26,6 +27,7 @@
             <b-table
                 ref="table"
                 :current-page="pagination.currentPage"
+                :per-page="pagination.perPage"
                 hover
                 :busy.sync="loading"
                 :fields="fields"
@@ -131,6 +133,16 @@ export default {
         }
     },
     methods: {
+        sendAllToPricing(){
+            const loading = this.$loading.show();
+            const url = '/api/products/pricing'
+            this.$http.post(url).then(response => {
+                loading.hide();
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true);
+                loading.hide();
+            })
+        },
         createSalesOrder(){
             this.$refs['create-sales-order-modal'].open()
         },
