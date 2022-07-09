@@ -136,9 +136,8 @@ export default {
         fields() {
             return [
                 {key: 'article_number', label: 'Product', tdClass: 'align-middle'},
-                {key: 'landed_cost.shipping_cost_gbp', label: 'Shipping Cost £', tdClass: 'w-15 align-middle'},
+                {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
                 {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Shipping Cost/Unit £', tdClass: 'w-15 align-middle'},
-                {key: 'landed_cost.est_landed_cost_per_unit', label: 'Landed Cost/Unit', tdClass: 'w-15 align-middle'},
                 {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Landed Cost/Unit £', tdClass: 'w-15 align-middle'},
             ]
         }

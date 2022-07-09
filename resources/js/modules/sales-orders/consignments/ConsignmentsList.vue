@@ -45,7 +45,7 @@
                             </b-tr>
                             <b-tbody>
                                 <b-tr v-if="row.item.consignments.length < 1">
-                                    <b-td colspan="8" class="text-center">No shipments recorded yet</b-td>
+                                    <b-td colspan="9" class="text-center">No shipments recorded yet</b-td>
                                 </b-tr>
                                 <b-tr v-for="consignment in row.item.consignments" :key="consignment.id +':'+ row.item.id">
                                     <b-td class="w-15">{{ consignment.reference }}</b-td>

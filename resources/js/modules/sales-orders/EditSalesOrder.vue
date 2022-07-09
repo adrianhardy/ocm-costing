@@ -44,13 +44,13 @@
                         </b-input-group>
                     </b-form-group>
                 </div>
-                <div class="col-12 col-md-1">
-                    <b-form-group label="Reference">
+                <div class="col-12 col-md-2">
+                    <b-form-group label="Our Reference">
                         <b-form-input v-model="salesOrder.reference" @change="save()"/>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-1">
-                    <b-form-group label="Supplier Reference">
+                    <b-form-group label="Supplier Ref">
                         <b-form-input v-model="salesOrder.supplier_reference" @change="save()"/>
                     </b-form-group>
                 </div>
@@ -286,15 +286,6 @@
                         @click="confirmSendToPricing()"
                     >
                         Send To Pricing
-                    </b-button>
-                    <b-button
-                        class="mr-1"
-                        size="lg"
-                        variant="success"
-                        v-if="!isSupplier && salesOrder.is_finalised && hasSelectedRows"
-                        @click="$refs['update-inbound-shipments-modal'].open()"
-                    >
-                        Update Inbound Shipments
                     </b-button>
                 </div>
             </div>

@@ -1,7 +1,12 @@
 <template>
-    <vue-select :multiple="multiple" :disabled="readonly" ref="select" :value="value"
-                @input="$emit('selected', $event) && $emit('input', $event)" :options="options" :filterable="true"
-                label="name"/>
+    <vue-select
+        :multiple="multiple"
+        :disabled="readonly"
+        ref="select"
+        :value="value"
+        @input="$emit('selected', $event) && $emit('input', $event)" :options="options" :filterable="true"
+        label="name"
+    />
 </template>
 
 <script>

@@ -10,6 +10,8 @@ use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CalculateLandedCostController extends Controller
 {
@@ -27,10 +29,21 @@ class CalculateLandedCostController extends Controller
     public function store(Request $request, SalesOrder $sales_order)
     {
 
-        /** @var Consignment[] $consignments */
-        $consignments = Consignment::query()
-            ->where('sales_order_id', $sales_order->id)
-            ->get();
+        $consignments = collect();
+        foreach ($sales_order->lines as $line) {
+            foreach ($line->consignments as $consignment) {
+                if (!$consignments->contains($consignment)) {
+                    $consignments->push($consignment);
+                }
+            }
+        }
+
+        if ($consignments->isEmpty()) {
+            throw new HttpException(
+                Response::HTTP_CONFLICT,
+                'There are no consignments for this sales order - cannot run landed cost calculations yet'
+            );
+        }
 
         foreach ($consignments as $consignment) {
             $cubicFt = 0;

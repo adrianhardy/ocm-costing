@@ -29,6 +29,7 @@ class Consignment extends BaseConsignment implements HasMedia
 		'container_number',
 		'bl_number',
 		'shipping_agent_ref',
-        'estimated_arrival_at'
+        'estimated_arrival_at',
+        'estimated_departure_at'
 	];
 }

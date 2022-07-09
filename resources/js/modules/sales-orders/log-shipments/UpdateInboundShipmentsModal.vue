@@ -21,6 +21,8 @@ import CurrencySelect from "../../../components/CurrencySelect";
 import LandedCostCalculator from "../../../library/LandedCostCalculator";
 import ConsignmentsTable from "./ConsignmentsTable";
 
+
+// --------- NOT CURRENTLY USED ----------------
 export default {
     name: "UpdateInboundShipmentsModal",
     components: {ConsignmentsTable, CurrencySelect},

@@ -1,10 +1,15 @@
 <template>
     <div>
+        <import-shipment-modal
+            ref="import-shipment-modal"
+            @updated="$refs['table'].refresh()"
+        />
         <b-card class="shadow-sm">
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
+                        <b-button variant="primary" @click="$refs['import-shipment-modal'].show()">Import</b-button>
                     </slot>
                 </table-header>
             </template>
@@ -47,10 +52,12 @@
 <script>
 import TableHeader from "../../components/table/TableHeader";
 import SearchInput from "../../components/SearchInput";
+import ImportShipmentModal from "./ImportShipmentModal";
 
 export default {
     name: "ShipmentsList",
     components: {
+        ImportShipmentModal,
         SearchInput,
         TableHeader
     },
