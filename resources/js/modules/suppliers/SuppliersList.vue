@@ -8,7 +8,7 @@
                                       @search="$refs['table'].refresh()"></search-input>
                     </div>
                     <slot>
-                        <b-button href="/admin/suppliers/create">Create New Supplier</b-button>
+                        <b-button href="/admin/suppliers/create" variant="primary">Create New Supplier</b-button>
                     </slot>
                 </table-header>
             </template>
