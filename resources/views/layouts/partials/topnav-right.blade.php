@@ -24,6 +24,7 @@
                 <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
                 <a class="dropdown-item" href="{{ route('product-asin.index') }}">Product ASIN Import</a>
                 <a class="dropdown-item" href="{{ route('unit-dimensions.index') }}">Unit Dimensions Import</a>
+                <a class="dropdown-item" href="{{ route('documents.index') }}">Documents</a>
                 <div class="dropdown-divider"></div>
                 @endrole
                 <a class="dropdown-item" href="{{ route('logout') }}"
