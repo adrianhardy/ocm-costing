@@ -22,6 +22,8 @@
                 <a class="dropdown-item" href="{{ route('settings.export-templates.index') }}">Templates</a>
                 <a class="dropdown-item" href="{{ route('currencies.index') }}">Currencies</a>
                 <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
+                <a class="dropdown-item" href="{{ route('product-asin.index') }}">Product ASIN Import</a>
+                <a class="dropdown-item" href="{{ route('unit-dimensions.index') }}">Unit Dimensions Import</a>
                 <div class="dropdown-divider"></div>
                 @endrole
                 <a class="dropdown-item" href="{{ route('logout') }}"
