@@ -42,6 +42,8 @@ Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
     Route::resource('/inspections', 'InspectionReports\InspectionReportsController')->only(['edit', 'index']);
     Route::resource('/shipments', 'Shipments\ShipmentsController')->only(['index', 'show']);
     Route::get('/shipments/{consignment}/generate-inspection-report', 'Shipments\ShipmentsController@download');
+    Route::resource('/admin/documents', 'Admin\DocumentsController')->only(['index']);
+
 });
 
 Route::group(['middleware' => ['auth', 'role:super']], function() {

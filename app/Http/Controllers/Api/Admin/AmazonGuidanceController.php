@@ -13,7 +13,7 @@ class AmazonGuidanceController extends Controller
 
         $this->validate($request, [
             'collection' => 'required',
-            'file' => 'required|image|mimes:jpg,jpeg|max:10000'
+            'file' => 'required|image|mimes:jpg,jpeg,png|max:10000'
         ]);
 
         switch($request->input('collection')) {

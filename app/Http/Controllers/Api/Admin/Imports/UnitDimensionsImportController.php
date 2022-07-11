@@ -25,7 +25,6 @@ class UnitDimensionsImportController extends Controller
 
         Artisan::call('import:dimensions', [
             'csv' => $csv, '--skip-first-row' => $skip,
-            '--pretend' => true
         ]);
 
         dd(Artisan::output());

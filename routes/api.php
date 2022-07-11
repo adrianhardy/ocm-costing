@@ -62,6 +62,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('admin/factories.files', 'Api\Admin\Factories\MediaController')->only(['index', 'store']);
         Route::resource('admin/settings', 'Api\Admin\SettingsController')->only(['index', 'store']);
         Route::resource('admin/users', 'Api\Admin\UsersController')->only(['index', 'update', 'store', 'show']);
+        Route::resource('admin/documents','Api\Admin\DocumentsController')->only(['index']);
     });
 
     Route::group(['as' => 'api.', 'middleware' => ['auth:api', 'role:super|pricing|pricing_approver']], function() {
