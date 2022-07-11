@@ -7,22 +7,22 @@
         <div class="card-body">
             <table class="table">
                 <tr class="text-center">
-                    <th class="w-15 ">
+                    <th class="w-16 ">
                         Draft<br />
                     </th>
-                    <th class="w-15">
+                    <th class="w-16">
                         Quote<br />
                     </th>
-                    <th class="w-15">
+                    <th class="w-16">
                         Sales Order<br />
                     </th>
-                    <th class="w-15">
+                    <th class="w-16">
                         Confirmed<br />
                     </th>
-                    <th class="w-15">
+                    <th class="w-16">
                         On Water<br />
                     </th>
-                    <th class="w-15">
+                    <th class="w-16">
                         Recently Docked<br />
                     </th>
                     <th></th>
