@@ -72,6 +72,8 @@ Vue.component('confirm-navigation-modal', require('./components/ConfirmNavigatio
 Vue.component('settings-list', require('./modules/settings/SettingsList.vue').default);
 Vue.component('amazon-guidance-upload', require('./modules/settings/AmazonGuidanceUpload').default)
 
+Vue.component('unit-dimensions-import', require('./modules/imports/UnitDimensionsImport').default)
+Vue.component('product-asin-import', require('./modules/imports/ProductASINImport').default);
 
 Vue.component('create-currency', require('./modules/currencies/CreateCurrency.vue').default);
 
