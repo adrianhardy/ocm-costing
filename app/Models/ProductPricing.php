@@ -25,7 +25,8 @@ class ProductPricing extends BaseProductPricing
 		'superseded_at',
 		'marketplace_fee',
 		'sales_order_line_id',
-        'eur_fx_rate'
+        'eur_fx_rate',
+        'current_eur_fx_rate'
 	];
 
     /**
