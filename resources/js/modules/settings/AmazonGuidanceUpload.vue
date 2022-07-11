@@ -27,11 +27,11 @@
             <div class="col-12 col-md-4">
                 <h4>ENF FBA</h4>
                 <div class="d-flex justify-content-center">
-                    <img v-if="images" :src="images.enf_fba" width="300"/>
+                    <img v-if="images" :src="images.efn_fba" width="300"/>
                 </div>
-                <b-form-file accept="image/*" class="mt-3" v-model="enf_fba"></b-form-file>
+                <b-form-file accept="image/*" class="mt-3" v-model="efn_fba"></b-form-file>
                 <div class="mt-3 d-flex justify-content-center">
-                    <b-button variant="success" @click="update('enf_fba', enf_fba)">
+                    <b-button variant="success" @click="update('efn_fba', efn_fba)">
                         Upload
                     </b-button>
                 </div>
@@ -78,7 +78,7 @@ export default {
     },
     data(){
         return {
-            enf_fba:   null,
+            efn_fba:   null,
             local_fba: null,
             sl:        null,
             images: {}
