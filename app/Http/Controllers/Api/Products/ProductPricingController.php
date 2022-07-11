@@ -68,18 +68,21 @@ class ProductPricingController extends Controller
     public function update(Request $request, ProductPricing $pricing)
     {
         $this->validate($request, [
-            'marketplace_commission_pc' => 'required|numeric|min:0',
-            'current_eur_fx_rate' => 'required|numeric|min:0',
+            'marketplace_commission_pc'     => 'required|numeric|min:0',
+            'current_eur_fx_rate'           => 'required|numeric|min:0',
+            'est_landed_cost_per_unit_gbp'  => 'required|numeric|min:0',
             'countries.*.current_gbp_fx_rate' => 'sometimes|nullable|numeric|min:0',
-            'countries.*.unit_fba_fee' => 'sometimes|nullable|numeric|min:0',
-            'countries.*.unit_fba_price' => 'sometimes|nullable|numeric|min:0',
-            'countries.*.unit_sf_price' => 'sometimes|nullable|numeric|min:0',
-            'countries.*.unit_sf_shipping' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_fba_fee'      => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_fba_price'    => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_sf_price'     => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_sf_shipping'  => 'sometimes|nullable|numeric|min:0',
             'countries.*.unit_fba_shipping' => 'sometimes|nullable|numeric|min:0',
-            'countries.*.unit_vat' => 'sometimes|nullable|numeric|min:0',
-            'countries.*.vat_rate' => 'sometimes|nullable|numeric|min:0',
+            'countries.*.unit_vat'          => 'sometimes|nullable|numeric|min:0',
+            'countries.*.vat_rate'          => 'sometimes|nullable|numeric|min:0',
         ],[
-
+            'est_landed_cost_per_unit_gbp' => 'Estimated Landed Cost',
+            'current_eur_fx_rate' => 'Euros to GBP exchange rate',
+            'marketplace_commission_pc' => 'Marketplace commission %'
         ],[
             'countries.*.unit_fba_fee' => 'FBA fee',
             'countries.*.unit_fba_price' => 'FBA price',
@@ -89,8 +92,11 @@ class ProductPricingController extends Controller
         ]);
 
         DB::beginTransaction();
-        $pricing->current_eur_fx_rate = $request->input('current_eur_fx_rate');
-        $pricing->marketplace_commission_pc = $request->input('marketplace_commission_pc');
+        $pricing->fill($request->only([
+            'current_eur_fx_rate',
+            'marketplace_commission_pc',
+            'est_landed_cost_per_unit_gbp'
+        ]));
         // copy the global "EUR" rate, set on ProductPricing, down to
         // all the ProductPricingCountry objects related to this $pricing
         foreach ($pricing->product_pricing_countries as $price) {

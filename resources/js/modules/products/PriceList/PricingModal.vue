@@ -109,7 +109,7 @@
                                 <div class="col-4">
                                     <b-form-group label="Est. L' Cost" label-cols="4" label-size="sm">
                                         <b-input-group prepend="£" size="sm">
-                                            <b-form-input readonly v-model="value.est_landed_cost_per_unit_gbp"/>
+                                            <b-form-input v-model.number="value.est_landed_cost_per_unit_gbp"/>
                                         </b-input-group>
                                     </b-form-group>
                                 </div>
@@ -206,9 +206,8 @@
                             </div>
                             <div class="overflow-auto">
                                 <div class="row flex-row flex-nowrap">
-                                    <div class="col-12 col-md-3" v-for="country in rowCountries">
+                                    <div class="col-12 col-md-3" v-for="country in rowCountries" v-if="value && value['countries'] && value['countries'][country.iso_2_code.toLowerCase()]">
                                         <rest-of-world-product-pricing
-                                            v-if="value && value.countries"
                                             v-model="value['countries'][country.iso_2_code.toLowerCase()]"
                                             :currency="country.currency.code"
                                             :country="country.iso_2_code"

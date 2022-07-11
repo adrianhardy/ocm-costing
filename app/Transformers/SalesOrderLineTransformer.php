@@ -26,8 +26,13 @@ class SalesOrderLineTransformer extends TransformerAbstract
      */
     protected $availableIncludes = [
         'product', 'landed_cost', 'consignments', 'selected_media', 'received',
-        'live_estimated_landed_cost'
+        'live_estimated_landed_cost', 'sales_order'
     ];
+
+    public function includeSalesOrder(SalesOrderLine $line)
+    {
+        return $this->item($line->sales_order, new SalesOrderTransformer());
+    }
 
     public function includeSelectedMedia(SalesOrderLine $line)
     {

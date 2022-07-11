@@ -39,83 +39,72 @@
                     </b-form-group>
                 </div>
             </div>
+            <h4 class="mt-2">Dates</h4>
             <div class="row">
-                <div class="col-12 col-md-6">
-                    <h4>Dates</h4>
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <b-form-group label="ETA">
-                                <b-form-datepicker v-model="shipment.estimated_arrival_at" />
-                            </b-form-group>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <b-form-group label="ETD">
-                                <b-form-datepicker v-model="shipment.estimated_departure_at" />
-                            </b-form-group>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <b-form-group label="Departed At">
-                                <b-form-datepicker v-model="shipment.departed_at"/>
-                            </b-form-group>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <b-form-group label="Docked At">
-                                <b-form-datepicker v-model="shipment.docked_at"/>
-                            </b-form-group>
-                        </div>
-                    </div>
+                <div class="col-12 col-md-3">
+                    <b-form-group label="ETA">
+                        <b-form-datepicker v-model="shipment.estimated_arrival_at" />
+                    </b-form-group>
                 </div>
-                <div class="col-12 col-md-6">
-                    <h4>Files</h4>
-                    <b-tabs>
-                        <b-tab title="Upload">
-                            <div class="d-flex justify-content-between">
-                                <b-form-file class="w-50 mt-3" v-model="file" />
-                                <b-button class="mt-3 mr-3" @click="uploadFile">Upload</b-button>
-                            </div>
-                        </b-tab>
-                        <b-tab title="Existing">
-                            <b-table
-                                :items="shipment.media"
-                                :fields="[{key: 'file_name', label: 'File'}, {key: 'delete', label: ''}]"
-                            >
-                                <template #cell(file_name)="data">
-                                    <b-link :href="data.item.url">
-                                        {{data.value}}
-                                    </b-link>
-                                </template>
-                                <template #cell(delete)="data">
-                                    <b-button size="sm" @click="deleteFile(data.item)" variant="danger">Delete</b-button>
-                                </template>
-                            </b-table>
-                        </b-tab>
-                    </b-tabs>
+                <div class="col-12 col-md-3">
+                    <b-form-group label="ETD">
+                        <b-form-datepicker v-model="shipment.estimated_departure_at" />
+                    </b-form-group>
                 </div>
-            </div>
-            <h4>
-                Sales Order Lines
-            </h4>
-            <div>
-                <b-table :fields="fields" :items="shipment.sales_order_lines">
-                    <template #cell(landed_cost.shipping_cost_gbp)="data">
-                        <b-input readonly v-model="data.value"/>
-                    </template>
-                    <template #cell(landed_cost.shipping_cost_gbp_per_unit)="data">
-                        <b-input readonly v-model="data.value"/>
-                    </template>
-                    <template #cell(landed_cost.est_landed_cost_per_unit)="data">
-                        <b-input readonly v-model="data.value"/>
-                    </template>
-                    <template #cell(landed_cost.est_landed_cost_per_unit_gbp)="data">
-                        <b-input readonly v-model="data.value"/>
-                    </template>
-                </b-table>
+                <div class="col-12 col-md-3">
+                    <b-form-group label="Departed At">
+                        <b-form-datepicker v-model="shipment.departed_at"/>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-3">
+                    <b-form-group label="Docked At">
+                        <b-form-datepicker v-model="shipment.docked_at"/>
+                    </b-form-group>
+                </div>
             </div>
             <div class="d-flex justify-content-end">
                 <b-button @click="update" variant="primary">Update</b-button>
             </div>
+            <h4 class="mt-2">Sales Order Lines</h4>
+            <div>
+                <b-table :fields="fields" :items="shipment.sales_order_lines" small>
+                    <template #cell(sales_order.sales_order_number)="data">
+                        <a :href="`/sales-orders/${data.item.sales_order.id}/edit`">
+                            {{ data.value }}
+                        </a>
+                    </template>
+                    <template #cell(landed_cost.shipping_cost_gbp_per_unit)="data">
+                        <b-input v-model="data.value"/>
+                    </template>
+                    <template #cell(landed_cost.est_landed_cost_per_unit_gbp)="data">
+                        <b-input v-model="data.value"/>
+                    </template>
+                </b-table>
+            </div>
+            <h4 class="mt-2">Files</h4>
+            <b-tabs>
+                <b-tab title="Upload">
+                    <div class="d-flex justify-content-between">
+                        <b-form-file class="w-50 mt-3" v-model="file" />
+                        <b-button class="mt-3 mr-3" @click="uploadFile">Upload</b-button>
+                    </div>
+                </b-tab>
+                <b-tab title="Existing">
+                    <b-table
+                        :items="shipment.media"
+                        :fields="[{key: 'file_name', label: 'File'}, {key: 'delete', label: ''}]"
+                    >
+                        <template #cell(file_name)="data">
+                            <b-link :href="data.item.url">
+                                {{data.value}}
+                            </b-link>
+                        </template>
+                        <template #cell(delete)="data">
+                            <b-button size="sm" @click="deleteFile(data.item)" variant="danger">Delete</b-button>
+                        </template>
+                    </b-table>
+                </b-tab>
+            </b-tabs>
         </b-card>
     </div>
 </template>
@@ -131,14 +120,16 @@ export default {
     },
     computed: {
         include() {
-            return 'sales_order,sales_order_lines,sales_order_lines.product,sales_order_lines.landed_cost,media'
+            return 'sales_order,sales_order_lines,sales_order_lines.received,sales_order_lines.product,sales_order_lines.landed_cost,sales_order_lines.sales_order,media'
         },
         fields() {
             return [
+                {key: 'sales_order.sales_order_number', label: 'Sales Order', tdClass: 'align-middle'},
                 {key: 'article_number', label: 'Product', tdClass: 'align-middle'},
                 {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
                 {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Shipping Cost/Unit £', tdClass: 'w-15 align-middle'},
                 {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Landed Cost/Unit £', tdClass: 'w-15 align-middle'},
+                {key: 'received', label: 'Quantity', tdClass: 'align-middle'}
             ]
         }
     },

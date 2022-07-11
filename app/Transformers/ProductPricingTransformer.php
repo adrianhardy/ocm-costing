@@ -69,16 +69,20 @@ class ProductPricingTransformer extends TransformerAbstract
                 ->where('country_id', $country->id)
                 ->firstOrFail();
 
-            $json[$code] = $countryPrice->only([
-                'unit_fba_fee',
-                'unit_fba_price',
-                'unit_sf_price',
-                'unit_sf_shipping',
-                'unit_fba_shipping',
-                'vat_rate',
-                'gbp_fx_rate',
-                'current_gbp_fx_rate'
-            ]);
+            if ($countryPrice) {
+                $json[$code] = $countryPrice->only([
+                    'unit_fba_fee',
+                    'unit_fba_price',
+                    'unit_sf_price',
+                    'unit_sf_shipping',
+                    'unit_fba_shipping',
+                    'vat_rate',
+                    'gbp_fx_rate',
+                    'current_gbp_fx_rate'
+                ]);
+            } else {
+
+            }
         };
         return $this->primitive($json);
     }
