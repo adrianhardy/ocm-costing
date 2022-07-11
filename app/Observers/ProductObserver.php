@@ -6,6 +6,7 @@ use App\Domain\LandedCostCalculator;
 use App\Domain\SortedArticleNumberGenerator;
 use App\Models\Currency;
 use App\Models\Product;
+use App\Models\ProductPricing;
 use App\Services\ProductService;
 
 class ProductObserver
@@ -38,6 +39,18 @@ class ProductObserver
 
             if ($product->units_per_case > 0) {
                 $this->productService->updateEstimatedLandedCost($product);
+            }
+        }
+
+        if($product->isDirty('est_landed_cost_gbp')) {
+            $pricing = ProductPricing::query()
+                ->where('product_id', $product->id)
+                ->whereNull('superseded_at')
+                ->first();
+
+            if($pricing) {
+                $pricing->est_landed_cost_per_unit_gbp = $product->est_landed_cost_gbp;
+                $pricing->save();
             }
         }
     }
