@@ -12,7 +12,10 @@
                             <b-select-option value="deleted">Deleted</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button @click="$refs['create'].open()" v-if="!isSupplier">
+                        <b-button @click="$refs['create'].open()"
+                          v-if="!isSupplier"
+                          variant="primary"
+                        >
                             Create New Quote
                         </b-button>
                     </slot>

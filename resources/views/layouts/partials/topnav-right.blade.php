@@ -12,15 +12,15 @@
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
-                <div class="dropdown-divider"></div>
                 @role('admin|super')
                 <a class="dropdown-item" href="{{ route('countries.index') }}">Countries</a>
+                <a class="dropdown-item" href="{{ route('currencies.index') }}">Currencies</a>
+                <div class="dropdown-divider"></div>
                 @endrole
                 @role('super')
                 <a class="dropdown-item" href="{{ route('settings.index') }}">Settings</a>
                 <a class="dropdown-item" href="{{ route('settings.export-templates.index') }}">Templates</a>
-                <a class="dropdown-item" href="{{ route('currencies.index') }}">Currencies</a>
+                <div class="dropdown-divider"></div>
                 <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
                 <a class="dropdown-item" href="{{ route('product-asin.index') }}">Product ASIN Import</a>
                 <a class="dropdown-item" href="{{ route('unit-dimensions.index') }}">Unit Dimensions Import</a>
