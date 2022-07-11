@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 Route::group(['as' => 'api.'], function() {
     Route::post('login', 'Api\AuthController@login');
 
-    Route::group(['middleware' => ['auth:api', 'role:admin|super|supplier']], function() {
+    Route::group(['middleware' => ['auth:api', 'role:admin|super|supplier|pricing|pricing_approver']], function() {
         Route::resource('products.comments', 'Api\Products\CommentsController')->only(['store']);
         Route::resource('products', 'Api\Products\ProductsController')->only(['index', 'show', 'store', 'update', 'delete']);
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
@@ -24,13 +24,14 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index', 'store']);
         Route::resource('products.pricing','Api\Pricing\CreatePricingFromProductController')->only(['store']);
         Route::post('products/pricing', 'Api\Pricing\CreatePricingFromProductController@store');
+        Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);
+        Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['index']);
     });
 
     Route::group(['middleware' => ['auth:api', 'role:admin|super']], function() {
-        Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);
         Route::resource('settings', 'Api\Settings\SettingsController')->only(['index']);
         Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
-        Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['index', 'store']);
+        Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['store']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['update']);
         Route::resource('countries', 'Api\Countries\CountriesController')->only(['index', 'update']);
         Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);

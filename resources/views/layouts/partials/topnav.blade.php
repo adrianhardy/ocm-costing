@@ -8,7 +8,7 @@
             </a>
         </li>
         @endauth
-        @role('super|admin|supplier')
+        @role('super|pricing|pricing_approver|admin|supplier')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('products.index') }}">
                 <b-icon-flower-3 scale="0.8"></b-icon-flower-3>
