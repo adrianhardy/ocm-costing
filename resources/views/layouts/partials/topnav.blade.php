@@ -15,6 +15,13 @@
                 Products
             </a>
         </li>
+        @else
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" disabled>
+                <b-icon-flower-3 scale="0.8" disabled></b-icon-flower-3>
+                Products
+            </a>
+        </li>
         @endrole
         @role('super|admin')
         <li class="nav-item">
@@ -23,11 +30,25 @@
                 Shipments
             </a>
         </li>
+        @else
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" disabled>
+                <b-icon-box-seam scale="0.8" disabled></b-icon-box-seam>
+                Shipments
+            </a>
+        </li>
         @endrole
         @role('super|admin|supplier')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('sales-orders.index') }}">
-                <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
+                <b-icon-files scale="0.8"></b-icon-files>
+                Sales Orders
+            </a>
+        </li>
+        @else
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" disabled>
+                <b-icon-files scale="0.8" disabled></b-icon-files>
                 Sales Orders
             </a>
         </li>
@@ -39,11 +60,25 @@
                 Price List
             </a>
         </li>
+        @else
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" disabled>
+                <b-icon-file-ruled scale="0.8" disabled></b-icon-file-ruled>
+                Price List
+            </a>
+        </li>
         @endrole
         @role('super')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('suppliers.index') }}">
                 <b-icon-truck scale="0.8"></b-icon-truck>
+                Suppliers
+            </a>
+        </li>
+        @else
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" disabled>
+                <b-icon-truck scale="0.8" disabled></b-icon-truck>
                 Suppliers
             </a>
         </li>
@@ -55,11 +90,25 @@
                 Factories
             </a>
         </li>
+        @else
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" disabled>
+                <b-icon-building scale="0.8" disabled></b-icon-building>
+                Factories
+            </a>
+        </li>
         @endrole
         @role('super')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('users.index') }}">
                 <b-icon-person scale="0.8"></b-icon-person>
+                Users
+            </a>
+        </li>
+        @else
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" disabled>
+                <b-icon-person scale="0.8" disabled></b-icon-person>
                 Users
             </a>
         </li>
