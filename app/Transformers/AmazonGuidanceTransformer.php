@@ -42,7 +42,7 @@ class AmazonGuidanceTransformer extends TransformerAbstract
             $json['local_fba'] = $guidance->getFirstMedia('local_fba')->getFullUrl();
         }
         if($guidance->getFirstMedia('enf_fba')) {
-            $json['enf_fba'] = $guidance->getFirstMedia('enf_fba')->getFullUrl();
+            $json['efn_fba'] = $guidance->getFirstMedia('efn_fba')->getFullUrl();
         }
 
         return $json;

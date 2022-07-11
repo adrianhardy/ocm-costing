@@ -29,11 +29,11 @@ class AmazonGuidanceController extends Controller
                     ->usingFileName('local_fba.' . $request->file('file')->getClientOriginalExtension())
                     ->toMediaCollection('local_fba');
                 break;
-            case 'enf_fba':
+            case 'efn_fba':
                 $guidance->addMediaFromRequest('file')
                     ->usingName($request->input('collection'))
-                    ->usingFileName('enf_fba.' . $request->file('file')->getClientOriginalExtension())
-                    ->toMediaCollection('enf_fba');
+                    ->usingFileName('efn_fba.' . $request->file('file')->getClientOriginalExtension())
+                    ->toMediaCollection('efn_fba');
                 break;
         }
     }

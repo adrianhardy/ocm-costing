@@ -236,17 +236,17 @@
                         </b-tab>
                         <b-tab title="Small & Light">
                             <div style="max-height: 650px; overflow: auto">
-                                <img v-if="images" :src="images.sl" height="650" />
+                                <img v-if="images" :src="images.sl" />
                             </div>
                         </b-tab>
                         <b-tab title="Local FBA">
                             <div style="max-height: 650px; overflow: auto">
-                                <img v-if="images" :src="images.local_fba" height="650"/>
+                                <img v-if="images" :src="images.local_fba"/>
                             </div>
                         </b-tab>
                         <b-tab title="EFN FBA">
                             <div style="max-height: 650px; overflow: auto">
-                                <img v-if="images" :src="images.enf_fba" height="650" />
+                                <img v-if="images" :src="images.efn_fba" />
                             </div>
                         </b-tab>
                     </b-tabs>
