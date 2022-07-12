@@ -132,16 +132,6 @@ export default {
         }
     },
     methods: {
-        sendAllToPricing(){
-            const loading = this.$loading.show();
-            const url = '/api/products/pricing'
-            this.$http.post(url).then(response => {
-                loading.hide();
-            }).catch(error => {
-                this.$handleExceptionResponse(error, true);
-                loading.hide();
-            })
-        },
         createSalesOrder(){
             this.$refs['create-sales-order-modal'].open()
         },

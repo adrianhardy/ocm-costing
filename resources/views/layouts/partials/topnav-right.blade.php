@@ -14,12 +14,18 @@
 
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                 @role('super')
-                <div class="dropdown-header">Super Administrator</div>
+                <div class="dropdown-header">Super Administrator Tools</div>
                 <a class="dropdown-item" href="{{ route('countries.index') }}">Countries</a>
                 <a class="dropdown-item" href="{{ route('currencies.index') }}">Currencies</a>
                 <a class="dropdown-item" href="{{ route('factories.index') }}">Factories</a>
                 <a class="dropdown-item" href="{{ route('suppliers.index') }}">Suppliers</a>
                 <a class="dropdown-item" href="{{ route('users.index') }}">Users</a>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-header">Pricing Admin</div>
+                <a class="dropdown-item" href="#" @click="$refs['send-all-products-to-pricing'].send()">
+                    <send-all-products-to-pricing ref="send-all-products-to-pricing"></send-all-products-to-pricing>
+                    Re-price all products
+                </a>
                 <div class="dropdown-divider"></div>
                 @endrole
                 @role('super')

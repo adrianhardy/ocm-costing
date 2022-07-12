@@ -12,7 +12,17 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CreatePricingFromProductController extends Controller
 {
-    public function store(Request $request, PricingService $pricingService, Product $product = null) {
+    /**
+     * @param Request $request
+     * @param PricingService $pricingService
+     * @param Product|null $product
+     * @return void
+     */
+    public function store(
+        Request $request,
+        PricingService $pricingService,
+        Product $product = null
+    ) {
 
         if(!$product) {
             $products = Product::query()
