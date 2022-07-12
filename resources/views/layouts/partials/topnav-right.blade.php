@@ -1,32 +1,37 @@
 <ul class="navbar-nav ml-auto">
     <!-- Authentication Links -->
     @guest
-{{--        <li class="nav-item">--}}
-{{--            <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>--}}
-{{--        </li>--}}
+        {{--        <li class="nav-item">--}}
+        {{--            <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>--}}
+        {{--        </li>--}}
     @else
         <li class="nav-item dropdown">
-            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false" v-pre>
                 <b-icon-person-circle></b-icon-person-circle>
                 {{ Auth::user()->name }} <span class="caret"></span>
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                @role('admin|super')
+                @role('super')
+                <div class="dropdown-header">Super Administrator</div>
                 <a class="dropdown-item" href="{{ route('countries.index') }}">Countries</a>
                 <a class="dropdown-item" href="{{ route('currencies.index') }}">Currencies</a>
+                <a class="dropdown-item" href="{{ route('factories.index') }}">Factories</a>
+                <a class="dropdown-item" href="{{ route('suppliers.index') }}">Suppliers</a>
+                <a class="dropdown-item" href="{{ route('users.index') }}">Users</a>
                 <div class="dropdown-divider"></div>
                 @endrole
                 @role('super')
+                <div class="dropdown-header">Settings</div>
                 <a class="dropdown-item" href="{{ route('settings.index') }}">Settings</a>
                 <a class="dropdown-item" href="{{ route('settings.export-templates.index') }}">Templates</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
-                <a class="dropdown-item" href="{{ route('product-asin.index') }}">Product ASIN Import</a>
-                <a class="dropdown-item" href="{{ route('unit-dimensions.index') }}">Unit Dimensions Import</a>
-                <a class="dropdown-item" href="{{ route('documents.index') }}">Documents</a>
-                <div class="dropdown-divider"></div>
                 @endrole
+                @role('super|admin|pricing|pricing_admin')
+                <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
+                @endrole
+                <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{{ route('logout') }}"
                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

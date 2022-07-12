@@ -19,11 +19,7 @@
                                 </b-dropdown>
                             </slot>
                         </search-input>
-                        <b-dropdown size="lg" variant="primary" right text="Actions" class="ml-2">
-                            <b-dropdown-item href="/products/create">Create Product</b-dropdown-item>
-                            <b-dropdown-item href="/admin/imports/create">Import Products</b-dropdown-item>
-                            <b-dropdown-item @click="sendAllToPricing">Send All To Pricing</b-dropdown-item>
-                        </b-dropdown>
+                        <b-button class="ml-2" href="/products/create" variant="primary">Create</b-button>
                     </slot>
                 </table-header>
             </template>

@@ -9,7 +9,7 @@
                 <table-header v-model="pagination">
                     <slot>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
-                        <b-button variant="primary" @click="$refs['import-shipment-modal'].show()">Import</b-button>
+                        <b-button class="ml-2" variant="primary" @click="$refs['import-shipment-modal'].show()">Import</b-button>
                     </slot>
                 </table-header>
             </template>
@@ -31,7 +31,7 @@
                     </b-link>
                 </template>
                 <template #cell(export)="data">
-                    <a :href="`/shipments/${data.item.id}/generate-inspection-report`">Download</a>
+                    <a :href="`/shipments/${data.item.id}/generate-inspection-report`">Inspection</a>
                 </template>
             </b-table>
         </b-card>

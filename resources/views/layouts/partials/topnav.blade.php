@@ -57,60 +57,37 @@
         <li class="nav-item">
             <a class="nav-link" href="{{ route('price-list.index') }}">
                 <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
-                Price List
+                Pricing
             </a>
         </li>
         @else
         <li class="nav-item">
             <a class="nav-link disabled" href="#" disabled>
                 <b-icon-file-ruled scale="0.8" disabled></b-icon-file-ruled>
-                Price List
+                Pricing
             </a>
         </li>
         @endrole
-        @role('super')
+        @role('super|admin|pricing|pricing_approver')
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('suppliers.index') }}">
-                <b-icon-truck scale="0.8"></b-icon-truck>
-                Suppliers
-            </a>
-        </li>
-        @else
-        <li class="nav-item">
-            <a class="nav-link disabled" href="#" disabled>
-                <b-icon-truck scale="0.8" disabled></b-icon-truck>
-                Suppliers
+            <a class="nav-link" href="{{ route('documents.index') }}">
+                <b-icon-file-earmark-text scale="0.8"></b-icon-file-earmark-text>
+                Documents
             </a>
         </li>
         @endrole
-        @role('super')
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('factories.index') }}">
-                <b-icon-building scale="0.8"></b-icon-building>
-                Factories
+        @role('super|admin|pricing|pricing_approver')
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                <b-icon-upload scale="0.8"></b-icon-upload>
+                Importers
             </a>
-        </li>
-        @else
-        <li class="nav-item">
-            <a class="nav-link disabled" href="#" disabled>
-                <b-icon-building scale="0.8" disabled></b-icon-building>
-                Factories
-            </a>
-        </li>
-        @endrole
-        @role('super')
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('users.index') }}">
-                <b-icon-person scale="0.8"></b-icon-person>
-                Users
-            </a>
-        </li>
-        @else
-        <li class="nav-item">
-            <a class="nav-link disabled" href="#" disabled>
-                <b-icon-person scale="0.8" disabled></b-icon-person>
-                Users
-            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{{ route('product-asin.index') }}">Import ASIN/SKUs</a>
+                <a class="dropdown-item" href="{{ route('imports.create') }}">Import Products</a>
+                <a class="dropdown-item" href="{{ route('unit-dimensions.index') }}">Import Product Dimensions</a>
+                <a class="dropdown-item" href="{{ route('shipments.index') }}">Import Shipment Details</a>
+            </div>
         </li>
         @endrole
     @endauth

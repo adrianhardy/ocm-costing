@@ -4,7 +4,7 @@
             <div class="d-flex">
                 <b-pagination
                     class="mb-0"
-                    limit="10"
+                    limit="5"
                     align="left"
                     v-model="value.currentPage"
                     :total-rows="value.total"

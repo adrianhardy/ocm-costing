@@ -14,6 +14,7 @@
                                 </b-input-group-append>
                             </template>
                         </search-input>
+                        <b-button class="ml-2" variant="primary" @click="exportSelected()">Export</b-button>
                     </slot>
                 </table-header>
             </template>
@@ -60,6 +61,9 @@
                 <template #cell(unit_price_gbp)="data">
                     <a href="#" @click.prevent="openModal(data.item)">{{ data.value | cash_value }}</a>
                 </template>
+                <template #cell(est_landed_cost_per_unit_gbp)="data">
+                    {{ data.value | cash_value }}
+                </template>
                 <template #cell(button)="data">
                     <div v-if="!isApprover">
                         <div v-if="!data.item.submitted_at">
@@ -74,7 +78,6 @@
                 </template>
             </b-table>
         </b-card>
-        <b-button variant="primary" @click="exportSelected()">Export</b-button>
         <pricing-modal
             :euro-countries="euroCountries"
             :row-countries="rowCountries"
@@ -123,6 +126,14 @@ export default {
             return this.items.filter(item => item.selected)
         },
         exportSelected() {
+            if (this.selectedForExport.length < 1) {
+                this.$bvModal.msgBoxOk(
+                    "You must select some products for export first", {
+                        title: 'Product export'
+                    }
+                );
+                return;
+            }
             window.location.href = `/price-list/export/?product_pricing_ids=${this.selectedForExport.join(',')}`;
         },
         toggleSelectAll(all) {

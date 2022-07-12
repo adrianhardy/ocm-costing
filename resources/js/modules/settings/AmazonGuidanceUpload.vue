@@ -5,7 +5,7 @@
             <div class="col-12 col-md-4">
                 <h4>Small + Light</h4>
                 <div class="d-flex justify-content-center">
-                    <img v-if="images" :src="images.sl" width="300" />
+                    <img v-if="images && images.sl" :src="images.sl" width="300" />
                 </div>
                 <b-form-file accept="image/*" class="mt-3" v-model="sl" />
                 <div class="mt-3 d-flex justify-content-center">
@@ -16,7 +16,7 @@
             </div>
             <div class="col-12 col-md-4">
                 <h4>Local FBA</h4>
-                <img v-if="images" :src="images.local_fba" width="300"/>
+                <img v-if="images && images.local_fba" :src="images.local_fba" width="300"/>
                 <b-form-file accept="image/*" class="mt-3" v-model="local_fba" />
                 <div class="mt-3 d-flex justify-content-center">
                     <b-button variant="success" @click="update('local_fba', local_fba)">
@@ -25,9 +25,9 @@
                 </div>
             </div>
             <div class="col-12 col-md-4">
-                <h4>ENF FBA</h4>
+                <h4>EFN FBA</h4>
                 <div class="d-flex justify-content-center">
-                    <img v-if="images" :src="images.efn_fba" width="300"/>
+                    <img v-if="images && images.efn_fba" :src="images.efn_fba" width="300"/>
                 </div>
                 <b-form-file accept="image/*" class="mt-3" v-model="efn_fba"></b-form-file>
                 <div class="mt-3 d-flex justify-content-center">

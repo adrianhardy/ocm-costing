@@ -7,7 +7,7 @@
             <search-input v-model="search" placeholder="Type and press enter to search" @search="$refs['table'].refresh()"></search-input>
           </div>
           <slot>
-            <b-button href="/admin/users/create" variant="primary">Create New User</b-button>
+            <b-button class="ml-2" href="/admin/users/create" variant="primary">Create</b-button>
           </slot>
         </table-header>
       </template>
