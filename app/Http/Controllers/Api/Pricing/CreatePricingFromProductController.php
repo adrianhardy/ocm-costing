@@ -30,25 +30,13 @@ class CreatePricingFromProductController extends Controller
                 ->where('est_landed_cost_gbp', '>', 0)
                 ->get();
         } else {
-            $pricing = ProductPricing::query()->where('product_id', $product->id)->exists();
-
-            if($product->est_landed_cost_gbp <= 0) {
-                throw new HttpException('500', 'The estimated landed cost must be greater than 0');
-            } elseif ($pricing) {
-                throw new HttpException('500', 'Product already has pricing');
-            }
-
-            $products = [
-                $product
-            ];
+            $products = [$product];
         }
 
         DB::beginTransaction();
-
         foreach($products as $product) {
             $pricingService->sendToPricing($product);
         }
-
         DB::commit();
     }
 }

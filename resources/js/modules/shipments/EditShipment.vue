@@ -7,63 +7,104 @@
                     <b-form-group label="Reference">
                         <b-form-input v-model="shipment.reference"/>
                     </b-form-group>
-                    <b-form-group v-if="shipment.sales_order" label="Sales Order">
-                        <b-form-input readonly v-model="shipment.sales_order.sales_order_number"/>
-                    </b-form-group>
-                    <b-form-group label="Est Cost Cuft">
-                        <b-input-group prepend="£">
-                            <b-form-input readonly v-model="shipment.est_cost_cuft_gbp"/>
-                        </b-input-group>
-                    </b-form-group>
                 </div>
                 <div class="col-12 col-md-4">
                     <b-form-group label="Order Number">
                         <b-form-input v-model="shipment.our_order_number"/>
                     </b-form-group>
+                </div>
+                <div class="col-12 col-md-4">
+                    <b-form-group v-if="shipment.sales_order" label="Sales Order">
+                        <b-form-input readonly v-model="shipment.sales_order.sales_order_number"/>
+                    </b-form-group>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-4">
                     <b-form-group label="Vessel">
                         <b-form-input v-model="shipment.vessel_name"/>
-                    </b-form-group>
-                    <b-form-group label="Supplier Reference">
-                        <b-form-input v-model="shipment.supplier_ref"/>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-4">
                     <b-form-group label="Container Number">
                         <b-form-input v-model="shipment.container_number"/>
                     </b-form-group>
+                </div>
+                <div class="col-12 col-md-4">
                     <b-form-group label="BL Number">
                         <b-form-input v-model="shipment.bl_number"/>
                     </b-form-group>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-3">
+                    <b-form-group label="Est Cost Cuft">
+                        <b-input-group prepend="£">
+                            <b-form-input readonly :value="shipment.est_cost_cuft_gbp.toFixed(2)"/>
+                        </b-input-group>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-3">
+                    <b-form-group label="Supplier Reference">
+                        <b-form-input v-model="shipment.supplier_ref"/>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-3">
                     <b-form-group label="Shipping Agent Reference">
                         <b-form-input v-model="shipment.shipping_agent_ref"/>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-3">
+                    <b-form-group label="Shipping Invoice Amt">
+                        <b-input-group prepend="£">
+                            <b-form-input v-model="shipment.invoice_amt"/>
+                        </b-input-group>
                     </b-form-group>
                 </div>
             </div>
             <h4 class="mt-2">Dates</h4>
             <div class="row">
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-2 offset-md-1">
                     <b-form-group label="ETA">
-                        <b-form-datepicker v-model="shipment.estimated_arrival_at" />
+                        <b-form-datepicker v-model="shipment.estimated_arrival_at" label-no-date-selected="None Set" :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}" />
                     </b-form-group>
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-2">
                     <b-form-group label="ETD">
-                        <b-form-datepicker v-model="shipment.estimated_departure_at" />
+                        <b-form-datepicker v-model="shipment.estimated_departure_at" label-no-date-selected="None Set" :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}" />
                     </b-form-group>
                 </div>
-                <div class="col-12 col-md-3">
-                    <b-form-group label="Departed At">
-                        <b-form-datepicker v-model="shipment.departed_at"/>
+                <div class="col-12 col-md-2">
+                    <b-form-group label="Shipped At">
+                        <b-form-datepicker v-model="shipment.departed_at" label-no-date-selected="None Set" :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}" />
                     </b-form-group>
                 </div>
-                <div class="col-12 col-md-3">
-                    <b-form-group label="Docked At">
-                        <b-form-datepicker v-model="shipment.docked_at"/>
+                <div class="col-12 col-md-2">
+                    <b-form-group label="Booked In">
+                        <b-form-datepicker v-model="shipment.booked_in_at" label-no-date-selected="None Set" :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"/>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-2">
+                    <b-form-group label="Delivered At">
+                        <b-form-datepicker v-model="shipment.docked_at" label-no-date-selected="None Set" :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"/>
                     </b-form-group>
                 </div>
             </div>
-            <div class="d-flex justify-content-end">
-                <b-button @click="update" variant="primary">Update</b-button>
+            <div class="mt-3 d-flex justify-content-between">
+                <div>
+                    <b-button :href="`/shipments/${shipment.id}/generate-inspection-report`">Generate Inspection Report</b-button>
+                </div>
+                <div>
+                    <b-input-group>
+                        <b-input-group-addon is-text>
+                            <b-checkbox v-model="updateLandedCosts">Calculate Landed Costs</b-checkbox>
+                        </b-input-group-addon>
+                        <b-input-group-addon is-text>
+                            <b-checkbox v-model="sendToPricing" :disabled="!updateLandedCosts">Send to pricing</b-checkbox>
+                        </b-input-group-addon>
+                        <b-button @click="update" variant="primary">Update</b-button>
+                    </b-input-group>
+                </div>
             </div>
             <h4 class="mt-2">Sales Order Lines</h4>
             <div>
@@ -136,10 +177,15 @@ export default {
     methods: {
         update() {
             const loading = this.$loading.show();
-            const url = `/api/shipments/${this.shipment.id}`;
-            this.$http.put(url, this.shipment).then(response => {
-                this.refresh();
+            let xhrs = [
+                this.$http.put(`/api/shipments/${this.shipment.id}`, this.shipment),
+                this.$http.post(`/api/shipments/${this.shipment.id}/landed-costs`, {
+                    'send_to_pricing': this.send_to_pricing
+                })
+            ];
+            this.$http.all(xhrs).then(() => {
                 loading.hide();
+                this.refresh();
             }).catch(error => {
                 this.$handleExceptionResponse(error, true);
                 loading.hide();
@@ -188,6 +234,8 @@ export default {
     },
     data() {
         return {
+            sendToPricing: false,
+            updateLandedCosts: false,
             shipment: {},
             file: null
         }

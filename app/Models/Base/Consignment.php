@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $est_cost_cuft_gbp
  * @property Carbon|null $departed_at
  * @property Carbon|null $docked_at
+ * @property Carbon|null $booked_in_at
  * @property int|null $sales_order_id
  * @property float|null $invoice_amt
  * @property int|null $creator_id
@@ -57,6 +58,7 @@ class Consignment extends Model
 	protected $dates = [
 		'departed_at',
 		'docked_at',
+		'booked_in_at',
 		'estimated_arrival_at',
 		'estimated_departure_at'
 	];

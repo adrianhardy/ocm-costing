@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class TransformPickingListFileCommand extends Command
 {
@@ -35,7 +36,14 @@ class TransformPickingListFileCommand extends Command
         $reader = IOFactory::createReaderForFile($this->argument('file'));
         $reader->setReadEmptyCells(false);
         $document = $reader->load($this->argument('file'));
-        $this->sheet = $document->getAllSheets()[$this->argument('sheet')];
+
+        if (is_numeric($this->argument('sheet'))) {
+            $this->sheet = $document->getAllSheets()[$this->argument('sheet')];
+        }
+
+        if ($this->argument('sheet') == 'auto') {
+            $this->sheet = $document->getSheetByName(strtoupper($this->option('type')));
+        }
 
         $lines = [];
         switch($this->option('type')) {
@@ -55,6 +63,7 @@ class TransformPickingListFileCommand extends Command
 
     protected function extractInvoiceLines()
     {
+        $vvv = $this->verbosity >= OutputInterface::VERBOSITY_VERBOSE;
         $tableStart = $this->findPayloadStartingRow();
         $coords = $this->sheet->getHighestRowAndColumn();
         $maxRows = $coords['row'];
@@ -85,13 +94,16 @@ class TransformPickingListFileCommand extends Command
                 $row['po_number'] = $currentPo;
             }
 
-            if ($row['po_number'] &&
+            $poOk = ($row['po_number'] && $currentPo) || (!$currentPo && !$row['po_number']);
+            if ($poOk &&
                 $row['article_number'] &&
                 $row['qty'] &&
                 $row['unit_price']
             ) {
-                $row['unit_price'] = str_replace('US$', '', $row['unit_price']);
-                $row['sub_total'] = str_replace('US$', '', $row['unit_price']);
+                $row['unit_price'] = trim(str_replace('US$', '', $row['unit_price']));
+                $row['sub_total'] = trim(str_replace('US$', '', $row['sub_total']));
+                $row['unit_price'] = trim(str_replace('USD', '', $row['unit_price']));
+                $row['sub_total'] = trim(str_replace('USD', '', $row['sub_total']));
                 $lines[] = $row;
             }
         }
@@ -101,6 +113,7 @@ class TransformPickingListFileCommand extends Command
 
     protected function extractPackingLines()
     {
+        $vvv = $this->verbosity >= OutputInterface::VERBOSITY_VERBOSE;
         $tableStart = $this->findPayloadStartingRow();
         $coords = $this->sheet->getHighestRowAndColumn();
         $maxRows = $coords['row'];
@@ -136,7 +149,9 @@ class TransformPickingListFileCommand extends Command
                 $row['po_number'] = $currentPo;
             }
 
-            if ($row['po_number'] &&
+            $poOk = ($row['po_number'] && $currentPo) || (!$currentPo && !$row['po_number']);
+
+            if ($poOk &&
                 $row['article_number'] &&
                 $row['qty'] &&
                 $row['ctn'] &&

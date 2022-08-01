@@ -82,7 +82,8 @@ class ConsignmentTransformer extends TransformerAbstract
             'departed_at',
             'docked_at',
             'estimated_arrival_at',
-            'estimated_departure_at'
+            'estimated_departure_at',
+            'booked_in_at'
         ]);
     }
 }

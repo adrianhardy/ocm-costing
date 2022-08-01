@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Api\Shipments;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
+use App\Mail\NewInboundShipmentReadyNotification;
 use App\Models\Consignment;
 use App\Models\Repositories\ConsignmentRepository;
 use App\Transformers\ConsignmentTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Mail;
 
 class ShipmentsController extends Controller
 {
@@ -37,7 +40,8 @@ class ShipmentsController extends Controller
             'supplier_ref' => 'sometimes|min:0|max:32',
             'container_number' => 'required|min:0|max:32',
             'bl_number' => 'sometimes|min:0|max:32',
-            'shipping_agent_ref' => 'sometimes|min:0|max:32'
+            'shipping_agent_ref' => 'sometimes|min:0|max:32',
+            'invoice_amt' => 'sometimes|numeric|min:0'
         ]);
 
         $shipment->fill($request->only([
@@ -49,20 +53,48 @@ class ShipmentsController extends Controller
             'container_number',
             'bl_number',
             'shipping_agent_ref',
+            'invoice_amt'
         ]));
 
         if ($request->input('departed_at')) {
             $shipment->departed_at = Carbon::parse($request->input('departed_at'));
+        } else {
+            $shipment->departed_at = null;
         }
+
         if ($request->input('docked_at')) {
             $shipment->docked_at = Carbon::parse($request->input('docked_at'));
+        } else {
+            $shipment->docked_at = null;
         }
+
         if ($request->input('estimated_arrival_at')) {
             $shipment->estimated_arrival_at = Carbon::parse($request->input('estimated_arrival_at'));
+        } else {
+            $shipment->estimated_arrival_at = null;
         }
+
         if ($request->input('estimated_departure_at')) {
             $shipment->estimated_departure_at = Carbon::parse($request->input('estimated_departure_at'));
+        } else {
+            $shipment->estimated_departure_at = null;
+        }
+
+        if ($request->input('booked_in_at')) {
+            $shipment->booked_in_at = Carbon::parse($request->input('booked_in_at'));
+        } else {
+            $shipment->booked_in_at = null;
         }
         $shipment->save();
+
+        if ($shipment->wasChanged(['estimated_arrival_at'])) {
+            $mail = new NewInboundShipmentReadyNotification($shipment);
+            $mail
+                ->to('shipping-alerts@orchardcrownmall.co.uk', 'Warehouse')
+                ->subject('Inbound shipment update');
+
+            Mail::send($mail);
+        }
+
     }
 }

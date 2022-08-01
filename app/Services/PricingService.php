@@ -7,7 +7,6 @@ use App\Models\Currency;
 use App\Models\Product;
 use App\Models\ProductPricing;
 use App\Models\ProductPricingCountry;
-use App\Models\ProductPricingCurrency;
 use App\Models\SalesOrderLine;
 use Carbon\Carbon;
 
@@ -60,9 +59,16 @@ class PricingService
         if ($line) {
             $costingData = $line->worst_estimated_landed_cost_data;
         } else {
-            $costingData = [
-                'est_landed_cost_per_unit_gbp' => $product->est_landed_cost_gbp
-            ];
+            if ($product->current_landed_cost_per_unit_gbp) {
+                $costingData = [
+                    'est_landed_cost_per_unit_gbp' => $product->current_landed_cost_per_unit_gbp
+                ];
+            } else {
+                $costingData = [
+                    'est_landed_cost_per_unit_gbp' => $product->est_landed_cost_gbp
+                ];
+            }
+
         }
 
         $suggestedPrice = $costingData['est_landed_cost_per_unit_gbp'] * setting('suggested_price_multiplier');

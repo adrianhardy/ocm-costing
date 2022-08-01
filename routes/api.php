@@ -38,7 +38,6 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('sales-orders.lines.media', 'Api\SalesOrders\Lines\MediaController')->only(['store']);
         Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'destroy']);
         Route::post('sales-orders/restore', 'Api\Admin\RestoreSalesOrderController@restore');
-        Route::resource('sales-orders.landed-costs', 'Api\SalesOrders\CalculateLandedCostController')->only(['store']);
         Route::resource('sales-orders.history', 'Api\SalesOrders\HistoryController')->only(['index']);
         Route::resource('sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['store', 'update', 'destroy']);
         Route::resource('sales-orders.tokens', 'Api\SalesOrders\AccessTokensController')->only(['index', 'store', 'destroy']);
@@ -53,6 +52,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('inspections', 'Api\InspectionReports\InspectionReportsController')->only(['show', 'update', 'index']);
         Route::resource('/admin/import/unit-dimensions', 'Api\Admin\Imports\UnitDimensionsImportController')->only(['store']);
         Route::resource('/admin/import/product-asin', 'Api\Admin\Imports\ProductASINImportController')->only(['store']);
+        Route::resource('shipments.landed-costs', 'Api\Shipments\CalculateLandedCostController')->only(['store']);
     });
 
     Route::group(['middleware' => ['auth:api', 'role:super']], function() {

@@ -34,20 +34,12 @@ class HomeController extends Controller
             ->currentStatus(SalesOrder::STATUS_CONFIRMED_SALES_ORDER)
             ->get();
 
-        $orders['receiving'] = SalesOrder::query()
+        $orders['shipments'] = SalesOrder::query()
             ->orderBy('created_at')
-            ->whereHas('consignments', function ($query) {
-                $query->where(function ($query) {
-                    $query->whereNull('docked_at');
-                });
-            })
-            ->get();
-
-        $orders['recently_docked'] = SalesOrder::query()
-            ->orderBy('created_at')
-            ->whereHas('consignments', function ($query) {
-                $query->where(function ($query) {
-                    $query->whereBetween('docked_at', [now()->subWeeks(4), now()->addWeek()]);
+            ->whereHas('consignments', function($query) {
+                $query->where(function($query) {
+                    $query->whereNull('docked_at')
+                        ->orWhere('docked_at', '>', now()->subWeeks(4));
                 });
             })
             ->get();

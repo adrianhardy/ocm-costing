@@ -15,12 +15,13 @@ use Spatie\MediaLibrary\Models\Media;
 
 class InspectionSheetBuilder
 {
-    protected $currentWriterRow = 0;
+    protected $currentWriterRow = 5;
     /** @var Worksheet */
     protected $sheet;
     protected $columns = [
         'Product Photo',
         'Art No.',
+        'Barcode',
         'Products Description',
         'Packing',
         'BARCODE PRODUCT / INNER / OUTER CHECK IT IS CORRECT FOR PRODUCT',
@@ -75,6 +76,7 @@ class InspectionSheetBuilder
         }
 
         $sheet->setCellValueByColumnAndRow(2, $this->currentWriterRow, $line->article_number);
+        $sheet->setCellValueByColumnAndRow(3, $this->currentWriterRow, $line->barcode);
         // border over the top of the current row
         for ($i = 1; $i <= count($this->columns); $i++) {
             $sheet->getStyleByColumnAndRow($i, $this->currentWriterRow)
@@ -90,7 +92,7 @@ class InspectionSheetBuilder
             PREG_SPLIT_NO_EMPTY
         );
         foreach ($description as $i => $text) {
-            $sheet->setCellValueByColumnAndRow(3, $this->currentWriterRow+$i, $text);
+            $sheet->setCellValueByColumnAndRow(4, $this->currentWriterRow+$i, $text);
         }
 
         $packing = preg_split(
@@ -101,7 +103,7 @@ class InspectionSheetBuilder
         );
 
         foreach ($packing as $i => $text) {
-            $sheet->setCellValueByColumnAndRow(4, $this->currentWriterRow+$i, $text);
+            $sheet->setCellValueByColumnAndRow(5, $this->currentWriterRow+$i, $text);
         }
 
         $rowCount = max(count($description), count($packing));
@@ -113,11 +115,11 @@ class InspectionSheetBuilder
         for ($row = 0; $row < $rowCount; $row++) {
 
             $desc = $sheet
-                ->getCellByColumnAndRow(3, $this->currentWriterRow - $row)
+                ->getCellByColumnAndRow(4, $this->currentWriterRow - $row)
                 ->getValue();
 
             $packing = $sheet
-                ->getCellByColumnAndRow(4, $this->currentWriterRow - $row)
+                ->getCellByColumnAndRow(5, $this->currentWriterRow - $row)
                 ->getValue();
 
             $longest = max(strlen($desc), strlen($packing));
@@ -149,11 +151,17 @@ class InspectionSheetBuilder
 
     protected function drawTitle(Consignment $consignment)
     {
-        $this->sheet->setCellValue('A1', "CONTAINER: " . $consignment->container_number);
-        $this->sheet->getStyle('A1')->applyFromArray([
-            'font' => ['bold' => true]
-        ]);
-        $this->currentWriterRow++;
+        $this->sheet->setCellValue('A1', "REFERENCE: " . $consignment->reference);
+        $this->sheet->setCellValue('A2', "CONTAINER: " . $consignment->container_number);
+        $this->sheet->setCellValue('A3', "SUPPLIER REF: " . $consignment->supplier_ref);
+        $this->sheet->setCellValue('C1', "ESTIMATED ARRIVAL: " . optional($consignment->estimated_arrival_at)->format('d/m/Y'));
+        $this->sheet->setCellValue('C2', "BOOKED IN: " . optional($consignment->booked_in_at)->format('d/m/Y'));
+        $this->sheet->setCellValue('C3', "DELIVERED: " . optional($consignment->docked_at)->format('d/m/Y'));
+        foreach (['A1', 'A2', 'A3', 'C1', 'C2', 'C3'] as $cell) {
+            $this->sheet->getStyle($cell)->applyFromArray([
+                'font' => ['bold' => true]
+            ]);
+        }
     }
 
     protected function drawHeaders()
@@ -162,7 +170,7 @@ class InspectionSheetBuilder
         foreach ($this->columns as $col => $name) {
 
             $width = 5*7.5;
-            if ($col == 1 || $col > 3) {
+            if ($col == 1 || $col == 2 || $col > 4) {
                 $width = 5*3;
             }
 

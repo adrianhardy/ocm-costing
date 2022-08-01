@@ -7,8 +7,7 @@
                         <b-select v-model="stage" style="width:20% !important" @change="$refs['table'].refresh()">
                             <b-select-option value="">All</b-select-option>
                             <b-select-option value="quote">Quotes</b-select-option>
-                            <b-select-option value="finalised">Finalised</b-select-option>
-                            <b-select-option value="sent">Sent</b-select-option>
+                            <b-select-option value="order">Orders</b-select-option>
                             <b-select-option value="deleted">Deleted</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
@@ -72,7 +71,8 @@ export default {
     name: "SalesOrdersList",
     components: {SearchInput, CreateSalesOrderModal, TableHeader},
     props: {
-        isSupplier: Boolean
+        isSupplier: Boolean,
+        initStage: String,
     },
     filters: {
         date: dateFilter
@@ -157,7 +157,7 @@ export default {
     data() {
         return {
             search: '',
-            stage: '',
+            stage: this.initStage,
             pagination: {
                 total: 0,
                 perPage: 100,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Shipments;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewInboundShipmentReadyNotification;
 use App\Models\Consignment;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ImportController extends Controller
 {
@@ -45,22 +47,27 @@ class ImportController extends Controller
         }
 
         // convert the XLSX file to JSON ...
-        Artisan::call("import:shipping-file --type=$type {$file->getRealPath()}");
+        Artisan::call("import:shipping-file --type=$type {$file->getRealPath()} auto");
         $json = json_decode(Artisan::output(), true);
         $summary = collect();
         $uniqueSalesOrderReferences = [];
+        $consignment = null;
         DB::beginTransaction();
-
         // For every line found in the XLSX file
         foreach ($json['lines'] as $row) {
 
             /** @var SalesOrderLine $line */
             $line = SalesOrderLine
                 ::query()
-                ->where('article_number', $row['article_number'])
-                ->whereHas('sales_order', function ($query) use ($row) {
+                ->where('article_number', $row['article_number']);
+
+            if ($row['po_number']) {
+                $line->whereHas('sales_order', function ($query) use ($row) {
                     $query->where('reference', $row['po_number']);
-                })->first();
+                });
+            }
+
+            $line = $line->first();
 
             if (!$line) {
                 continue;
@@ -89,7 +96,8 @@ class ImportController extends Controller
                     ]);
                 }
                 $consignment->fill([
-                    'reference' => $json['shipment']['vessel_name'],
+                    'reference' => '',
+                    'supplier_reference' => $json['invoice_number'],
                     'vessel_name' => $json['shipment']['vessel_name'],
                     'estimated_arrival_at' => Carbon::parse($json['shipment']['estimated_date_of_arrival']),
                     'estimated_departure_at' => Carbon::parse($json['shipment']['estimated_date_of_departure']),
@@ -127,6 +135,16 @@ class ImportController extends Controller
                 'line' => fractal($line, new SalesOrderLineTransformer())->parseIncludes('product'),
                 'raw' => $row
             ];
+
+
+            if ($consignment && $consignment->wasChanged(['estimated_arrival_at']) && !$preview) {
+                $mail = new NewInboundShipmentReadyNotification($consignment);
+                $mail
+                    ->to('shipping-alerts@orchardcrownmall.co.uk', 'Warehouse')
+                    ->subject('Inbound shipment update');
+
+                Mail::send($mail);
+            }
         }
 
         DB::commit();

@@ -8,21 +8,38 @@
             </a>
         </li>
         @endauth
-        @role('super|pricing|pricing_approver|admin|supplier')
+        @role('super|admin')
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('products.index') }}">
-                <b-icon-flower-3 scale="0.8"></b-icon-flower-3>
-                Products
+            <a class="nav-link" href="{{ route('sales-orders.index', ['stage' => 'quote']) }}">
+                <b-icon-list-task scale="0.8"></b-icon-list-task>
+                Quotes
             </a>
         </li>
         @else
         <li class="nav-item">
             <a class="nav-link disabled" href="#" disabled>
-                <b-icon-flower-3 scale="0.8" disabled></b-icon-flower-3>
-                Products
+                <b-icon-list-task scale="0.8"></b-icon-list-task>
+                Quotes
             </a>
         </li>
         @endrole
+
+        @role('super|admin|supplier')
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('sales-orders.index', ['stage' => 'order']) }}">
+                <b-icon-list-check scale="0.8"></b-icon-list-check>
+                Orders
+            </a>
+        </li>
+        @else
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#" disabled>
+                <b-icon-list-check scale="0.8"></b-icon-list-check>
+                Orders
+            </a>
+        </li>
+        @endrole
+
         @role('super|admin')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('shipments.index') }}">
@@ -38,18 +55,19 @@
             </a>
         </li>
         @endrole
-        @role('super|admin|supplier')
+
+        @role('super|pricing|pricing_approver|admin|supplier')
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('sales-orders.index') }}">
-                <b-icon-files scale="0.8"></b-icon-files>
-                Sales Orders
+            <a class="nav-link" href="{{ route('products.index') }}">
+                <b-icon-flower-3 scale="0.8"></b-icon-flower-3>
+                Products
             </a>
         </li>
         @else
         <li class="nav-item">
             <a class="nav-link disabled" href="#" disabled>
-                <b-icon-files scale="0.8" disabled></b-icon-files>
-                Sales Orders
+                <b-icon-flower-3 scale="0.8" disabled></b-icon-flower-3>
+                Products
             </a>
         </li>
         @endrole

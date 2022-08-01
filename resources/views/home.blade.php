@@ -7,23 +7,20 @@
         <div class="card-body">
             <table class="table">
                 <tr class="text-center">
-                    <th class="w-16 ">
+                    <th class="w-20 ">
                         Draft<br />
                     </th>
-                    <th class="w-16">
+                    <th class="w-20">
                         Quote<br />
                     </th>
-                    <th class="w-16">
-                        Sales Order<br />
+                    <th class="w-20">
+                        Unconfirmed SO<br />
                     </th>
-                    <th class="w-16">
-                        Confirmed<br />
+                    <th class="w-20">
+                        Confirmed SO<br />
                     </th>
-                    <th class="w-16">
-                        On Water<br />
-                    </th>
-                    <th class="w-16">
-                        Recently Docked<br />
+                    <th class="w-20">
+                        Shipped<br />
                     </th>
                     <th></th>
                 </tr>
@@ -49,7 +46,7 @@
                         @endforeach
                     </td>
                     <td>
-                        @foreach ($orders['receiving'] as $order)
+                        @foreach ($orders['shipments'] as $order)
                             <div class="dropdown">
                             <button class="btn btn-primary btn-block mb-1 dropdown-toggle" data-toggle="dropdown">
                                 <span class="badge badge-light">{{ $order->consignments->count() }}</span>
@@ -57,42 +54,65 @@
                             </button>
                             <div class="dropdown-menu">
                                 @foreach ($order->consignments as $consignment)
-                                <a class="dropdown-item" href="{{ route('shipments.show', $consignment) }}">
-                                    {{ $consignment->vessel_name }}<br />
-                                    <small class="text-muted">
-                                        @if ($consignment->docked_at)
-                                            Docked: {{ $consignment->docked_at->format('d/m/Y') }}
-                                        @else
-                                            Not yet docked
-                                        @endif
-                                    </small>
-                                </a>
+                                <div class="dropdown-item">
+                                    <a href="{{ route('shipments.show', $consignment) }}">
+                                        {{ $consignment->vessel_name }} {{ $consignment->reference }}
+                                    </a>
+                                    <div class="text-muted small">
+                                        <div class="row">
+                                            <div class="col-5">ETD:</div>
+                                            <div class="col-7">
+                                                {{
+                                                    $consignment->estimated_departure_at?
+                                                    $consignment->estimated_departure_at->format('d/m/Y'):
+                                                    'Not set'
+                                                 }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">ETA:</div>
+                                            <div class="col-7">
+                                                {{
+                                                    $consignment->estimated_arrival_at?
+                                                    $consignment->estimated_departure_at->format('d/m/Y'):
+                                                    'Not set'
+                                                 }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">Shipped:</div>
+                                            <div class="col-7">
+                                                {{
+                                                    $consignment->departed_at?
+                                                    $consignment->departed_at->format('d/m/Y'):
+                                                    'Not set'
+                                                 }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">Booked In:</div>
+                                            <div class="col-7">
+                                                {{
+                                                    $consignment->booked_in?
+                                                    $consignment->booked_in->format('d/m/Y'):
+                                                    'Not set'
+                                                 }}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-5">Delivered:</div>
+                                            <div class="col-7">
+                                                {{
+                                                    $consignment->docked_at?
+                                                    $consignment->docked_at->format('d/m/Y'):
+                                                    'Not set'
+                                                 }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 @endforeach
                             </div>
-                            </div>
-                        @endforeach
-                    </td>
-                    <td>
-                        @foreach ($orders['recently_docked'] as $order)
-                            <div class="dropdown">
-                                <button class="btn btn-primary btn-block mb-1 dropdown-toggle" data-toggle="dropdown">
-                                    <span class="badge badge-light">{{ $order->consignments->count() }}</span>
-                                    {{ $order->reference }}
-                                </button>
-                                <div class="dropdown-menu">
-                                    @foreach ($order->consignments as $consignment)
-                                        <a class="dropdown-item" href="{{ route('shipments.show', $consignment) }}">
-                                            {{ $consignment->vessel_name }}<br />
-                                            <small class="text-muted">
-                                                @if ($consignment->docked_at)
-                                                    Docked: {{ $consignment->docked_at->format('d/m/Y') }}
-                                                @else
-                                                    Not yet docked
-                                                @endif
-                                            </small>
-                                        </a>
-                                    @endforeach
-                                </div>
                             </div>
                         @endforeach
                     </td>

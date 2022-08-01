@@ -274,15 +274,6 @@
                         Add Line
                     </b-button>
                     <b-button
-                        v-if="!isSupplier && salesOrder.is_finalised && !hasSelectedRows"
-                        variant="primary"
-                        class="mr-1"
-                        size="lg"
-                        @click="runLandedCostCalc()"
-                    >
-                        Run Landed Cost Calculation
-                    </b-button>
-                    <b-button
                         class="mr-1"
                         size="lg"
                         variant="primary"
@@ -474,18 +465,6 @@ export default {
         }
     },
     methods: {
-        runLandedCostCalc() {
-            const loader = this.$loading.show();
-            this.$http
-                .post(`/api/sales-orders/${this.salesOrderId}/landed-costs`)
-                .then(() => {
-                    loader.hide();
-                    this.refresh();
-                }).catch(error => {
-                    loader.hide();
-                    this.$handleExceptionResponse(error, true);
-                });
-        },
         openSupplierAccessModal() {
             this.$refs['supplier-access-modal'].open();
         },

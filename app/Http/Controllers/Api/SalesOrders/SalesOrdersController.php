@@ -52,13 +52,19 @@ class SalesOrdersController extends Controller
                 $paginator = $paginator->withTrashed()->whereNotNull('deleted_at');
                 break;
             case 'quote':
-                $paginator = $paginator->whereNull('finalised_at')->whereNull('sent_at');
+                $paginator = $paginator
+                    ->currentStatus([
+                        SalesOrder::STATUS_DRAFT,
+                        SalesOrder::STATUS_QUOTE,
+                        SalesOrder::STATUS_QUOTE_REQUEST
+                    ]);
                 break;
-            case 'finalised':
-                $paginator = $paginator->whereNotNull('finalised_at')->whereNull('sent_at');
-                break;
-            Case 'sent':
-                $paginator = $paginator->whereNotNull('finalised_at')->whereNotNull('sent_at');
+            case 'order':
+                $paginator = $paginator
+                    ->currentStatus([
+                        SalesOrder::STATUS_CONFIRMED_SALES_ORDER,
+                        SalesOrder::STATUS_SALES_ORDER
+                    ]);
                 break;
         }
 

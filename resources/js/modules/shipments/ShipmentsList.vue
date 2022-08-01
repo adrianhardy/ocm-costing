@@ -19,6 +19,8 @@
                 :items="items"
                 :current-page="pagination.currentPage"
                 :per-page="pagination.perPage"
+                sort-by="id"
+                :sort-desc="true"
             >
                 <template #cell(reference)="data">
                     <b-link :href="`/shipments/${data.item.id}`">
@@ -29,9 +31,6 @@
                     <b-link :href="`/sales-orders/${data.value}/edit`">
                         {{ data.value }}
                     </b-link>
-                </template>
-                <template #cell(export)="data">
-                    <a :href="`/shipments/${data.item.id}/generate-inspection-report`">Inspection</a>
                 </template>
             </b-table>
         </b-card>
@@ -54,6 +53,7 @@ export default {
         fields() {
             return [
                 {key: 'reference', label: 'Reference'},
+                {key: 'supplier_ref', label: 'Supplier Reference'},
                 {key: 'our_order_number', label: 'Order #'},
                 {key: 'container_number', label: 'Container #'},
                 {key: 'bl_number', label: 'BL #'},
@@ -74,7 +74,22 @@ export default {
                         return this.$options.filters.date_dmY(value);
                     }, sortable: true
                 },
-                {key: 'export', label: ''}
+                {
+                    key: 'departed_at', label: 'Shipped', formatter: value => {
+                        if (!value) {
+                            return '';
+                        }
+                        return this.$options.filters.date_dmY(value);
+                    }, sortable: true
+                },
+                {
+                    key: 'docked_at', label: 'Delivered', formatter: value => {
+                        if (!value) {
+                            return '';
+                        }
+                        return this.$options.filters.date_dmY(value);
+                    }, sortable: true
+                }
             ]
         },
         include() {

@@ -30,7 +30,11 @@ class ProductPricingExportController extends Controller
             'barcode',
             'SKU',
             'ASIN',
+            '',
             'uk_postage_method',
+            'unit_gb_sf_price',
+            'unit_gb_fba_price',
+            '',
             'eu_postage_method',
             'row_postage_method'
         ];
@@ -116,6 +120,7 @@ class ProductPricingExportController extends Controller
 
         $row['sku'] = $sku;
         $row['asin'] = $asin;
+        $row['blank_1'] = '';
 
         $row = $row->concat($pricing->product->only(
             'uk_postage_method',
