@@ -80,8 +80,8 @@ class CalculateLandedCostController extends Controller
             if ($request->input('send_to_pricing')) {
                 $pricingService->sendToPricing($line);
             }
-
-            return response()->json();
         }
+
+        return response()->json();
     }
 }

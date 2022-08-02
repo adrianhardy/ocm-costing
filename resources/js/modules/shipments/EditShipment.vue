@@ -178,11 +178,15 @@ export default {
         update() {
             const loading = this.$loading.show();
             let xhrs = [
-                this.$http.put(`/api/shipments/${this.shipment.id}`, this.shipment),
-                this.$http.post(`/api/shipments/${this.shipment.id}/landed-costs`, {
-                    'send_to_pricing': this.send_to_pricing
-                })
+                this.$http.put(`/api/shipments/${this.shipment.id}`, this.shipment)
             ];
+
+            if (this.updateLandedCosts) {
+                this.$http.post(`/api/shipments/${this.shipment.id}/landed-costs`, {
+                    'send_to_pricing': this.sendToPricing
+                });
+            }
+
             this.$http.all(xhrs).then(() => {
                 loading.hide();
                 this.refresh();
