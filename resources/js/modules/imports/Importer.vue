@@ -73,6 +73,7 @@
                 </b-form-group>
             </div>
         </div>
+        <b-button class="mb-4" href="/admin/import/template/PRODUCT-IMPORT-TEMPLATE.xlsx" variant="outline-primary">Template</b-button>
         <b-card variant="primary" v-if="!quoteReference && !file" title="Quote Numbers">
             <p>
                 Quote numbers are required to separate out historic pricing. An item number

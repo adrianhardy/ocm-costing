@@ -10,7 +10,8 @@
                     <b-form-checkbox v-model="skip" :value="1" :unchecked-value="0">Skip First Row?</b-form-checkbox>
                 </b-form-group>
             </div>
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-between">
+                <b-button href="/admin/import/template/ASIN-IMPORT-TEMPLATE.csv" variant="outline-primary">Template</b-button>
                 <b-button @click="upload" variant="primary">Upload</b-button>
             </div>
         </b-card>
