@@ -1,0 +1,2 @@
+article_number ,primary_sku,primary_asin,additional_skus,additional_asins
+123456,new_sku,new_asin,"sku_one,sku_two","asin_one,asin_two"

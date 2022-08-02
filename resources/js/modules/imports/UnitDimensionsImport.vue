@@ -11,8 +11,9 @@
                 </b-form-group>
             </div>
 
-            <div class="d-flex justify-content-end">
-                <b-button variant="primary" @click="upload">Upload</b-button>
+            <div class="d-flex justify-content-between">
+                <b-button href="/admin/import/template/IMPORT-UNIT-WEIGHT-TEMPLATE.csv" variant="outline-primary">Template</b-button>
+                <b-button @click="upload" variant="primary">Upload</b-button>
             </div>
         </b-card>
         <b-card class="shadow-sm mt-2">
