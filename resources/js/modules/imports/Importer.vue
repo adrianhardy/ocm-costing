@@ -39,8 +39,8 @@
         </div>
         <div class="row">
             <div class="col-12 col-md-2">
-                <b-form-group label="Import Type">
-                    <b-form-checkbox label="Date" v-model="historic" @change="updateHistoric">Historic Landed Cost Only</b-form-checkbox>
+                <b-form-group label="Import Type" description="No updates to products, just the creation of landed costs">
+                    <b-form-checkbox class="mt-2" label="Date" v-model="historic" @change="updateHistoric">Landed Costs Only</b-form-checkbox>
                 </b-form-group>
             </div>
             <div class="col-12 col-md-2">
@@ -55,7 +55,9 @@
             </div>
             <div class="col-12 col-md-2">
                 <b-form-group label="Ship Cost Per Cu.ft.">
-                    <b-form-input :disabled="historic === false" v-model="cuft"/>
+                    <b-input-group prepend="£">
+                        <b-form-input :disabled="historic === false" v-model="cuft"/>
+                    </b-input-group>
                 </b-form-group>
             </div>
             <div class="col-12 col-md-2">
@@ -152,7 +154,13 @@ import FactorySelect from "../../components/FactorySelect";
 export default {
     name: "Importer",
     components: {FactorySelect, SupplierSelect, ProductPreviewer},
-    props: {'code': String, 'types': Object, 'accounts': Array, 'columns': Object, 'suppliers': Array},
+    props: {
+        'code': String,
+        'types': Object,
+        'accounts': Array,
+        'columns': Object,
+        'suppliers': Array
+    },
     filters: {
         datetime(value) {
             return format(new Date(value), 'HH:mm:ss')

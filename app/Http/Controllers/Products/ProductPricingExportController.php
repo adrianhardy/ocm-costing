@@ -19,10 +19,27 @@ class ProductPricingExportController extends Controller
         $pricings->load('product_pricing_countries');
         $pricings->load('product');
 
+        /** @var Country $gb */
         $gb = Country::query()
             ->where('iso_2_code', 'GB')
             ->first();
 
+        $eu = Country::query()
+            ->where('has_pricing', 1)
+            ->orderBy('iso_2_code')
+            ->whereIn('iso_2_code', [
+                'AT', 'BE', 'BG', 'HR', 'CY', 'CZ',
+                'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
+                'HU', 'IE', 'IT', 'LV', 'LT', 'LU',
+                'MT', 'NL', 'PL', 'PT', 'RO', 'SK',
+                'SI', 'ES', 'SE'
+            ])
+            ->get();
+
+        $restOfWorld = Country::query()
+            ->where('has_pricing', 1)
+            ->whereNotIn('id', $eu->pluck('id'))
+            ->get();
 
         $headings = [
             'item_number',
@@ -36,24 +53,30 @@ class ProductPricingExportController extends Controller
             'unit_gb_fba_price',
             '',
             'eu_postage_method',
-            'row_postage_method'
         ];
 
-        $countries = Country::query()
-            ->where('has_pricing', 1)
-            ->where('id', '!=', 'gb')
-            ->get();
-
-        $countries = collect([$gb])->concat($countries);
-
-        foreach ($countries as $country) {
+        foreach ($eu as $country) {
             $code = strtolower($country->iso_2_code);
             $headings[] = 'unit_' . $code . '_fba_price';
             $headings[] = 'unit_' . $code . '_sf_price';
         }
 
+
+        // add another gap column between end of EU
+        // and start of ROW
+        $headings[] = '';
+        $headings[] = 'row_postage_method';
+
+        foreach ($restOfWorld as $country) {
+            $code = strtolower($country->iso_2_code);
+            $headings[] = 'unit_' . $code . '_fba_price';
+            $headings[] = 'unit_' . $code . '_sf_price';
+        }
+
+        $headings[] = '';
         $headings[] = 'ebay_price';
         $headings[] = 'website_price';
+        $headings[] = '';
         $headings[] = 'raf_re_order_level';
         $headings[] = 'send_to_uk';
         $headings[] = 'send_to_eu';
@@ -65,8 +88,9 @@ class ProductPricingExportController extends Controller
 
             $row = $this->createCsvRow(
                 $pricing,
-                $countries,
                 $gb,
+                $eu,
+                $restOfWorld,
                 $pricing->product->primary_sku,
                 $pricing->product->primary_asin
             );
@@ -84,7 +108,7 @@ class ProductPricingExportController extends Controller
                 if ($biggestCount > 0) {
                     foreach ($asins as $i => $asin) {
                         $sku = $skus[$i]??null;
-                        $row = $this->createCsvRow($pricing, $countries, $gb, $sku, $asin);
+                        $row = $this->createCsvRow($pricing, $gb, $eu, $row, $sku, $asin);
                         $csv->fputcsv($row->toArray());
                     }
                 }
@@ -99,16 +123,21 @@ class ProductPricingExportController extends Controller
         }, 'product-pricing.csv');
     }
 
+
     /**
      * @param ProductPricing $pricing
-     * @param Collection $countries
-     * @param $gb
-     * @return Collection
+     * @param Country $gb
+     * @param Collection $eu
+     * @param Collection $restOfWorld
+     * @param $sku
+     * @param $asin
+     * @return array
      */
     protected function createCsvRow(
         ProductPricing $pricing,
-        Collection $countries,
-        $gb,
+        Country $gb,
+        Collection $eu,
+        Collection $restOfWorld,
         $sku = '',
         $asin = ''
     ) {
@@ -121,38 +150,57 @@ class ProductPricingExportController extends Controller
         $row['sku'] = $sku;
         $row['asin'] = $asin;
         $row['blank_1'] = '';
-
-        $row = $row->concat($pricing->product->only(
-            'uk_postage_method',
-            'eu_postage_method',
-            'row_postage_method'
-        ));
-
-        foreach ($countries as $country) {
-            /** @var ProductPricingCountry $price */
-            $price = $pricing->product_pricing_countries
-                ->where('country_id', $country->id)
-                ->first();
-
-            if ($price) {
-                $row[] = $price->unit_fba_price;
-                $row[] = $price->unit_sf_price;
-            } else {
-                $row[] = 'N/A';
-                $row[] = 'N/A';
-            }
-
+        $row['uk_postage_method'] = $pricing->product->uk_postage_method;
+        $row = $this->appendProductPricingForCountry($row, $pricing, $gb);
+        $row['blank_2'] = '';
+        $row['eu_postage_method'] = $pricing->product->eu_postage_method;
+        foreach ($eu as $country) {
+            $row = $this->appendProductPricingForCountry($row, $pricing, $country);
         }
+        $row['blank_3'] = '';
+        $row['row_postage_method'] = $pricing->product->row_postage_method;
+        foreach ($restOfWorld as $country) {
+            $row = $this->appendProductPricingForCountry($row, $pricing, $country);
+        }
+        $row['blank_4'] = '';
 
-        /** @var ProductPricingCountry $price */
-        $price = $pricing->product_pricing_countries
-            ->where('country_id', $gb->id)
-            ->first();
-
+        $price = $this->getProductPricingForCountry($pricing, $gb)->first();
         // ebay price
         if ($price) {
             $row[] = $price->unit_sf_price;
         } else {
+            $row[] = 'N/A';
+        }
+        return $row;
+    }
+
+
+    /**
+     * @param ProductPricing $pricing
+     * @param Country $country
+     * @return ProductPricingCountry|null
+     */
+    protected function getProductPricingForCountry(ProductPricing $pricing, Country $country)
+    {
+        return $pricing->product_pricing_countries
+            ->where('country_id', $country->id)
+            ->first();
+    }
+
+    /**
+     * @param array $row
+     * @param ProductPricing $pricing
+     * @param Country $country
+     * @return array
+     */
+    protected function appendProductPricingForCountry($row, $pricing, $country)
+    {
+        $price = $this->getProductPricingForCountry($pricing, $country);
+        if ($price) {
+            $row[] = $price->unit_fba_price;
+            $row[] = $price->unit_sf_price;
+        } else {
+            $row[] = 'N/A';
             $row[] = 'N/A';
         }
         return $row;

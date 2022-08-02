@@ -166,7 +166,7 @@ class ImportProductsCommand extends Command
 
                 $shippingCosts = (new LandedCostCalculator($lc->shipping_cost_per_cuft))
                             ->calculateWithDuties(
-                                $lc->case_cubic_ft,
+                                $data['cuft_per_ctn']??$lc->case_cubic_ft,
                                 $lc->units_per_case,
                                 $lc->unit_price,
                                 $product->is_excluded_from_commission

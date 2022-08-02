@@ -31,6 +31,9 @@ return [
                 'unit_height_m'       => 'Unit Height (m)',
                 'unit_depth_m'        => 'Unit Length (m)',
                 'unit_weight_kg'      => 'Unit Weight (kg)',
+            ],
+            'shipping' => [
+                'cuft_per_ctn'        => 'Cuft / Ctn'
             ]
         ]
     ]
