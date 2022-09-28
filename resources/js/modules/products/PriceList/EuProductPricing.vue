@@ -83,7 +83,7 @@
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[feeField]" size="sm" />
                 <b-input-group-append class="w-15">
-                    <b-input-group-text class="w-100">&pound;</b-input-group-text>
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>

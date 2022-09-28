@@ -43,6 +43,11 @@ class CountriesController extends Controller
             $country->save();
         }
 
+        if ($country->has_pricing && $request->input('has_pricing', null) === false) {
+            $country->has_pricing = false;
+            $country->save();
+        }
+
         return response()->json();
     }
 }

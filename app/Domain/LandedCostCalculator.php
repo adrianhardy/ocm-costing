@@ -39,6 +39,14 @@ class LandedCostCalculator
         $cubicFeet,
         $unitCount
     ) {
+
+        if ($unitCount < 1) {
+            return [
+                'shipping_cost_gbp' => 0,
+                'shipping_cost_per_unit_gbp' => 0
+            ];
+        }
+
         $shippingCostGbp = $cubicFeet * $this->shippingCostPerCubicFootGbp;
         $shippingCostPerUnit = $shippingCostGbp / $unitCount;
 

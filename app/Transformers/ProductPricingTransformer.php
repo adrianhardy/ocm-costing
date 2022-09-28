@@ -67,7 +67,7 @@ class ProductPricingTransformer extends TransformerAbstract
             $countryPrice = $pricing
                 ->product_pricing_countries()
                 ->where('country_id', $country->id)
-                ->firstOrFail();
+                ->first();
 
             if ($countryPrice) {
                 $json[$code] = $countryPrice->only([

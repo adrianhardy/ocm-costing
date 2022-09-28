@@ -170,6 +170,11 @@
                                             vat-field="vat_rate"
                                             :fx-rate="value.current_eur_fx_rate"
                                         />
+                                        <div v-else>
+                                            <b-form-group :label="country.iso_2_code" label-size="sm" class="mb-2">
+                                                Missing pricing for this country. Please resend through pricing.
+                                            </b-form-group>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -180,6 +185,48 @@
                                     class="mb-3"
                                     v-model="value.product.pricing_notes"
                                 />
+                            </div>
+                        </b-tab>
+                        <b-tab title="EU Pricing">
+                            <div class="row">
+                                <div class="col-4">
+                                    <b-form-group label="Est. L' Cost" label-cols="4" label-size="sm">
+                                        <b-input-group prepend="£" size="sm">
+                                            <b-form-input readonly v-model="value.est_landed_cost_per_unit_gbp"/>
+                                        </b-input-group>
+                                    </b-form-group>
+                                </div>
+                                <div class="col-4">
+                                    <b-form-group label="Referral Fee" label-cols="4" label-size="sm">
+                                        <b-input-group size="sm" class="w-70">
+                                            <b-form-input v-model="value.marketplace_commission_pc"/>
+                                            <b-input-group-append class="w-30">
+                                                <b-input-group-text class="w-100 text-center">
+                                                    %
+                                                </b-input-group-text>
+                                            </b-input-group-append>
+                                        </b-input-group>
+                                    </b-form-group>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <div class="row flex-row flex-nowrap">
+                                    <div class="col-12 col-md-3" v-for="country in nonEuroEuCountries" v-if="value && value['countries'] && value['countries'][country.iso_2_code.toLowerCase()]">
+                                        <rest-of-world-product-pricing
+                                            v-model="value['countries'][country.iso_2_code.toLowerCase()]"
+                                            :currency="country.currency.code"
+                                            :country="country"
+                                            :marketplace-commission-pc="value.marketplace_commission_pc"
+                                            :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
+                                            fee-field="unit_fba_fee"
+                                            sf-price-field="unit_sf_price"
+                                            ship-field="unit_fba_shipping"
+                                            price-field="unit_fba_price"
+                                            vat-field="vat_rate"
+                                            fx-field="current_gbp_fx_rate"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </b-tab>
                         <b-tab title="RoW Pricing">
@@ -210,7 +257,7 @@
                                         <rest-of-world-product-pricing
                                             v-model="value['countries'][country.iso_2_code.toLowerCase()]"
                                             :currency="country.currency.code"
-                                            :country="country.iso_2_code"
+                                            :country="country"
                                             :marketplace-commission-pc="value.marketplace_commission_pc"
                                             :landed-cost-per-unit-gbp="value.est_landed_cost_per_unit_gbp"
                                             fee-field="unit_fba_fee"
@@ -258,7 +305,6 @@
 
 <script>
 import RestOfWorldProductPricing from "./RestOfWorldProductPricing";
-import EuOfWorldProductPricing from "./EuProductPricing";
 import EuProductPricing from "./EuProductPricing";
 import SmallLight from "./AmazonShippingRates/SmallLight";
 import LocalFBA from "./AmazonShippingRates/LocalFBA";
@@ -266,14 +312,16 @@ import EFNFBA from "./AmazonShippingRates/EFNFBA";
 
 export default {
     name: "PricingModal",
-    components: {EFNFBA, LocalFBA, SmallLight, EuProductPricing, EuOfWorldProductPricing, RestOfWorldProductPricing},
+    components: {EFNFBA, LocalFBA, SmallLight, EuProductPricing, RestOfWorldProductPricing},
     props: {
         uk: Object,
         rowCountries: Array,
-        euroCountries: Array
+        euroCountries: Array,
+        nonEuroEuCountries: Array
     },
     mounted(){
         this.getGuidance();
+        console.log("****************", this.nonEuroEuCountries, "****************");
     },
     computed: {
         ukPostageMethod() {
@@ -313,7 +361,6 @@ export default {
             const url = '/api/guidance'
             this.$http.get(url).then(response => {
                 this.images = response.data
-                console.log(this.images);
                 loading.hide();
             }).catch(error => {
                 this.$handleExceptionResponse(error, true)

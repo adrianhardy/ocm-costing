@@ -123,7 +123,23 @@
             </div>
 
             <div class="row">
-                <div class="col-2 offset-10">
+                <div class="col-2 offset-6">
+                    <b-form-group label="Supplier Reference">
+                        <b-form-input
+                            size="md"
+                            v-model="shipment.supplier_reference"
+                        />
+                    </b-form-group>
+                </div>
+                <div class="col-2">
+                    <b-form-group label="Our Reference">
+                        <b-form-input
+                            size="md"
+                            v-model="shipment.reference"
+                        />
+                    </b-form-group>
+                </div>
+                <div class="col-2">
                     <b-form-group label="Shipment Invoice Value">
                         <b-input-group prepend="USD">
                             <b-form-input
@@ -183,11 +199,12 @@ export default {
 
 
             if (this.type === 'packing' && !this.preview) {
-                console.log(this.shipment);
                 formData.append('bl_number', this.shipment.bl_number?this.shipment.bl_number:'');
                 formData.append('vessel_name', this.shipment.vessel_name?this.shipment.vessel_name:'');
                 formData.append('container_reference', this.shipment.container_reference?this.shipment.container_reference:'');
                 formData.append('shipping_agent_ref', this.shipment.shipping_agent_ref?this.shipment.shipping_agent_ref:'');
+                formData.append('reference', this.shipment.reference?this.shipment.reference:'');
+                formData.append('supplier_reference', this.shipment.supplier_reference?this.shipment.supplier_reference:'');
                 formData.append('total_shipping_invoice_value', this.shipment.total_shipping_invoice_value?this.shipment.total_shipping_invoice_value:'');
             }
 
@@ -198,6 +215,8 @@ export default {
             }).then(response => {
                 this.summary = response.data.lines;
                 this.shipment = response.data.shipment;
+                this.shipment.supplier_reference = response.data.shipment.invoice_number;
+                delete this.shipment.invoice_number;
                 loader.hide();
 
                 if (!this.preview) {

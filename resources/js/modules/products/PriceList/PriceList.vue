@@ -81,6 +81,7 @@
         <pricing-modal
             :euro-countries="euroCountries"
             :row-countries="rowCountries"
+            :non-euro-eu-countries="nonEuroEuCountries"
             :uk="uk"
             ref="pricing-modal"
             @updated="updatePricing"
@@ -100,6 +101,7 @@ export default {
         isApprover: Boolean,
         euroCountries: Array,
         rowCountries: Array,
+        nonEuroEuCountries: Array,
         uk: Object
     },
     components: {

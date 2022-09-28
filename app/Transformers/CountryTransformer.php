@@ -44,7 +44,7 @@ class CountryTransformer extends TransformerAbstract
     public function transform(Country $country)
     {
         return $country->only([
-            'id', 'iso_2_code', 'name', 'has_pricing'
+            'id', 'iso_2_code', 'name', 'has_pricing', 'uses_euro', 'is_row'
         ]);
     }
 }

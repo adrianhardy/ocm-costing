@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-form-group :label="`${country} (${currency})`" label-size="sm" class="mb-2">
+        <b-form-group :label="`${country.iso_2_code} (${currency})`" label-size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
                     <b-input-group-text class="w-100">Rate</b-input-group-text>
@@ -33,6 +33,21 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
+
+
+        <b-form-group class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">SF VAT</b-input-group-text>
+                </b-input-group-prepend>
+                <div class="form-control bg-light">{{ sfVat }}</div>
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+
+
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
@@ -44,6 +59,19 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
+
+        <b-form-group class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">FBA VAT</b-input-group-text>
+                </b-input-group-prepend>
+                <div class="form-control bg-light">{{ fbaVat }}</div>
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+
         <b-form-group size="sm" class="mb-2">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
@@ -90,6 +118,18 @@
             </b-input-group>
         </b-form-group>
 
+        <b-form-group size="sm" class="mb-2">
+            <b-input-group size="sm">
+                <b-input-group-prepend class="w-40">
+                    <b-input-group-text class="w-100">SF Ref' Fee</b-input-group-text>
+                </b-input-group-prepend>
+                <div class="form-control bg-light">{{ sfReferralFeeValue }}</div>
+                <b-input-group-append class="w-20">
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
+                </b-input-group-append>
+            </b-input-group>
+        </b-form-group>
+
         <pricing-profit-summary
             :fba-price="value[priceField]"
             :fba-vat="0"
@@ -102,6 +142,7 @@
             :fx-rate="value[fxField]"
             :currency-symbol="currencySymbol"
             :landed-cost-per-unit-gbp="landedCostPerUnitGbp"
+            present-profit-in-gbp
         />
 
     </div>
@@ -122,13 +163,29 @@ export default {
         priceField: String,
         feeField: String,
         currency: String,
-        country: String,
+        country: Object,
         vatField: String,
         marketplaceCommissionPc: Number,
         landedCostPerUnitGbp: Number
     },
     computed: {
+        sfVat() {
+            if (this.country.is_row) {
+                return 0.00;
+            }
+            return (this.value[this.sfPriceField] * (this.value[this.vatField] / 100)).toFixed(2);
+        },
+        fbaVat() {
+            if (this.country.is_row) {
+                return 0.00;
+            }
+            return (this.value[this.priceField] * (this.value[this.vatField] / 100)).toFixed(2);
+        },
         referralTaxValue() {
+            // if it's a EU, non EURO country
+            if (!this.country.is_row) {
+                return '0.00';
+            }
             return (this.fbaReferralFeeValue * 0.2).toFixed(2);
         },
         fbaReferralFeeValue() {
@@ -154,10 +211,10 @@ export default {
             const fxRate = this.value[this.fxField];
 
             const localMargin = (this.value[this.priceField]) -
-                (this.value.est_landed_cost_per_unit_gbp / fxRate) -
+                (this.value.est_landed_cost_per_unit_gbp * fxRate) -
                 this.fbaReferralFeeValue -
-                (this.value[this.feeField] / fxRate) -
-                (this.value[this.shipField] / fxRate) -
+                (this.value[this.feeField] * fxRate) -
+                (this.value[this.shipField] * fxRate) -
                 this.referralTaxValue
 
             return (localMargin * fxRate).toFixed(2);

@@ -77,42 +77,51 @@ class ProductPricingExportController extends Controller
             });
 
         $headings = [
-            'item_number',
-            'name',
-            'barcode',
             'SKU',
+            'ITEM NUMBER',
+            'DESCRIPTION',
+            'WEIGHT',
+            'DIMENSIONS',
             'ASIN',
-            '',
-            'uk_postage_method',
-            'unit_gb_sf_price',
-            'unit_gb_fba_price',
-            '',
-            'eu_postage_method',
+            'QTY DELIVERED',
+            'QTY TO LIST',
+            'UK',
+            'PP',
+            'FBA',
+            'TL/PIGGY',
+            'VARIATION',
+            'CHECKED LISTING 1',
+            'CHECKED LISTING 2',
+            'PHOTO',
+            'SEND UK',
+            'SEND EU',
+            'RAF REORDER LEVEL',
+            'WEBSITE',
+            'WEB QTY',
+            'EBAY',
+            'EBAY QTY',
+            'ADDED SS',
+            'PAUL',
+            'TAGS',
+            'CLICK AND DROP',
         ];
 
         foreach ($eu as $country) {
-            $code = strtolower($country->iso_2_code);
-            $headings[] = 'unit_' . $code . '_sf_price';
-            $headings[] = 'unit_' . $code . '_fba_price';
+            // PL doesn't have SF or PP columns
+            if ($country->iso_2_code == 'PL') {
+                $headings[] = 'POLAND FBA';
+            } else {
+                $headings[] = strtoupper($country->name);
+                $headings[] = 'PP';
+                $headings[] = 'FBA';
+            }
         }
-
-        // add another gap column between end of EU
-        // and start of ROW
-        $headings[] = '';
-        $headings[] = 'row_postage_method';
-
+        // Row countries only have self fulfilled and PP cols
+        // FBA is not used for ROW
         foreach ($restOfWorld as $country) {
-            $code = strtolower($country->iso_2_code);
-            $headings[] = 'unit_' . $code . '_sf_price';
+            $headings[] = strtoupper($country->name);
+            $headings[] = 'PP';
         }
-
-        $headings[] = '';
-        $headings[] = 'ebay_price';
-        $headings[] = 'website_price';
-        $headings[] = '';
-        $headings[] = 'raf_re_order_level';
-        $headings[] = 'send_to_uk';
-        $headings[] = 'send_to_eu';
 
         $csv = new \SplTempFileObject(256 * 1024 * 1024);
         $csv->fputcsv($headings);
@@ -128,7 +137,7 @@ class ProductPricingExportController extends Controller
                 $pricing->product->primary_asin
             );
 
-            $csv->fputcsv($row->toArray());
+            $csv->fputcsv($row);
 
             $asins = $pricing->product->additional_asins;
             $skus = $pricing->product->additional_skus;
@@ -158,12 +167,14 @@ class ProductPricingExportController extends Controller
 
 
     /**
+     *
+     *
      * @param ProductPricing $pricing
      * @param Country $gb
      * @param Collection $eu
      * @param Collection $restOfWorld
-     * @param $sku
-     * @param $asin
+     * @param string $sku
+     * @param string $asin
      * @return array
      */
     protected function createCsvRow(
@@ -174,40 +185,38 @@ class ProductPricingExportController extends Controller
         $sku = '',
         $asin = ''
     ) {
-        $row = collect($pricing->product->only([
-            'item_number',
-            'name',
-            'barcode'
-        ]));
+        $row[] = $sku;
+        $row[] = $pricing->product->item_number;
+        $row[] = $pricing->product->name;
+        $row[] = $pricing->product->unit_weight_g . 'G';
+        $row[] = "{$pricing->product->unit_length_cm} x {$pricing->product->unit_width_cm} x {$pricing->product->unit_height_cm}";
+        $row[] = $asin;
+        $row[] = ''; // qty delivered
+        $row[] = ''; // qty to list
+        $row = $this->appendProductPricingForCountry($row, $pricing, $gb, false);
+        $row[] = ''; // TL/PIGGY
+        $row[] = ''; // VARIATION
+        $row[] = ''; // CHECKED LIST 1
+        $row[] = ''; // CHECKED LIST 2
+        $row[] = ''; // PHOTO
+        $row[] = ''; // SEND UK
+        $row[] = ''; // SEND EU
+        $row[] = ''; // RAF REORDER LEVEL
+        $row[] = ''; // WEBSITE
+        $row[] = ''; // WEB QTY
 
-        $row['sku'] = $sku;
-        $row['asin'] = $asin;
-        $row['blank_1'] = '';
-        $row['uk_postage_method'] = $pricing->product->uk_postage_method;
-        $row = $this->appendProductPricingForCountry($row, $pricing, $gb);
-        $row['blank_2'] = '';
-        $row['eu_postage_method'] = $pricing->product->eu_postage_method;
+        $ukPrice = $this->getProductPricingForCountry($pricing, $gb);
+        $row[] = $ukPrice->unit_sf_price; // EBAY
+        $row[] = ''; // EBAY QTY
+        $row[] = ''; // ADDED SS
+        $row[] = ''; // PAUL
+        $row[] = ''; // TAGS
+        $row[] = ''; // CLICK AND DROP
         foreach ($eu as $country) {
-            $row = $this->appendProductPricingForCountry($row, $pricing, $country);
+            $row = $this->appendProductPricingForCountry($row, $pricing, $country, false);
         }
-        $row['blank_3'] = '';
-        $row['row_postage_method'] = $pricing->product->row_postage_method;
         foreach ($restOfWorld as $country) {
-            $price = $this->getProductPricingForCountry($pricing, $country);
-            if ($price) {
-                $row[] = $price->unit_sf_price;
-            } else {
-                $row[] = 'N/A';
-            }
-        }
-        $row['blank_4'] = '';
-
-        $price = $this->getProductPricingForCountry($pricing, $gb)->first();
-        // ebay price
-        if ($price) {
-            $row[] = $price->unit_sf_price;
-        } else {
-            $row[] = 'N/A';
+            $row = $this->appendProductPricingForCountry($row, $pricing, $country, true);
         }
         return $row;
     }
@@ -231,15 +240,41 @@ class ProductPricingExportController extends Controller
      * @param Country $country
      * @return array
      */
-    protected function appendProductPricingForCountry($row, $pricing, $country)
-    {
+    protected function appendProductPricingForCountry(
+        array $row,
+        ProductPricing $pricing,
+        Country $country,
+        $isRow
+    ) {
+
         $price = $this->getProductPricingForCountry($pricing, $country);
+        // poland is only via FBA at the moment ....
+        if ($country->iso_2_code == 'PL') {
+            $row[] = $price->unit_fba_price;
+            return $row;
+        }
+
+        $postage = $pricing->product->row_postage_method;
+        if (in_array($country->iso_2_code, $this->euIso2Codes)) {
+            $postage = $pricing->product->eu_postage_method;
+        }
+        if ($country->iso_2_code = 'GB') {
+            $postage = $pricing->product->uk_postage_method;
+        }
+
         if ($price) {
             $row[] = $price->unit_sf_price;
-            $row[] = $price->unit_fba_price;
+            $row[] = $postage;
+
+            if (!$isRow) {
+                $row[] = $price->unit_fba_price;
+            }
         } else {
             $row[] = 'N/A';
-            $row[] = 'N/A';
+            $row[] = $postage;
+            if (!$isRow) {
+                $row[] = 'N/A';
+            }
         }
         return $row;
     }

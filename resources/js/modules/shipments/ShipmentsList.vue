@@ -24,7 +24,8 @@
             >
                 <template #cell(reference)="data">
                     <b-link :href="`/shipments/${data.item.id}`">
-                        {{ data.value }}
+                        <span v-if="data.value">{{ data.value }}</span>
+                        <span v-else>[No reference]</span>
                     </b-link>
                 </template>
                 <template #cell(sales_order.sales_order_number)="data">

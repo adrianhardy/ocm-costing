@@ -32,7 +32,7 @@ class ProductPricingController extends Controller
             // Pricing's to be approved/done:
 
             if(auth()->user()->hasRole(['pricing_approver'])) {
-                $paginator
+                $paginator = $paginator
                     ->whereNull('approved_at')
                     ->whereNotNull('submitted_at');
             } elseif (auth()->user()->hasRole(['pricing'])) {

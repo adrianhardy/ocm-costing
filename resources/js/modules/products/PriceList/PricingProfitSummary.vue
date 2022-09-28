@@ -1,9 +1,9 @@
 <template>
     <b-form-group size="sm" class="mb-2">
         <div class="d-flex justify-content-around">
-            <div class="small">FBA <span v-html="currencySymbol"></span></div>
+            <div class="small">FBA <span v-html="presentProfitInGbp?'&pound;':currencySymbol"></span></div>
             <div class="small">FBA %</div>
-            <div class="small">SF <span v-html="currencySymbol"></span></div>
+            <div class="small">SF <span v-html="presentProfitInGbp?'&pound;':currencySymbol"></span></div>
             <div class="small">SF %</div>
         </div>
         <b-input-group size="sm">
@@ -36,18 +36,30 @@ export default {
         sfPrice: [Number, String],
         fbaReferralFee: [Number, String],
         sfReferralFee: [Number, String],
-        currencySymbol: String
+        currencySymbol: String,
+        presentProfitInGbp: Boolean
     },
     computed: {
         sfProfit() {
             if (this.sfPrice <= 0) {
                 return 0;
             }
-            return (this.sfPrice -
-                (this.landedCostPerUnitGbp / this.fxRate) -
+
+            console.log([
+                ["sfPrice", this.sfPrice],
+                ["landedCost GBP", this.landedCostPerUnitGbp],
+                [" - landedCost CUR", this.landedCostPerUnitGbp * this.fxRate],
+                ["fx rate", this.fxRate],
+                [" - sf VAT", this.sfVat],
+                [" - referral fee CUR", this.sfReferralFee]
+            ]);
+
+            const profit = (this.sfPrice -
+                (this.landedCostPerUnitGbp * this.fxRate) -
                 this.sfVat -
-                (this.sfReferralFee / this.fxRate)
-            ).toFixed(2);
+                this.sfReferralFee
+            );
+            return (profit / (this.presentProfitInGbp?this.fxRate:1)).toFixed(2);
         },
         sfMargin() {
             if (this.sfPrice <= 0) {
@@ -66,12 +78,25 @@ export default {
                 return 0;
             }
 
-            return (this.fbaPrice -
-                (this.landedCostPerUnitGbp / this.fxRate) -
+            console.log([
+                ["fbaPrice", this.fbaPrice],
+                ["landedCost GBP", this.landedCostPerUnitGbp],
+                [" - landedCost CUR", this.landedCostPerUnitGbp * this.fxRate],
+                ["fx rate", this.fxRate],
+                [" - fba VAT", this.fbaVat],
+                [" - referral fee", this.fbaReferralFee],
+                [" - fba shipping", this.fbaShipping],
+                ["fee CUR", this.fee],
+            ]);
+
+            const profit = this.fbaPrice -
+                (this.landedCostPerUnitGbp * this.fxRate) -
                 this.fbaVat -
                 this.fbaReferralFee -
                 this.fbaShipping -
-                (this.fee / this.fxRate)).toFixed(2);
+                this.fee;
+
+            return (profit / (this.presentProfitInGbp?this.fxRate:1)).toFixed(2);
         }
 
     }

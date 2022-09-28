@@ -42,7 +42,9 @@ class ImportController extends Controller
                 'vessel_name'                   => 'required|min:1|max:50',
                 'bl_number'                     => 'nullable|min:0|max:32',
                 'shipping_agent_ref'            => 'nullable|min:0|max:32',
-                'total_shipping_invoice_value' => 'required|numeric|min:0'
+                'reference'                     => 'required|min:0|max:32',
+                'supplier_reference'            => 'required|min:0|max:32',
+                'total_shipping_invoice_value'  => 'required|numeric|min:0'
             ]);
         }
 
@@ -96,8 +98,8 @@ class ImportController extends Controller
                     ]);
                 }
                 $consignment->fill([
-                    'reference' => '',
-                    'supplier_reference' => $json['invoice_number'],
+                    'reference' => $json['reference'],
+                    'supplier_reference' => $json['supplier_reference'],
                     'vessel_name' => $json['shipment']['vessel_name'],
                     'estimated_arrival_at' => Carbon::parse($json['shipment']['estimated_date_of_arrival']),
                     'estimated_departure_at' => Carbon::parse($json['shipment']['estimated_date_of_departure']),
