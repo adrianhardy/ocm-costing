@@ -14,8 +14,8 @@
                     </b-input-group>
                 </b-form-group>
                 <b-form-group label="Shipping Cost / Cu.ft">
-                    <b-input-group prepend="$">
-                        <b-form-input v-model="shipCostPerUnit" />
+                    <b-input-group prepend="£">
+                        <b-form-input v-model="shipCostPerCubicFt" />
                     </b-input-group>
                 </b-form-group>
                 <b-form-group label="Marketplace Commission Rate">
@@ -36,20 +36,45 @@
                 </b-form-group>
                 <b-form-group label="Carton Width">
                     <b-input-group prepend="cm">
-                        <b-form-input v-model="width" />
+                        <b-form-input v-model="width" :disabled="cartonTotalCubicFt"/>
                     </b-input-group>
                 </b-form-group>
                 <b-form-group label="Carton Length">
                     <b-input-group prepend="cm">
-                        <b-form-input v-model="length" />
+                        <b-form-input v-model="length" :disabled="cartonTotalCubicFt"/>
                     </b-input-group>
                 </b-form-group>
                 <b-form-group label="Carton Height">
                     <b-input-group prepend="cm">
-                        <b-form-input v-model="height" />
+                        <b-form-input v-model="height" :disabled="cartonTotalCubicFt"/>
+                    </b-input-group>
+                </b-form-group>
+                <b-form-group label="OR, Total Cubic Feet">
+                    <b-input-group prepend="cu.ft">
+                        <b-form-input v-model="cartonTotalCubicFt" />
                     </b-input-group>
                 </b-form-group>
             </div>
+        </div>
+        <div class="small">
+            <b-table-simple small>
+                <b-tr>
+                    <b-td>Carton Cubic Feet</b-td>
+                    <b-td>{{ caseVolumeCubicFt }}</b-td>
+                </b-tr>
+                <b-tr>
+                    <b-td>Shipping/Carton</b-td>
+                    <b-td>&pound; {{ costToShipPerCartonGbp.toFixed(2) }}</b-td>
+                </b-tr>
+                <b-tr>
+                    <b-td>Shipping/Unit</b-td>
+                    <b-td>&pound; {{ shippingCostPerUnitGbp.toFixed(2) }}</b-td>
+                </b-tr>
+                <b-tr>
+                    <b-td>Unit Cost (raw)</b-td>
+                    <b-td>&pound; {{ unitCostGbp.toFixed(2) }}</b-td>
+                </b-tr>
+            </b-table-simple>
         </div>
         <h5>Landed Cost Per Unit</h5>
         <div class="font-weight-bold">&pound;{{ landedCostPerUnit }}</div>
@@ -60,33 +85,51 @@
 export default {
     props: {defaultFXRate: Number, defaultImportDuty: Number, defaultCommissionRate: Number},
     name: "QuickCostModal",
+    watch: {
+        cartonTotalCubicFt(value) {
+            if (!value && value !== null) {
+                this.cartonTotalCubicFt = null;
+            }
+        }
+    },
     computed: {
         landedCostPerUnit() {
-            const commissionUplift = 1 + (this.commissionRate/100);
             const importDutyUplift = 1 + (this.importDuty/100);
+            const costAfterCommission = (this.unitCostWithCommissionGbp + this.shippingCostPerUnitGbp) * importDutyUplift;
 
-            const importCost = (this.unitPrice * importDutyUplift);
-            const gbpCost = (importCost / this.exchangeRate);
-            const costToShip = gbpCost + (this.caseVolumeCubicFt * this.shipCostPerUnit) / (this.unitsPerCase);
-
-            console.log(this.caseVolumeCubicFt, this.shipCostPerUnit);
-
-            const costAfterCommission = costToShip * commissionUplift;
-
-            if (isNaN(costToShip)) {
+            if (isNaN(costAfterCommission)) {
                 return (0).toFixed(2);
             }
 
             return costAfterCommission.toFixed(2);
         },
+        unitCostWithCommissionGbp() {
+            const commissionUplift = 1 + (this.commissionRate/100);
+            return this.unitCostGbp * commissionUplift;
+        },
+        unitCostGbp() {
+            return this.unitPrice / this.exchangeRate / this.unitsPerCase;
+        },
+        shippingCostPerUnitGbp() {
+            return (this.caseVolumeCubicFt * this.shipCostPerCubicFt) / this.unitsPerCase;
+        },
+        costToShipPerCartonGbp() {
+            return (this.caseVolumeCubicFt * this.shipCostPerCubicFt);
+        },
         caseVolumeCubicFt() {
-            const volume = ((this.width / 100) * (this.height/100) * (this.length/ 100));
-            if (this.caseSystem === 'imperial') {
-                return volume.toFixed(3);
+            if (this.cartonTotalCubicFt) {
+                return this.cartonTotalCubicFt;
             }
+
+            const volume = ((this.width / 100) * (this.height/100) * (this.length/ 100));
             return (volume * 35.3147).toFixed(3);
         },
         caseVolumeCubicM() {
+
+            if (this.cartonTotalCubicFt) {
+                return this.cartonTotalCubicFt / 35.3147;
+            }
+
             const volume = (this.width * this.height * this.length);
             if (this.caseSystem === 'imperial') {
                 return (volume / 35.3147).toFixed(3);
@@ -107,22 +150,23 @@ export default {
     },
     data() {
         return {
-            shipCostPerUnit: 2.5,
+            cartonTotalCubicFt: null,
+
+            shipCostPerCubicFt: 5.5,
             importDuty: 4,
             commissionRate: 4.7,
-            exchangeRate: 1.25,
+            exchangeRate: 1.08,
 
-            unitsPerCase: 0,
-            width: 0.0,
-            height: 0.0,
-            length: 0.0,
+            unitsPerCase: 10,
+            width: 100.0,
+            height: 100.0,
+            length: 100.0,
 
-            caseSystem: 'metric',
             shippingSystem: 'imperial',
             currency: 'usd',
             shippingCurrency: 'USD',
             settings: null,
-            unitPrice: 0
+            unitPrice: 10
         }
     }
 }
