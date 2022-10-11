@@ -108,7 +108,7 @@ export default {
             return this.unitCostGbp * commissionUplift;
         },
         unitCostGbp() {
-            return this.unitPrice / this.exchangeRate / this.unitsPerCase;
+            return this.unitPrice / this.exchangeRate;
         },
         shippingCostPerUnitGbp() {
             return (this.caseVolumeCubicFt * this.shipCostPerCubicFt) / this.unitsPerCase;

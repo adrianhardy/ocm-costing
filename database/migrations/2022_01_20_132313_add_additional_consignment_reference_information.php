@@ -14,12 +14,12 @@ class AddAdditionalConsignmentReferenceInformation extends Migration
     public function up()
     {
         Schema::table('consignments', function (Blueprint $table) {
-            $table->string('supplier_ref', 32)->nullable();
-            $table->string('our_order_number', 32)->nullable();
+            $table->string('supplier_ref', 255)->nullable();
+            $table->string('our_order_number', 200)->nullable();
             $table->string('vessel_name', 64)->nullable();
             $table->string('container_number', 32)->nullable();
             $table->string('bl_number', 32)->nullable();
-            $table->string('shipping_agent_ref', 32)->nullable();
+            $table->string('shipping_agent_ref', 200)->nullable();
         });
     }
 

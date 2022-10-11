@@ -44,7 +44,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('sales-orders/lines/shipments', 'Api\Shipments\CreateShipmentFromOrderLinesController')->only(['store', 'index']);
         Route::get('sales-orders/{sales_order}/consignments/report', 'Api\SalesOrders\ConsignmentsReportController@index');
         Route::put('sales-orders/lines/{line}/consignments/{consignment}', 'Api\SalesOrders\ConsignmentsReportController@update');
-        Route::resource('shipments', 'Api\Shipments\ShipmentsController')->only(['index', 'show', 'update']);
+        Route::resource('shipments', 'Api\Shipments\ShipmentsController')->only(['index', 'show', 'update', 'destroy']);
         Route::resource('shipments/import', 'Api\Shipments\ImportController')->only(['store']);
         Route::resource('shipments.media', 'Api\Shipments\MediaController')->only(['store', 'destroy']);
         Route::resource('admin/import-mappings', 'Api\ImportMappingsController')->only(['index', 'store']);

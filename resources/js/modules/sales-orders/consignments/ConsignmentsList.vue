@@ -105,7 +105,8 @@ export default {
         async items(ctx) {
             const url = `/api/sales-orders/${this.orderId}/consignments/report`;
             const payload = {
-                include: this.include
+                include: this.include,
+                all: true
             }
             return this.$paginatedFetch(
                 url,

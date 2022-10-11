@@ -40,7 +40,8 @@
                 <div class="col-12 col-md-3">
                     <b-form-group label="Est Cost Cuft">
                         <b-input-group prepend="£">
-                            <b-form-input readonly :value="shipment.est_cost_cuft_gbp.toFixed(2)"/>
+                            <b-form-input readonly :value="shipment.est_cost_cuft_gbp.toFixed(2)" v-if="shipment.est_cost_cuft_gbp"/>
+                            <b-form-input readonly :value="shipment.est_cost_cuft_gbp" v-else />
                         </b-input-group>
                     </b-form-group>
                 </div>

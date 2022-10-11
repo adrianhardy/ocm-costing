@@ -11,6 +11,7 @@ use App\Transformers\ConsignmentTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class ShipmentsController extends Controller
@@ -32,15 +33,15 @@ class ShipmentsController extends Controller
     public function update(Request $request, Consignment $shipment)
     {
         $this->validate($request, [
-            'reference' => 'required|min:0|max:32',
+            'reference' => 'required|min:0|max:200',
             'sales_order' => 'required',
             'est_cost_cuft_gbp' => 'sometimes|nullable',
-            'our_order_number' => 'required|min:0|max:32',
+            'our_order_number' => 'required|min:0|max:200',
             'vessel_name' => 'required|min:0|max:32',
-            'supplier_ref' => 'sometimes|min:0|max:32',
+            'supplier_ref' => 'sometimes|min:0|max:200',
             'container_number' => 'required|min:0|max:32',
             'bl_number' => 'sometimes|min:0|max:32',
-            'shipping_agent_ref' => 'sometimes|min:0|max:32',
+            'shipping_agent_ref' => 'sometimes|min:0|max:200',
             'invoice_amt' => 'sometimes|numeric|min:0'
         ]);
 
@@ -96,5 +97,17 @@ class ShipmentsController extends Controller
             Mail::send($mail);
         }
 
+    }
+
+    /**
+     * @param Consignment $shipment
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function destroy(Consignment $shipment)
+    {
+        abort_unless(Auth::user()->hasRole(['super']), 403, 'You are not permitted to carry out this action');
+        $shipment->delete();
+        return response()->json();
     }
 }

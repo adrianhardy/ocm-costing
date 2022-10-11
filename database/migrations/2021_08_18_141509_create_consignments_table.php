@@ -16,7 +16,7 @@ class CreateConsignmentsTable extends Migration
         Schema::create('consignments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->string('reference', 32);
+            $table->string('reference', 200);
             $table->decimal('est_cost_cuft_gbp')->nullable();
             $table->dateTime('departed_at')->nullable();
             $table->dateTime('docked_at')->nullable();
