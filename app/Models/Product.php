@@ -25,6 +25,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property $unit_weight_g
  * @property Collection|ProductLandedCost[] $landed_costs
  * @property Collection|Factory[] $factories
+ * @property ProductPricing $current_product_pricing
  * @property-read $current_landed_cost_per_unit_gbp
  * @property-read $case_cubic_ft
  */
@@ -119,6 +120,10 @@ class Product extends BaseProduct implements HasMedia
                     ->width(200)
                     ->height(200);
             });
+    }
+
+    public function current_product_pricing(){
+        return $this->hasOne(ProductPricing::class)->whereNull('superseded_at');
     }
 
     public function getCaseCubicFtAttribute()

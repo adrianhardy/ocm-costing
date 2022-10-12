@@ -4,7 +4,7 @@
             <div class="d-flex justify-content-between">
                 <h2>Edit Shipment</h2>
                 <div>
-                    <b-button variant="danger" size="sm" class="mt-2" @click="deleteShipment">Delete Shipment</b-button>
+                    <b-button v-if="isSuper" variant="danger" size="sm" class="mt-2" @click="deleteShipment">Delete Shipment</b-button>
                 </div>
             </div>
             <div class="row">
@@ -161,7 +161,11 @@
 export default {
     name: "EditShipment",
     props: {
-        shipmentId: Number
+        shipmentId: Number,
+        isSuper: {
+            type: Boolean,
+            default: false
+        }
     },
     mounted() {
         this.refresh();
