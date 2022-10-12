@@ -85,6 +85,7 @@
             :uk="uk"
             ref="pricing-modal"
             @updated="updatePricing"
+            @copy="copyPricing($event)"
         />
     </div>
 </template>
@@ -110,6 +111,9 @@ export default {
         'pricing-modal': PricingModal
     },
     methods: {
+        copyPricing(pricing){
+            this.copiedPricing = pricing
+        },
         selectAllForExport(value) {
             if (value) {
                 this.selectedForExport = _.uniq([...this.selectedForExport, ..._.map(this.pricings, 'id')]);
@@ -146,7 +150,7 @@ export default {
             }
         },
         openModal(line) {
-            this.$refs['pricing-modal'].open(line);
+            this.$refs['pricing-modal'].open(line, this.copiedPricing);
         },
         updatePricing() {
             this.$bvToast.toast('Pricing Updated', {
@@ -184,6 +188,7 @@ export default {
     },
     data() {
         return {
+            copiedPricing: null,
             pricings: [],
             selected: [],
             search: '',

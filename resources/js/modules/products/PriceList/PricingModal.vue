@@ -10,6 +10,14 @@
          centered
          size="xl"
     >
+        <template #modal-footer="{ok, cancel}">
+            <div class="mr-auto">
+                <b-button class="mr-1" @click="copyPricing">Copy Pricing</b-button>
+                <b-button v-if="copiedPricing" @click="pastePricing">Paste Pricing</b-button>
+            </div>
+            <b-button variant="secondary" @click="cancel">Cancel</b-button>
+            <b-button variant="primary" @click.prevent="save($event)">Update</b-button>
+        </template>
         <div>
             <div class="row">
                 <div class="col-12 col-md-3">
@@ -356,6 +364,23 @@ export default {
         }
     },
     methods: {
+        copyPricing(){
+            this.$emit('copy', this.value)
+            // this is more of a visual thing of saying
+            // "hey, you can paste this somewhere now", and
+            // pasting to the same place shouldn't do anything anyway
+            this.copiedPricing = this.value
+        },
+        pastePricing(){
+            const copied = this.copiedPricing
+
+            let newPricing = {}
+            _.forEach(this.value.countries, function(country, key) {
+                newPricing[key] = copied.countries[key]
+            })
+
+            this.value.countries = newPricing
+        },
         getGuidance(){
             const loading = this.$loading.show();
             const url = '/api/guidance'
@@ -399,8 +424,9 @@ export default {
                 this.$handleExceptionResponse(error, true)
             })
         },
-        open(line) {
+        open(line, copiedPricing = null) {
             this.value = line;
+            this.copiedPricing = copiedPricing;
             this.$http.get(`/api/pricing/${this.value.id}`, {
                 params: {
                     include: `product,product.media,sales_order_line,countries`
@@ -440,7 +466,8 @@ export default {
                 {key: 'approver.name', label: 'Approved By', sortable: true},
                 {key: 'unit_price_gbp', label: 'Unit Price'},
                 {key: 'margin_pc', label: 'Margin'},
-            ]
+            ],
+            copiedPricing: null
         }
     }
 }
