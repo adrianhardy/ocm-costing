@@ -85,16 +85,16 @@ class InspectionSheetBuilder
         $this->currentWriterRow++;
 
 
-//        /** @var Media $media */
-//        foreach ($line->product->getMedia()->take(2) as $i => $media) {
-//            $drawing = new Drawing();
-//            $drawing->setPath($media->getPath('thumb'));
-//            $drawing->setCoordinates('A' . $this->currentWriterRow);
-//            $drawing->setOffsetX(5 + ($i * 135) );
-//            $drawing->setOffsetY(5);
-//            $drawing->setWidthAndHeight(130,130);
-//            $drawing->setWorksheet($this->sheet);
-//        }
+        /** @var Media $media */
+        foreach ($line->product->getMedia()->take(2) as $i => $media) {
+            $drawing = new Drawing();
+            $drawing->setPath($media->getPath('thumb'));
+            $drawing->setCoordinates('A' . $this->currentWriterRow);
+            $drawing->setOffsetX(5 + ($i * 135) );
+            $drawing->setOffsetY(5);
+            $drawing->setWidthAndHeight(130,130);
+            $drawing->setWorksheet($this->sheet);
+        }
 
         $sheet->setCellValueByColumnAndRow(1, $this->currentWriterRow, '');
 
