@@ -2,6 +2,7 @@
 
 namespace App\Domain\Excel;
 
+use App\Domain\LandedCostCalculator;
 use App\Models\Consignment;
 use App\Models\SalesOrderLine;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -18,7 +19,7 @@ class InspectionSheetBuilder
     protected $currentWriterRow = 5;
     /** @var Worksheet */
     protected $sheet;
-    protected $columns = [
+    protected $inspectionColumns = [
         'Product Photo',
         'Art No.',
         'Barcode',
@@ -31,12 +32,28 @@ class InspectionSheetBuilder
         'APPEARANCE OK',
         'SIZE MEASURE ITEM CHECK IS CORRECT'
     ];
-    public function build(Consignment $consignment)
+    protected $shippingColumns = [
+        'Product Photo',
+        'Art No.',
+        'Barcode',
+        'Products Description',
+        'Packing',
+        'Landed Cost GBP',
+        'Quantity Received'
+    ];
+    protected $mode = 'inspection';
+
+    public function build(Consignment $consignment, $mode = 'inspection')
     {
+        $this->mode = $mode;
         $spreadsheet = new Spreadsheet();
         $this->sheet = $spreadsheet->getSheet(0);
         $this->drawTitle($consignment);
-        $this->drawHeaders();
+        if ($this->mode === 'inspection') {
+            $this->drawHeaders($this->inspectionColumns);
+        } else if($this->mode === 'shipping') {
+            $this->drawHeaders($this->shippingColumns);
+        }
         foreach ($consignment->sales_order_lines as $line) {
             $this->writeLine($line);
         }
@@ -46,9 +63,9 @@ class InspectionSheetBuilder
         return $fp;
     }
 
-    protected function drawHorizontalRule()
+    protected function drawHorizontalRule($columns)
     {
-        for ($col = 1; $col <= count($this->columns); $col++) {
+        for ($col = 1; $col <= count($columns); $col++) {
             $this->sheet
                 ->getStyleByColumnAndRow($col, $this->currentWriterRow)
                 ->getBorders()
@@ -60,29 +77,45 @@ class InspectionSheetBuilder
     protected function writeLine(SalesOrderLine $line)
     {
         $sheet = $this->sheet;
-        $this->drawHorizontalRule();
+        if($this->mode === 'inspection') {
+            $this->drawHorizontalRule($this->inspectionColumns);
+        } else {
+            $this->drawHorizontalRule($this->shippingColumns);
+        }
         $this->currentWriterRow++;
 
 
-        /** @var Media $media */
-        foreach ($line->product->getMedia()->take(2) as $i => $media) {
-            $drawing = new Drawing();
-            $drawing->setPath($media->getPath('thumb'));
-            $drawing->setCoordinates('A' . $this->currentWriterRow);
-            $drawing->setOffsetX(5 + ($i * 135) );
-            $drawing->setOffsetY(5);
-            $drawing->setWidthAndHeight(130,130);
-            $drawing->setWorksheet($this->sheet);
-        }
+//        /** @var Media $media */
+//        foreach ($line->product->getMedia()->take(2) as $i => $media) {
+//            $drawing = new Drawing();
+//            $drawing->setPath($media->getPath('thumb'));
+//            $drawing->setCoordinates('A' . $this->currentWriterRow);
+//            $drawing->setOffsetX(5 + ($i * 135) );
+//            $drawing->setOffsetY(5);
+//            $drawing->setWidthAndHeight(130,130);
+//            $drawing->setWorksheet($this->sheet);
+//        }
+
+        $sheet->setCellValueByColumnAndRow(1, $this->currentWriterRow, '');
 
         $sheet->setCellValueByColumnAndRow(2, $this->currentWriterRow, $line->article_number);
         $sheet->setCellValueByColumnAndRow(3, $this->currentWriterRow, $line->barcode);
         // border over the top of the current row
-        for ($i = 1; $i <= count($this->columns); $i++) {
-            $sheet->getStyleByColumnAndRow($i, $this->currentWriterRow)
-                ->getBorders()
-                ->getTop()
-                ->setBorderStyle(Border::BORDER_THICK);
+
+        if($this->mode === 'inspection') {
+            for ($i = 1; $i <= count($this->inspectionColumns); $i++) {
+                $sheet->getStyleByColumnAndRow($i, $this->currentWriterRow)
+                    ->getBorders()
+                    ->getTop()
+                    ->setBorderStyle(Border::BORDER_THICK);
+            }
+        } else if($this->mode === 'shipping') {
+            for ($i = 1; $i <= count($this->shippingColumns); $i++) {
+                $sheet->getStyleByColumnAndRow($i, $this->currentWriterRow)
+                    ->getBorders()
+                    ->getTop()
+                    ->setBorderStyle(Border::BORDER_THICK);
+            }
         }
 
         $description = preg_split(
@@ -106,10 +139,21 @@ class InspectionSheetBuilder
             $sheet->setCellValueByColumnAndRow(5, $this->currentWriterRow+$i, $text);
         }
 
+        if($this->mode === 'shipping') {
+            $sheet->setCellValueByColumnAndRow(6, $this->currentWriterRow, $line->pivot->est_landed_cost_per_unit_gbp);
+
+            $sheet->setCellValueByColumnAndRow(7, $this->currentWriterRow, $line->pivot->qty_shipped);
+        }
+
         $rowCount = max(count($description), count($packing));
         $this->currentWriterRow += $rowCount-1;
-        $this->drawHorizontalRule();
 
+
+        if($this->mode === 'inspection') {
+            $this->drawHorizontalRule($this->inspectionColumns);
+        } else if ($this->mode === 'shipping') {
+            $this->drawHorizontalRule($this->shippingColumns);
+        }
 
         // for every column ...
         for ($row = 0; $row < $rowCount; $row++) {
@@ -129,20 +173,39 @@ class InspectionSheetBuilder
                     ->setRowHeight(1.5 * ceil($longest % 40));
             }
 
-            for ($col = 1; $col <= count($this->columns); $col++) {
-                // start at the current row and work upwards, drawing
-                // vertical borders on either side of each cell ...
-                $sheet->getStyleByColumnAndRow($col, $this->currentWriterRow - $row)
-                    ->applyFromArray([
-                        'alignment' => [
-                            'wrapText' => true,
-                            'vertical' => Alignment::VERTICAL_TOP,
-                        ],
-                        'borders' => [
-                            'left' => ['borderStyle' => Border::BORDER_THICK],
-                            'right' => ['borderStyle' => Border::BORDER_THICK]
-                        ]
-                    ]);
+            if($this->mode === 'inspection') {
+                for ($col = 1; $col <= count($this->inspectionColumns); $col++) {
+                    // start at the current row and work upwards, drawing
+                    // vertical borders on either side of each cell ...
+                    $sheet->getStyleByColumnAndRow($col, $this->currentWriterRow - $row)
+                        ->applyFromArray([
+                            'alignment' => [
+                                'wrapText' => true,
+                                'vertical' => Alignment::VERTICAL_TOP,
+                            ],
+                            'borders' => [
+                                'left' => ['borderStyle' => Border::BORDER_THICK],
+                                'right' => ['borderStyle' => Border::BORDER_THICK]
+                            ]
+                        ]);
+                }
+            } else if ($this->mode === 'shipping') {
+                for ($col = 1; $col <= count($this->shippingColumns); $col++) {
+                    // start at the current row and work upwards, drawing
+                    // vertical borders on either side of each cell ...
+                    $sheet->getStyleByColumnAndRow($col, $this->currentWriterRow - $row)
+                        ->applyFromArray([
+                            'alignment' => [
+                                'wrapText' => true,
+                                'vertical' => Alignment::VERTICAL_TOP,
+                            ],
+                            'borders' => [
+                                'left' => ['borderStyle' => Border::BORDER_THICK],
+                                'right' => ['borderStyle' => Border::BORDER_THICK]
+                            ]
+                        ]);
+                }
+
             }
         }
 
@@ -164,10 +227,10 @@ class InspectionSheetBuilder
         }
     }
 
-    protected function drawHeaders()
+    protected function drawHeaders($columns)
     {
         $row = $this->currentWriterRow+1;
-        foreach ($this->columns as $col => $name) {
+        foreach ($columns as $col => $name) {
 
             $width = 5*7.5;
             if ($col == 1 || $col == 2 || $col > 4) {
@@ -198,5 +261,9 @@ class InspectionSheetBuilder
 
         }
         $this->currentWriterRow++;
+    }
+
+    public function setMode($mode){
+        $this->mode = $mode;
     }
 }

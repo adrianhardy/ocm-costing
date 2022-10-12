@@ -1,7 +1,12 @@
 <template>
     <div>
         <b-card class="shadow-sm">
-            <h2>Edit Shipment</h2>
+            <div class="d-flex justify-content-between">
+                <h2>Edit Shipment</h2>
+                <div>
+                    <b-button variant="danger" size="sm" class="mt-2" @click="deleteShipment">Delete Shipment</b-button>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12 col-md-4">
                     <b-form-group label="Reference">
@@ -93,7 +98,8 @@
             </div>
             <div class="mt-3 d-flex justify-content-between">
                 <div>
-                    <b-button :href="`/shipments/${shipment.id}/generate-inspection-report`">Generate Inspection Report</b-button>
+                    <b-button :href="`/shipments/${shipment.id}/generate-inspection-report?mode=inspection`">Generate Inspection Report</b-button>
+                    <b-button :href="`/shipments/${shipment.id}/generate-inspection-report?mode=shipping`">Generate Shipping List</b-button>
                 </div>
                 <div>
                     <b-input-group>
@@ -176,6 +182,27 @@ export default {
         }
     },
     methods: {
+        deleteShipment(){
+            this.$bvModal.msgBoxConfirm('Are you sure you want to delete this shipment?', {
+                centered: true,
+                okVariant: 'danger',
+                okTitle: 'Delete',
+                cancelVariant: 'primary'
+            }).then(response => {
+                if(!response) {
+                    return;
+                }
+                const loading = this.$loading.show();
+                const url = `/api/shipments/${this.shipment.id}`;
+                this.$http.delete(url).then(response => {
+                    loading.hide();
+                    window.location.href = '/shipments'
+                }).catch(error => {
+                    loading.hide();
+                    this.$handleExceptionResponse(error, true)
+                })
+            })
+        },
         update() {
             const loading = this.$loading.show();
             let xhrs = [
