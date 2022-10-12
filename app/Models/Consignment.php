@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Models\Base\Consignment as BaseConsignment;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class Consignment extends BaseConsignment implements HasMedia
 {
     use HasMediaTrait;
+    use SoftDeletes;
 
     public function registerMediaCollections()
     {

@@ -123,4 +123,11 @@ class SalesOrderLine extends BaseSalesOrderLine
 
         return round($shipping['est_landed_cost_per_unit_gbp'], 2);
     }
+
+    public function consignments()
+    {
+        return parent::consignments()->withTrashed();
+    }
+
+
 }

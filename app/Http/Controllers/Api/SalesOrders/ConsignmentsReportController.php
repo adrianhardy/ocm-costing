@@ -32,10 +32,13 @@ class ConsignmentsReportController extends Controller
 
         $paginator = $paginator->where('sales_order_id', $salesOrder->id);
 
-        $paginator = $paginator->paginate(
-            $request->input('per_page', $paginator->count())
-        );
+        if ($request->input('all')) {
+            return response()->json([
+                'items' => fractal($paginator->get(), new SalesOrderLineTransformer())
+            ]);
+        }
 
+        $paginator = $paginator->paginate($request->input('per_page'));
         return response()->json(new SerializeLengthAwarePaginator($paginator, new SalesOrderLineTransformer()));
 
     }

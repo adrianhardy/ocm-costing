@@ -136,4 +136,10 @@ class InspectionReport extends BaseInspectionReport
     {
         return $this->case_width_m * 100;
     }
+
+    public function consignment()
+    {
+        return parent::consignment()->withTrashed();
+    }
+
 }

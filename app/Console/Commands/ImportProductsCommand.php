@@ -116,12 +116,14 @@ class ImportProductsCommand extends Command
                 ->where('article_number', $data['article_number'])
                 ->first();
 
-            if (!$product) {
-                $product = new Product();
-                $product->supplier()->associate($supplier);
+            if ($this->updateHistoricLCOnly && !$product) {
+                $this->log->warning("Failed to find existing product for article_number {$data['article_number']}");
+                $import->total_errors++;
+                $import->save();
+                continue;
             }
 
-            if ($this->updateHistoricLCOnly) {
+            if ($this->updateHistoricLCOnly && $product) {
                 /** @var Currency $usd */
                 $usd = Currency::query()->where('code', 'USD')->first();
 
@@ -176,7 +178,13 @@ class ImportProductsCommand extends Command
                 $lc->landed_cost_per_unit = $lc->landed_cost_per_unit_gbp * $usd->default_fx_to_gbp;
                 $lc->save();
                 $import->save();
+                $this->log->info("Created landed cost {$lc->id}");
                 continue;
+            }
+
+            if (!$product) {
+                $product = new Product();
+                $product->supplier()->associate($supplier);
             }
 
             $product->fill($data->only([

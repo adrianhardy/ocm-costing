@@ -27,6 +27,8 @@ class ImportController extends Controller
     public function store(Request $request)
     {
 
+        set_time_limit(6000);
+
         $file = $request->file('file');
         $type = $request->input('type');
         $preview = $request->input('preview') === '1';
@@ -41,9 +43,9 @@ class ImportController extends Controller
                 'container_reference'           => 'required|max:50',
                 'vessel_name'                   => 'required|min:1|max:50',
                 'bl_number'                     => 'nullable|min:0|max:32',
-                'shipping_agent_ref'            => 'nullable|min:0|max:32',
-                'reference'                     => 'required|min:0|max:32',
-                'supplier_reference'            => 'required|min:0|max:32',
+                'shipping_agent_ref'            => 'nullable|min:0|max:200',
+                'reference'                     => 'required|min:0|max:200',
+                'supplier_reference'            => 'required|min:0|max:200',
                 'total_shipping_invoice_value'  => 'required|numeric|min:0'
             ]);
         }
@@ -55,6 +57,7 @@ class ImportController extends Controller
         $uniqueSalesOrderReferences = [];
         $consignment = null;
         DB::beginTransaction();
+        $log = [];
         // For every line found in the XLSX file
         foreach ($json['lines'] as $row) {
 
@@ -72,6 +75,7 @@ class ImportController extends Controller
             $line = $line->first();
 
             if (!$line) {
+                $log[] = "Failed to find article {$row['article_number']} on PO {$row['po_number']}";
                 continue;
             }
 
@@ -88,7 +92,7 @@ class ImportController extends Controller
             }
 
             // If we're trying to update shipments as we're going lone
-            if ($type == 'packing' && !$preview) {
+            if ($type == 'packing') {
                 $consignment = Consignment::query()
                     ->where('container_number', $json['shipment']['container_reference'])
                     ->first();
@@ -98,8 +102,8 @@ class ImportController extends Controller
                     ]);
                 }
                 $consignment->fill([
-                    'reference' => $json['reference'],
-                    'supplier_reference' => $json['supplier_reference'],
+                    'reference' => $request->input('reference'),
+                    'supplier_ref' => $request->input('supplier_reference'),
                     'vessel_name' => $json['shipment']['vessel_name'],
                     'estimated_arrival_at' => Carbon::parse($json['shipment']['estimated_date_of_arrival']),
                     'estimated_departure_at' => Carbon::parse($json['shipment']['estimated_date_of_departure']),
@@ -107,30 +111,38 @@ class ImportController extends Controller
                     'invoice_amt' => $request->input('total_shipping_invoice_value'),
                     'bl_number' => $request->input('bl_number')
                 ]);
-                $consignment->sales_order()->associate($line->sales_order);
-                $consignment->save();
                 $line->unit_width_cm = $row['outer_dimension_w'];
                 $line->unit_length_cm = $row['outer_dimension_l'];
                 $line->unit_height_cm = $row['outer_dimension_h'];
                 $line->units_per_case = $row['pcs_per_ctn'];
-                $line->save();
 
-                // attach this line to this consignment
-                // if it doesn't exist already ...
-                if (!$consignment
-                    ->sales_order_lines()
-                    ->where('id', $line->id)
-                    ->exists()
-                ) {
-                    $consignment->sales_order_lines()->save($line);
+                $log[] = [
+                    'desc' => "Saved a shipment line for article {$row['article_number']}",
+                    'line' => $line->only(['unit_width_cm', 'unit_length_cm', 'unit_height_cm', 'units_per_case'])
+                ];
+
+                if (!$preview) {
+                    $line->save();
+                    $consignment->sales_order()->associate($line->sales_order);
+                    $consignment->save();
+
+                    // attach this line to this consignment
+                    // if it doesn't exist already ...
+                    if (!$consignment
+                        ->sales_order_lines()
+                        ->where('id', $line->id)
+                        ->exists()
+                    ) {
+                        $consignment->sales_order_lines()->save($line);
+                    }
+
+                    $consignment->sales_order_lines()
+                        ->wherePivot('consignment_id', $consignment->id)
+                        ->wherePivot('sales_order_line_id', $line->id)
+                        ->update([
+                            'qty_shipped' => $row['qty']
+                        ]);
                 }
-
-                $consignment->sales_order_lines()
-                    ->wherePivot('consignment_id', $consignment->id)
-                    ->wherePivot('sales_order_line_id', $line->id)
-                    ->update([
-                        'qty_shipped' => $row['qty']
-                    ]);
             }
 
             $summary[] = [
@@ -152,7 +164,8 @@ class ImportController extends Controller
         DB::commit();
         return response()->json([
             'lines' => $summary,
-            'shipment' => $json['shipment']
+            'shipment' => $json['shipment'],
+            'log' => $log
         ]);
     }
 }

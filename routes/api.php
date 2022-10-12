@@ -56,6 +56,7 @@ Route::group(['as' => 'api.'], function() {
     });
 
     Route::group(['middleware' => ['auth:api', 'role:super']], function() {
+        Route::resource('shipments', 'Api\Shipments\ShipmentsController')->only(['destroy']);
         Route::resource('admin/suppliers', 'Api\Admin\SuppliersController')->only(['index', 'update', 'store', 'show']);
         Route::resource('admin/suppliers.files', 'Api\Admin\Suppliers\MediaController')->only(['index', 'store']);
         Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['update', 'store', 'show']);

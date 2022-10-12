@@ -181,6 +181,6 @@ class SalesOrder extends BaseSalesOrder
 
     public function consignments()
     {
-        return $this->hasMany(Consignment::class, 'sales_order_id', 'id');
+        return $this->hasMany(Consignment::class, 'sales_order_id', 'id')->withTrashed();
     }
 }

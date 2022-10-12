@@ -23,10 +23,10 @@ class ShipmentsController extends Controller
      * @param Consignment $consignment
      * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
-    public function download(Consignment $consignment)
+    public function download(Request $request, Consignment $consignment)
     {
         $builder = new InspectionSheetBuilder();
-        $fp = $builder->build($consignment);
+        $fp = $builder->build($consignment, $request->input('mode'));
         return response()->streamDownload(function () use ($fp) {
             rewind($fp);
             echo stream_get_contents($fp);
