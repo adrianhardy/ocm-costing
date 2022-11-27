@@ -153,8 +153,8 @@ export default {
             cartonTotalCubicFt: null,
 
             shipCostPerCubicFt: 5.5,
-            importDuty: 4,
-            commissionRate: 4.7,
+            importDuty: 4.7,
+            commissionRate: 4,
             exchangeRate: 1.08,
 
             unitsPerCase: 10,
