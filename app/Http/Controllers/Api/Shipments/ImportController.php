@@ -125,6 +125,7 @@ class ImportController extends Controller
                     $line->save();
                     $consignment->sales_order()->associate($line->sales_order);
                     $consignment->save();
+                    $consignment->touch();
 
                     // attach this line to this consignment
                     // if it doesn't exist already ...

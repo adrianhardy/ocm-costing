@@ -159,6 +159,23 @@ class ImportProductsCommand extends Command
                     $lc->width_m = 0;
                 }
 
+                if (isset($data['']))
+
+                if (isset($data['line_cubic_m'])) {
+
+                    $cases = null;
+                    if (isset($data['cases'])) {
+                        $cases = $data['cases'];
+                    }
+
+                    if (!$cases && !(isset($data['case_qty']) && isset($data['total_unit_qty'])) ) {
+                        abort(400, 'When importing using line cubic metres, you must map EITHER total cartons, or total units and case qty');
+                    }
+
+                    $cases = $data['total_unit_qty'] / $data['case_qty'];
+                    $data['cuft_per_ctn'] = ($data['line_cubic_m'] * setting('cubic_metres_to_feet')) / $cases;
+                }
+
                 $lc->units_per_case = $data['case_qty'];
                 $lc->fx_rate = $import->config['fxRate'];
                 $lc->shipping_cost_per_cuft = $import->config['cuft'];

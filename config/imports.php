@@ -33,7 +33,8 @@ return [
                 'unit_weight_kg'      => 'Unit Weight (kg)',
             ],
             'shipping' => [
-                'cuft_per_ctn'        => 'Cuft / Ctn'
+                'cuft_per_ctn'        => 'Cuft / Ctn',
+                'line_cubic_m'        => 'Line Cubic M'
             ]
         ]
     ]

@@ -5,6 +5,7 @@ namespace App\Domain\Excel;
 use App\Domain\LandedCostCalculator;
 use App\Models\Consignment;
 use App\Models\SalesOrderLine;
+use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -92,7 +93,7 @@ class InspectionSheetBuilder
             $drawing->setCoordinates('A' . $this->currentWriterRow);
             $drawing->setOffsetX(5 + ($i * 135) );
             $drawing->setOffsetY(5);
-            $drawing->setWidthAndHeight(130,130);
+            $drawing->setWidthAndHeight(50,50);
             $drawing->setWorksheet($this->sheet);
         }
 
@@ -217,14 +218,24 @@ class InspectionSheetBuilder
         $this->sheet->setCellValue('A1', "REFERENCE: " . $consignment->reference);
         $this->sheet->setCellValue('A2', "CONTAINER: " . $consignment->container_number);
         $this->sheet->setCellValue('A3', "SUPPLIER REF: " . $consignment->supplier_ref);
+        $this->sheet->setCellValue('A4', "DATE GENERATED: " . Carbon::now()->format('d/M/y'));
         $this->sheet->setCellValue('C1', "ESTIMATED ARRIVAL: " . optional($consignment->estimated_arrival_at)->format('d/m/Y'));
         $this->sheet->setCellValue('C2', "BOOKED IN: " . optional($consignment->booked_in_at)->format('d/m/Y'));
         $this->sheet->setCellValue('C3', "DELIVERED: " . optional($consignment->docked_at)->format('d/m/Y'));
-        foreach (['A1', 'A2', 'A3', 'C1', 'C2', 'C3'] as $cell) {
+        foreach (['A1', 'A2', 'A3', 'A4', 'C1', 'C2', 'C3', 'E1', 'E2', 'E3'] as $cell) {
             $this->sheet->getStyle($cell)->applyFromArray([
                 'font' => ['bold' => true]
             ]);
         }
+
+        if ($this->mode === 'shipping') {
+            $this->sheet
+                ->setCellValue('E1', 'FX RATE: ' . number_format(1/$consignment->sales_order->fx_rate, 2))
+                ->setCellValue('E2', 'SHIPPING RATE: ' . number_format($consignment->sales_order->shipping_cost_per_cubic_foot,2))
+                ->setCellValue('E3', 'MID REF: ' . $consignment->shipping_agent_ref);
+        }
+
+
     }
 
     protected function drawHeaders($columns)

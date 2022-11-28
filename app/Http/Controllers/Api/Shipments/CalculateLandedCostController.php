@@ -82,6 +82,7 @@ class CalculateLandedCostController extends Controller
             }
         }
 
+        $shipment->touch();
         return response()->json();
     }
 }

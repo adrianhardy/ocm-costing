@@ -26,7 +26,7 @@ class ExportController extends Controller
 
         return response()->streamDownload(function() use ($blob) {
             echo $blob;
-        }, "{$salesOrder->sales_order_number}.xlsx");
+        }, "{$salesOrder->reference}.xlsx");
 
     }
 }
