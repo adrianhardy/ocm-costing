@@ -113,11 +113,6 @@ class SalesOrderExporter
             $this->clone->getSheet(0)->insertNewRowBefore($this->start + ($current*$this->sheetRowsPerLine), $this->sheetRowsPerLine);
             $this->insertSalesOrderLine($line, $this->start + ($current*$this->sheetRowsPerLine));
             $maxLine = $this->start+$current*$this->sheetRowsPerLine;
-
-            if ($maxLine > 20) {
-                break;
-            }
-
         }
 
         $maxLine++; // So when we're doing our sums we're going to the last
@@ -298,7 +293,8 @@ class SalesOrderExporter
             '%DOCUMENT_TYPE%',
             '%SC_REFERENCE%',
             '%SALES_ORDER_NUMBER%',
-            '%DATE_FINALISED%'
+            '%DATE_FINALISED%',
+            '%NOTES%'
         ], [
             $salesOrder->supplier->name,
             $salesOrder->factory->name,
@@ -308,8 +304,12 @@ class SalesOrderExporter
             $salesOrder->stage_description,
             $salesOrder->reference,
             $salesOrder->reference,
-            $salesOrder->finalised_at->format('d M Y')
+            $salesOrder->finalised_at->format('d M Y'),
+            $salesOrder->sales_order_notes
         ]);
+        if ($cell->getValue() == '%NOTES%') {
+            $cell->getStyle()->getAlignment()->setWrapText(true);
+        }
         $cell->setValue(strtr($cell->getValue(), $pairs));
     }
 

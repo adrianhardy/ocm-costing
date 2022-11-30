@@ -159,8 +159,6 @@ class ImportProductsCommand extends Command
                     $lc->width_m = 0;
                 }
 
-                if (isset($data['']))
-
                 if (isset($data['line_cubic_m'])) {
 
                     $cases = null;
