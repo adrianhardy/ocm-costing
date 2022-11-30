@@ -93,8 +93,8 @@
                                             <div class="col-5">Booked In:</div>
                                             <div class="col-7">
                                                 {{
-                                                    $consignment->booked_in?
-                                                    $consignment->booked_in->format('d/m/Y'):
+                                                    $consignment->booked_in_at?
+                                                    $consignment->booked_in_at->format('d/m/Y'):
                                                     'Not set'
                                                  }}
                                             </div>
