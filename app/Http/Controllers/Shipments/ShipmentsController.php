@@ -25,11 +25,21 @@ class ShipmentsController extends Controller
      */
     public function download(Request $request, Consignment $consignment)
     {
+        $this->validate($request, [
+            'mode' => 'required|in:shipping,inspection'
+        ]);
+
+        $filename = "INSPECTION REPORT {$consignment->sales_order->reference}.xlsx";
+
+        if ($request->input('mode') == 'shipping') {
+            $filename = "SHIPPING LIST {$consignment->sales_order->reference}.xlsx";
+        }
+
         $builder = new InspectionSheetBuilder();
         $fp = $builder->build($consignment, $request->input('mode'));
         return response()->streamDownload(function () use ($fp) {
             rewind($fp);
             echo stream_get_contents($fp);
-        }, 'inspection-report.xlsx');
+        }, $filename);
     }
 }

@@ -8,6 +8,7 @@
             @role('super')
             show-costing
             @endrole
+            :cubic-metres-to-feet="{{ setting('cubic_metres_to_feet') }}"
             :product-id="{{ $product->id }}"
             :shipping-cost-per-cubic-foot="{{ $shipping_cost_per_cubic_foot }}"
             :exchange-rate-usd="{{ $exchange_rate_usd }}"

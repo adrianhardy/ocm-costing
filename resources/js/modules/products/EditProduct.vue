@@ -61,7 +61,6 @@
                                 <b-input-group prepend="$">
                                     <b-form-input v-model="product.unit_price"/>
                                 </b-input-group>
-                                </b-input-group>
                             </b-form-group>
                         </div>
                         <div class="col-4">
@@ -378,7 +377,8 @@ export default {
         shippingCostPerCubicFoot: Number,
         showCosting: Boolean,
         productId: Number,
-        isSupplier: Boolean
+        isSupplier: Boolean,
+        cubicMetresToFeet: Number
     },
     filters: {
         date: dateFilter
@@ -394,8 +394,9 @@ export default {
     },
     computed: {
         testLandedCost() {
+            const caseVolumeM = (this.product.height_cm/100) * (this.product.length_cm/100) * (this.product.width_cm/100);
             const landedCost = LandedCostCalculator.calculate(
-                this.product.case_cubic_ft,
+                caseVolumeM * this.cubicMetresToFeet,
                 this.product.unit_price,
                 this.test.shipping_cost_per_cubic_foot,
                 this.test.exchange_rate_usd,
@@ -404,7 +405,6 @@ export default {
                 this.product.is_excluded_from_commission,
                 this.product.units_per_case
             );
-            console.log(landedCost);
             return landedCost;
         },
         disabled() {

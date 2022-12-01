@@ -47,6 +47,13 @@ return [
             'level' => 'debug',
         ],
 
+        'export' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/xlsx-export.log'),
+            'level' => 'debug',
+            'days' => 14
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),

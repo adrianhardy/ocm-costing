@@ -72,7 +72,7 @@
                 {{ data.item.length_cm }}x{{ data.item.width_cm }}x{{ data.item.height_cm }}
             </template>
             <template #cell(shipping_cost_per_cuft)="data">
-                {{ data.value * data.item.fx_rate | cash_value }}
+                {{ data.value | cash_value }}
             </template>
             <template #cell(landed_cost_per_unit_gbp)="data">
                 {{ data.value | cash_value }}
@@ -85,6 +85,9 @@
             </template>
             <template #cell(import_duty_pc)="data">
                 {{ data.value | 2dp_value }}%
+            </template>
+            <template #cell(unit_price)="data">
+                ${{ data.value | 2dp_value }}
             </template>
         </b-table>
 

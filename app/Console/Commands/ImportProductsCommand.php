@@ -159,6 +159,34 @@ class ImportProductsCommand extends Command
                     $lc->width_m = 0;
                 }
 
+                // if we're given the total cubic m for the entire line
+                // then we need to work out our number of cases (from two
+                // possible sources).
+                if (isset($data['line_cubic_m'])) {
+
+                    $cases = null;
+                    if (isset($data['cases'])) {
+                        $cases = $data['cases'];
+                    } else {
+                        $cases = $data['total_unit_qty'] / $data['case_qty'];
+                    }
+
+                    // backfill this for when we update the $lc model later
+                    if (!isset($data['case_qty']) && isset($data['total_unit_qty'])) {
+                        $data['case_qty'] = $data['total_unit_qty'] / $cases;
+                    }
+
+                    $data['cuft_per_ctn'] = ($data['line_cubic_m'] * setting('cubic_metres_to_feet')) / $cases;
+
+                    $lc->height_m = ($data['line_cubic_m'] / $cases) ** (1/3);
+                    $lc->length_m = $lc->height_m;
+                    $lc->width_m = $lc->height_m;
+                }
+
+                if (!isset($data['case_qty'])) {
+                    throw new \Exception("Failed to calculate pieces per carton");
+                }
+
                 $lc->units_per_case = $data['case_qty'];
                 $lc->fx_rate = $import->config['fxRate'];
                 $lc->shipping_cost_per_cuft = $import->config['cuft'];
