@@ -111,6 +111,15 @@ class InspectionSheetBuilder
                     ->setBorderStyle(Border::BORDER_THICK);
             }
         } else if($this->mode === 'shipping') {
+
+            $sheet->getStyleByColumnAndRow(6, $this->currentWriterRow)
+                ->applyFromArray([
+                    'font' => ['bold' => true]
+                ])
+                ->getFont()
+                ->getColor()
+                ->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+
             for ($i = 1; $i <= count($this->shippingColumns); $i++) {
                 $sheet->getStyleByColumnAndRow($i, $this->currentWriterRow)
                     ->getBorders()
@@ -228,12 +237,10 @@ class InspectionSheetBuilder
             ]);
         }
 
-        if ($this->mode === 'shipping') {
-            $this->sheet
-                ->setCellValue('E1', 'FX RATE: ' . number_format(1/$consignment->sales_order->fx_rate, 2))
-                ->setCellValue('E2', 'SHIPPING RATE: ' . number_format($consignment->sales_order->shipping_cost_per_cubic_foot,2))
-                ->setCellValue('E3', 'MID REF: ' . $consignment->shipping_agent_ref);
-        }
+        $this->sheet
+            ->setCellValue('E1', 'FX RATE: ' . number_format(1/$consignment->sales_order->fx_rate, 2))
+            ->setCellValue('E2', 'SHIPPING RATE: ' . number_format($consignment->sales_order->shipping_cost_per_cubic_foot,2))
+            ->setCellValue('E3', 'MID REF: ' . $consignment->shipping_agent_ref);
 
 
     }
@@ -270,6 +277,12 @@ class InspectionSheetBuilder
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THICK);
 
+            if ($this->mode == 'shipping') {
+                $this->sheet->getStyleByColumnAndRow(6, $row)
+                    ->getFont()
+                    ->getColor()
+                    ->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+            }
         }
         $this->currentWriterRow++;
     }

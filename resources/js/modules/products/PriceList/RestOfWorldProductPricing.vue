@@ -106,7 +106,7 @@
 
             </b-input-group>
         </b-form-group>
-        <b-form-group size="sm" class="mb-2">
+        <b-form-group size="sm" class="mb-2" v-if="showReferralTaxField">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-40">
                     <b-input-group-text class="w-100">Ref' Tax</b-input-group-text>
@@ -180,6 +180,9 @@ export default {
                 return 0.00;
             }
             return (this.value[this.priceField] * (this.value[this.vatField] / 100)).toFixed(2);
+        },
+        showReferralTaxField() {
+            return this.country.is_row;
         },
         referralTaxValue() {
             // if it's a EU, non EURO country

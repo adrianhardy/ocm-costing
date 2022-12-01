@@ -29,10 +29,10 @@ class ShipmentsController extends Controller
             'mode' => 'required|in:shipping,inspection'
         ]);
 
-        $filename = 'inspection-report.xlsx';
+        $filename = "INSPECTION REPORT {$consignment->sales_order->reference}.xlsx";
 
         if ($request->input('mode') == 'shipping') {
-            $filename = 'shipping-list.xlsx';
+            $filename = "SHIPPING LIST {$consignment->sales_order->reference}.xlsx";
         }
 
         $builder = new InspectionSheetBuilder();

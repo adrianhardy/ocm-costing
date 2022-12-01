@@ -55,9 +55,19 @@ class SalesOrderExporter
         'product_details' => '%PRODUCT_DETAILS%',
         'packing_instructions' => '%PACKING_INSTRUCTIONS%',
         'unit_price' => '%UNIT_PRICE%',
+        'unit_weight_kg' => '%UNIT_WEIGHT_KG%',
+        'case_weight_kg' => '%CARTON_WEIGHT_KG%',
+        'unit_length_cm' => '%UNIT_LENGTH_CM%',
+        'unit_width_cm' => '%UNIT_WIDTH_CM%',
+        'unit_height_cm' => '%UNIT_HEIGHT_CM%',
+        'length_cm' => '%CARTON_LENGTH_CM%',
+        'width_cm' => '%CARTON_WIDTH_CM%',
+        'height_cm' => '%CARTON_HEIGHT_CM%',
+
         'cartons' => '%CARTONS%',
         'units_per_case' => '%UNITS_PER_CARTON%',
         'line_cubic_m' => '%LINE_CUBIC_M%',
+        'cubic_m_per_case' => '%CUBIC_M_PER_CTN%',
         'inner_qty' => '%INNER_QUANTITY%',
         'units_requested' => '%QUANTITY%',
         'sub_total' => '%SUB_TOTAL%',
@@ -109,10 +119,13 @@ class SalesOrderExporter
         $this->clone->getSheet(0)->removeRow($this->start);
 
         $maxLine = 0;
-        foreach  ($salesOrder->lines as $current => $line) {
-            $this->clone->getSheet(0)->insertNewRowBefore($this->start + ($current*$this->sheetRowsPerLine), $this->sheetRowsPerLine);
-            $this->insertSalesOrderLine($line, $this->start + ($current*$this->sheetRowsPerLine));
-            $maxLine = $this->start+$current*$this->sheetRowsPerLine;
+        for ($current = 1; $current < $salesOrder->lines->count(); $current++) {
+            $this->clone->getSheet(0)->insertNewRowBefore($this->start + $current, $this->sheetRowsPerLine);
+            $maxLine = $this->start+$current;
+        }
+
+        foreach ($salesOrder->lines as $current => $line) {
+            $this->insertSalesOrderLine($line, $this->start + $current);
         }
 
         $maxLine++; // So when we're doing our sums we're going to the last
@@ -147,18 +160,27 @@ class SalesOrderExporter
             'packing_instructions',
             'unit_price',
             'units_per_case',
-            'inner_qty'
+            'inner_qty',
+            'unit_length_cm',
+            'unit_height_cm',
+            'unit_width_cm',
+            'length_cm',
+            'height_cm',
+            'width_cm'
         ]);
         $row = collect($row)->merge([
+            'case_weight_kg' => $line->case_weight_kg,
+            'unit_weight_kg' => $line->unit_weight_kg,
             'product_name' => $line->product->name,
             'product_details' => $line->product_description,
             'sub_total' => $line->total,
             'units_requested' => $line->units_requested,
             'cartons' => ceil($line->units_requested / $line->units_per_case),
             'cuft_per_case' => $line->case_cubic_ft,
+            'cubic_m_per_case' => $line->case_cubic_m,
             'total_cuft' => $line->total_cubic_m * setting('cubic_metres_to_feet'),
             'line_cubic_m'=> $line->total_cubic_m,
-            'barcode' => $line->barcode
+            'barcode' => $line->barcode,
         ]);
 
         // for each of the values we've found above, find the coordinates
