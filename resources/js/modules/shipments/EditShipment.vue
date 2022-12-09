@@ -121,13 +121,24 @@
                             {{ data.value }}
                         </a>
                     </template>
+                    <template #cell(product.name)="data">
+                        <a :href="`/products/${data.item.product.id}/edit`">
+                            {{ data.value }}
+                        </a>
+                    </template>
                     <template #cell(landed_cost.shipping_cost_gbp_per_unit)="data">
                         <b-input v-model="data.value"/>
                     </template>
                     <template #cell(landed_cost.est_landed_cost_per_unit_gbp)="data">
                         <b-input v-model="data.value"/>
                     </template>
+                    <template #cell(case_cubic_ft)="data">
+                        {{ data.value.toFixed(2) }}
+                    </template>
                 </b-table>
+                <p>
+                    <strong>Total Cubic : {{ shipment.cubic_totals.total_calculated_cubic_ft}} ft<sup>3</sup> / {{ shipment.cubic_totals.total_calculated_cubic_m }} m<sup>3</sup></strong>
+                </p>
             </div>
             <h4 class="mt-2">Files</h4>
             <b-tabs>
@@ -172,13 +183,15 @@ export default {
     },
     computed: {
         include() {
-            return 'sales_order,sales_order_lines,sales_order_lines.received,sales_order_lines.product,sales_order_lines.landed_cost,sales_order_lines.sales_order,media'
+            return 'cubic_totals,sales_order,sales_order_lines,sales_order_lines.received,sales_order_lines.product,sales_order_lines.landed_cost,sales_order_lines.sales_order,media'
         },
         fields() {
             return [
                 {key: 'sales_order.sales_order_number', label: 'Sales Order', tdClass: 'align-middle'},
                 {key: 'article_number', label: 'Product', tdClass: 'align-middle'},
                 {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
+                {key: 'units_per_case', label: 'Unit/Case', tdClass: 'align-middle'},
+                {key: 'case_cubic_ft', label: 'Cuft/Case', tdClass: 'align-middle'},
                 {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Shipping Cost/Unit £', tdClass: 'w-15 align-middle'},
                 {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Landed Cost/Unit £', tdClass: 'w-15 align-middle'},
                 {key: 'received', label: 'Quantity', tdClass: 'align-middle'}

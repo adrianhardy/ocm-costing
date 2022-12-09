@@ -86,6 +86,14 @@ class ShipmentsController extends Controller
         } else {
             $shipment->booked_in_at = null;
         }
+
+        if ($request->input('invoice_amt')) {
+            $shipment->invoice_amt = $request->input('invoice_amt');
+            if ($shipment->isDirty(['invoice_amt'])) {
+                $shipment->est_cost_cuft_gbp = round($shipment->invoice_amt / $shipment->total_calculated_cubic_ft, 4);
+            }
+        }
+
         $shipment->save();
 
         if ($shipment->wasChanged(['estimated_arrival_at'])) {

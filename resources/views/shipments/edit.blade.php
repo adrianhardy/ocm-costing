@@ -9,7 +9,6 @@
                 :shipment-id="{{$shipment->id}}"
                 :is-super="{{auth()->user()->hasRole(['super'])?'true':'false'}}"
         >
-
         </edit-shipment>
     </div>
 @endsection

@@ -72,6 +72,7 @@ class ImportController extends Controller
                 });
             }
 
+            /** @var SalesOrderLine $line */
             $line = $line->first();
 
             if (!$line) {
@@ -111,9 +112,11 @@ class ImportController extends Controller
                     'invoice_amt' => $request->input('total_shipping_invoice_value'),
                     'bl_number' => $request->input('bl_number')
                 ]);
-                $line->unit_width_cm = $row['outer_dimension_w'];
-                $line->unit_length_cm = $row['outer_dimension_l'];
-                $line->unit_height_cm = $row['outer_dimension_h'];
+
+                // TODO: set the width/length/height_cm
+                $line->width_cm = $row['outer_dimension_w'];
+                $line->length_cm = $row['outer_dimension_l'];
+                $line->height_cm = $row['outer_dimension_h'];
                 $line->units_per_case = $row['pcs_per_ctn'];
 
                 $log[] = [

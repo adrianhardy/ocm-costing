@@ -39,7 +39,7 @@ class HomeController extends Controller
             ->whereHas('consignments', function($query) {
                 $query->where(function($query) {
                     $query->whereNull('docked_at')
-                        ->orWhere('docked_at', '>', now()->subWeeks(4));
+                        ->orWhere('docked_at', '>', now()->subYears(5));
                 });
             })
             ->get();

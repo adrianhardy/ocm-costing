@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
+/**
+ * @property-read float $total_calculated_cubic_m
+ * @property-read float $total_calculated_cubic_ft
+ */
 class Consignment extends BaseConsignment implements HasMedia
 {
     use HasMediaTrait;
@@ -16,6 +20,26 @@ class Consignment extends BaseConsignment implements HasMedia
     {
         $this->addMediaCollection('default');
     }
+
+    public function getTotalCalculatedCubicMAttribute()
+    {
+        $total = 0;
+        foreach ($this->sales_order_lines as $line) {
+            $total += round($line->case_cubic_m * ($line->pivot->qty_shipped / $line->units_per_case), 4);
+        }
+        return $total;
+    }
+
+    public function getTotalCalculatedCubicFtAttribute()
+    {
+        $total = 0;
+        foreach ($this->sales_order_lines as $line) {
+            $total += round($line->case_cubic_ft * ($line->pivot->qty_shipped / $line->units_per_case), 4);
+        }
+        return $total;
+    }
+
+
 
     protected $fillable = [
 		'reference',

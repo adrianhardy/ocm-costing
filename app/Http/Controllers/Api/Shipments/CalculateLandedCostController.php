@@ -32,17 +32,13 @@ class CalculateLandedCostController extends Controller
         Consignment $shipment,
         PricingService $pricingService
     ) {
-        $cubicFt = 0;
-        foreach ($shipment->sales_order_lines as $line) {
-            $cubicFt += ($line->pivot->qty_shipped / $line->units_per_case) * $line->case_cubic_ft;
-        }
-
-        $shipment->est_cost_cuft_gbp = $shipment->invoice_amt / $cubicFt;
+        $shipment->est_cost_cuft_gbp = round($shipment->invoice_amt / $shipment->total_calculated_cubic_ft, 4);
         $shipment->save();
 
         foreach ($shipment->sales_order_lines as $line) {
             $calculator = new LandedCostCalculator(
-                $shipment->est_cost_cuft_gbp
+                $shipment->est_cost_cuft_gbp,
+                (1/$shipment->sales_order->fx_rate)
             );
             $calcs = $calculator->calculateWithDuties(
                 ceil($line->pivot->qty_shipped / $line->units_per_case) * $line->case_cubic_ft,

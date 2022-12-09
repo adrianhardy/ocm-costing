@@ -177,6 +177,11 @@ class ImportProductsCommand extends Command
                     }
 
                     $data['cuft_per_ctn'] = ($data['line_cubic_m'] * setting('cubic_metres_to_feet')) / $cases;
+                    $data['cuft_per_ctn'] = round($data['cuft_per_ctn'], 2);
+
+                    $this->log->debug(
+                        "Cubic ft/carton calculated as {$data['cuft_per_ctn']} using (LINE {$data['line_cubic_m']}m^3 / $cases)"
+                    );
 
                     $lc->height_m = ($data['line_cubic_m'] / $cases) ** (1/3);
                     $lc->length_m = $lc->height_m;
@@ -187,6 +192,8 @@ class ImportProductsCommand extends Command
                     throw new \Exception("Failed to calculate pieces per carton");
                 }
 
+                $this->log->debug("Calculated units per case as {$lc->units_per_case}");
+
                 $lc->units_per_case = $data['case_qty'];
                 $lc->fx_rate = $import->config['fxRate'];
                 $lc->shipping_cost_per_cuft = $import->config['cuft'];
@@ -194,19 +201,22 @@ class ImportProductsCommand extends Command
                 $lc->commission_rate_pc = $import->config['commissionRate'];
                 $lc->product()->associate($product);
 
-                $shippingCosts = (new LandedCostCalculator($lc->shipping_cost_per_cuft))
-                            ->calculateWithDuties(
-                                $data['cuft_per_ctn']??$lc->case_cubic_ft,
-                                $lc->units_per_case,
-                                $lc->unit_price,
-                                $product->is_excluded_from_commission
-                            );
+                $calc = new LandedCostCalculator($lc->shipping_cost_per_cuft, $lc->fx_rate);
+                // $calc->setLogger($this->log);
+                $shippingCosts = $calc->calculateWithDuties(
+                    $data['cuft_per_ctn']??$lc->case_cubic_ft,
+                    $lc->units_per_case,
+                    $lc->unit_price,
+                    $product->is_excluded_from_commission
+                );
 
                 $lc->landed_cost_per_unit_gbp = $shippingCosts['est_landed_cost_per_unit_gbp'];
                 $lc->landed_cost_per_unit = $lc->landed_cost_per_unit_gbp * $usd->default_fx_to_gbp;
                 $lc->save();
                 $import->save();
-                $this->log->info("Created landed cost {$lc->id}");
+                $this->log->info("Created landed cost #{$lc->id} for article {$lc->product->article_number}");
+                $this->log->info(" - USD {$lc->unit_price} / unit");
+                $this->log->info(" - GBP {$lc->landed_cost_per_unit_gbp} Landed / unit");
                 continue;
             }
 

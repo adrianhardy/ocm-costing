@@ -23,7 +23,7 @@ class ConsignmentTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'pivot', 'sales_order', 'sales_order_lines', 'media'
+        'pivot', 'sales_order', 'sales_order_lines', 'media', 'cubic_totals'
     ];
 
     public function includeMedia(Consignment $consignment){
@@ -49,6 +49,14 @@ class ConsignmentTransformer extends TransformerAbstract
             return $this->null();
         }
         return $this->collection($consignment->sales_order_lines, new SalesOrderLineTransformer());
+    }
+
+    public function includeCubicTotals(Consignment $consignment)
+    {
+        return $this->primitive([
+            'total_calculated_cubic_ft' => round($consignment->total_calculated_cubic_ft, 2),
+            'total_calculated_cubic_m' => round($consignment->total_calculated_cubic_m, 2),
+        ]);
     }
 
     public function includePivot(Consignment $consignment)
