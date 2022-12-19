@@ -13,6 +13,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Consignment
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $deleted_at
  * @property string $reference
  * @property float|null $est_cost_cuft_gbp
  * @property Carbon|null $departed_at
@@ -36,6 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $shipping_agent_ref
  * @property Carbon|null $estimated_arrival_at
  * @property Carbon|null $estimated_departure_at
+ * @property float|null $current_fx_rate
  * 
  * @property User|null $creator
  * @property SalesOrder|null $sales_order
@@ -46,13 +49,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Consignment extends Model
 {
+	use SoftDeletes;
 	protected $table = 'consignments';
 
 	protected $casts = [
 		'est_cost_cuft_gbp' => 'float',
 		'sales_order_id' => 'int',
 		'invoice_amt' => 'float',
-		'creator_id' => 'int'
+		'creator_id' => 'int',
+		'current_fx_rate' => 'float'
 	];
 
 	protected $dates = [

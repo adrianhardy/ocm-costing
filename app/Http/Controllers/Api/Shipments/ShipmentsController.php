@@ -42,7 +42,8 @@ class ShipmentsController extends Controller
             'container_number' => 'required|min:0|max:32',
             'bl_number' => 'sometimes|min:0|max:32',
             'shipping_agent_ref' => 'sometimes|min:0|max:200',
-            'invoice_amt' => 'sometimes|numeric|min:0'
+            'invoice_amt' => 'sometimes|numeric|min:0',
+            'current_fx_rate' => 'nullable|sometimes|numeric|min:0'
         ]);
 
         $shipment->fill($request->only([
@@ -54,7 +55,8 @@ class ShipmentsController extends Controller
             'container_number',
             'bl_number',
             'shipping_agent_ref',
-            'invoice_amt'
+            'invoice_amt',
+            'current_fx_rate'
         ]));
 
         if ($request->input('departed_at')) {

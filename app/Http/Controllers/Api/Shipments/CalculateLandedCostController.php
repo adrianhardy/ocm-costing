@@ -38,7 +38,7 @@ class CalculateLandedCostController extends Controller
         foreach ($shipment->sales_order_lines as $line) {
             $calculator = new LandedCostCalculator(
                 $shipment->est_cost_cuft_gbp,
-                (1/$shipment->sales_order->fx_rate)
+                $shipment->current_fx_rate?$shipment->current_fx_rate:$shipment->sales_order->fx_rate
             );
             $calcs = $calculator->calculateWithDuties(
                 ceil($line->pivot->qty_shipped / $line->units_per_case) * $line->case_cubic_ft,
@@ -61,7 +61,7 @@ class CalculateLandedCostController extends Controller
                 'length_m' => $line->length_m,
                 'height_m' => $line->height_m,
                 'width_m' => $line->width_m,
-                'fx_rate' => $line->sales_order->fx_rate,
+                'fx_rate' => $shipment->current_fx_rate,
                 'unit_price' => $line->unit_price,
                 'import_duty_pc' => setting('default_import_duty_pc'),
                 'commission_rate_pc' => setting('default_commission_rate_pc'),

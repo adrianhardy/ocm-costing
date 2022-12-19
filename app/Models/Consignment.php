@@ -14,7 +14,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 class Consignment extends BaseConsignment implements HasMedia
 {
     use HasMediaTrait;
-    use SoftDeletes;
 
     public function registerMediaCollections()
     {
@@ -56,6 +55,7 @@ class Consignment extends BaseConsignment implements HasMedia
 		'bl_number',
 		'shipping_agent_ref',
         'estimated_arrival_at',
-        'estimated_departure_at'
+        'estimated_departure_at',
+        'current_fx_rate'
 	];
 }

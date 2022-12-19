@@ -43,14 +43,6 @@
             </div>
             <div class="row">
                 <div class="col-12 col-md-3">
-                    <b-form-group label="Est Cost Cuft">
-                        <b-input-group prepend="£">
-                            <b-form-input readonly :value="shipment.est_cost_cuft_gbp.toFixed(2)" v-if="shipment.est_cost_cuft_gbp"/>
-                            <b-form-input readonly :value="shipment.est_cost_cuft_gbp" v-else />
-                        </b-input-group>
-                    </b-form-group>
-                </div>
-                <div class="col-12 col-md-3">
                     <b-form-group label="Supplier Reference">
                         <b-form-input v-model="shipment.supplier_ref"/>
                     </b-form-group>
@@ -60,10 +52,25 @@
                         <b-form-input v-model="shipment.shipping_agent_ref"/>
                     </b-form-group>
                 </div>
-                <div class="col-12 col-md-3">
+                <div class="col-12 col-md-2">
                     <b-form-group label="Shipping Invoice Amt">
                         <b-input-group prepend="£">
                             <b-form-input v-model="shipment.invoice_amt"/>
+                        </b-input-group>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-2">
+                    <b-form-group label="FX Rate">
+                        <b-input-group prepend="USD">
+                            <b-form-input v-model="shipment.current_fx_rate"/>
+                        </b-input-group>
+                    </b-form-group>
+                </div>
+                <div class="col-12 col-md-2">
+                    <b-form-group label="Est Cost Cuft">
+                        <b-input-group prepend="£">
+                            <b-form-input readonly :value="shipment.est_cost_cuft_gbp.toFixed(2)" v-if="shipment.est_cost_cuft_gbp"/>
+                            <b-form-input readonly :value="shipment.est_cost_cuft_gbp" v-else />
                         </b-input-group>
                     </b-form-group>
                 </div>
@@ -135,6 +142,12 @@
                     <template #cell(case_cubic_ft)="data">
                         {{ data.value.toFixed(2) }}
                     </template>
+                    <template #cell(cartons)="data">
+                        {{ (data.item.received/data.item.units_per_case).toFixed(1) }}
+                    </template>
+                    <template #cell(total_cubic_ft)="data">
+                        {{ (data.item.case_cubic_ft * (data.item.received/data.item.units_per_case)).toFixed(2) }}
+                    </template>
                 </b-table>
                 <p>
                     <strong>Total Cubic : {{ shipment.cubic_totals.total_calculated_cubic_ft}} ft<sup>3</sup> / {{ shipment.cubic_totals.total_calculated_cubic_m }} m<sup>3</sup></strong>
@@ -192,8 +205,10 @@ export default {
                 {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
                 {key: 'units_per_case', label: 'Unit/Case', tdClass: 'align-middle'},
                 {key: 'case_cubic_ft', label: 'Cuft/Case', tdClass: 'align-middle'},
-                {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Shipping Cost/Unit £', tdClass: 'w-15 align-middle'},
-                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Landed Cost/Unit £', tdClass: 'w-15 align-middle'},
+                {key: 'cartons', label: 'Cartons', tdClass: 'align-middle'},
+                {key: 'total_cubic_ft', label: 'Total Cuft', thClass: 'text-nowrap', tdClass: 'align-middle'},
+                {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Ship\' Cost/Unit £', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
+                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Land\' Cost/Unit £', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
                 {key: 'received', label: 'Quantity', tdClass: 'align-middle'}
             ]
         }

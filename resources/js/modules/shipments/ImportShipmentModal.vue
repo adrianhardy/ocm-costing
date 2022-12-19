@@ -123,7 +123,7 @@
             </div>
 
             <div class="row">
-                <div class="col-2 offset-6">
+                <div class="col-2 offset-4">
                     <b-form-group label="Supplier Reference">
                         <b-form-input
                             size="md"
@@ -137,6 +137,17 @@
                             size="md"
                             v-model="shipment.reference"
                         />
+                    </b-form-group>
+                </div>
+                <div class="col-2">
+                    <b-form-group label="FX Rate">
+                        <b-input-group prepend="USD">
+                            <b-form-input
+                                placeholder="REQUIRED"
+                                size="md"
+                                v-model="shipment.current_fx_rate"
+                            />
+                        </b-input-group>
                     </b-form-group>
                 </div>
                 <div class="col-2">
@@ -206,6 +217,7 @@ export default {
                 formData.append('reference', this.shipment.reference?this.shipment.reference:'');
                 formData.append('supplier_reference', this.shipment.supplier_reference?this.shipment.supplier_reference:'');
                 formData.append('total_shipping_invoice_value', this.shipment.total_shipping_invoice_value?this.shipment.total_shipping_invoice_value:'');
+                formData.append('current_fx_rate', this.shipment.current_fx_rate?this.shipment.current_fx_rate:'');
             }
 
             this.$http.post('/api/shipments/import', formData, {

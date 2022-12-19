@@ -62,7 +62,7 @@ class LinesController extends Controller
             /** @var Product $product */
             $product = Product::findOrFail($request->input('product.id'));
 
-            if (!$product->factories->contains($salesOrder->factory)) {
+            if ($salesOrder->factory && !$product->factories->contains($salesOrder->factory)) {
                 abort(400, 'You can only add products whose factories contain ' . $salesOrder->factory->name);
             }
 

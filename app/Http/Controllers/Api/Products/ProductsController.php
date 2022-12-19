@@ -223,9 +223,11 @@ class ProductsController extends Controller
 
         if ($request->input('sales_order_id')) {
             $salesOrder = SalesOrder::query()->findOrFail($request->input('sales_order_id'));
-            $paginator = $paginator->whereHas('factories', function($query) use ($salesOrder) {
-                return $query->where('id', $salesOrder->factory->id);
-            });
+            if ($salesOrder->factory) {
+                $paginator = $paginator->whereHas('factories', function($query) use ($salesOrder) {
+                    return $query->where('id', $salesOrder->factory->id);
+                });
+            }
         }
 
         $paginator = $paginator->paginate(

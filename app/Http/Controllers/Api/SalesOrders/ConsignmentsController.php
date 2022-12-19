@@ -36,7 +36,8 @@ class ConsignmentsController extends Controller
             'vessel_name'       => 'sometimes|min:0|max:30',
             'container_number'  => 'sometimes|min:0|max:30',
             'bl_number'         => 'sometimes|min:0|max:30',
-            'shipping_agent_ref' => 'sometimes|min:0|max:30'
+            'shipping_agent_ref' => 'sometimes|min:0|max:30',
+            'current_fx_rate'   => 'nullable|sometimes|numeric|min:0|max:999'
         ]);
 
         $consignment = new Consignment([
@@ -48,6 +49,7 @@ class ConsignmentsController extends Controller
             'bl_number'                 => $request->input('bl_number', ''),
             'shipping_agent_ref'        => $request->input('shipping_agent_ref', ''),
             'invoice_amt'               => $request->input('invoice_amt', ''),
+            'current_fx_rate'           => $request->input('current_fx_rate')
         ]);
         $consignment->sales_order()->associate($salesOrder);
         $consignment->creator()->associate(\Auth::user());

@@ -46,7 +46,8 @@ class ImportController extends Controller
                 'shipping_agent_ref'            => 'nullable|min:0|max:200',
                 'reference'                     => 'required|min:0|max:200',
                 'supplier_reference'            => 'required|min:0|max:200',
-                'total_shipping_invoice_value'  => 'required|numeric|min:0'
+                'total_shipping_invoice_value'  => 'required|numeric|min:0',
+                'current_fx_rate'               => 'required|numeric|min:0'
             ]);
         }
 
@@ -110,13 +111,14 @@ class ImportController extends Controller
                     'estimated_departure_at' => Carbon::parse($json['shipment']['estimated_date_of_departure']),
                     'our_order_number' => implode(',', $uniqueSalesOrderReferences),
                     'invoice_amt' => $request->input('total_shipping_invoice_value'),
-                    'bl_number' => $request->input('bl_number')
+                    'bl_number' => $request->input('bl_number'),
+                    'current_fx_rate' => $request->input('current_fx_rate')
                 ]);
 
                 // TODO: set the width/length/height_cm
-                $line->width_cm = $row['outer_dimension_w'];
-                $line->length_cm = $row['outer_dimension_l'];
-                $line->height_cm = $row['outer_dimension_h'];
+                $line->width_m = $row['outer_dimension_w'];
+                $line->length_m = $row['outer_dimension_l'];
+                $line->height_m = $row['outer_dimension_h'];
                 $line->units_per_case = $row['pcs_per_ctn'];
 
                 $log[] = [

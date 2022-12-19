@@ -117,7 +117,13 @@ class RunController extends Controller
         DB::commit();
 
         set_time_limit(0);
-        Artisan::call("import:products", ['import' => $import->id, '--landed-cost-date' => $request->input('date')]);
+
+        if ($request->input('date')) {
+            Artisan::call("import:products", ['import' => $import->id, '--landed-cost-date' => $request->input('date')]);
+        } else {
+            Artisan::call("import:products", ['import' => $import->id]);
+        }
+
         return response()->json(
             fractal($import->fresh(), new ImportTransformer()),
             200

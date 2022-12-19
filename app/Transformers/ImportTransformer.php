@@ -33,9 +33,13 @@ class ImportTransformer extends TransformerAbstract
     public function includeLog(Import $import)
     {
         $log = [];
-        $file = new \SplFileObject(
-            Storage::disk('imports')->path($import->log_path), 'r'
-        );
+        try {
+            $file = new \SplFileObject(
+                Storage::disk('imports')->path($import->log_path), 'r'
+            );
+        } catch (\RuntimeException $ex) {
+            return $this->primitive([]);
+        }
         while (!$file->eof()) {
             // $json can sometimes be null, so we add it conditionally...
             $json = json_decode($file->fgets(), true);

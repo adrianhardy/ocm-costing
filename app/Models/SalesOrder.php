@@ -179,8 +179,12 @@ class SalesOrder extends BaseSalesOrder
         });
     }
 
-    public function consignments()
+    public function getConsignmentsAttribute()
     {
-        return $this->hasMany(Consignment::class, 'sales_order_id', 'id')->withTrashed();
+        return Consignment::query()
+            ->whereHas('sales_order_lines', function($query) {
+                $query->where('sales_order_id', $this->id);
+            })
+            ->get();
     }
 }

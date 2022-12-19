@@ -36,10 +36,9 @@ class HomeController extends Controller
 
         $orders['shipments'] = SalesOrder::query()
             ->orderBy('created_at')
-            ->whereHas('consignments', function($query) {
-                $query->where(function($query) {
-                    $query->whereNull('docked_at')
-                        ->orWhere('docked_at', '>', now()->subYears(5));
+            ->whereHas('lines', function($query) {
+                $query->whereHas('consignments', function ($query) {
+                    $query->whereNull('deleted_at');
                 });
             })
             ->get();

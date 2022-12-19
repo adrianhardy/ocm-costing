@@ -60,6 +60,7 @@ class SalesOrderLineTransformer extends TransformerAbstract
     {
         $consignment = $line->consignments()
             ->orderBy('est_landed_cost_per_unit_gbp', 'DESC')
+            ->whereNull('deleted_at')
             ->first();
 
         if (!$consignment) {
@@ -72,7 +73,9 @@ class SalesOrderLineTransformer extends TransformerAbstract
     public function includeReceived(SalesOrderLine $line)
     {
         return $this->primitive(
-            $line->consignments->sum('pivot.qty_shipped')
+            $line->consignments
+                ->whereNull('deleted_at')
+                ->sum('pivot.qty_shipped')
         );
     }
 
@@ -86,7 +89,7 @@ class SalesOrderLineTransformer extends TransformerAbstract
 
     public function includeConsignments(SalesOrderLine $line)
     {
-        return $this->collection($line->consignments, new ConsignmentTransformer());
+        return $this->collection($line->consignments()->withoutTrashed()->get(), new ConsignmentTransformer());
     }
 
     /**
