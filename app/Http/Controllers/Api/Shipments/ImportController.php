@@ -95,6 +95,11 @@ class ImportController extends Controller
 
             // If we're trying to update shipments as we're going lone
             if ($type == 'packing') {
+
+                if (!isset($json['shipment']['container_reference'])) {
+                    abort(400, 'Failed to identify a container reference in the packing list');
+                }
+
                 $consignment = Consignment::query()
                     ->where('container_number', $json['shipment']['container_reference'])
                     ->first();

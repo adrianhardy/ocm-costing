@@ -197,21 +197,25 @@ class TransformPickingListFileCommand extends Command
             'seal no:'      => 'seal_number'
         ];
         $pairs = [];
-        for ($i = 1; $i < 7; $i++) {
+        for ($i = 1; $i < 10; $i++) {
             for ($j = 1; $j < 15; $j++) {
                 $value = trim(strtolower($this->sheet->getCellByColumnAndRow($i, $j)->getValue()));
                 if (!$value) {
                     continue;
                 }
                 if (isset($titles[$value])) {
-                    $nextCell = $this->sheet->getCellByColumnAndRow($i+1, $j);
                     // the first column has its data immediately adjacent
                     // (invoice #), but the next column of info has a gap
-                    // (container size)
-                    if (!$nextCell->getFormattedValue()) {
-                        $nextCell = $this->sheet->getCellByColumnAndRow($i+2, $j);
+                    // Attempt to go right up to 10 cells before we find the value for $title
+                    for ($attempts = 1; $attempts < 10; $attempts++) {
+                        $nextCell = $this->sheet->getCellByColumnAndRow($i+$attempts, $j);
+                        if ($nextCell->getFormattedValue()) {
+                            break;
+                        }
                     }
 
+
+                    // if, after going 10 columns to the right we still haven't found anything, give up.
                     if (!$nextCell->getFormattedValue()) {
                         continue;
                     }
