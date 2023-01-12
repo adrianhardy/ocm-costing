@@ -189,7 +189,8 @@ class ImportProductsCommand extends Command
                 }
 
                 if (!isset($data['case_qty'])) {
-                    throw new \Exception("Failed to calculate pieces per carton");
+                    $data['case_qty'] = $data['total_unit_qty'];
+                    // throw new \Exception("Failed to calculate pieces per carton");
                 }
 
                 $this->log->debug("Calculated units per case as {$lc->units_per_case}");
