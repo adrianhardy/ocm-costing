@@ -20,7 +20,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 class SalesOrderExporter
 {
 
-    protected $sheetRowsPerLine = 2;
+    protected $sheetRowsPerLine = 1;
 
     protected $log;
 
