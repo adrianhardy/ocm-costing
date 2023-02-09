@@ -113,14 +113,33 @@ class SalesOrderExporter
             "Highest Row and Column: " . print_r($source->getSheet(0)->getHighestRowAndColumn(), true)
         );
 
+        // Sometimes, setting print areas generates the exception
+        // "Cell coordinate can not be zero-length string" whenever
+        // you try to insert or remove a row. It relates to
+        // PhpOffice\PhpSpreadsheet\ReferenceHelper::insertNewBefore
+        // where, right at the bottom, it does something to do with the
+        // printarea.
+        if ($source->getActiveSheet()->getPageSetup()->isPrintAreaSet()) {
+            $source->getActiveSheet()->getPageSetup()->clearPrintArea();
+        }
+
         $this->start = $this->findItemStartRow($source->getSheet(0));
+
         $this->mapping = $this->calculateColumnMapping($source->getSheet(0));
         // remove the template row
         $this->clone->getSheet(0)->removeRow($this->start);
 
         $maxLine = 0;
         for ($current = 1; $current < $salesOrder->lines->count(); $current++) {
-            $this->clone->getSheet(0)->insertNewRowBefore($this->start + $current, $this->sheetRowsPerLine);
+            try {
+                $this->clone->getSheet(0)->insertNewRowBefore($this->start + $current, $this->sheetRowsPerLine);
+            } catch (\PhpOffice\PhpSpreadsheet\Exception $ex) {
+                $this->log->debug(
+                    "Caught exception when trying to process 'insertNewRowBefore': start '$this->start', current '$current'"
+                );
+                $this->log->error($ex->getMessage());
+                throw $ex;
+            }
             $maxLine = $this->start+$current;
         }
 
