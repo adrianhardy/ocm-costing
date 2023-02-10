@@ -384,8 +384,11 @@ class SalesOrderExporter
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})");
                 break;
             case '%GRAND_TOTAL_CBM%':
-                $column = $this->mapping['line_cubic_m'];
-                $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})");
+                // because the spreadsheet template doesn't contain a column for
+                // cubic m per line, we work it out from the total cuft and divide
+                // by the magic number 35.3147
+                $column = $this->mapping['total_cuft'];
+                $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})/35.3147");
                 break;
             case '%GRAND_TOTAL_CUFT%':
                 $column = $this->mapping['total_cuft'];
