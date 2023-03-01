@@ -150,8 +150,8 @@ class ProductPricingExportController extends Controller
                 if ($biggestCount > 0) {
                     foreach ($asins as $i => $asin) {
                         $sku = $skus[$i]??null;
-                        $row = $this->createCsvRow($pricing, $gb, $eu, $row, $sku, $asin);
-                        $csv->fputcsv($row->toArray());
+                        $row = $this->createCsvRow($pricing, $gb, $eu, $restOfWorld, $sku, $asin);
+                        $csv->fputcsv($row);
                     }
                 }
             }
