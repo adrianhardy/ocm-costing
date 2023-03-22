@@ -11,13 +11,7 @@
                         <b-form-input v-model="user.email"/>
                     </b-form-group>
                     <b-form-group label="Role">
-                        <b-select :disabled="currentUser.id == userId" v-model="user.role">
-                            <b-select-option value="admin">Admin</b-select-option>
-                            <b-select-option value="pricing">Pricing</b-select-option>
-                            <b-select-option value="pricing_approver">Pricing Approver</b-select-option>
-                            <b-select-option value="super">Super</b-select-option>
-                            <b-select-option value="supplier">Supplier</b-select-option>
-                        </b-select>
+                        <role-select v-model="user.roles" @selected="user.role = $event.name"></role-select>
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-6">
@@ -52,19 +46,14 @@
 <script>
 import SupplierSelect from "../../components/SupplierSelect";
 import FactorySelect from "../../components/FactorySelect";
+import RoleSelect from "../../components/RoleSelect";
 export default {
-    components: {FactorySelect, SupplierSelect},
+    components: {FactorySelect, SupplierSelect, RoleSelect},
     props: ['user-id', 'roles', 'current-user'],
     name: "EditUser",
     mounted() {
         if (!this.isCreating) {
             this.refresh();
-        }
-    },
-    watch: {
-        role(newValue) {
-            const role = _.find(this.roles, ['name', newValue]);
-            this.user.roles = [role]
         }
     },
     computed: {
