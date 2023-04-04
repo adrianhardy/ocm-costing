@@ -48,6 +48,7 @@ Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
 });
 
 Route::group(['middleware' => ['auth', 'role:super']], function() {
+    Route::resource('/admin/roles', 'Admin\RolesController')->only(['index']);
     Route::resource('/admin/currencies', 'Admin\Currencies\CurrencyController')->only(['index', 'create']);
     Route::resource('/admin/countries', 'Admin\Countries\CountriesController')->only(['index']);
     Route::resource('/admin/users', 'Admin\UsersController')->only(['index', 'edit', 'create']);
@@ -58,7 +59,7 @@ Route::group(['middleware' => ['auth', 'role:super']], function() {
     Route::get('/admin/export-templates/delete', 'Admin\ExportTemplatesController@destroy')->name('settings.export-templates.destroy');
 });
 
-Route::group(['middleware' => ['auth', 'role:super|pricing|pricing_approver']], function() {
+Route::group(['middleware' => ['auth', 'role_or_permission:super|pricing|pricing_approve']], function() {
     Route::resource('price-list', 'Products\ProductPricingController')->only(['index']);
     Route::resource('price-list/export', 'Products\ProductPricingExportController', ['as' => 'price-list'])->only(['index']);
 });

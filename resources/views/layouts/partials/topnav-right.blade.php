@@ -20,6 +20,7 @@
                 <a class="dropdown-item" href="{{ route('factories.index') }}">Factories</a>
                 <a class="dropdown-item" href="{{ route('suppliers.index') }}">Suppliers</a>
                 <a class="dropdown-item" href="{{ route('users.index') }}">Users</a>
+                <a class="dropdown-item" href="{{ route('roles.index') }}">Manage Roles</a>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-header">Pricing Admin</div>
                 <a class="dropdown-item" href="#" @click="$refs['send-all-products-to-pricing'].send()">

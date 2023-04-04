@@ -41,7 +41,7 @@ class UsersController extends Controller
            'name'           => 'required|max:255',
            'password'       => 'sometimes|nullable|confirmed|min:8',
            'email'          => ['required', $unique, 'email', 'max:128'],
-           'role'           => 'required|in:super,admin,supplier,pricing,pricing_approver',
+           'role'           => 'required',
            'supplier.id'    => 'nullable|required_if:role,supplier|exists:suppliers,id'
         ], [], [
             'supplier.id' => 'Supplier'
@@ -90,7 +90,7 @@ class UsersController extends Controller
             'password'      => $required,
             'supplier.id'   => $request->input('role') === 'supplier'?'required|exists:suppliers,id':'nullable',
             'email'         => ['required', Rule::unique('users','email'), 'max:128'],
-            'role'          => 'required|in:super,admin,supplier,pricing,pricing_approver'
+            'role'          => 'required'
         ]);
 
         $user = new User();

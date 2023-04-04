@@ -31,11 +31,11 @@ class ProductPricingController extends Controller
         if ($request->query->getBoolean('todo_only', false)) {
             // Pricing's to be approved/done:
 
-            if(auth()->user()->hasRole(['pricing_approver'])) {
+            if(auth()->user()->hasPermissionTo('pricing_approve')) {
                 $paginator = $paginator
                     ->whereNull('approved_at')
                     ->whereNotNull('submitted_at');
-            } elseif (auth()->user()->hasRole(['pricing'])) {
+            } elseif (auth()->user()->hasPermissionTo('pricing')) {
                 $paginator = $paginator
                     ->whereNull('submitted_at')
                     ->whereNull('approved_at');
@@ -122,7 +122,7 @@ class ProductPricingController extends Controller
         }
 
         if($request->input(['submitted'])){
-            if(auth()->user()->HasRole('pricing_approver') || auth()->user()->hasRole('admin')) {
+            if(auth()->user()->hasPermissionTo('pricing_approve') || auth()->user()->hasRole('admin')) {
                 $pricing->approved_at = Carbon::now();
                 $pricing->approver()->associate(auth()->user());
             } else {
