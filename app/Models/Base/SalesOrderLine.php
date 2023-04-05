@@ -49,6 +49,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_height_m
  * @property float|null $unit_weight_kg
  * @property int|null $media_id
+ * @property Carbon|null $oa_eta
+ * @property int|null $oa_reorder_number
+ * @property string|null $oa_primary_sku
  * 
  * @property Medium|null $media
  * @property Product|null $product
@@ -83,7 +86,12 @@ class SalesOrderLine extends Model
 		'unit_length_m' => 'float',
 		'unit_height_m' => 'float',
 		'unit_weight_kg' => 'float',
-		'media_id' => 'int'
+		'media_id' => 'int',
+		'oa_reorder_number' => 'int'
+	];
+
+	protected $dates = [
+		'oa_eta'
 	];
 
 	public function media()

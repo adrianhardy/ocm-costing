@@ -44,7 +44,7 @@ class SalesOrdersController extends Controller
         Request $request,
         SalesOrderRepository $salesOrderRepository
     ) {
-        $paginator = $salesOrderRepository;
+        $paginator = $salesOrderRepository->where('is_order_acknowledgement', false);
 
         switch($request->query('stage'))
         {

@@ -41,6 +41,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $supplier_reference
  * @property int|null $factory_id
  * @property Carbon|null $supplier_finalised_at
+ * @property bool $is_order_acknowledgement
  * 
  * @property Currency|null $currency
  * @property Factory|null $factory
@@ -67,7 +68,8 @@ class SalesOrder extends Model
 		'fx_rate' => 'float',
 		'supplier_id' => 'int',
 		'shipping_cost_per_cubic_foot' => 'float',
-		'factory_id' => 'int'
+		'factory_id' => 'int',
+		'is_order_acknowledgement' => 'bool'
 	];
 
 	protected $dates = [
