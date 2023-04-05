@@ -136,7 +136,11 @@ class SalesOrderLineTransformer extends TransformerAbstract
             'unit_length_cm',
             'unit_height_cm',
             'unit_weight_kg',
-            'barcode'
+            'barcode',
+
+            'oa_eta',
+            'oa_reorder_number',
+            'oa_primary_sku'
         ]);
     }
 }

@@ -53,7 +53,7 @@ class SalesOrder extends BaseSalesOrder
         'shipping_cost_per_cubic_foot',
         'supplier_reference',
         'supplier_finalised_at',
-        'sales_order_fx_rate'
+        'sales_order_fx_rate',
 	];
 
 	public function setSalesOrderFxRateAttribute($value)

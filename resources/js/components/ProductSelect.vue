@@ -21,6 +21,9 @@
         <template slot="selected-option" slot-scope="data">
             <div>{{ data.name | dotdotdot(30) }}</div>
         </template>
+        <template v-slot:no-options>
+            <slot name="no-options"></slot>
+        </template>
     </vue-select>
 </template>
 

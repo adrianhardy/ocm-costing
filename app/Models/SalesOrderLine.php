@@ -54,8 +54,12 @@ class SalesOrderLine extends BaseSalesOrderLine
         'unit_length_m',
         'unit_height_m',
         'barcode',
-        'sales_order_notes'
+        'sales_order_notes',
 
+        'oa_reorder_number',
+        'oa_eta',
+        'oa_primary_sku',
+        'name'
 	];
 
 	public function getEstimatedShippingCostGbpAttribute()

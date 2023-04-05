@@ -2,7 +2,16 @@
     <b-modal ref="modal" title="Sales Order History" ok-only size="xl">
         <b-table-simple>
             <b-thead>
-                <b-tr>
+                <b-tr v-if="salesOrder.is_order_acknowledgement">
+                    <b-th>Product</b-th>
+                    <b-th>Article #</b-th>
+                    <b-th>Item #</b-th>
+                    <b-th>Barcode</b-th>
+                    <b-th>Primary Sku</b-th>
+                    <b-th>Unit Price</b-th>
+                    <b-th>Units</b-th>
+                </b-tr>
+                <b-tr v-else>
                     <b-th>Product</b-th>
                     <b-th>Article #</b-th>
                     <b-th>Item #</b-th>
@@ -15,8 +24,17 @@
                     <b-td>{{ line.product.name }}</b-td>
                     <b-td>{{ line.article_number }}</b-td>
                     <b-td>{{ line.item_number }}</b-td>
-                    <b-td>{{ line.product_description }}</b-td>
-                    <b-td>{{ line.packing_instructions }}</b-td>
+
+                    <b-td v-if="salesOrder.is_order_acknowledgement">
+                        {{line.barcode}}
+                    </b-td>
+                    <b-td v-else>{{ line.product_description }}</b-td>
+
+                    <b-td v-if="salesOrder.is_order_acknowledgement">
+                        {{line.oa_primary_sku}}
+                    </b-td>
+                    <b-td v-else>{{ line.packing_instructions }}</b-td>
+
                     <b-td>{{ line.unit_price }}</b-td>
                     <b-td>{{ line.units_requested }}</b-td>
                 </b-tr>

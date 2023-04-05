@@ -80,6 +80,15 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('sales-orders.consignments', 'Api\SalesOrders\ConsignmentsController')->only(['index', 'store', 'update']);
     });
 
+
+    Route::group(['middleware' => ['auth:api','permission:uk']], function () {
+        Route::resource('order-acknowledgements', 'Api\Uk\OrderAcknowledgementsController')->only(['index', 'store', 'show', 'destroy', 'update']);
+        Route::put('/order-acknowledgements/{order_acknowledgement}/restore', 'Api\Uk\OrderAcknowledgementsController@restore');
+        Route::resource('order-acknowledgements.lines', 'Api\Uk\OrderAcknowledgementLinesController')->only('store', 'update', 'destroy');
+        Route::resource('order-acknowledgements.lines.product', 'Api\Uk\OrderAcknowledgementProductController')->only('store');
+    });
+
+
     Route::group(['middleware' => ['auth:api']], function() {
         Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['index']);
     });

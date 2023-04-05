@@ -24,6 +24,13 @@ Route::group(['middleware' => ['auth', 'role:supplier']], function() {
     )->only(['edit', 'index', 'store', 'update']);
 });
 
+
+Route::group([
+    'middleware' => ['auth', 'permission:uk']
+], function(){
+    Route::resource('order-acknowledgements', 'Uk\OrderAcknowledgementsController')->only(['index', 'edit']);
+});
+
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('products', 'Products\ProductsController')->only(['index', 'create', 'edit']);
