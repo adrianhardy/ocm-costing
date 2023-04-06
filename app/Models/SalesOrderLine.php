@@ -15,7 +15,10 @@ use Spatie\MediaLibrary\Models\Media;
  * @property-read $case_cubic_m
  * @property-read $case_cubic_ft
  * @property $total_cubic_ft
+ * @property $qty_received
  * @property-read float $live_estimated_landed_cost
+ *
+ * @property-read int $qty_remaining
  */
 class SalesOrderLine extends BaseSalesOrderLine
 {
@@ -131,6 +134,27 @@ class SalesOrderLine extends BaseSalesOrderLine
     public function consignments()
     {
         return parent::consignments()->withTrashed();
+    }
+
+
+    // ---------------------- ORDER ACKNOWLEDGEMENT STUFF --------------------
+
+    public function invoice_lines()
+    {
+        return $this->invoice_lines_sales_order_line;
+    }
+
+    public function getQtyReceivedAttribute()
+    {
+        return InvoiceLine::query()->where('sales_order_line_id', $this->id)->whereHas('invoice', function($query) {
+            return $query->whereNull('deleted_at');
+        })->sum('qty');
+    }
+
+    public function getQtyRemainingAttribute()
+    {
+        // this is only for use when dealing with Invoices
+        return $this->units_requested - $this->qty_received;
     }
 
 

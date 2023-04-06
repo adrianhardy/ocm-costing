@@ -86,6 +86,8 @@ Route::group(['as' => 'api.'], function() {
         Route::put('/order-acknowledgements/{order_acknowledgement}/restore', 'Api\Uk\OrderAcknowledgementsController@restore');
         Route::resource('order-acknowledgements.lines', 'Api\Uk\OrderAcknowledgementLinesController')->only('store', 'update', 'destroy');
         Route::resource('order-acknowledgements.lines.product', 'Api\Uk\OrderAcknowledgementProductController')->only('store');
+
+        Route::resource('invoices', 'Api\Uk\Invoices\InvoiceController')->only(['index', 'store', 'update', 'destroy', 'show']);
     });
 
 

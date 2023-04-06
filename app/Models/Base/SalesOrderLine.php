@@ -8,6 +8,7 @@ namespace App\Models\Base;
 
 use App\Models\Consignment;
 use App\Models\InspectionReport;
+use App\Models\InvoiceLine;
 use App\Models\Medium;
 use App\Models\Product;
 use App\Models\ProductPricing;
@@ -57,6 +58,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Product|null $product
  * @property SalesOrder|null $sales_order
  * @property Collection|InspectionReport[] $inspection_reports_sales_order_line
+ * @property Collection|InvoiceLine[] $invoice_lines_sales_order_line
  * @property Collection|ProductPricing[] $product_pricings_sales_order_line
  * @property Collection|Consignment[] $consignments
  *
@@ -112,6 +114,11 @@ class SalesOrderLine extends Model
 	public function inspection_reports_sales_order_line()
 	{
 		return $this->hasMany(InspectionReport::class);
+	}
+
+	public function invoice_lines_sales_order_line()
+	{
+		return $this->hasMany(InvoiceLine::class);
 	}
 
 	public function product_pricings_sales_order_line()
