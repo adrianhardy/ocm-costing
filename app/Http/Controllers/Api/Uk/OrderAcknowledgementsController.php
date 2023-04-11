@@ -70,7 +70,7 @@ class OrderAcknowledgementsController extends Controller
 
     public function update(Request $request, SalesOrder $orderAcknowledgement){
         $this->authorize('view', $orderAcknowledgement);
-        if(!$request->input('finalised')) {
+        if(!$request->input('finalised') && !$request->input('closed') && !$request->input('reopen')) {
             $this->validate($request, [
                 'supplier.id' => 'required',
                 'reference' => 'required',
@@ -85,17 +85,38 @@ class OrderAcknowledgementsController extends Controller
         }
 
 
-
         if ($request->input('finalised')) {
             $orderAcknowledgement->finalised_at = Carbon::now();
         }
 
+        if($request->input('closed')) {
+            $orderAcknowledgement->setStatus(SalesOrder::OA_STATUS_CLOSED);
+        }
+
+        if($request->input('reopen')) {
+            // this will set the status to draft,
+            // if the OA has invoices, the observer
+            // will set the correct status during save
+            $orderAcknowledgement->setStatus(SalesOrder::STATUS_DRAFT);
+        }
+
+
         if($request->input('restore')) {
+
+            $orderAcknowledgement->save();
+
+            $completedInvoices = $orderAcknowledgement->invoices()->count();
+
+
+            if($completedInvoices >= 1) {
+                throw new \Exception('You cannot unfinalise an order that has an invoice');
+            }
+
             $orderAcknowledgement->finalised_at = null;
+            $orderAcknowledgement->setStatus(SalesOrder::STATUS_DRAFT);
         }
 
         $orderAcknowledgement->save();
-
 
         return response()->json(fractal($orderAcknowledgement, new SalesOrderTransformer()));
     }
@@ -114,8 +135,5 @@ class OrderAcknowledgementsController extends Controller
         $orderAcknowledgement = SalesOrder::query()->withTrashed()->where('id', $orderAcknowledgement)->firstOrFail();
         $orderAcknowledgement->restore();
         return response()->json(fractal($orderAcknowledgement, new SalesOrderTransformer()));
-
     }
-
-
 }

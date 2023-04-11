@@ -43,7 +43,8 @@ class CreatePermissionsCommand extends Command
             'china',
             'pricing',
             'pricing_approve',
-            'products'
+            'products',
+            'approve_invoice'
         ];
 
         foreach($permissions as $perm) {

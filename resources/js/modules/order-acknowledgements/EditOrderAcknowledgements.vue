@@ -12,6 +12,12 @@
                     </b-badge>
                 </div>
                 <div>
+                    <b-button variant="outline-primary" @click="close" v-if="salesOrder.is_finalised && salesOrder.status !== 'closed'">
+                        Close
+                    </b-button>
+                    <b-button @click="unclose" variant="outline-danger" v-if="salesOrder.is_finalised && salesOrder.status === 'closed'">
+                        Un-Close
+                    </b-button>
                     <b-button v-if="salesOrder.is_finalised" @click="unfinalise" variant="outline-danger">
                         Un-Finalise
                     </b-button>
@@ -108,7 +114,7 @@
                     </div>
                     <div v-else>
                         <b-form-input @change="updateLine(data.item)" v-model="data.item.name" size="sm" />
-                        <b-button variant="success" size="sm" block class="mt-2" @click="createNewProduct(data.item)">Create</b-button>
+                        <b-button variant="outline-success" size="sm" block class="mt-2" @click="createNewProduct(data.item)">Create</b-button>
                     </div>
 
 
@@ -129,6 +135,7 @@
                 <template #cell(oa_eta)="data">
                     <b-form-datepicker
                         @input="updateLine(data.item)"
+                        v-model="data.item.oa_eta"
                         placeholder="ETA"
                         size="sm"
                         :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"
@@ -217,11 +224,11 @@
                     <b-button
                         class="mr-1"
                         size="lg"
-                        variant="primary"
-                        v-if="salesOrder.is_finalised && hasSelectedRows"
-                        @click="confirmSendToPricing()"
+                        variant="outline-primary"
+                        v-if="salesOrder.is_finalised && salesOrder.status !== 'closed'"
+                        @click="createInvoice"
                     >
-                        Send To Pricing
+                        Create Invoice
                     </b-button>
                 </div>
             </div>
@@ -229,6 +236,10 @@
         <sales-order-history-modal
             :sales-order="salesOrder"
             ref="sales-order-history-modal"
+        />
+        <create-invoice-modal
+            ref="invoice-modal"
+            :sales-order="salesOrder"
         />
     </div>
 </template>
@@ -244,6 +255,7 @@ import ProductSelect from "../../components/ProductSelect";
 import CurrencySelect from "../../components/CurrencySelect";
 import SupplierSelect from "../../components/SupplierSelect";
 import {dateFilter} from "vue-date-fns";
+import CreateInvoiceModal from "./modals/CreateInvoiceModal";
 
 export default {
     name: "EditOrderAcknowledgements",
@@ -256,7 +268,8 @@ export default {
         UpdateInboundShipmentsModal,
         ProductSelect,
         CurrencySelect,
-        SupplierSelect
+        SupplierSelect,
+        CreateInvoiceModal
     },
     props: {
         acknowledgementId: {
@@ -375,6 +388,9 @@ export default {
         }
     },
     methods: {
+        createInvoice() {
+            this.$refs['invoice-modal'].open();
+        },
         beginCreateProduct(line){
             this.showCreateProduct = line.id;
         },
@@ -423,6 +439,36 @@ export default {
 
             this.save({finalised: true})
         },
+        async close(){
+            let result = await this.$bvModal.msgBoxConfirm(
+                "Are you sure you want to close this order acknowledgement?", {
+                    centered: true,
+                    title: 'Please confirm',
+                    okTitle: 'Yes'
+                }
+            );
+
+            if (!result) {
+                return;
+            }
+
+            this.save({closed: true})
+        },
+        async unclose(){
+            let result = await this.$bvModal.msgBoxConfirm(
+                "Are you sure you want to reopen this order acknowledgement?", {
+                    centered: true,
+                    title: 'Please confirm',
+                    okTitle: 'Yes'
+                }
+            );
+
+            if (!result) {
+                return;
+            }
+
+            this.save({reopen: true})
+        },
         restore() {
             const loader = this.$loading.show
             this.salesOrder.restore = true
@@ -436,7 +482,6 @@ export default {
             });
 
         },
-
         save(model = false) {
             const loader = this.$loading.show();
             this.$http.put(

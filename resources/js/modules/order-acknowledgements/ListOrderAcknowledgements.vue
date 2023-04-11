@@ -42,11 +42,11 @@
                         {{ data.value }}
                     </b-link>
                 </template>
-                <template #cell(created_at)="data">
-                    <span>{{ new Date(data.value) | date('dd/MM/yy HH:mm') }}</span>
+                <template #cell(date)="data">
+                    <span>{{ new Date(data.item.created_at) | date('dd/MM/yy HH:mm') }}</span>
                 </template>
-                <template #cell(sent_at)="data">
-                    <span v-if="data.value">{{ new Date(data.value) | date('dd/MM/yy HH:mm') }}</span>
+                <template #cell(eta)="data">
+                    <span v-if="data.item.oa_eta">{{ new Date(data.item.oa_eta) | date('dd/MM/yy') }}</span>
                 </template>
             </b-table>
         </b-card>
@@ -81,21 +81,38 @@ export default {
         fields() {
             return [
                 {
-                    key: 'reference',
-                    label: 'Order #',
-                    sortable: true,
-                }, {
-                    key: 'created_at',
-                    sortable: true
-                }, {
-                    key: 'sent_at',
-                    sortable: true
-                }, {
-                    key: 'status_description'
+                    key: 'date',
+                    label: 'Date',
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
                 }, {
                     key: 'supplier.name',
                     sortable: true,
-                    label: 'Supplier'
+                    label: 'Supplier',
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                }, {
+                    key: 'reference',
+                    label: 'Our Reference',
+                    sortable: true,
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                },  {
+                    key: 'supplier_reference',
+                    label: 'Supplier Reference',
+                    sortable: true,
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                }, {
+                    key: 'eta',
+                    label: 'ETA',
+                    sortable: true,
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                }, {
+                    key: 'status_description',
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
                 }
             ];
         }

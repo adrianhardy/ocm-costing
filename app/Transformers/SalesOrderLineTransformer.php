@@ -140,7 +140,9 @@ class SalesOrderLineTransformer extends TransformerAbstract
 
             'oa_eta',
             'oa_reorder_number',
-            'oa_primary_sku'
+            'oa_primary_sku',
+            'qty_remaining',
+            'qty_received'
         ]);
     }
 }
