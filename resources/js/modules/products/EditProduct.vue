@@ -13,7 +13,7 @@
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Factories">
+                            <b-form-group v-if="isChina" label="Factories">
                                 <factory-select v-model="product.factories" multiple/>
                             </b-form-group>
                         </div>
@@ -35,7 +35,7 @@
                                 <b-form-input all v-model="product.item_number"/>
                             </b-form-group>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4" v-if="isChina">
                             <b-form-group label="Article Number">
                                 <b-form-input all v-model="product.article_number"/>
                             </b-form-group>
@@ -63,14 +63,21 @@
                                 </b-input-group>
                             </b-form-group>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4" v-if="isUk">
+                            <b-form-group label="Unit Price GBP">
+                                <b-input-group prepend="£">
+                                    <b-form-input v-model="product.unit_price_gbp"/>
+                                </b-input-group>
+                            </b-form-group>
+                        </div>
+                        <div class="col-4" v-if="isChina">
                             <b-form-group label="Est. Land' Cost">
                                 <b-input-group prepend="£">
                                     <b-form-input readonly v-model="product.est_landed_cost_gbp"/>
                                 </b-input-group>
                             </b-form-group>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4" v-if="isChina">
                             <b-form-group label="Current Land' Cost" v-if="product.current_landed_cost_per_unit_gbp">
                                 <b-input-group prepend="£">
                                     <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
@@ -84,7 +91,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
-                    <b-tabs content-class="pt-3" small>
+                    <b-tabs v-model="tabIndex" content-class="pt-3" small>
                         <b-tab title="Description">
                             <b-form-group label="Product Details">
                                 <b-textarea v-model="product.product_description" maxlength="500" rows="7"/>
@@ -95,7 +102,7 @@
                                     <span v-else>0 / 500</span>
                                 </template>
                             </b-form-group>
-                            <b-form-group label="Packing Instructions">
+                            <b-form-group label="Packing Instructions" v-if="isChina">
                                 <b-textarea v-model="product.packing_instructions" maxlength="500" rows="7"/>
                                 <template #description>
                                   <span v-if="product.packing_instructions">
@@ -105,14 +112,16 @@
                                 </template>
                             </b-form-group>
 
-                            <b-button variant="outline-primary float-right" @click="save()">
-                                {{ this.productId ? 'Update' : 'Create' }} Product
-                            </b-button>
+                            <div v-if="isChina">
+                                <b-button variant="outline-primary float-right" @click="save()">
+                                    {{ this.productId ? 'Update' : 'Create' }} Product
+                                </b-button>
 
-                            <b-button @click="sendToPricing" v-if="this.productId"
-                                      variant="outline-secondary float-right" class="mr-2">
-                                Send To Pricing
-                            </b-button>
+                                <b-button @click="sendToPricing" v-if="this.productId"
+                                          variant="outline-secondary float-right" class="mr-2">
+                                    Send To Pricing
+                                </b-button>
+                            </div>
                         </b-tab>
                         <b-tab title="Dimensions">
                             <h4>Postage</h4>
@@ -307,6 +316,28 @@
                         <b-tab title="History" v-if="!isSupplier && product.id" :disabled="!showCosting">
                             <b-table ref="product-history" small :items="productLog" :fields="productLogFields"
                                      sticky-header="600px">
+                                <template #cell(details)="row">
+                                    <b-link @click="row.toggleDetails">
+                                        <b-icon-chevron-expand v-if="!row.detailsShowing" />
+                                        <b-icon-chevron-down v-else />
+                                    </b-link>
+                                </template>
+                                <template #row-details="data">
+                                    <b-table-simple>
+                                        <tr>
+                                            <th class="w-50">Field</th>
+                                            <th>New Value</th>
+                                        </tr>
+                                        <tr v-for="(property, index) in data.item.attributes">
+                                            <td>
+                                                {{index}}
+                                            </td>
+                                            <td>
+                                                {{property}}
+                                            </td>
+                                        </tr>
+                                    </b-table-simple>
+                                </template>
                                 <template #cell(updated_at)="data">
                                     {{ new Date(data.value) | date('dd/MM/yy HH:mm') }}
                                 </template>
@@ -349,10 +380,31 @@
                                 </template>
                             </b-table>
                         </b-tab>
-                        <landed-cost-history-tab v-if="!isSupplier && product.id" :product="product"
+                        <b-tab title="Pricing History" v-if="isUk">
+                            <div class="d-flex justify-content-end">
+                                <b-form-select v-model="historyType" size="sm" class="w-25 mb-2">
+                                    <b-form-select-option value="pricing">Pricing</b-form-select-option>
+                                    <b-form-select-option value="order_acknowledgement">OA's</b-form-select-option>
+                                    <b-form-select-option value="invoices">Invoices</b-form-select-option>
+                                </b-form-select>
+                            </div>
+                            <invoice-history v-if="product && product.id && historyType === 'invoices'" :product-id="product.id"></invoice-history>
+                            <order-acknowledgement-history v-if="product && product.id && historyType === 'order_acknowledgement'" :product-id="product.id"></order-acknowledgement-history>
+                        </b-tab>
+                        <landed-cost-history-tab v-if="!isSupplier && product.id && isChina" :product="product"
                                                  :disabled="!showCosting"/>
                     </b-tabs>
                 </div>
+            </div>
+            <div v-if="isUk && tabIndex === 0" class="d-flex justify-content-end">
+                <b-button variant="outline-primary mr-2" @click="save()">
+                    {{ this.productId ? 'Update' : 'Create' }} Product
+                </b-button>
+
+                <b-button @click="sendToPricing" v-if="this.productId"
+                          variant="outline-secondary float-right" class="mr-2">
+                    Send To Pricing
+                </b-button>
             </div>
         </b-card>
     </div>
@@ -366,10 +418,14 @@ import FactorySelect from "../../components/FactorySelect";
 import LandedCostHistoryTab from "./LandedCostHistoryTab";
 import ProductSkuTab from "./ProductSkuTab";
 import LandedCostCalculator from '../../library/LandedCostCalculator';
+import InvoiceHistory from "./HistoryLists/InvoiceHistory";
+import OrderAcknowledgementHistory from "./HistoryLists/OrderAcknowledgementHistory";
 
 export default {
     name: "EditProduct",
-    components: {ProductSkuTab, LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
+    components: {
+        OrderAcknowledgementHistory,
+        InvoiceHistory, ProductSkuTab, LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
     props: {
         importDutyPc: Number,
         commissionRatePc: Number,
@@ -378,7 +434,9 @@ export default {
         showCosting: Boolean,
         productId: Number,
         isSupplier: Boolean,
-        cubicMetresToFeet: Number
+        cubicMetresToFeet: Number,
+        isUk: Boolean,
+        isChina: Boolean
     },
     filters: {
         date: dateFilter
@@ -434,7 +492,12 @@ export default {
                 label: 'U/Price'
             }, {
                 key: 'extra',
-                label: 'Desc'
+                label: 'Desc',
+                tdClass: 'w-25'
+            }, {
+                key: 'details',
+                label: '',
+                tdClass: 'w-1'
             }]
         }
     },
@@ -532,7 +595,9 @@ export default {
                 packing_instructions: '',
                 comments: [],
                 supplier: {}
-            }
+            },
+            tabIndex: 0,
+            historyType: null,
         }
     }
 }

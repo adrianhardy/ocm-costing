@@ -46,6 +46,7 @@ Vue.component('quick-cost-modal', require('./components/QuickCostModal').default
 Vue.component('vue-select', VueSelect);
 Vue.component('auto-toast', require('./components/AutoToast.vue').default);
 Vue.component('create-import', require('./modules/imports/Importer.vue').default);
+Vue.component('uk-product-importer', require('./modules/imports/UkProductImporter').default);
 Vue.component('products-list', require('./modules/products/ProductsList.vue').default);
 Vue.component('edit-product', require('./modules/products/EditProduct.vue').default);
 Vue.component('users-list', require('./modules/users/UserList.vue').default);

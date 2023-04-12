@@ -21,6 +21,13 @@ class OrderAcknowledgementsController extends Controller
 
         $paginator = $paginator->where('is_order_acknowledgement', true);
 
+
+        if($request->input('product_id')) {
+            $paginator = $paginator->whereHas('lines', function($query) use ($request) {
+                return $query->where('product_id', $request->input('product_id'));
+            });
+        }
+
         switch($request->input('stage'))
         {
             case 'deleted':

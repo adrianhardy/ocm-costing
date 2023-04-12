@@ -53,6 +53,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $row_postage_method
  * @property string $sorted_article_number
  * @property string|null $pricing_notes
+ * @property float|null $unit_price_gbp
  * 
  * @property Supplier $supplier
  * @property Collection|ProductLandedCost[] $product_landed_costs_product
@@ -82,7 +83,8 @@ class Product extends Model
 		'unit_width_m' => 'float',
 		'unit_price' => 'float',
 		'est_landed_cost_gbp' => 'float',
-		'is_excluded_from_commission' => 'bool'
+		'is_excluded_from_commission' => 'bool',
+		'unit_price_gbp' => 'float'
 	];
 
 	public function supplier()

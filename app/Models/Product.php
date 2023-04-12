@@ -66,7 +66,8 @@ class Product extends BaseProduct implements HasMedia
         'primary_sku',
         'primary_asin',
         'additional_skus',
-        'additional_asins'
+        'additional_asins',
+        'unit_price_gbp'
     ];
 
 	protected $fillable = [
@@ -101,7 +102,8 @@ class Product extends BaseProduct implements HasMedia
         'uk_postage_method',
         'eu_postage_method',
         'row_postage_method',
-        'pricing_notes'
+        'pricing_notes',
+        'unit_price_gbp'
     ];
 
 	protected $casts = [
