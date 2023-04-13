@@ -21,6 +21,15 @@ class InvoiceController extends Controller
     {
         $paginator = $repository->pushCriteria(app(RequestCriteria::class));
 
+
+        if($request->input('product_id')) {
+            $paginator = $paginator->whereHas('invoice_lines', function($query) use ($request) {
+                return $query->whereHas('sales_order_line', function($query) use ($request) {
+                    return $query->where('product_id', $request->input('product_id'));
+                });
+            });
+        }
+
         switch ($request->input('stage')) {
             case 'approved':
                 $paginator = $paginator->where('is_approval_required', false)->orWhereNotNull('approved_at');

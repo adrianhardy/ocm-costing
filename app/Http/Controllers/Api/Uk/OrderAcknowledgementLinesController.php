@@ -53,7 +53,7 @@ class OrderAcknowledgementLinesController extends Controller
                 'name'                  => '' . $product->name,
                 'item_number'           => '' . $product->item_number,
                 'article_number'        => '' . $product->article_number,
-                'unit_price'            => $product->unit_price,
+                'unit_price'            => $product->unit_price_gbp > 0?$product->unit_price_gbp:$product->unit_price,
                 'primary_sku'           => $product->primary_sku
             ]);
             $line->product()->associate($product);

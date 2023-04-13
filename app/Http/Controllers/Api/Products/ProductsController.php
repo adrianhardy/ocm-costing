@@ -93,6 +93,7 @@ class ProductsController extends Controller
             'unit_price',
             'case_weight_kg',
             'unit_weight_kg',
+            'unit_price_gbp'
         ];
 
         if (!\Auth::user()->is_supplier) {
