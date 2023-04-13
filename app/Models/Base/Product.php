@@ -6,6 +6,7 @@
 
 namespace App\Models\Base;
 
+use App\Models\DailyPricing;
 use App\Models\ProductLandedCost;
 use App\Models\ProductPricing;
 use App\Models\ProductsFactory;
@@ -56,6 +57,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_price_gbp
  * 
  * @property Supplier $supplier
+ * @property Collection|DailyPricing[] $daily_pricings_product
  * @property Collection|ProductLandedCost[] $product_landed_costs_product
  * @property Collection|ProductPricing[] $product_pricings_product
  * @property Collection|ProductsFactory[] $products_factories_product
@@ -90,6 +92,11 @@ class Product extends Model
 	public function supplier()
 	{
 		return $this->belongsTo(Supplier::class);
+	}
+
+	public function daily_pricings_product()
+	{
+		return $this->hasMany(DailyPricing::class);
 	}
 
 	public function product_landed_costs_product()

@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Api\Products;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
-use App\Models\Country;
-use App\Models\Currency;
 use App\Models\ProductPricing;
 use App\Models\Repositories\ProductPricingRepository;
 use App\Transformers\ProductPricingTransformer;
@@ -42,6 +40,10 @@ class ProductPricingController extends Controller
             }
         }
 
+        if($request->input('priority')) {
+            $paginator = $paginator->where('priority', $request->input('priority'));
+        }
+
         $paginator = $paginator->paginate($request->input('per_page', 100));
 
         $paginator->load($with);
@@ -68,6 +70,7 @@ class ProductPricingController extends Controller
     public function update(Request $request, ProductPricing $pricing)
     {
         $this->validate($request, [
+            'priority' => 'required|in:low,medium,high',
             'marketplace_commission_pc'     => 'required|numeric|min:0',
             'current_eur_fx_rate'           => 'required|numeric|min:0',
             'est_landed_cost_per_unit_gbp'  => 'required|numeric|min:0',
@@ -95,7 +98,8 @@ class ProductPricingController extends Controller
         $pricing->fill($request->only([
             'current_eur_fx_rate',
             'marketplace_commission_pc',
-            'est_landed_cost_per_unit_gbp'
+            'est_landed_cost_per_unit_gbp',
+            'priority'
         ]));
         // copy the global "EUR" rate, set on ProductPricing, down to
         // all the ProductPricingCountry objects related to this $pricing

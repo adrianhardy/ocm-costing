@@ -29,6 +29,7 @@ Route::group([
     'middleware' => ['auth', 'permission:uk']
 ], function(){
     Route::post('/uk/product/import', 'Uk\Imports\ProductImportController@import');
+    Route::resource('daily-pricing', 'Uk\Pricing\DailyPricingController')->only(['index']);
     Route::resource('order-acknowledgements', 'Uk\OrderAcknowledgementsController')->only(['index', 'edit']);
     Route::resource('invoices', 'Uk\Invoices\InvoicesController')->only(['index', 'edit']);
 });

@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $sales_order_line_id
  * @property float|null $eur_fx_rate
  * @property float|null $unit_sf_fr_price
+ * @property string|null $priority
  * 
  * @property User|null $approver
  * @property Product $product

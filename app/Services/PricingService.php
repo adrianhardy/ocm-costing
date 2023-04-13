@@ -32,7 +32,7 @@ class PricingService
      * @param $productOrSalesOrderLine
      * @return void
      */
-    public function sendToPricing($productOrSalesOrderLine)
+    public function sendToPricing($productOrSalesOrderLine, $unitPriceGbp = null)
     {
         $line = null;
         $product = null;
@@ -92,6 +92,13 @@ class PricingService
             'margin_pc' => $suggestedPrice / $grossCost,
             'eur_fx_rate' => $eur->default_fx_to_gbp
         ]);
+
+        if($unitPriceGbp) {
+            $pricing->unit_price_gbp = $unitPriceGbp;
+        }
+
+        $pricing->priority = ProductPricing::PRIORITY_MEDIUM;
+
         $pricing->save();
         foreach ($this->getPricingCountries() as $country) {
             // create all empty country-pricing for this

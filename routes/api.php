@@ -88,6 +88,8 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('order-acknowledgements.lines.product', 'Api\Uk\OrderAcknowledgementProductController')->only('store');
 
         Route::resource('invoices', 'Api\Uk\Invoices\InvoiceController')->only(['index', 'store', 'update', 'destroy', 'show']);
+
+        Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
     });
 
 
