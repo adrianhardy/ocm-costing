@@ -66,6 +66,8 @@ Vue.component('edit-order-acknowledgements', require('./modules/order-acknowledg
 Vue.component('list-invoices', require('./modules/invoices/ListInvoices').default)
 Vue.component('edit-invoice', require('./modules/invoices/EditInvoice').default)
 
+Vue.component('list-daily-pricing', require('./modules/daily-pricing/DailyPricingList').default)
+
 Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersList.vue').default);
 Vue.component('edit-sales-order', require('./modules/sales-orders/EditSalesOrder.vue').default);
 Vue.component('edit-inspection-report-modal', require('./modules/inspection/EditInspectionReportModal').default);

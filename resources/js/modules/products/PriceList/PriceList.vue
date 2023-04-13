@@ -4,6 +4,12 @@
             <template #header>
                 <table-header v-model="pagination" @input="$refs['table'].refresh()">
                     <slot>
+                        <b-form-select class="w-25 mr-2 " v-model="priority" @change="$refs['table'].refresh()">
+                            <b-form-select-option :value="null"></b-form-select-option>
+                            <b-form-select-option value="low">Low</b-form-select-option>
+                            <b-form-select-option value="medium">Medium</b-form-select-option>
+                            <b-form-select-option value="High">High</b-form-select-option>
+                        </b-form-select>
                         <search-input v-model="search" @search="$refs['table'].refresh()">
                             <template #right>
                                 <b-input-group-append>
@@ -58,12 +64,16 @@
                 <template #cell(profit)="data">
                     {{ data.value | cash_value }}
                 </template>
-                <template #cell(unit_price_gbp)="data">
-                    <a href="#" @click.prevent="openModal(data.item)">{{ data.value | cash_value }}</a>
+                <template #cell(product.name)="data">
+                    <a href="#" @click.prevent="openModal(data.item)">{{ data.value }}</a>
                 </template>
                 <template #cell(est_landed_cost_per_unit_gbp)="data">
                     {{ data.value | cash_value }}
                 </template>
+                <template #cell(priority)="data">
+                    <span>{{data.value | capitalize}}</span>
+                </template>
+
                 <template #cell(button)="data">
                     <div v-if="!isApprover">
                         <div v-if="!data.item.submitted_at">
@@ -109,6 +119,11 @@ export default {
         TableHeader,
         SearchInput,
         'pricing-modal': PricingModal
+    },
+    filters: {
+        capitalize(val) {
+            return val && val[0].toUpperCase() + val.slice(1);
+        }
     },
     methods: {
         copyPricing(pricing){
@@ -159,27 +174,16 @@ export default {
             })
             this.$refs['table'].refresh();
         },
-        submitOrder(line) {
-            line.submitted = true;
-            this.$http.put(`/api/pricing/${line.id}`, {...line}).then(response => {
-                this.$bvToast.toast('Pricing Submitted', {
-                    variant: 'success',
-                    title: 'Pricing'
-                })
-                this.$refs['table'].refresh();
-            }).catch(error => {
-                this.$handleExceptionResponse(error, true);
-            });
-        },
 
         async items(ctx) {
             const pricings = await this.$paginatedFetch(
                 '/api/pricing',
                 this.pagination,
                 ctx, {
-                    include: 'product,product.media,selected_for_export',
+                    include: 'product,product.media,selected_for_export,submitter,approver',
                     todo_only: this.todoOnly,
-                    search: this.search
+                    search: this.search,
+                    priority: this.priority
                 });
 
             this.pricings = pricings;
@@ -199,18 +203,20 @@ export default {
                 currentPage: 1,
             },
             selectedForExport: [],
+            priority: null,
             fields: [
                 {key: 'selected_for_export', label: '', tdClass: 'align-middle', thClass: 'align-middle'},
                 {key: 'product.image', label: 'Image', tdClass: 'align-middle'},
-                {key: 'product.name', label: 'Product', tdClass: 'align-middle'},
+                {key: 'product.item_number', label: 'Item #', tdClass: 'align-middle'},
                 {key: 'product.primary_sku', label: 'SKU', tdClass: 'align-middle'},
                 {key: 'product.primary_asin', label: 'ASIN', tdClass: 'align-middle'},
-                {key: 'created_at', label: 'Created At', tdClass: 'align-middle'},
-                {key: 'submitted_at', label: 'Submitted At', tdClass: 'align-middle'},
-                {key: 'approved_at', label: 'Approved At', tdClass: 'align-middle'},
-                {key: 'unit_price_gbp', label: 'U/Price', tdClass: 'align-middle'},
-                {key: 'est_landed_cost_per_unit_gbp', label: 'Est. LC', tdClass: 'align-middle'},
-                {key: 'button', label: '', tdClass: 'align-middle'}
+                {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
+                {key: 'submitted_at', label: 'Priced', tdClass: 'align-middle'},
+                {key: 'submitter.name', label: 'Priced By', tdClass: 'align-middle'},
+                {key: 'approved_at', label: 'Approved', tdClass: 'align-middle'},
+                {key: 'approver.name', label: 'Appr. by', tdClass: 'align-middle'},
+                {key: 'exported_at', label: 'exported', tdClass: 'align-middle'},
+                {key: 'priority', label: 'Priority', tdClass: 'align-middle'},
             ]
         }
     }

@@ -9,6 +9,7 @@ use App\Models\InvoiceLine;
 use App\Models\Repositories\InvoiceRepository;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
+use App\Services\PricingService;
 use App\Transformers\InvoiceTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -51,7 +52,7 @@ class InvoiceController extends Controller
         return response()->json(fractal($invoice, new InvoiceTransformer));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, PricingService $pricingService)
     {
         // we're basically just giving this a sales order,
         // so we need to go through the lines and pick out
@@ -111,6 +112,14 @@ class InvoiceController extends Controller
             }
         }
 
+
+        if(!$invoice->is_approval_required) {
+            foreach($invoice->invoice_lines as $line) {
+                $pricingService->sendToPricing($line->sales_order_line->product, $line->unit_price);
+            }
+        }
+
+
         // we have an observer to set sub_total for the invoice once all the lines are processed
         $invoice->save();
         $invoice->sales_order->touch();
@@ -120,7 +129,7 @@ class InvoiceController extends Controller
         return response()->json(fractal($invoice, new InvoiceTransformer));
     }
 
-    public function update(Request $request, Invoice $invoice)
+    public function update(Request $request, PricingService $pricingService, Invoice $invoice)
     {
 
         $this->validate($request, [
@@ -135,6 +144,8 @@ class InvoiceController extends Controller
             $invoiceLine->unit_price = $line['unit_price'];
             $invoiceLine->qty = $line['qty'];
             $invoiceLine->save();
+
+            $pricingService->sendToPricing($invoiceLine->sales_order_line->product, $invoiceLine->unit_price);
         }
 
         $invoice->approved_at = Carbon::now();

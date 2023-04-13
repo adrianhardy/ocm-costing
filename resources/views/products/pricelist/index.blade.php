@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <price-list
         index-Url="/api/price-list"
         :euro-countries='{!! json_encode($euro_countries, JSON_HEX_QUOT|JSON_HEX_APOS) !!}'

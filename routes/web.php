@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth', 'role:supplier']], function() {
 Route::group([
     'middleware' => ['auth', 'permission:uk']
 ], function(){
+    Route::resource('daily-pricing', 'Uk\Pricing\DailyPricingController')->only(['index']);
     Route::resource('order-acknowledgements', 'Uk\OrderAcknowledgementsController')->only(['index', 'edit']);
     Route::resource('invoices', 'Uk\Invoices\InvoicesController')->only(['index', 'edit']);
 });
