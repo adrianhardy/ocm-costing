@@ -4,7 +4,10 @@
             <template #header>
                 <table-header v-model="pagination" @input="$refs['table'].refresh()">
                     <slot>
-                        <country-select class="w-25" @input="$refs['table'].refresh()" v-model="country"></country-select>
+                        <b-button v-if="canExport" variant="primary" class="mr-2" @click="exportNonViable">
+                            Export Non Viable
+                        </b-button>
+                        <country-select class="w-25 mr-2" @input="$refs['table'].refresh()" v-model="country"></country-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
                     </slot>
                 </table-header>
@@ -90,6 +93,10 @@ export default {
         canApprove: {
             type: Boolean,
             default: false
+        },
+        canExport: {
+            type: Boolean,
+            default: false,
         }
     },
     filters: {
@@ -171,6 +178,26 @@ export default {
         }
     },
     methods: {
+        exportNonViable() {
+            let params = new URLSearchParams({
+                include: this.include,
+                export: true
+            });
+
+            if(this.search !== '') {
+                params.append('search', this.search)
+            }
+
+            if(this.country) {
+                params.append('country_id', this.country.id)
+            }
+
+            const link = document.createElement('a');
+            link.href = '/api/daily-pricing?' + params.toString();
+            link.download = 'daily_pricing_export.csv';
+            console.log(link);
+            link.click();
+        },
         approveDailyPricing(pricing) {
             const loading = this.$loading.show();
             const url = `/api/daily-pricing/${pricing.id}`
@@ -197,7 +224,7 @@ export default {
             const payload = {
                 include: this.include,
                 search: this.search,
-                country_id: this.country?this.country.id:null
+                country_id: this.country?this.country.id:null,
             }
             return this.$paginatedFetch(
                 '/api/daily-pricing',

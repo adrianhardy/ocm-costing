@@ -14,6 +14,10 @@ use Illuminate\Http\Request;
 */
 Route::group(['as' => 'api.'], function() {
     Route::post('login', 'Api\AuthController@login');
+    Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
+    Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
+
+
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super|products']], function() {
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['store']);
@@ -35,7 +39,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
         Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['store']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['update']);
-        Route::resource('countries', 'Api\Countries\CountriesController')->only(['index', 'update']);
+        Route::resource('countries', 'Api\Countries\CountriesController')->only(['update']);
         Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
         Route::resource('sales-orders.lines.media', 'Api\SalesOrders\Lines\MediaController')->only(['store']);
         Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'destroy']);
@@ -88,12 +92,11 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('order-acknowledgements.lines.product', 'Api\Uk\OrderAcknowledgementProductController')->only('store');
 
         Route::resource('invoices', 'Api\Uk\Invoices\InvoiceController')->only(['index', 'store', 'update', 'destroy', 'show']);
-
-        Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
     });
 
 
     Route::group(['middleware' => ['auth:api']], function() {
+        Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
         Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['index']);
     });
 

@@ -15,6 +15,7 @@ class AddPriorityToProductPricing extends Migration
     {
         Schema::table('product_pricing', function (Blueprint $table) {
             $table->string('priority', 32)->nullable();
+            $table->dateTime('exported_at')->nullable();
         });
     }
 
@@ -27,6 +28,7 @@ class AddPriorityToProductPricing extends Migration
     {
         Schema::table('product_pricing', function (Blueprint $table) {
             $table->dropColumn('priority');
+            $table->dropColumn('exported_at');
         });
     }
 }

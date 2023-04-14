@@ -45,7 +45,7 @@ class CreatePermissionsCommand extends Command
             'pricing_approve',
             'products',
             'approve_invoice',
-            'approve_pricing'
+            'daily_pricing_export'
         ];
 
         foreach($permissions as $perm) {

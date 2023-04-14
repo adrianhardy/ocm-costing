@@ -61,6 +61,11 @@
                         {{ data.value | date_dmY }}
                     </span>
                 </template>
+                <template #cell(exported_at)="data">
+                    <span v-if="data.item.exported_at">
+                        {{ data.value | date_dmY }}
+                    </span>
+                </template>
                 <template #cell(profit)="data">
                     {{ data.value | cash_value }}
                 </template>
@@ -71,20 +76,15 @@
                     {{ data.value | cash_value }}
                 </template>
                 <template #cell(priority)="data">
-                    <span>{{data.value | capitalize}}</span>
-                </template>
-
-                <template #cell(button)="data">
-                    <div v-if="!isApprover">
-                        <div v-if="!data.item.submitted_at">
-                            <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Submit</a>
-                        </div>
-                    </div>
-                    <div v-if="isApprover && data.item.submitted_at && !data.item.approved_at">
-                        <div>
-                            <a href="#" size="sm" @click.prevent="submitOrder(data.item)">Approve</a>
-                        </div>
-                    </div>
+                    <b-badge variant="secondary" v-if="data.value === 'low'">
+                        {{data.value | capitalize}}
+                    </b-badge>
+                    <b-badge variant="primary" v-if="data.value === 'medium'">
+                        {{data.value | capitalize}}
+                    </b-badge>
+                    <b-badge variant="danger" v-if="data.value === 'high'">
+                        {{data.value | capitalize}}
+                    </b-badge>
                 </template>
             </b-table>
         </b-card>
@@ -92,6 +92,7 @@
             :euro-countries="euroCountries"
             :row-countries="rowCountries"
             :non-euro-eu-countries="nonEuroEuCountries"
+            :is-approver="isApprover"
             :uk="uk"
             ref="pricing-modal"
             @updated="updatePricing"

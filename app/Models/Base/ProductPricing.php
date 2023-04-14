@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $eur_fx_rate
  * @property float|null $unit_sf_fr_price
  * @property string|null $priority
+ * @property Carbon|null $exported_at
  * 
  * @property User|null $approver
  * @property Product $product
@@ -68,7 +69,8 @@ class ProductPricing extends Model
 	protected $dates = [
 		'submitted_at',
 		'approved_at',
-		'superseded_at'
+		'superseded_at',
+		'exported_at'
 	];
 
 	public function approver()

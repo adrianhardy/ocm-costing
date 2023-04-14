@@ -380,14 +380,15 @@
                                 </template>
                             </b-table>
                         </b-tab>
-                        <b-tab title="Pricing History" v-if="isUk">
+                        <b-tab title="Pricing History" v-if="isUk && product">
                             <div class="d-flex justify-content-end">
                                 <b-form-select v-model="historyType" size="sm" class="w-25 mb-2">
-                                    <b-form-select-option value="pricing">Pricing</b-form-select-option>
+                                    <b-form-select-option value="daily_pricing">Daily Pricing</b-form-select-option>
                                     <b-form-select-option value="order_acknowledgement">OA's</b-form-select-option>
                                     <b-form-select-option value="invoices">Invoices</b-form-select-option>
                                 </b-form-select>
                             </div>
+                            <daily-pricing-history v-if="product && product.id && historyType === 'daily_pricing'" :product-id="product.id"></daily-pricing-history>
                             <invoice-history v-if="product && product.id && historyType === 'invoices'" :product-id="product.id"></invoice-history>
                             <order-acknowledgement-history v-if="product && product.id && historyType === 'order_acknowledgement'" :product-id="product.id"></order-acknowledgement-history>
                         </b-tab>
@@ -420,12 +421,20 @@ import ProductSkuTab from "./ProductSkuTab";
 import LandedCostCalculator from '../../library/LandedCostCalculator';
 import InvoiceHistory from "./HistoryLists/InvoiceHistory";
 import OrderAcknowledgementHistory from "./HistoryLists/OrderAcknowledgementHistory";
+import DailyPricingHistory from "./HistoryLists/DailyPricingHistory";
 
 export default {
     name: "EditProduct",
     components: {
+        DailyPricingHistory,
         OrderAcknowledgementHistory,
-        InvoiceHistory, ProductSkuTab, LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
+        InvoiceHistory,
+        ProductSkuTab,
+        LandedCostHistoryTab,
+        FactorySelect,
+        EditProductMedia,
+        SupplierSelect
+    },
     props: {
         importDutyPc: Number,
         commissionRatePc: Number,

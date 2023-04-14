@@ -197,9 +197,6 @@ class Product extends BaseProduct implements HasMedia
         return $this->belongsToMany(Factory::class, 'products_factories');
     }
 
-
-
-
     public function getUnitWeightGAttribute()
     {
         return round($this->unit_weight_kg * 100, 2);

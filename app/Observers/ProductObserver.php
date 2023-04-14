@@ -5,9 +5,11 @@ namespace App\Observers;
 use App\Domain\LandedCostCalculator;
 use App\Domain\SortedArticleNumberGenerator;
 use App\Models\Currency;
+use App\Models\DailyPricing;
 use App\Models\Product;
 use App\Models\ProductPricing;
 use App\Services\ProductService;
+use Carbon\Carbon;
 
 class ProductObserver
 {
@@ -20,6 +22,23 @@ class ProductObserver
 
     public function saving(Product $product)
     {
+        foreach($product->current_product_pricing->product_pricing_countries as $pricingCountry) {
+            $country = $pricingCountry->country;
+
+            $hasDailyPricing = DailyPricing::query()
+                ->where('country_id', $country->id)
+                ->where('product_id', $product->id)
+                ->exists();
+
+            if(!$hasDailyPricing) {
+                $dailyPricing = new DailyPricing();
+                $dailyPricing->country()->associate($country);
+                $dailyPricing->product()->associate($product);
+                $dailyPricing->submitted_at = Carbon::now();
+                $dailyPricing->submitter()->associate(auth()->user());
+                $dailyPricing->save();
+            }
+        }
 
         $product->sorted_article_number = SortedArticleNumberGenerator::convert($product->article_number);
 

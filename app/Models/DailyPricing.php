@@ -63,8 +63,6 @@ class DailyPricing extends BaseDailyPricing
             ->orderByDesc('submitted_at')
             ->take(6)
             ->get();
-
-
     }
 
 

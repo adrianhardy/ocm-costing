@@ -156,14 +156,14 @@ class ImportUkProductsCommand extends Command
                 'row_postage_method' => $row['worldwide_postage'],
                 'units_per_case' => $row['units_per_case'],
                 'inner_qty' => $row['inner_qty'],
-                'height_m' => $row['weight'],
-                'length_m' => $row['length'],
-                'width_m' => $row['width'],
-                'case_weight_kg' => $row['height'],
+                'height_m' => $row['height']?$row['height'] / 100:null,
+                'length_m' => $row['length']?$row['length'] / 100:null,
+                'width_m' => $row['width']?$row['width'] / 100:null,
+                'case_weight_kg' => $row['weight'],
                 'unit_weight_kg' => $row['unit_weight'],
-                'unit_length_m' => $row['unit_length'],
-                'unit_width_m' => $row['unit_width'],
-                'unit_height_m' => $row['unit_height'],
+                'unit_length_m' => $row['unit_length']?$row['unit_length'] / 100:null,
+                'unit_width_m' => $row['unit_width']?$row['unit_width'] / 100:null,
+                'unit_height_m' => $row['unit_height']?$row['unit_height'] / 100:null,
             ]);
 
             $product->supplier()->associate($supplier);

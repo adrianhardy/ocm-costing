@@ -48,7 +48,8 @@ class ProductPricingTransformer extends TransformerAbstract
             'superseded_at',
             'eur_fx_rate',
             'current_eur_fx_rate',
-            'priority'
+            'priority',
+            'exported_at'
         ]);
 
         return $json;

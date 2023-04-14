@@ -15,7 +15,12 @@
                 <b-button class="mr-1" @click="copyPricing">Copy Pricing</b-button>
                 <b-button v-if="copiedPricing" @click="pastePricing">Paste Pricing</b-button>
             </div>
-            <b-button variant="success" @click="submitOrder">Approve</b-button>
+            <b-button v-if="isApprover && value.submitted_at" variant="success" @click="submitOrder">
+                Approve
+            </b-button>
+            <b-button v-if="!isApprover && !value.submitted_at" variant="success" @click="submitOrder">
+                Submit
+            </b-button>
             <b-button variant="secondary" @click="cancel">Cancel</b-button>
             <b-button variant="primary" @click.prevent="save($event)">Update</b-button>
         </template>
@@ -337,7 +342,8 @@ export default {
         uk: Object,
         rowCountries: Array,
         euroCountries: Array,
-        nonEuroEuCountries: Array
+        nonEuroEuCountries: Array,
+        isApprover: Boolean
     },
     mounted(){
         this.getGuidance();

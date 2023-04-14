@@ -5,6 +5,9 @@
                 @can('pricing_approve')
                     can-approve
                 @endcan
+                @can('daily_pricing_export')
+                    can-export
+                @endcan
         >
 
         </list-daily-pricing>
