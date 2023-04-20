@@ -181,4 +181,8 @@ class SalesOrderLine extends BaseSalesOrderLine
 
     }
 
+    public function product()
+    {
+        return parent::product()->withTrashed();
+    }
 }

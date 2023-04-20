@@ -65,5 +65,10 @@ class DailyPricing extends BaseDailyPricing
             ->get();
     }
 
+    public function product()
+    {
+        return parent::product()->withTrashed();
+    }
+
 
 }

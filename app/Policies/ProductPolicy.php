@@ -71,7 +71,7 @@ class ProductPolicy
      */
     public function delete(User $user, Product $product)
     {
-        if ($user->is_supplier) {
+        if ($user->is_supplier && !$user->can('delete_product')) {
             return false;
         }
         return true;
@@ -102,6 +102,14 @@ class ProductPolicy
     public function forceDelete(User $user, Product $product)
     {
         if ($user->is_supplier) {
+            return false;
+        }
+        return true;
+    }
+
+    public function copy(User $user, Product $product)
+    {
+        if ($user->is_supplier && !$user->can('copy_product')) {
             return false;
         }
         return true;

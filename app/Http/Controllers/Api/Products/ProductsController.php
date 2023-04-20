@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Products;
 
 use App\Domain\Export\ProductExport;
+use App\Events\ProductInformationChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Factory;
@@ -114,6 +115,9 @@ class ProductsController extends Controller
         }
         $product->factories()->sync(Factory::query()->findMany($request->input('factories.*.id')));
         $product->save();
+
+        event(new ProductInformationChanged($product));
+
         return response()->json(fractal($product->fresh(), new ProductTransformer()));
     }
 
@@ -272,5 +276,15 @@ class ProductsController extends Controller
     {
         $product->delete();
         return response()->json();
+    }
+
+    public function copy(Request $request, Product $product)
+    {
+        $this->authorize('copy', $product);
+        $newProduct = $product->replicate(['item_number', 'article_number', 'sorted_article_number']);
+        $newProduct->name = "Copy of {$product->name}";
+        $newProduct->save();
+
+        return response()->json(fractal($newProduct, new ProductTransformer()));
     }
 }

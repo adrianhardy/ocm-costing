@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\ProductInformationChanged;
 use App\Models\Import;
 use App\Models\Product;
 use App\Models\Supplier;
@@ -171,6 +172,7 @@ class ImportUkProductsCommand extends Command
 
             if(!$this->hasArgument('pretend')) {
                 $product->save();
+                event(new ProductInformationChanged($product));
             }
         }
     }

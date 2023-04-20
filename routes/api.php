@@ -22,10 +22,11 @@ Route::group(['as' => 'api.'], function() {
 
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super|products']], function() {
-        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['store']);
+        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index','store']);
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
-        Route::resource('products', 'Api\Products\ProductsController')->only(['show', 'store', 'update', 'delete']);
+        Route::resource('products', 'Api\Products\ProductsController')->only(['show', 'store', 'update', 'destroy']);
+        Route::post('products/{product}/copy', 'Api\Products\ProductsController@copy');
         Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
         Route::resource('products.comments', 'Api\Products\CommentsController')->only(['store']);
         Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);

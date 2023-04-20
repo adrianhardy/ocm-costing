@@ -1,9 +1,27 @@
 @extends('layouts.app')
 @section('layout.breadcrumbs', Breadcrumbs::render('home') )
+@push('layout.footer.scripts')
+<script type="text/javascript">
+        function jumpToYear(year) {
+            window.location.href = '/home?year=' + year;
+        }
+</script>
+@endpush
 @section('content')
 <div class="container">
     <div class="card">
-        <div class="card-header">Sales Order Progress Dashboard</div>
+        <div class="card-header">
+            <div class="d-flex justify-content-between w-100">
+                <div>Sales Order Progress Dashboard</div>
+                <div>
+                    <select name="year" class="form-control form-control-sm" onchange="jumpToYear(this.value)">
+                        @foreach($years as $year)
+                            <option value="{{ $year }}" {{ $current_year == $year?"selected":"" }}>{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
         <div class="card-body">
             <table class="table">
                 <tr class="text-center">

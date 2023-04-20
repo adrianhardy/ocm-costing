@@ -61,4 +61,9 @@ class ProductPricing extends BaseProductPricing
         $profit -= $this->unit_shipping_gbp;
         return $profit;
     }
+
+    public function product()
+    {
+        return parent::product()->withTrashed();
+    }
 }

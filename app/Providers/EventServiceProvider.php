@@ -24,6 +24,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         \App\Events\ShippingCostSettingChanged::class => [
             \App\Listeners\UpdateAllCurrentEstimatedLandedCosts::class
+        ],
+
+        Events\ProductInformationChanged::class => [
+            Listeners\ProductInformationChangedListener::class
         ]
     ];
 

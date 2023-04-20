@@ -30,7 +30,18 @@ class ProductExport
         'supplier.name',
         'primary_sku',
         'additional_skus',
-        'barcode'
+        'barcode',
+        'unit_price',
+        'unit_price_gbp',
+        'packing_instructions',
+        'product_description',
+        'is_excluded_from_commission',
+        'primary_asin',
+        'additional_skus',
+        'additional_asins',
+        'uk_postage_method',
+        'eu_postage_method',
+        'row_postage_method',
     );
 
     /**
