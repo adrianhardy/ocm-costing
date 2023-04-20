@@ -45,7 +45,8 @@ class InvoiceLineTransformer extends TransformerAbstract
             'unit_price',
             'qty',
             'qty_received_excl_me',
-            'sub_total'
+            'sub_total',
+            'pricing_priority'
         ]);
     }
 }

@@ -1,0 +1,172 @@
+<?php
+
+
+namespace App\Domain\Export;
+
+
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+use League\Csv\Exception;
+use League\Csv\Writer;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+
+class ProductExport
+{
+    protected $writer;
+    protected $products = array();
+    protected $log;
+    protected $pa;
+    protected $columns = array(
+        'item_number',
+        'article_number',
+        'name',
+        'unit_weight_kg',
+        'case_weight_kg',
+        'inner_qty',
+        'units_per_case',
+        'height_m',
+        'length_m',
+        'width_m',
+        'supplier.name',
+        'primary_sku',
+        'additional_skus',
+        'barcode'
+    );
+
+    /**
+     * @var mixed
+     */
+    private $stockLevels;
+    /**
+     * @var bool
+     */
+    private $stockLevelRequired = false;
+
+    public function __construct($products)
+    {
+        $this->products = $products;
+        $this->pa = PropertyAccess::createPropertyAccessor();
+
+    }
+
+    /**
+     * If we call this multiple times, then the first time we'll get the
+     * headers written to the CSV. On subsequent calls, we'll only get
+     * the contents of $this->accounts written to the CSV. This means
+     * we can chunk the query and just call "setAccounts" followed by
+     * "buildExport" as many times as we like and we end up with a .
+     * single CSV file...
+     * @return Writer|null
+     */
+    public function buildExport()
+    {
+        $headers = $this->columns;
+
+        if($this->stockLevelRequired) {
+            $headers[] = 'Stock Level';
+        }
+
+        try {
+            if ($this->writer) {
+                $export = $this->writer;
+            } else {
+                $export = Writer::createFromFileObject(new \SplTempFileObject(256 * 1024 * 1024));
+                $export->setDelimiter(',');
+                $export->setNewline("\r\n");
+                $export->insertOne($headers);
+                $this->writer = $export;
+            }
+
+            foreach ($this->products as $product) {
+                $exportItem = [];
+                foreach ($this->columns as $column) {
+                    if($column !== 'Stock Level') {
+                        $exportItem[] = $this->extractProperty($product, $column);
+                    }
+                }
+
+                if($this->stockLevelRequired === true) {
+                    // i'm assuming that stock levels can come in as null if nothing gets found
+                    // so we're making sure we have it so the foreach doesn't throw an issue
+                    if($this->stockLevels) {
+                        foreach($this->stockLevels as $level) {
+                            if ($level->item->item_number === $product->item_number) {
+                                $stock = $level->level;
+                            }
+                        }
+                    }
+                    $exportItem[] = $stock??'N/A';
+                }
+
+
+
+                $export->insertOne($exportItem);
+            }
+            return $export;
+        } catch (Exception $e) {
+            $this->log->critical(
+                $e->getMessage()
+            );
+            return null;
+        }
+    }
+
+    public function getStock(){
+        $client = new Client(['base_uri' => env('RAF_BASE_URI', 'http://127.0.0.1:8000')]);
+
+        $response = $client->request('GET', '/api/stock-export', [
+            'query' => [
+                'items' => collect($this->products)->pluck('item_number')->toArray(),
+                'selected_date' => Carbon::now()
+            ]]);
+
+
+
+        $this->stockLevels = json_decode($response->getBody());
+    }
+
+    public function setStockLevelRequired(){
+        $this->stockLevelRequired = true;
+    }
+
+
+
+    /**
+     *
+     * @param $products
+     * @return void
+     */
+    public function setProducts($products){
+        $this->products = $products;
+    }
+
+    /**
+     * @return null
+     */
+    public function getCsvDownloadResponse()
+    {
+        $export = $this->buildExport();
+        return $export->output();
+    }
+
+    /**
+     * @param $data
+     * @param $property
+     * @return string
+     */
+    function extractProperty($data,$property): ?string
+    {
+        $elements = explode(".",$property);
+        $propertyArray = "";
+        foreach ($elements as $element){
+            $propertyArray .= '['.$element.']';
+        }
+        try {
+            return "".$this->pa->getValue($data,$propertyArray);
+        } catch (\Exception $ignore){}
+        return "";
+    }
+
+
+
+}

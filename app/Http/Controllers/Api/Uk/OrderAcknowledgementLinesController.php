@@ -7,7 +7,7 @@ use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
 use App\Transformers\SalesOrderTransformer;
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class OrderAcknowledgementLinesController extends Controller
@@ -17,6 +17,7 @@ class OrderAcknowledgementLinesController extends Controller
 
         $line = new SalesOrderLine();
         $orderAcknowledgement->lines()->save($line);
+        $orderAcknowledgement->touch();
         return response()->json(
             fractal($orderAcknowledgement->fresh(), new SalesOrderTransformer())
         );
@@ -40,10 +41,12 @@ class OrderAcknowledgementLinesController extends Controller
             'units_per_case',
             'barcode',
             'inner_qty',
-            'oa_eta',
             'oa_reorder_number',
             'oa_primary_sku'
         ]));
+
+
+        $line->oa_eta = Carbon::parse($request->input('oa_eta'));
 
         if ($request->input('product.id') && $request->input('product.id') != $line->product_id) {
             /** @var Product $product */
@@ -53,7 +56,7 @@ class OrderAcknowledgementLinesController extends Controller
                 'name'                  => '' . $product->name,
                 'item_number'           => '' . $product->item_number,
                 'article_number'        => '' . $product->article_number,
-                'unit_price'            => $product->unit_price,
+                'unit_price'            => $product->unit_price_gbp > 0?$product->unit_price_gbp:$product->unit_price,
                 'primary_sku'           => $product->primary_sku
             ]);
             $line->product()->associate($product);

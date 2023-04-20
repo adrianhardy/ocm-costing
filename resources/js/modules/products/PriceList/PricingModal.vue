@@ -15,6 +15,12 @@
                 <b-button class="mr-1" @click="copyPricing">Copy Pricing</b-button>
                 <b-button v-if="copiedPricing" @click="pastePricing">Paste Pricing</b-button>
             </div>
+            <b-button v-if="isApprover && value.submitted_at" variant="success" @click="submitOrder">
+                Approve
+            </b-button>
+            <b-button v-if="!isApprover && !value.submitted_at" variant="success" @click="submitOrder">
+                Submit
+            </b-button>
             <b-button variant="secondary" @click="cancel">Cancel</b-button>
             <b-button variant="primary" @click.prevent="save($event)">Update</b-button>
         </template>
@@ -194,6 +200,17 @@
                                     v-model="value.product.pricing_notes"
                                 />
                             </div>
+                            <div>
+                                <b-form-group label="Priority">
+                                    <b-select v-model="value.priority">
+                                        <b-select-option value="low">Low</b-select-option>
+                                        <b-select-option value="medium">Medium</b-select-option>
+                                        <b-select-option value="high">High</b-select-option>
+                                    </b-select>
+                                </b-form-group>
+                            </div>
+
+
                         </b-tab>
                         <b-tab title="EU Pricing">
                             <div class="row">
@@ -325,7 +342,8 @@ export default {
         uk: Object,
         rowCountries: Array,
         euroCountries: Array,
-        nonEuroEuCountries: Array
+        nonEuroEuCountries: Array,
+        isApprover: Boolean
     },
     mounted(){
         this.getGuidance();
@@ -364,6 +382,20 @@ export default {
         }
     },
     methods: {
+
+        submitOrder() {
+            this.value.submitted = true;
+            this.$http.put(`/api/pricing/${this.value.id}`, {...this.value}).then(response => {
+                this.$bvToast.toast('Pricing Submitted', {
+                    variant: 'success',
+                    title: 'Pricing'
+                })
+                this.$refs['table'].refresh();
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true);
+            });
+        },
+
         copyPricing(){
             this.$emit('copy', this.value)
             // this is more of a visual thing of saying

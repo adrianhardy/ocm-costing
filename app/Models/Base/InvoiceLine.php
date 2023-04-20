@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $unit_price
  * @property int $qty
  * @property float $sub_total
+ * @property string|null $pricing_priority
  * 
  * @property Invoice $invoice
  * @property SalesOrderLine $sales_order_line

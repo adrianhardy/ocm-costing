@@ -101,7 +101,8 @@ class SalesOrderTransformer extends TransformerAbstract
             'supplier_reference',
             'sales_order_fx_rate',
             'is_order_acknowledgement',
-            'oa_eta'
+            'oa_eta',
+            'has_unmatched_products'
         ]);
     }
 }

@@ -8,6 +8,12 @@
             @role('super')
             show-costing
             @endrole
+            @can('uk')
+            is-uk
+            @endcan
+            @can('china')
+            is-china
+            @endcan
             :cubic-metres-to-feet="{{ setting('cubic_metres_to_feet') }}"
             :product-id="{{ $product->id }}"
             :shipping-cost-per-cubic-foot="{{ $shipping_cost_per_cubic_foot }}"

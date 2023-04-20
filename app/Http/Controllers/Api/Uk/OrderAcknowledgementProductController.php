@@ -40,7 +40,6 @@ class OrderAcknowledgementProductController extends Controller
             'unit_length_m',
             'unit_width_m',
             'unit_height_m',
-            'unit_price',
             'units_per_case'
         ]));
 
@@ -49,6 +48,7 @@ class OrderAcknowledgementProductController extends Controller
         $product->supplier()->associate($orderAcknowledgement->supplier);
         $product->item_number = $request->input('item_number');
         $product->article_number = $request->input('item_number');
+        $product->unit_price_gbp = $request->input('unit_price');
 
         $product->save();
 
@@ -57,7 +57,7 @@ class OrderAcknowledgementProductController extends Controller
             'name'                     => '' . $product->name,
             'item_number'              => '' . $product->item_number,
             'article_number'           => '' . $product->article_number,
-            'unit_price'               => $product->unit_price,
+            'unit_price'               => $product->unit_price_gbp,
             'oa_primary_sku'           => $product->primary_sku
         ]);
 

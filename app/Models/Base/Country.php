@@ -7,6 +7,7 @@
 namespace App\Models\Base;
 
 use App\Models\Currency;
+use App\Models\DailyPricing;
 use App\Models\ProductPricingCountry;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool|null $has_pricing
  * 
  * @property Currency|null $currency
+ * @property Collection|DailyPricing[] $daily_pricings_country
  * @property Collection|ProductPricingCountry[] $product_pricing_countries_country
  *
  * @package App\Models\Base
@@ -44,6 +46,11 @@ class Country extends Model
 	public function currency()
 	{
 		return $this->belongsTo(Currency::class);
+	}
+
+	public function daily_pricings_country()
+	{
+		return $this->hasMany(DailyPricing::class);
 	}
 
 	public function product_pricing_countries_country()

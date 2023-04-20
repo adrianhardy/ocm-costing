@@ -9,6 +9,8 @@ use App\Models\InvoiceLine;
 use App\Models\Repositories\InvoiceRepository;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
+use App\Services\InvoiceService;
+use App\Services\PricingService;
 use App\Transformers\InvoiceTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -20,6 +22,15 @@ class InvoiceController extends Controller
     public function index(Request $request, InvoiceRepository $repository)
     {
         $paginator = $repository->pushCriteria(app(RequestCriteria::class));
+
+
+        if($request->input('product_id')) {
+            $paginator = $paginator->whereHas('invoice_lines', function($query) use ($request) {
+                return $query->whereHas('sales_order_line', function($query) use ($request) {
+                    return $query->where('product_id', $request->input('product_id'));
+                });
+            });
+        }
 
         switch ($request->input('stage')) {
             case 'approved':
@@ -51,7 +62,7 @@ class InvoiceController extends Controller
         return response()->json(fractal($invoice, new InvoiceTransformer));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, PricingService $pricingService, InvoiceService $invoiceService)
     {
         // we're basically just giving this a sales order,
         // so we need to go through the lines and pick out
@@ -62,10 +73,12 @@ class InvoiceController extends Controller
             'lines.*.product.id'    => 'required|',
             'lines.*.checked'       => 'sometimes|boolean',
             'lines.*.invoice_qty_received'  => 'nullable|numeric|min:0|required_if:lines.*.checked,true',
-            'lines.*.invoice_unit_price'    => 'nullable|numeric|min:0|required_if:lines.*.checked,true'
+            'lines.*.invoice_unit_price'    => 'nullable|numeric|min:0|required_if:lines.*.checked,true',
+            'lines.*.priority' => 'required_if:lines.*.checked,true|in:low,medium,high',
         ], [
             'lines.*.invoice_qty_received.required_if' => 'Qty received is required when line is checked',
-            'lines.*.invoice_unit_price.required_if' => 'Unit price is required when line is checked'
+            'lines.*.invoice_unit_price.required_if' => 'Unit price is required when line is checked',
+            'lines.*.priority.required_if' => 'Pricing Priority is required when line is checked'
         ]);
 
         // @todo make sure that the validation here works properly and looks nice too
@@ -88,28 +101,24 @@ class InvoiceController extends Controller
                 /** @var SalesOrderLine $salesOrderLine */
                 $salesOrderLine = SalesOrderLine::query()->findOrFail($line['id']);
 
-                // get the qty remaining BEFORE we make the invoice line,
-                // as if we evaluate it later, this line will be included
-                $remaining = $salesOrderLine->qty_remaining;
-
-
                 $invoiceLine = new InvoiceLine();
                 $invoiceLine->sales_order_line()->associate($salesOrderLine);
                 $invoiceLine->invoice()->associate($invoice);
                 $invoiceLine->unit_price = $line['invoice_unit_price'];
                 $invoiceLine->qty = $line['invoice_qty_received'];
+                $invoiceLine->pricing_priority = $line['priority'];
                 $invoiceLine->save();
-
-
-                // we only want to mark them for approval if the price
-                // is different OR we've received more than we wanted
-
-
-                if ($invoiceLine->unit_price !== $salesOrderLine->unit_price || $invoiceLine->qty > $remaining) {
-                    $invoice->is_approval_required = true;
-                }
             }
         }
+
+        if($invoiceService->checkIfInvoiceApprovalRequired($invoice)) {
+            $invoice->is_approval_required = true;
+        } else {
+            foreach ($invoice->invoice_lines as $line) {
+                $pricingService->sendToPricing($line->sales_order_line->product, $line->unit_price, $line->pricing_priority);
+            }
+        }
+
 
         // we have an observer to set sub_total for the invoice once all the lines are processed
         $invoice->save();
@@ -120,12 +129,13 @@ class InvoiceController extends Controller
         return response()->json(fractal($invoice, new InvoiceTransformer));
     }
 
-    public function update(Request $request, Invoice $invoice)
+    public function update(Request $request, PricingService $pricingService, Invoice $invoice)
     {
 
         $this->validate($request, [
             'lines.*.unit_price' => 'numeric|min:0|required',
             'lines.*.qty' => 'numeric|min:0|required',
+            'lines.*.pricing_priority' => 'required|in:low,medium,high',
         ]);
 
 
@@ -134,7 +144,10 @@ class InvoiceController extends Controller
             $invoiceLine = InvoiceLine::query()->findOrFail($line['id']);
             $invoiceLine->unit_price = $line['unit_price'];
             $invoiceLine->qty = $line['qty'];
+            $invoiceLine->pricing_priority = $line['pricing_priority'];
             $invoiceLine->save();
+
+            $pricingService->sendToPricing($invoiceLine->sales_order_line->product, $invoiceLine->unit_price, $invoiceLine->pricing_priority);
         }
 
         $invoice->approved_at = Carbon::now();

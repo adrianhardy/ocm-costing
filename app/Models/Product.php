@@ -28,6 +28,8 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property ProductPricing $current_product_pricing
  * @property-read $current_landed_cost_per_unit_gbp
  * @property-read $case_cubic_ft
+ * @property-read Boolean $has_duplicate_item_number;
+ * @property-read Boolean $has_duplicate_barcode;
  */
 class Product extends BaseProduct implements HasMedia
 {
@@ -66,7 +68,8 @@ class Product extends BaseProduct implements HasMedia
         'primary_sku',
         'primary_asin',
         'additional_skus',
-        'additional_asins'
+        'additional_asins',
+        'unit_price_gbp'
     ];
 
 	protected $fillable = [
@@ -101,7 +104,8 @@ class Product extends BaseProduct implements HasMedia
         'uk_postage_method',
         'eu_postage_method',
         'row_postage_method',
-        'pricing_notes'
+        'pricing_notes',
+        'unit_price_gbp'
     ];
 
 	protected $casts = [
@@ -195,9 +199,6 @@ class Product extends BaseProduct implements HasMedia
         return $this->belongsToMany(Factory::class, 'products_factories');
     }
 
-
-
-
     public function getUnitWeightGAttribute()
     {
         return round($this->unit_weight_kg * 100, 2);
@@ -207,6 +208,21 @@ class Product extends BaseProduct implements HasMedia
     {
         $this->unit_weight_kg = $g/100;
     }
+
+    public function getHasDuplicateBarcodeAttribute(){
+        return Product::query()
+            ->where('id', '!=', $this->id)
+            ->where('barcode', $this->barcode)
+            ->exists();
+    }
+
+    public function getHasDuplicateItemNumberAttribute(){
+        return Product::query()
+            ->where('id', '!=', $this->id)
+            ->where('item_number', $this->item_number)
+            ->exists();
+    }
+
 
 
 }

@@ -15,6 +15,11 @@
                         {{ new Date(invoice.approved_at) | date('dd/MM/yy HH:mm') }}
                     </b-badge>
                 </div>
+                <b-form-select v-if="!invoice.approved_at" class="w-25" @input="setAllPriority($event)">
+                    <b-form-select-option value="low">Low</b-form-select-option>
+                    <b-form-select-option value="medium">Medium</b-form-select-option>
+                    <b-form-select-option value="high">High</b-form-select-option>
+                </b-form-select>
             </template>
             <b-table :items="invoice.lines" :fields="fields">
                 <template #cell(product)="data">
@@ -42,6 +47,14 @@
                 </template>
                 <template #cell(sub_total)="data">
                     <span>{{ data.item.qty * data.item.unit_price | cash_value }}</span>
+                </template>
+                <template #cell(pricing_priority)="data">
+                    <b-form-select v-if="invoice.is_approval_required && !invoice.approved_at" :rerenderCounter="rerenderCounter" v-model="data.item.pricing_priority">
+                        <b-form-select-option value="low">Low</b-form-select-option>
+                        <b-form-select-option value="medium">Medium</b-form-select-option>
+                        <b-form-select-option value="high">High</b-form-select-option>
+                    </b-form-select>
+                    <span v-else>{{data.item.pricing_priority}}</span>
                 </template>
             </b-table>
 
@@ -127,7 +140,12 @@ export default {
                     label: "Sub Total",
                     thClass: 'align-middle',
                     tdClass: 'align-middle'
-                },
+                }, {
+                    key: 'pricing_priority',
+                    label: 'Priority',
+                    thClass: 'align-middle',
+                    tdClass: 'align-middle'
+                }
             ]
         },
         include() {
@@ -178,6 +196,15 @@ export default {
                 loading.hide();
             })
         },
+        setAllPriority(newPriority) {
+            for (let i = 0; i < this.invoice.lines.length; i++) {
+                this.invoice.lines[i].pricing_priority = newPriority;
+            }
+            // force Vue to notice the nested change on priority
+            // by default, this.invoice.lines[i].priority won't
+            // be watched for changes, just this.invoice
+            this.rerenderCounter++;
+        },
         getSubTotal(qty, price) {
             return qty * price;
         },
@@ -198,6 +225,8 @@ export default {
         return {
             invoice: {},
             reference: '',
+            allPricing: null,
+            rerenderCounter: null
         }
     }
 }

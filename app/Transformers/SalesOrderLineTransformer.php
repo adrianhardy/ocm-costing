@@ -2,9 +2,7 @@
 
 namespace App\Transformers;
 
-use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
-use Illuminate\Support\Facades\DB;
 use League\Fractal\TransformerAbstract;
 use Spatie\MediaLibrary\Models\Media;
 
@@ -142,7 +140,9 @@ class SalesOrderLineTransformer extends TransformerAbstract
             'oa_reorder_number',
             'oa_primary_sku',
             'qty_remaining',
-            'qty_received'
+            'qty_received',
+            'has_duplicate_item_number',
+            'has_duplicate_barcode',
         ]);
     }
 }

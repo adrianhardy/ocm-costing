@@ -24,7 +24,7 @@ class ProductPricingTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'product', 'approver', 'sales_order_line', 'selected_for_export', 'countries'
+        'product', 'approver', 'sales_order_line', 'selected_for_export', 'countries', 'submitter'
     ];
 
     /**
@@ -47,7 +47,9 @@ class ProductPricingTransformer extends TransformerAbstract
             'approved_at',
             'superseded_at',
             'eur_fx_rate',
-            'current_eur_fx_rate'
+            'current_eur_fx_rate',
+            'priority',
+            'exported_at'
         ]);
 
         return $json;
@@ -81,7 +83,7 @@ class ProductPricingTransformer extends TransformerAbstract
                     'current_gbp_fx_rate'
                 ]);
             } else {
-
+                // is this necessary?
             }
         };
         return $this->primitive($json);
@@ -102,6 +104,13 @@ class ProductPricingTransformer extends TransformerAbstract
             return $this->null();
         }
         return $this->item($productPricing->sales_order_line, new SalesOrderLineTransformer());
+    }
+
+    public function includeSubmitter(ProductPricing $productPricing){
+        if(!$productPricing->submitter_id) {
+            return $this->null();
+        }
+        return $this->item($productPricing->submitter, new UserTransformer());
     }
 
     public function includeApprover(ProductPricing $productPricing)

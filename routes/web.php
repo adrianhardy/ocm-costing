@@ -28,7 +28,12 @@ Route::group(['middleware' => ['auth', 'role:supplier']], function() {
 Route::group([
     'middleware' => ['auth', 'permission:uk']
 ], function(){
+    Route::post('/uk/product/import', 'Uk\Imports\ProductImportController@import');
+    Route::resource('daily-pricing', 'Uk\Pricing\DailyPricingController')->only(['index']);
     Route::resource('order-acknowledgements', 'Uk\OrderAcknowledgementsController')->only(['index', 'edit']);
+    Route::resource('order-acknowledgements.import-lines', 'Uk\Imports\OrderAcknowledgmentLinesImportController')->only(['index','store']);
+    Route::resource('order-acknowledgements.import-invoice', 'Uk\Imports\InvoiceImportController')->only(['index','store']);
+
     Route::resource('invoices', 'Uk\Invoices\InvoicesController')->only(['index', 'edit']);
 });
 
