@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h1>Upload Products</h1>
         <b-card header="Drag and drop files to upload here" class="mt-3" body-class="p-0">
             <label for="file-upload-input" class="d-block p-0 m-0">
                 <b-card-body>

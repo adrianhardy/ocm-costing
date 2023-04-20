@@ -36,7 +36,7 @@ import TableHeader from "../../../components/table/TableHeader";
 export default {
     name: "OrderAcknowledgementHistory",
     props: {
-        productId: String
+        productId: Number
     },
     filters: {
         date: dateFilter

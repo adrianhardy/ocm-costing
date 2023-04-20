@@ -5,10 +5,12 @@
                 <table-header v-model="pagination">
                     <slot>
                         <b-select v-model="stage" style="width:20% !important" @change="$refs['table'].refresh()">
-                            <b-select-option value="">All</b-select-option>
-                            <b-select-option value="quote">Quotes</b-select-option>
-                            <b-select-option value="order">Orders</b-select-option>
-                            <b-select-option value="deleted">Deleted</b-select-option>
+                            <b-select-option :value="null">All</b-select-option>
+                            <b-select-option value="draft">Draft</b-select-option>
+                            <b-select-option value="unmatched_products">Unmatched Products</b-select-option>
+                            <b-select-option value="active">Active</b-select-option>
+                            <b-select-option value="partially_received">Partially Received</b-select-option>
+                            <b-select-option value="fully_received">Fully Received</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
                         <b-button

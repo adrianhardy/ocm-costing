@@ -22,6 +22,24 @@ class OrderAcknowledgementsController extends Controller
         $paginator = $paginator->where('is_order_acknowledgement', true);
 
 
+        switch($request->input('stage')) {
+            case 'draft':
+                $paginator = $paginator->currentStatus(SalesOrder::STATUS_DRAFT);
+                break;
+            case 'unmatched_products':
+                $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS);
+                break;
+            case 'active':
+                $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_ACTIVE);
+                break;
+            case 'partially_received':
+                $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_PARTIALLY_RECEIVED);
+                break;
+            case 'fully_received':
+                $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_FULLY_RECEIVED);
+                break;
+        }
+
         if($request->input('product_id')) {
             $paginator = $paginator->whereHas('lines', function($query) use ($request) {
                 return $query->where('product_id', $request->input('product_id'));
@@ -67,10 +85,12 @@ class OrderAcknowledgementsController extends Controller
 
         $acknowledgement->save();
 
+        DB::commit();
+        $acknowledgement->fresh();
+
+
         $acknowledgement->setStatus(SalesOrder::STATUS_DRAFT);
 
-
-        DB::commit();
 
         return response()->json(fractal($acknowledgement, new SalesOrderTransformer));
     }
@@ -93,6 +113,11 @@ class OrderAcknowledgementsController extends Controller
 
 
         if ($request->input('finalised')) {
+            abort_if(
+                $orderAcknowledgement->status === SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS,
+                400,
+                'You cannot finalise a order acknowledgement with unmatched products'
+            );
             $orderAcknowledgement->finalised_at = Carbon::now();
         }
 

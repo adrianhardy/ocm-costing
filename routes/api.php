@@ -16,6 +16,8 @@ Route::group(['as' => 'api.'], function() {
     Route::post('login', 'Api\AuthController@login');
     Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
     Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
+    Route::resource('products', 'Api\Products\ProductsController')->only(['index']);
+
 
 
 
@@ -23,7 +25,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['store']);
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
-        Route::resource('products', 'Api\Products\ProductsController')->only(['index', 'show', 'store', 'update', 'delete']);
+        Route::resource('products', 'Api\Products\ProductsController')->only(['show', 'store', 'update', 'delete']);
         Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
         Route::resource('products.comments', 'Api\Products\CommentsController')->only(['store']);
         Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);
@@ -90,7 +92,7 @@ Route::group(['as' => 'api.'], function() {
         Route::put('/order-acknowledgements/{order_acknowledgement}/restore', 'Api\Uk\OrderAcknowledgementsController@restore');
         Route::resource('order-acknowledgements.lines', 'Api\Uk\OrderAcknowledgementLinesController')->only('store', 'update', 'destroy');
         Route::resource('order-acknowledgements.lines.product', 'Api\Uk\OrderAcknowledgementProductController')->only('store');
-
+        Route::resource('products.stock-changes', 'Api\Products\ProductRafStockController')->only(['index']);
         Route::resource('invoices', 'Api\Uk\Invoices\InvoiceController')->only(['index', 'store', 'update', 'destroy', 'show']);
     });
 
@@ -105,7 +107,4 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('supplier/sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['update', 'store', 'destroy']);
     });
 });
-
-
-
 

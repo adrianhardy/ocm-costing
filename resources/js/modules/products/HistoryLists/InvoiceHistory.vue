@@ -20,15 +20,12 @@
             <template #cell(status)="data">
                 <div v-if="!data.item.deleted_at">
                     <div v-if="data.item.is_approval_required">
-                        <b-badge v-if="!data.item.approved_at" variant="danger">Approval Required</b-badge>
+                        <b-badge :id="`approval-required-${data.item.id}`" v-if="!data.item.approved_at" variant="danger">X</b-badge>
                         <div v-else>
-                            <b-badge variant="success">
-                                Approved At: {{ new Date(data.item.approved_at) | date('dd/MM/yy HH:mm') }}
+                            <b-badge :id="`approved-${data.item.id}`" variant="warning">
+                                <b-icon-check></b-icon-check>
                             </b-badge>
                             <br/>
-                            <b-badge variant="success">
-                                Approved By: {{ data.item.approver.name }}
-                            </b-badge>
                         </div>
                     </div>
                 </div>
@@ -37,9 +34,19 @@
                         Deleted At: {{ new Date(data.item.deleted_at) | date('dd/MM/yy HH:mm') }}
                     </b-badge>
                 </div>
-                <b-badge v-if="!data.item.is_approval_required" variant="success">Manally Approved:
-                    {{ new Date(data.item.created_at) | date('dd/MM/yy HH:mm') }}
+                <b-badge :id="`auto-approved-${data.item.id}`" v-if="!data.item.is_approval_required" variant="success">
+                    <b-icon-check></b-icon-check>
                 </b-badge>
+
+                <b-tooltip triggers="hover" :target="`approved-${data.item.id}`">
+                    <span>Approved: {{new Date(data.item.approved_at) | date('dd/MM/yy HH:mm')}}</span>
+                </b-tooltip>
+                <b-tooltip triggers="hover" :target="`auto-approved-${data.item.id}`">
+                    <span>Auto Approved: {{new Date(data.item.created_at) | date('dd/MM/yy HH:mm')}}</span>
+                </b-tooltip>
+                <b-tooltip triggers="hover" :target="`approval-required-${data.item.id}`">
+                    <span>Approval Required</span>
+                </b-tooltip>
             </template>
             <template #cell(created_at)="data">
                 <span>{{ new Date(data.value) | date('dd/MM/yy HH:mm') }}</span>
@@ -63,7 +70,7 @@ import {dateFilter} from "vue-date-fns";
 export default {
     name: "InvoiceHistory",
     props: {
-        productId: String
+        productId: Number
     },
     components: {
         TableHeader, SearchInput
@@ -77,23 +84,30 @@ export default {
                 {
                     key: 'sales_order.supplier.name',
                     label: 'Supplier',
-                    tdClass: 'w-1'
+                    tdClass: 'w-1 align-middle text-center',
+                    thClass: 'align-middle text-center'
                 }, {
                     key: 'reference',
                     label: 'Invoice #',
-                    tdClass: 'w-1'
+                    tdClass: 'w-1 text-center',
+                    thClass: 'align-middle text-center'
+
                 }, {
                     key: 'created_at',
                     label: 'Date',
-                    tdClass: 'w-1'
+                    tdClass: 'w-5 text-center',
+                    thClass: 'align-middle text-center'
                 }, {
                     key: 'sub_total',
                     label: 'Sub Total',
-                    tdClass: 'w-1'
+                    tdClass: 'w-1 text-center',
+                    thClass: 'align-middle text-center'
                 }, {
                     key: 'status',
                     label: 'Status',
-                    tdClass: 'w-25'
+                    tdClass: 'w-1 text-center align-middle',
+                    thClass: 'align-middle text-center'
+
                 }
             ];
         },

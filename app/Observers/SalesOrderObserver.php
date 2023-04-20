@@ -2,13 +2,9 @@
 
 namespace App\Observers;
 
-use _HumbugBoxcbe25c660cef\Nette\DI\Extensions\ParametersExtension;
-use App\Models\InvoiceLine;
 use App\Models\SalesOrder;
 use App\Models\Version;
 use App\Transformers\SalesOrderTransformer;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class SalesOrderObserver
 {
@@ -40,6 +36,14 @@ class SalesOrderObserver
             $salesOrder->shipping_cost_per_cubic_foot = setting('shipping_cost_per_cubic_foot');
         }
 
+        if($salesOrder->is_order_acknowledgement && !$salesOrder->is_finalised && $salesOrder->id) {
+            if($salesOrder->has_unmatched_products) {
+                $salesOrder->setStatus(SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS);
+            } else {
+                $salesOrder->setStatus(SalesOrder::STATUS_DRAFT);
+            }
+        }
+
         /*
          * If we're trying to finalise the order (or it's already finalised) then
          * if we've received > 0, it's partially received. If we've got <= remaining
@@ -64,6 +68,8 @@ class SalesOrderObserver
                 if ($remaining <= 0) {
                     $salesOrder->setStatus(SalesOrder::OA_STATUS_FULLY_RECEIVED);
                 }
+            } else {
+                $salesOrder->setStatus(SalesOrder::OA_STATUS_ACTIVE);
             }
         };
 

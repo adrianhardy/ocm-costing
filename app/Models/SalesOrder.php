@@ -22,6 +22,7 @@ use Spatie\ModelStatus\HasStatuses;
  * @proeprty-read $status_description
  * @property Invoice[] $invoices
  * @property-read $oa_eta
+ * @property-read Boolean $has_unmatched_products
  */
 class SalesOrder extends BaseSalesOrder
 {
@@ -43,12 +44,16 @@ class SalesOrder extends BaseSalesOrder
     ];
 
     const OA_STATUS_CLOSED = 'closed';
+    const OA_STATUS_ACTIVE = 'active';
     const OA_STATUS_AWAITING_DELIVERY = 'awaiting_delivery';
     const OA_STATUS_PARTIALLY_RECEIVED = 'partially_received';
     const OA_STATUS_FULLY_RECEIVED = 'fully_received';
+    const OA_STATUS_UNMATCHED_PRODUCTS = 'unmatched_products';
 
     const OA_STATUSES = [
         self::STATUS_DRAFT => 'Draft',
+        self::OA_STATUS_ACTIVE => 'Active',
+        self::OA_STATUS_UNMATCHED_PRODUCTS => 'Unmatched Products',
         self::OA_STATUS_AWAITING_DELIVERY => 'Awaiting Delivery',
         self::OA_STATUS_PARTIALLY_RECEIVED => 'Partially Received',
         self::OA_STATUS_FULLY_RECEIVED => 'Fully Received',
@@ -114,6 +119,11 @@ class SalesOrder extends BaseSalesOrder
         return $status?$status->name:null;
 
     }
+
+    public function getHasUnmatchedProductsAttribute(){
+        return $this->lines()->whereNull('product_id')->exists();
+    }
+
 
     /**
      * @return string

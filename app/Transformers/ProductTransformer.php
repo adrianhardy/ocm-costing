@@ -114,7 +114,9 @@ class ProductTransformer extends TransformerAbstract
             'eu_postage_method',
             'row_postage_method',
             'pricing_notes',
-            'unit_price_gbp'
+            'unit_price_gbp',
+            'has_duplicate_barcode',
+            'has_duplicate_item_number'
         ]);
     }
 }

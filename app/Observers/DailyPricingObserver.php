@@ -6,7 +6,12 @@ use App\Models\DailyPricing;
 
 class DailyPricingObserver
 {
-    public function saving(DailyPricing $pricing){
-        $pricing->is_viable = ($pricing->fba_fee * 1.3) < $pricing->suggested_price;
+    /**
+     * @param DailyPricing $pricing
+     * @todo replace with a formula from Toni/Cat
+     */
+    public function saving(DailyPricing $pricing)
+    {
+        $pricing->is_viable = ($pricing->product->unit_price_gbp * 1.3) < $pricing->suggested_price;
     }
 }

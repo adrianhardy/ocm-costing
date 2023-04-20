@@ -1,9 +1,18 @@
 <template>
     <b-modal title="Create Invoice" size="xl" ref="modal" centered ok-title="Create" @ok.prevent="create()">
         <div class="row">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-6">
                 <b-form-group label="Supplier Invoice Reference">
                     <b-form-input v-model="invoice.invoice_reference" />
+                </b-form-group>
+            </div>
+            <div class="col-12 col-md-6">
+                <b-form-group label="Pricing Priority / All">
+                    <b-form-select @input="setAllPriority($event)">
+                        <b-form-select-option value="low">Low</b-form-select-option>
+                        <b-form-select-option value="medium">Medium</b-form-select-option>
+                        <b-form-select-option value="high">High</b-form-select-option>
+                    </b-form-select>
                 </b-form-group>
             </div>
         </div>
@@ -32,6 +41,13 @@
             <template #cell(unit_price)="data">
                 <b-form-input :readonly="!data.item.checked" type="number" v-model="data.item.invoice_unit_price" />
             </template>
+            <template #cell(priority)="data">
+                <b-form-select :disabled="!data.item.checked" :rerenderCount="rerenderCounter" v-model="data.item.priority">
+                    <b-select-option value="low">Low</b-select-option>
+                    <b-select-option value="medium">Medium</b-select-option>
+                    <b-select-option value="high">High</b-select-option>
+                </b-form-select>
+            </template>
         </b-table>
     </b-modal>
 </template>
@@ -50,13 +66,23 @@ export default {
                 {key: 'item_number', label: 'Item #', tdClass: 'align-middle', thClass: 'align-middle'},
                 {key: 'name', label: 'Product Details', tdClass: 'align-middle', thClass: 'align-middle'},
                 {key: 'barcode', label: 'Barcode', tdClass: 'align-middle', thClass: 'align-middle'},
-                {key: 'qty_received', label: 'Received', tdClass: 'align-middle', thClass: 'align-middle'},
-                {key: 'ordered', label: 'Ordered', tdClass: 'align-middle', thClass: 'align-middle'},
-                {key: 'unit_price', label: 'Unit Price', tdClass: 'align-middle', thClass: 'align-middle'},
+                {key: 'qty_received', label: 'Received', tdClass: 'align-middle', thClass: 'align-middle w-5    '},
+                {key: 'ordered', label: 'Ordered', tdClass: 'align-middle', thClass: 'align-middle w-10'},
+                {key: 'unit_price', label: 'Unit Price', tdClass: 'align-middle', thClass: 'align-middle w-10'},
+                {key: 'priority', label: 'Priority', tdClass: 'align-middle', thClass: 'align-middle w-15'},
             ]
         }
     },
     methods: {
+        setAllPriority(newPriority) {
+            for (let i = 0; i < this.invoice.lines.length; i++) {
+                this.invoice.lines[i].priority = newPriority;
+            }
+            // force Vue to notice the nested change on priority
+            // by default, this.invoice.lines[i].priority won't
+            // be watched for changes, just this.invoice
+            this.rerenderCounter++;
+        },
         create(){
             const loading = this.$loading.show();
             const url = '/api/invoices'
@@ -70,7 +96,11 @@ export default {
         },
         open(){
             this.$refs['modal'].show();
-            this.invoice = _.cloneDeep(this.salesOrder)
+            // use cloneDeep so that lines get cloned, rather than referenced
+            this.invoice = _.cloneDeep(this.salesOrder);
+            _.forEach(this.invoice.lines, function(line) {
+                line.priority = null;
+            });
         },
         close(){
             this.$refs['modal'].hide();
@@ -78,7 +108,9 @@ export default {
     },
     data(){
         return {
-            invoice: {}
+            invoice: {},
+            allPriority: null,
+            rerenderCounter: 0
         }
     }
 }

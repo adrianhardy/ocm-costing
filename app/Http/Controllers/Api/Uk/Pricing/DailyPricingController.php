@@ -62,9 +62,11 @@ class DailyPricingController extends Controller
             $dailyPricing->approved_at = Carbon::now();
             $dailyPricing->approver()->associate(auth()->user());
 
-            $dailyPricing->product->unit_price_gbp = $dailyPricing->suggested_price;
-            $dailyPricing->product->unit_price = $dailyPricing->suggested_price;
-            $dailyPricing->product->save();
+
+            // $factor = $dailyPricing->country->currency->default_fx_to_gbp;
+            $factor = $dailyPricing->country->currency->currency_fx_rate;
+            $dailyPricing->product->current_product_pricing->unit_price_gbp = ($factor * $dailyPricing->suggested_price);
+            $dailyPricing->product->current_product_pricing->marketplace_fee = $dailyPricing->fba_fee;
 
             $newDailyPricing = new DailyPricing();
             $newDailyPricing->country()->associate($dailyPricing->country);

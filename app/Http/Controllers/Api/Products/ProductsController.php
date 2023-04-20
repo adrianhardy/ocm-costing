@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Products;
 
+use App\Domain\Export\ProductExport;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Factory;
@@ -207,7 +208,7 @@ class ProductsController extends Controller
         $paginator = $productRepository;
 
         // Restrict the catalogue of products that goes back to suppliers
-        if (\Auth::user()->is_supplier) {
+        if (\Auth::user() && \Auth::user()->is_supplier) {
             $paginator = $paginator
                 ->where('supplier_id', \Auth::user()->supplier_id)
                 ->whereHas('factories', function($query) {
@@ -229,6 +230,27 @@ class ProductsController extends Controller
                     return $query->where('id', $salesOrder->factory->id);
                 });
             }
+        }
+
+        if($request->input('export')) {
+            $paginator = $paginator
+                ->whereNotNull('item_number')
+                ->where('item_number', '!=', '');
+            set_time_limit(120);
+            ini_set('memory_limit', '256M');
+            $export = new ProductExport([]);
+
+            if($request->input('includeStockLevels') === "true") {
+                $export->setStockLevelRequired();
+            }
+
+            $paginator->chunk(150, function ($products) use ($export) {
+                $export->setProducts($products);
+                $export->getStock();
+                $export->buildExport();
+            });
+            $export->setProducts([]);
+            return $export->getCsvDownloadResponse();
         }
 
         $paginator = $paginator->paginate(

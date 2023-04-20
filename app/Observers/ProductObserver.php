@@ -4,12 +4,14 @@ namespace App\Observers;
 
 use App\Domain\LandedCostCalculator;
 use App\Domain\SortedArticleNumberGenerator;
+use App\Models\Country;
 use App\Models\Currency;
 use App\Models\DailyPricing;
 use App\Models\Product;
 use App\Models\ProductPricing;
 use App\Services\ProductService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductObserver
 {
@@ -22,9 +24,8 @@ class ProductObserver
 
     public function saving(Product $product)
     {
-        foreach($product->current_product_pricing->product_pricing_countries as $pricingCountry) {
-            $country = $pricingCountry->country;
 
+        foreach (Country::query()->where('has_pricing', 1) as $country) {
             $hasDailyPricing = DailyPricing::query()
                 ->where('country_id', $country->id)
                 ->where('product_id', $product->id)
@@ -41,7 +42,6 @@ class ProductObserver
         }
 
         $product->sorted_article_number = SortedArticleNumberGenerator::convert($product->article_number);
-
 
         if ($product->isDirty([
             'length_m',

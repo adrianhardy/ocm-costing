@@ -28,6 +28,8 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property ProductPricing $current_product_pricing
  * @property-read $current_landed_cost_per_unit_gbp
  * @property-read $case_cubic_ft
+ * @property-read Boolean $has_duplicate_item_number;
+ * @property-read Boolean $has_duplicate_barcode;
  */
 class Product extends BaseProduct implements HasMedia
 {
@@ -206,6 +208,21 @@ class Product extends BaseProduct implements HasMedia
     {
         $this->unit_weight_kg = $g/100;
     }
+
+    public function getHasDuplicateBarcodeAttribute(){
+        return Product::query()
+            ->where('id', '!=', $this->id)
+            ->where('barcode', $this->barcode)
+            ->exists();
+    }
+
+    public function getHasDuplicateItemNumberAttribute(){
+        return Product::query()
+            ->where('id', '!=', $this->id)
+            ->where('item_number', $this->item_number)
+            ->exists();
+    }
+
 
 
 }

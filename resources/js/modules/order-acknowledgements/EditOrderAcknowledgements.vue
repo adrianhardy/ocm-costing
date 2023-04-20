@@ -51,7 +51,10 @@
                 :fields="fields"
             >
                 <template #cell(item_number)="data">
-                    <b-form-input size="sm" v-if="!data.item.product.id" v-model="data.item.item_number" />
+                    <div v-if="!data.item.product.id" >
+                        <b-form-input size="sm" v-model="data.item.item_number" />
+                        <b-badge v-if="data.item.has_duplicate_item_number" variant="danger">Duplicate Item #</b-badge>
+                    </div>
                     <span v-else>{{data.item.product.item_number}}</span>
                 </template>
                 <template #cell(id)="data">
@@ -121,6 +124,7 @@
                 </template>
                 <template #cell(barcode)="data">
                     <b-form-input @change="updateLine(data.item)" size="sm" class="mb-2" v-model="data.item.barcode" />
+                    <b-badge v-if="data.item.has_duplicate_barcode" variant="danger" size="sm">Duplicate Barcode</b-badge>
                 </template>
 
                 <template #cell(oa_primary_sku)="data">
@@ -212,6 +216,12 @@
                               @click="finalise">
                         Finalise
                     </b-button>
+                    <b-button variant="secondary" size="lg" v-if="!salesOrder.finalised_at" :href="`/order-acknowledgements/${salesOrder.id}/import-lines`">
+                        Import Lines
+                    </b-button>
+                    <b-button variant="primary" size="lg" v-if="salesOrder.finalised_at" :href="`/order-acknowledgements/${salesOrder.id}/import-invoice`">
+                        Import Invoice
+                    </b-button>
 
                     <b-button variant="danger" size="lg" v-if="salesOrder.id > 0 && !salesOrder.finalised_at" @click="deleteSalesOrder">
                         Delete
@@ -287,7 +297,7 @@ export default {
             return window.__state;
         },
         showFinaliseButton() {
-            return this.salesOrder.id > 0 && !this.salesOrder.is_finalised;
+            return this.salesOrder.id > 0 && !this.salesOrder.is_finalised && this.salesOrder.status !== 'unmatched_products';
         },
         totalCartons() {
             let count = 0;

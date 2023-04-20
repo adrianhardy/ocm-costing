@@ -31,7 +31,7 @@ export default {
         TableHeader
     },
     props:{
-        productId: String
+        productId: Number
     },
     computed: {
         fields(){

@@ -32,7 +32,7 @@ class PricingService
      * @param $productOrSalesOrderLine
      * @return void
      */
-    public function sendToPricing($productOrSalesOrderLine, $unitPriceGbp = null)
+    public function sendToPricing($productOrSalesOrderLine, $unitPriceGbp = null, $pricingPriority = null)
     {
         $line = null;
         $product = null;
@@ -97,7 +97,11 @@ class PricingService
             $pricing->unit_price_gbp = $unitPriceGbp;
         }
 
-        $pricing->priority = ProductPricing::PRIORITY_MEDIUM;
+        if($pricingPriority) {
+            $pricing->priority = $pricingPriority;
+        } else {
+            $pricing->priority = ProductPricing::PRIORITY_MEDIUM;
+        }
 
         $pricing->save();
         foreach ($this->getPricingCountries() as $country) {

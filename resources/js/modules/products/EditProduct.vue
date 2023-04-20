@@ -24,7 +24,7 @@
                         </b-form-group>
                     </div>
                     <b-form-group description="When estimating landed costs, no commission will be added"
-                                  v-if="!isSupplier && showCosting">
+                                  v-if="!isSupplier && showCosting && isChina">
                         <b-form-checkbox v-model="product.is_excluded_from_commission">Exclude from commission
                         </b-form-checkbox>
                     </b-form-group>
@@ -33,6 +33,7 @@
                         <div class="col-4">
                             <b-form-group label="Item Number">
                                 <b-form-input all v-model="product.item_number"/>
+                                <b-badge v-if="product.has_duplicate_item_number" variant="danger" class="text-center">Duplicate Item Number</b-badge>
                             </b-form-group>
                         </div>
                         <div class="col-4" v-if="isChina">
@@ -43,6 +44,14 @@
                         <div class="col-4">
                             <b-form-group label="Barcode">
                                 <b-form-input all v-model="product.barcode"/>
+                                <b-badge v-if="product.has_duplicate_barcode" variant="danger">Duplicate Barcode</b-badge>
+                            </b-form-group>
+                        </div>
+                        <div class="col-4" v-if="isUk">
+                            <b-form-group label="Unit Price GBP">
+                                <b-input-group prepend="£">
+                                    <b-form-input v-model="product.unit_price_gbp"/>
+                                </b-input-group>
                             </b-form-group>
                         </div>
                     </div>
@@ -55,18 +64,11 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <div class="row" v-if="!isSupplier && showCosting">
+                    <div class="row" v-if="!isSupplier && isChina">
                         <div class="col-4">
                             <b-form-group label="Unit Price">
                                 <b-input-group prepend="$">
                                     <b-form-input v-model="product.unit_price"/>
-                                </b-input-group>
-                            </b-form-group>
-                        </div>
-                        <div class="col-4" v-if="isUk">
-                            <b-form-group label="Unit Price GBP">
-                                <b-input-group prepend="£">
-                                    <b-form-input v-model="product.unit_price_gbp"/>
                                 </b-input-group>
                             </b-form-group>
                         </div>
@@ -170,7 +172,7 @@
                             </div>
                             <h5>
                                 Carton
-                                <small v-if="!isSupplier && product.id > 0">
+                                <small v-if="!isSupplier && product.id > 0 && isChina">
                                     <a href="#" @click.prevent="showTestCalculator = !showTestCalculator">{{
                                             showTestCalculator ? 'Hide' : 'Show'
                                         }} Test Calculator</a>
@@ -314,83 +316,23 @@
                             <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
                         </b-tab>
                         <b-tab title="History" v-if="!isSupplier && product.id" :disabled="!showCosting">
-                            <b-table ref="product-history" small :items="productLog" :fields="productLogFields"
-                                     sticky-header="600px">
-                                <template #cell(details)="row">
-                                    <b-link @click="row.toggleDetails">
-                                        <b-icon-chevron-expand v-if="!row.detailsShowing" />
-                                        <b-icon-chevron-down v-else />
-                                    </b-link>
-                                </template>
-                                <template #row-details="data">
-                                    <b-table-simple>
-                                        <tr>
-                                            <th class="w-50">Field</th>
-                                            <th>New Value</th>
-                                        </tr>
-                                        <tr v-for="(property, index) in data.item.attributes">
-                                            <td>
-                                                {{index}}
-                                            </td>
-                                            <td>
-                                                {{property}}
-                                            </td>
-                                        </tr>
-                                    </b-table-simple>
-                                </template>
-                                <template #cell(updated_at)="data">
-                                    {{ new Date(data.value) | date('dd/MM/yy HH:mm') }}
-                                </template>
-                                <template #cell(unit_price)="data">
-                                    {{ data.value | 2dp_value }}
-                                </template>
-                                <template #cell(attributes.case_cubic_ft)="data">
-                                    <span
-                                        v-b-popover.hover="`${data.item.attributes.length_cm}cm x ${data.item.attributes.width_cm}cm x ${data.item.attributes.height_cm}cm`"
-                                        title="LxWxH" style="cursor:pointer">
-                                        {{ data.value }}
-                                    </span>
-                                </template>
-                                <template #cell(landed_cost_per_unit_gbp)="data">
-                                    {{ data.value | cash_value }}
-                                </template>
-                                <template #cell(extra)="data">
-                                    <div v-if="data.item && data.item.attributes">
-                                        <span v-b-popover.hover="data.item.attributes.primary_asin" title="ASIN"
-                                              style="cursor:pointer">
-                                        <b-icon-box-seam/>
-                                      </span>
-                                        <span v-b-popover.hover="data.item.attributes.primary_sku"
-                                              title="SKU" style="cursor:pointer">
-                                        <b-icon-box-seam/>
-                                      </span>
-                                        <span v-b-popover.hover="data.item.attributes.packing_instructions"
-                                              title="Packing Instructions" style="cursor:pointer">
-                                        <b-icon-box-seam/>
-                                      </span>
-                                        <span v-b-popover.hover="data.item.attributes.product_description"
-                                              title="Product Description" style="cursor:pointer">
-                                        <b-icon-tag/>
-                                      </span>
-                                        <span style="cursor:pointer" v-b-popover.hover="data.item.attributes.barcode"
-                                              title="Barcode">
-                                        <b-icon-upc-scan/>
-                                      </span>
-                                    </div>
-                                </template>
-                            </b-table>
-                        </b-tab>
-                        <b-tab title="Pricing History" v-if="isUk && product">
-                            <div class="d-flex justify-content-end">
-                                <b-form-select v-model="historyType" size="sm" class="w-25 mb-2">
-                                    <b-form-select-option value="daily_pricing">Daily Pricing</b-form-select-option>
-                                    <b-form-select-option value="order_acknowledgement">OA's</b-form-select-option>
-                                    <b-form-select-option value="invoices">Invoices</b-form-select-option>
-                                </b-form-select>
+                            <div v-if="isUk">
+                                <div class="d-flex justify-content-end">
+                                    <b-form-select v-model="historyType" size="sm" class="w-25 mb-2">
+                                        <b-form-select-option value="changes">Changes</b-form-select-option>
+                                        <b-form-select-option value="stock">Stock</b-form-select-option>
+                                        <b-form-select-option value="daily_pricing">Daily Pricing</b-form-select-option>
+                                        <b-form-select-option value="order_acknowledgement">OA's</b-form-select-option>
+                                        <b-form-select-option value="invoices">Invoices</b-form-select-option>
+                                    </b-form-select>
+                                </div>
+                                <changes-history v-if="product && product.id && historyType === 'changes'" :product-id="product.id" :fields="productLogFields"></changes-history>
+                                <stock-history v-if="product && product.id && historyType === 'stock'" :product-id="product.id"></stock-history>
+                                <daily-pricing-history v-if="product && product.id && historyType === 'daily_pricing'" :product-id="product.id"></daily-pricing-history>
+                                <invoice-history v-if="product && product.id && historyType === 'invoices'" :product-id="product.id"></invoice-history>
+                                <order-acknowledgement-history v-if="product && product.id && historyType === 'order_acknowledgement'" :product-id="product.id"></order-acknowledgement-history>
                             </div>
-                            <daily-pricing-history v-if="product && product.id && historyType === 'daily_pricing'" :product-id="product.id"></daily-pricing-history>
-                            <invoice-history v-if="product && product.id && historyType === 'invoices'" :product-id="product.id"></invoice-history>
-                            <order-acknowledgement-history v-if="product && product.id && historyType === 'order_acknowledgement'" :product-id="product.id"></order-acknowledgement-history>
+                            <changes-history v-else :product-id="product.id" :fields="productLogFields"></changes-history>
                         </b-tab>
                         <landed-cost-history-tab v-if="!isSupplier && product.id && isChina" :product="product"
                                                  :disabled="!showCosting"/>
@@ -422,10 +364,14 @@ import LandedCostCalculator from '../../library/LandedCostCalculator';
 import InvoiceHistory from "./HistoryLists/InvoiceHistory";
 import OrderAcknowledgementHistory from "./HistoryLists/OrderAcknowledgementHistory";
 import DailyPricingHistory from "./HistoryLists/DailyPricingHistory";
+import ChangesHistory from "./HistoryLists/ChangesHistory";
+import StockHistory from "./HistoryLists/StockHistory";
 
 export default {
     name: "EditProduct",
     components: {
+        StockHistory,
+        ChangesHistory,
         DailyPricingHistory,
         OrderAcknowledgementHistory,
         InvoiceHistory,
@@ -531,17 +477,6 @@ export default {
             })
 
         },
-        productLog() {
-            const url = `/api/products/${this.productId}/history`;
-            return this.$http.get(url).then(response => {
-                return _.map(response.data.items, row => {
-                    return {
-                        updated_at: row.updated_at,
-                        attributes: row.properties.attributes
-                    }
-                });
-            });
-        },
         save() {
             const method = this.product.id ? 'PUT' : 'POST';
             const url = `/api/products/` + (method === 'PUT' ? this.product.id : '');
@@ -606,7 +541,7 @@ export default {
                 supplier: {}
             },
             tabIndex: 0,
-            historyType: null,
+            historyType: 'changes',
         }
     }
 }
