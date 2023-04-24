@@ -14,18 +14,21 @@ use Illuminate\Http\Request;
 */
 Route::group(['as' => 'api.'], function() {
     Route::post('login', 'Api\AuthController@login');
-    Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
-    Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
-    Route::resource('products', 'Api\Products\ProductsController')->only(['index']);
 
+
+    Route::group(['middleware' => ['auth:api']], function() {
+        Route::resource('products', 'Api\Products\ProductsController')->only(['index']);
+        Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
+    });
 
 
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super|products']], function() {
-        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['store']);
+        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index','store']);
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
-        Route::resource('products', 'Api\Products\ProductsController')->only(['show', 'store', 'update', 'delete']);
+        Route::resource('products', 'Api\Products\ProductsController')->only(['show', 'store', 'update', 'destroy']);
+        Route::post('products/{product}/copy', 'Api\Products\ProductsController@copy');
         Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
         Route::resource('products.comments', 'Api\Products\CommentsController')->only(['store']);
         Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);
@@ -88,6 +91,7 @@ Route::group(['as' => 'api.'], function() {
 
 
     Route::group(['middleware' => ['auth:api','permission:uk']], function () {
+        Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
         Route::resource('order-acknowledgements', 'Api\Uk\OrderAcknowledgementsController')->only(['index', 'store', 'show', 'destroy', 'update']);
         Route::put('/order-acknowledgements/{order_acknowledgement}/restore', 'Api\Uk\OrderAcknowledgementsController@restore');
         Route::resource('order-acknowledgements.lines', 'Api\Uk\OrderAcknowledgementLinesController')->only('store', 'update', 'destroy');

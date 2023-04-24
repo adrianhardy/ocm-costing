@@ -20,4 +20,9 @@ class QuoteLine extends BaseQuoteLine
 		'case_height_m',
 		'case_depth_m'
 	];
+
+    public function product()
+    {
+        return parent::product()->withTrashed();
+    }
 }

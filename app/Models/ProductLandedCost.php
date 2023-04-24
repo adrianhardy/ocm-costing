@@ -31,7 +31,12 @@ class ProductLandedCost extends BaseProductLandedCost
         'height_cm'
     ];
 
-	public function getCaseCubicMAttribute()
+    public function product()
+    {
+        return parent::product()->withTrashed();
+    }
+
+    public function getCaseCubicMAttribute()
     {
         return $this->length_m *
             $this->width_m *

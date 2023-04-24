@@ -43,6 +43,7 @@ Vue.use(VueRouter);
 Vue.use(require('./plugins/DateFilter').default);
 
 Vue.component('quick-cost-modal', require('./components/QuickCostModal').default);
+Vue.component('quick-price-modal', require('./components/QuickPricingModal').default);
 Vue.component('vue-select', VueSelect);
 Vue.component('auto-toast', require('./components/AutoToast.vue').default);
 Vue.component('create-import', require('./modules/imports/Importer.vue').default);

@@ -16,6 +16,11 @@
                             <b-form-group v-if="isChina" label="Factories">
                                 <factory-select v-model="product.factories" multiple/>
                             </b-form-group>
+                            <b-form-group v-if="isUk && canCustomProfit" label="Custom Minimum Profit">
+                                <b-input-group prepend="£">
+                                    <b-form-input type="number" v-model="product.custom_minimum_profit" />
+                                </b-input-group>
+                            </b-form-group>
                         </div>
                     </div>
                     <div v-else>
@@ -113,17 +118,6 @@
                                     <span v-else>0 / 500</span>
                                 </template>
                             </b-form-group>
-
-                            <div v-if="isChina">
-                                <b-button variant="outline-primary float-right" @click="save()">
-                                    {{ this.productId ? 'Update' : 'Create' }} Product
-                                </b-button>
-
-                                <b-button @click="sendToPricing" v-if="this.productId"
-                                          variant="outline-secondary float-right" class="mr-2">
-                                    Send To Pricing
-                                </b-button>
-                            </div>
                         </b-tab>
                         <b-tab title="Dimensions">
                             <h4>Postage</h4>
@@ -272,9 +266,6 @@
                                     </b-form-group>
                                 </div>
                             </div>
-                            <b-button variant="outline-primary float-right" @click="save()">
-                                {{ this.productId ? 'Update' : 'Create' }} Product
-                            </b-button>
                         </b-tab>
                         <product-sku-tab v-if="!isSupplier && product.id" :product="product"/>
                         <b-tab v-if="product.id">
@@ -339,14 +330,25 @@
                     </b-tabs>
                 </div>
             </div>
-            <div v-if="isUk && tabIndex === 0" class="d-flex justify-content-end">
-                <b-button variant="outline-primary mr-2" @click="save()">
-                    {{ this.productId ? 'Update' : 'Create' }} Product
-                </b-button>
 
-                <b-button @click="sendToPricing" v-if="this.productId"
-                          variant="outline-secondary float-right" class="mr-2">
-                    Send To Pricing
+            <div class="d-flex justify-content-between">
+                <div>
+                    <b-button v-if="this.productId && canDelete" variant="outline-danger" @click="deleteProduct">Delete</b-button>
+                    <b-button v-if="this.productId && canCopy" variant="outline-primary" @click="copyProduct">Copy Product</b-button>
+
+                </div>
+                <div v-if="tabIndex === 0">
+                    <b-button variant="outline-primary mr-2" @click="save()">
+                        {{ this.productId ? 'Update' : 'Create' }} Product
+                    </b-button>
+
+                    <b-button @click="sendToPricing" v-if="this.productId"
+                              variant="outline-secondary float-right" class="mr-2">
+                        Send To Pricing
+                    </b-button>
+                </div>
+                <b-button v-if="tabIndex === 1" variant="outline-primary float-right" @click="save()">
+                    {{ this.productId ? 'Update' : 'Create' }} Product
                 </b-button>
             </div>
         </b-card>
@@ -391,7 +393,10 @@ export default {
         isSupplier: Boolean,
         cubicMetresToFeet: Number,
         isUk: Boolean,
-        isChina: Boolean
+        isChina: Boolean,
+        canDelete: Boolean,
+        canCopy: Boolean,
+        canCustomProfit: Boolean
     },
     filters: {
         date: dateFilter
@@ -457,6 +462,42 @@ export default {
         }
     },
     methods: {
+        async deleteProduct(){
+            const result = await this.$bvModal.msgBoxConfirm('Are you sure you want to delete this product?', {
+                centered: true,
+                okTitle: 'Confirm',
+                title: 'Please Confirm'
+            })
+            if(!result) {
+                return;
+            }
+            const loading = this.$loading.show();
+            this.$http.delete(`/api/products/${this.product.id}`).then(response => {
+                loading.hide();
+                window.location.href = '/products'
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true)
+                loading.hide();
+            })
+        },
+        async copyProduct(){
+            const result = await this.$bvModal.msgBoxConfirm('Are you sure you want to copy this product?', {
+                centered: true,
+                okTitle: 'Confirm',
+                title: 'Please Confirm'
+            })
+            if(!result) {
+                return;
+            }
+            const loading = this.$loading.show();
+            this.$http.post(`/api/products/${this.product.id}/copy`).then(response => {
+                loading.hide();
+                window.location.href = `/products/${response.data.id}/edit`
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true);
+                loading.hide();
+            })
+        },
         sendToPricing() {
             this.$bvModal.msgBoxConfirm('Are you sure you want to send this product to pricing?', {
                 title: 'Send to pricing',

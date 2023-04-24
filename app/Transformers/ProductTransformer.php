@@ -116,7 +116,8 @@ class ProductTransformer extends TransformerAbstract
             'pricing_notes',
             'unit_price_gbp',
             'has_duplicate_barcode',
-            'has_duplicate_item_number'
+            'has_duplicate_item_number',
+            'custom_minimum_profit'
         ]);
     }
 }
