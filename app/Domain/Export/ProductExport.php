@@ -123,17 +123,18 @@ class ProductExport
     }
 
     public function getStock(){
-        $client = new Client(['base_uri' => env('RAF_BASE_URI', 'http://127.0.0.1:8000')]);
 
-        $response = $client->request('GET', '/api/stock-export', [
-            'query' => [
-                'items' => collect($this->products)->pluck('item_number')->toArray(),
-                'selected_date' => Carbon::now()
-            ]]);
+        if($this->stockLevelRequired === true) {
+            $client = new Client(['base_uri' => env('RAF_BASE_URI', 'http://127.0.0.1:8000')]);
 
+            $response = $client->request('GET', '/api/stock-export', [
+                'query' => [
+                    'items' => collect($this->products)->pluck('item_number')->toArray(),
+                    'selected_date' => Carbon::now()
+                ]]);
 
-
-        $this->stockLevels = json_decode($response->getBody());
+            $this->stockLevels = json_decode($response->getBody());
+        }
     }
 
     public function setStockLevelRequired(){
