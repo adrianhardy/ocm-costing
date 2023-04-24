@@ -20,6 +20,9 @@
             @can('copy_products')
             can-copy
             @endcan
+            @can('update_custom_minimum_profit')
+            can-custom-profit
+            @endcan
             :cubic-metres-to-feet="{{ setting('cubic_metres_to_feet') }}"
             :product-id="{{ $product->id }}"
             :shipping-cost-per-cubic-foot="{{ $shipping_cost_per_cubic_foot }}"

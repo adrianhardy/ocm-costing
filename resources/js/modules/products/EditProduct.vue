@@ -16,6 +16,11 @@
                             <b-form-group v-if="isChina" label="Factories">
                                 <factory-select v-model="product.factories" multiple/>
                             </b-form-group>
+                            <b-form-group v-if="isUk && canCustomProfit" label="Custom Minimum Profit">
+                                <b-input-group prepend="£">
+                                    <b-form-input type="number" v-model="product.custom_minimum_profit" />
+                                </b-input-group>
+                            </b-form-group>
                         </div>
                     </div>
                     <div v-else>
@@ -390,7 +395,8 @@ export default {
         isUk: Boolean,
         isChina: Boolean,
         canDelete: Boolean,
-        canCopy: Boolean
+        canCopy: Boolean,
+        canCustomProfit: Boolean
     },
     filters: {
         date: dateFilter

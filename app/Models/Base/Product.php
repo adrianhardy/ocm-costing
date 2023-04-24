@@ -55,6 +55,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $sorted_article_number
  * @property string|null $pricing_notes
  * @property float|null $unit_price_gbp
+ * @property float|null $custom_minimum_profit
  * 
  * @property Supplier $supplier
  * @property Collection|DailyPricing[] $daily_pricings_product
@@ -86,7 +87,8 @@ class Product extends Model
 		'unit_price' => 'float',
 		'est_landed_cost_gbp' => 'float',
 		'is_excluded_from_commission' => 'bool',
-		'unit_price_gbp' => 'float'
+		'unit_price_gbp' => 'float',
+		'custom_minimum_profit' => 'float'
 	];
 
 	public function supplier()

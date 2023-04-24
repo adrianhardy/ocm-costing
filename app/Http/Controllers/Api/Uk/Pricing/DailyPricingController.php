@@ -77,8 +77,8 @@ class DailyPricingController extends Controller
 
         } else {
             $this->validate($request, [
-                'fba_fee' => 'sometimes|numeric|nullable',
-                'suggested_price' => 'sometimes|numeric|nullable'
+                'fba_fee' => 'sometimes|numeric|nullable|min:0',
+                'suggested_price' => 'sometimes|numeric|nullable|min:0'
             ]);
 
             $dailyPricing->fill($request->only([

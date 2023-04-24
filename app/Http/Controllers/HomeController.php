@@ -17,7 +17,6 @@ class HomeController extends Controller
 
         $years = range(date('Y'), date('Y')-10);
 
-
         $year = $request->input('year', date('Y'));
         $start = Carbon::createFromDate($year)->startOfYear();
         $end = $start->copy()->endOfYear();
@@ -25,6 +24,7 @@ class HomeController extends Controller
         $orders[SalesOrder::STATUS_DRAFT] = SalesOrder::query()
             ->orderBy('created_at')
             ->currentStatus(SalesOrder::STATUS_DRAFT)
+            ->where('is_order_acknowledgement', false)
             ->whereBetween('created_at', [$start, $end])
             ->get();
 
@@ -54,6 +54,45 @@ class HomeController extends Controller
                     $query->whereNull('deleted_at');
                 });
             })
+            ->get();
+
+
+        $orders['oa_draft'] = SalesOrder::query()
+            ->orderBy('created_at')
+            ->where('is_order_acknowledgement', true)
+            ->currentStatus(SalesOrder::STATUS_DRAFT)
+            ->whereBetween('created_at', [$start, $end])
+            ->get();
+
+        $orders['oa_unmatched_products'] = SalesOrder::query()
+            ->orderBy('created_at')
+            ->currentStatus(SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS)
+            ->whereBetween('created_at', [$start, $end])
+            ->get();
+
+
+        $orders['oa_active'] = SalesOrder::query()
+            ->orderBy('created_at')
+            ->currentStatus(SalesOrder::OA_STATUS_ACTIVE)
+            ->whereBetween('created_at', [$start, $end])
+            ->get();
+
+        $orders['oa_partially_received'] = SalesOrder::query()
+            ->orderBy('created_at')
+            ->currentStatus(SalesOrder::OA_STATUS_PARTIALLY_RECEIVED)
+            ->whereBetween('created_at', [$start, $end])
+            ->get();
+
+        $orders['oa_fully_received'] = SalesOrder::query()
+            ->orderBy('created_at')
+            ->currentStatus(SalesOrder::OA_STATUS_FULLY_RECEIVED)
+            ->whereBetween('created_at', [$start, $end])
+            ->get();
+
+        $orders['oa_closed'] = SalesOrder::query()
+            ->orderBy('created_at')
+            ->currentStatus(SalesOrder::OA_STATUS_CLOSED)
+            ->whereBetween('created_at', [$start, $end])
             ->get();
 
         $user = User::query()->first();

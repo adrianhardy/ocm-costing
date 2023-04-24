@@ -48,6 +48,7 @@ class CreatePermissionsCommand extends Command
             'daily_pricing_export',
             'delete_products',
             'copy_products',
+            'update_custom_minimum_profit'
         ];
 
         foreach($permissions as $perm) {

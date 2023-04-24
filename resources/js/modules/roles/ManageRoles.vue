@@ -11,7 +11,7 @@
                     <th
                         style="width: 200px"
                         class="text-center align-middle text-nowrap"
-                        v-if="roles.length >= 1 && role.type === type" v-for="role in roles"
+                        v-if="roles.length >= 1" v-for="role in roles"
                         :key="role.id"
                     >
                         {{ role.name | niceRoleName }}
@@ -21,7 +21,7 @@
                     v-for="permission in permissions"
                     :key="permission.id">
                     <td>{{ permission.name | nicePermName | niceRoleName }}</td>
-                    <td class="align-middle" v-if="role.type === type" v-for="role in roles" :key="role.id">
+                    <td class="align-middle" v-for="role in roles" :key="role.id">
                         <div v-for="rolePermission in role.permissions">
                             <b-form-checkbox class="text-center" switch v-if="rolePermission.id === permission.id"
                                              v-model="rolePermission.has_permission"/>

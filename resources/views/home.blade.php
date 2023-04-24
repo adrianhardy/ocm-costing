@@ -12,7 +12,12 @@
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between w-100">
+                @can('china')
                 <div>Sales Order Progress Dashboard</div>
+                @endcan
+                @can('uk')
+                <div>Order Acknowledgement Progress Dashboard</div>
+                @endcan
                 <div>
                     <select name="year" class="form-control form-control-sm" onchange="jumpToYear(this.value)">
                         @foreach($years as $year)
@@ -25,6 +30,7 @@
         <div class="card-body">
             <table class="table">
                 <tr class="text-center">
+                    @can('china')
                     <th class="w-20 ">
                         Draft<br />
                     </th>
@@ -41,26 +47,84 @@
                         Shipped<br />
                     </th>
                     <th></th>
+                    @endcan
+                    @can('uk')
+                            <th class="w-15 ">
+                                Draft<br />
+                            </th>
+                            <th class="w-15">
+                                Unmatched<br />
+                            </th>
+                            <th class="w-15">
+                                Active<br />
+                            </th>
+                            <th class="w-15">
+                                Partially Received<br />
+                            </th>
+                            <th class="w-15">
+                                Fully Received<br/>
+                            </th>
+                            <th class="w-15">
+                                Closed<br/>
+                            </th>
+                    @endcan
                 </tr>
                 <tr>
+                    @can('uk')
+                    <td>
+                        @foreach ($orders['oa_draft'] as $order)
+                            <a class="btn btn-primary btn-block mb-1" href="{{ route('order-acknowledgements.edit', $order) }}">{{ $order->reference }}</a>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($orders['oa_unmatched_products'] as $order)
+                            <a class="btn btn-primary btn-block mb-1" href="{{ route('order-acknowledgements.edit', $order) }}">{{ $order->reference }}</a>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($orders['oa_active'] as $order)
+                            <a class="btn btn-primary btn-block mb-1" href="{{ route('order-acknowledgements.edit', $order) }}">{{ $order->reference }}</a>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($orders['oa_partially_received'] as $order)
+                            <a class="btn btn-primary btn-block mb-1" href="{{ route('order-acknowledgements.edit', $order) }}">{{ $order->reference }}</a>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($orders['oa_fully_received'] as $order)
+                            <a class="btn btn-primary btn-block mb-1" href="{{ route('order-acknowledgements.edit', $order) }}">{{ $order->reference }}</a>
+                        @endforeach
+                    </td>
+                    <td>
+                        @foreach ($orders['oa_closed'] as $order)
+                            <a class="btn btn-primary btn-block mb-1" href="{{ route('order-acknowledgements.edit', $order) }}">{{ $order->reference }}</a>
+                        @endforeach
+                    </td>
+                    @endcan
+                    @can('china')
                     <td>
                         @foreach ($orders['draft'] as $order)
-                            <a class="btn btn-primary btn-block mb-1" href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
+                            <a class="btn btn-primary btn-block mb-1"
+                               href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
                         @endforeach
                     </td>
                     <td>
                         @foreach ($orders['quote'] as $order)
-                            <a class="btn btn-primary btn-block mb-1" href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
+                            <a class="btn btn-primary btn-block mb-1"
+                               href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
                         @endforeach
                     </td>
                     <td>
                         @foreach ($orders['sales_order'] as $order)
-                            <a class="btn btn-primary btn-block mb-1" href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
+                            <a class="btn btn-primary btn-block mb-1"
+                               href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
                         @endforeach
                     </td>
                     <td>
                         @foreach ($orders['confirmed_sales_order'] as $order)
-                            <a class="btn btn-primary btn-block mb-1" href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
+                            <a class="btn btn-primary btn-block mb-1"
+                               href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
                         @endforeach
                     </td>
                     <td>
@@ -134,6 +198,7 @@
                             </div>
                         @endforeach
                     </td>
+                    @endcan
                 </tr>
             </table>
         </div>

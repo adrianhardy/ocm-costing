@@ -38,6 +38,9 @@
                 @role('super|admin|pricing|pricing_admin')
                 <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
                 @endrole
+                @can('uk')
+                <a class="dropdown-item" @click="$refs['quick-price-modal'].show()">Quick Price</a>
+                @endcan
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{{ route('logout') }}"
                    onclick="event.preventDefault();
@@ -53,3 +56,4 @@
     @endguest
 </ul>
 <quick-cost-modal ref="quick-cost-modal"></quick-cost-modal>
+<quick-price-modal ref="quick-price-modal"></quick-price-modal>

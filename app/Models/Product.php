@@ -30,6 +30,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property-read $case_cubic_ft
  * @property-read Boolean $has_duplicate_item_number;
  * @property-read Boolean $has_duplicate_barcode;
+ * @property-read $final_cost_gbp
  */
 class Product extends BaseProduct implements HasMedia
 {
@@ -69,7 +70,8 @@ class Product extends BaseProduct implements HasMedia
         'primary_asin',
         'additional_skus',
         'additional_asins',
-        'unit_price_gbp'
+        'unit_price_gbp',
+        'custom_minimum_profit'
     ];
 
 	protected $fillable = [
@@ -105,7 +107,9 @@ class Product extends BaseProduct implements HasMedia
         'eu_postage_method',
         'row_postage_method',
         'pricing_notes',
-        'unit_price_gbp'
+        'unit_price_gbp',
+        'custom_minimum_profit'
+
     ];
 
 	protected $casts = [
@@ -223,6 +227,11 @@ class Product extends BaseProduct implements HasMedia
             ->exists();
     }
 
-
+    public function getFinalCostGbpAttribute(){
+        if(!$this->unit_price_gbp) {
+            return $this->est_landed_cost_gbp;
+        }
+        return $this->unit_price_gbp;
+    }
 
 }
