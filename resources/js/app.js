@@ -58,6 +58,8 @@ Vue.component('currency-list', require('./modules/currencies/CurrencyList.vue').
 Vue.component('country-list', require('./modules/countries/CountryList.vue').default);
 Vue.component('price-list', require('./modules/products/PriceList/PriceList').default);
 
+Vue.component('manage-roles', require('./modules/roles/ManageRoles').default);
+
 Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersList.vue').default);
 Vue.component('edit-sales-order', require('./modules/sales-orders/EditSalesOrder.vue').default);
 Vue.component('edit-inspection-report-modal', require('./modules/inspection/EditInspectionReportModal').default);

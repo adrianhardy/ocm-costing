@@ -41,7 +41,6 @@ class UserTransformer extends TransformerAbstract
             'last_seen_at',
             'is_locked',
         ]);
-        $json['role'] = optional($user->role)->name;
         $json['me'] = \Auth::id() == $user->id;
         $pivot = $user->getAttribute('pivot');
         if ($pivot) {
