@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Products;
 
+use App\Domain\Export\ProductExport;
+use App\Events\ProductInformationChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Factory;
@@ -68,7 +70,8 @@ class ProductsController extends Controller
             'product_description'   => 'nullable|sometimes|max:500',
             'uk_postage_method'     => 'nullable|sometimes',
             'eu_postage_method'     => 'nullable|sometimes',
-            'row_postage_method'    => 'nullable|sometimes'
+            'row_postage_method'    => 'nullable|sometimes',
+            'custom_minimum_profit' => 'nullable|sometimes|numeric|min:0'
         ], [], [
             'supplier.id' => 'Supplier',
             'factories.*.id' => 'Factory'
@@ -93,6 +96,8 @@ class ProductsController extends Controller
             'unit_price',
             'case_weight_kg',
             'unit_weight_kg',
+            'unit_price_gbp',
+            'custom_minimum_profit'
         ];
 
         if (!\Auth::user()->is_supplier) {
@@ -112,6 +117,9 @@ class ProductsController extends Controller
         }
         $product->factories()->sync(Factory::query()->findMany($request->input('factories.*.id')));
         $product->save();
+
+        event(new ProductInformationChanged($product));
+
         return response()->json(fractal($product->fresh(), new ProductTransformer()));
     }
 
@@ -147,7 +155,8 @@ class ProductsController extends Controller
             'product_description'   => 'sometimes|max:500',
             'uk_postage_method'     => 'nullable|sometimes',
             'eu_postage_method'     => 'nullable|sometimes',
-            'row_postage_method'    => 'nullable|sometimes'
+            'row_postage_method'    => 'nullable|sometimes',
+            'custom_minimum_profit' => 'nullable|sometimes|numeric|min:0'
         ], [
             'item_number.unique' => 'The item number/barcode combination has already been taken'
         ], [
@@ -171,7 +180,8 @@ class ProductsController extends Controller
             'product_description',
             'unit_price',
             'case_weight_kg',
-            'unit_weight_kg'
+            'unit_weight_kg',
+            'custom_minimum_profit'
         ];
         if (!\Auth::user()->is_supplier) {
             $fields = array_merge($fields, [
@@ -206,7 +216,7 @@ class ProductsController extends Controller
         $paginator = $productRepository;
 
         // Restrict the catalogue of products that goes back to suppliers
-        if (\Auth::user()->is_supplier) {
+        if (\Auth::user() && \Auth::user()->is_supplier) {
             $paginator = $paginator
                 ->where('supplier_id', \Auth::user()->supplier_id)
                 ->whereHas('factories', function($query) {
@@ -230,6 +240,27 @@ class ProductsController extends Controller
             }
         }
 
+        if($request->input('export')) {
+            $paginator = $paginator
+                ->whereNotNull('item_number')
+                ->where('item_number', '!=', '');
+            set_time_limit(120);
+            ini_set('memory_limit', '256M');
+            $export = new ProductExport([]);
+
+            if($request->input('includeStockLevels') === "true") {
+                $export->setStockLevelRequired();
+            }
+
+            $paginator->chunk(150, function ($products) use ($export) {
+                $export->setProducts($products);
+                $export->getStock();
+                $export->buildExport();
+            });
+            $export->setProducts([]);
+            return $export->getCsvDownloadResponse();
+        }
+
         $paginator = $paginator->paginate(
             $request->input('per_page', 100)
         );
@@ -249,5 +280,15 @@ class ProductsController extends Controller
     {
         $product->delete();
         return response()->json();
+    }
+
+    public function copy(Request $request, Product $product)
+    {
+        $this->authorize('copy', $product);
+        $newProduct = $product->replicate(['item_number', 'article_number', 'sorted_article_number']);
+        $newProduct->name = "Copy of {$product->name}";
+        $newProduct->save();
+
+        return response()->json(fractal($newProduct, new ProductTransformer()));
     }
 }

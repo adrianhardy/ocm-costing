@@ -13,6 +13,10 @@ use App\Models\Base\ProductPricing as BaseProductPricing;
 
 class ProductPricing extends BaseProductPricing
 {
+    const PRIORITY_LOW = 'low';
+    const PRIORITY_MEDIUM = 'medium';
+    const PRIORITY_HIGH = 'high';
+
 	protected $fillable = [
 		'product_id',
 		'est_landed_cost_per_unit_gbp',
@@ -26,7 +30,8 @@ class ProductPricing extends BaseProductPricing
 		'marketplace_fee',
 		'sales_order_line_id',
         'eur_fx_rate',
-        'current_eur_fx_rate'
+        'current_eur_fx_rate',
+        'priority'
 	];
 
     /**
@@ -55,5 +60,10 @@ class ProductPricing extends BaseProductPricing
         $profit -= $this->est_landed_cost_per_unit_gbp;
         $profit -= $this->unit_shipping_gbp;
         return $profit;
+    }
+
+    public function product()
+    {
+        return parent::product()->withTrashed();
     }
 }

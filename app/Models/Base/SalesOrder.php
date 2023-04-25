@@ -9,6 +9,7 @@ namespace App\Models\Base;
 use App\Models\Consignment;
 use App\Models\Currency;
 use App\Models\Factory;
+use App\Models\Invoice;
 use App\Models\SalesOrderAuthentication;
 use App\Models\SalesOrderLine;
 use App\Models\Supplier;
@@ -41,11 +42,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $supplier_reference
  * @property int|null $factory_id
  * @property Carbon|null $supplier_finalised_at
+ * @property bool $is_order_acknowledgement
  * 
  * @property Currency|null $currency
  * @property Factory|null $factory
  * @property Supplier $supplier
  * @property Collection|Consignment[] $consignments_sales_order
+ * @property Collection|Invoice[] $invoices_sales_order
  * @property Collection|SalesOrderAuthentication[] $sales_order_authentications_sales_order
  * @property Collection|SalesOrderLine[] $sales_order_lines_sales_order
  *
@@ -67,7 +70,8 @@ class SalesOrder extends Model
 		'fx_rate' => 'float',
 		'supplier_id' => 'int',
 		'shipping_cost_per_cubic_foot' => 'float',
-		'factory_id' => 'int'
+		'factory_id' => 'int',
+		'is_order_acknowledgement' => 'bool'
 	];
 
 	protected $dates = [
@@ -94,6 +98,11 @@ class SalesOrder extends Model
 	public function consignments_sales_order()
 	{
 		return $this->hasMany(Consignment::class);
+	}
+
+	public function invoices_sales_order()
+	{
+		return $this->hasMany(Invoice::class);
 	}
 
 	public function sales_order_authentications_sales_order()

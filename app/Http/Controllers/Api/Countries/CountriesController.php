@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Api\Countries;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Country;
-use App\Models\Currency;
 use App\Transformers\CountryTransformer;
-use App\Transformers\CurrencyTransformer;
 use Illuminate\Http\Request;
 
 class CountriesController extends Controller
@@ -19,8 +17,15 @@ class CountriesController extends Controller
     public function index(Request $request)
     {
         $paginator = Country::query()
-            ->orderBy('name')
-            ->paginate($request->input('per_page', 15));
+            ->orderBy('name');
+
+        if($request->input('all')) {
+            return response()->json([
+                'items' => fractal($paginator->get(), new CountryTransformer())
+            ]);
+        };
+
+        $paginator = $paginator->paginate($request->input('per_page', 15));
 
         return response()->json(new SerializeLengthAwarePaginator(
             $paginator, new CountryTransformer()

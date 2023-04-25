@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Models;
 use App\Models\User;
 use App\Observers\CurrencyObserver;
+use App\Observers\DailyPricingObserver;
+use App\Observers\InvoiceLineObserver;
+use App\Observers\InvoiceObserver;
 use App\Observers\ProductObserver;
 use App\Observers\SalesOrderLineObserver;
 use App\Observers\SalesOrderObserver;
@@ -43,5 +46,9 @@ class AppServiceProvider extends ServiceProvider
             return \Auth::user() && Hash::check($value, \Auth::user()->password);
         });
         Models\Currency::observe(CurrencyObserver::class);
+        Models\Invoice::observe(InvoiceObserver::class);
+        Models\InvoiceLine::observe(InvoiceLineObserver::class);
+        Models\DailyPricing::observe(DailyPricingObserver::class);
+
     }
 }

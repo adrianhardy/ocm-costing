@@ -43,9 +43,11 @@ Vue.use(VueRouter);
 Vue.use(require('./plugins/DateFilter').default);
 
 Vue.component('quick-cost-modal', require('./components/QuickCostModal').default);
+Vue.component('quick-price-modal', require('./components/QuickPricingModal').default);
 Vue.component('vue-select', VueSelect);
 Vue.component('auto-toast', require('./components/AutoToast.vue').default);
 Vue.component('create-import', require('./modules/imports/Importer.vue').default);
+Vue.component('uk-product-importer', require('./modules/imports/UkProductImporter').default);
 Vue.component('products-list', require('./modules/products/ProductsList.vue').default);
 Vue.component('edit-product', require('./modules/products/EditProduct.vue').default);
 Vue.component('users-list', require('./modules/users/UserList.vue').default);
@@ -59,6 +61,17 @@ Vue.component('country-list', require('./modules/countries/CountryList.vue').def
 Vue.component('price-list', require('./modules/products/PriceList/PriceList').default);
 
 Vue.component('manage-roles', require('./modules/roles/ManageRoles').default);
+
+Vue.component('order-acknowledgements-list', require('./modules/order-acknowledgements/ListOrderAcknowledgements').default)
+Vue.component('edit-order-acknowledgements', require('./modules/order-acknowledgements/EditOrderAcknowledgements').default)
+Vue.component('order-lines-importer', require('./modules/order-acknowledgements/imports/OALinesImporter').default);
+Vue.component('invoice-importer', require('./modules/order-acknowledgements/imports/InvoiceImporter').default);
+
+
+Vue.component('list-invoices', require('./modules/invoices/ListInvoices').default)
+Vue.component('edit-invoice', require('./modules/invoices/EditInvoice').default)
+
+Vue.component('list-daily-pricing', require('./modules/daily-pricing/DailyPricingList').default)
 
 Vue.component('sales-orders-list', require('./modules/sales-orders/SalesOrdersList.vue').default);
 Vue.component('edit-sales-order', require('./modules/sales-orders/EditSalesOrder.vue').default);

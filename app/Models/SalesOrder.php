@@ -20,6 +20,9 @@ use Spatie\ModelStatus\HasStatuses;
  * @property $sales_order_fx_rate
  * @property-read $status
  * @proeprty-read $status_description
+ * @property Invoice[] $invoices
+ * @property-read $oa_eta
+ * @property-read Boolean $has_unmatched_products
  */
 class SalesOrder extends BaseSalesOrder
 {
@@ -40,6 +43,23 @@ class SalesOrder extends BaseSalesOrder
         self::STATUS_CONFIRMED_SALES_ORDER => 'Confirmed Sales Order',
     ];
 
+    const OA_STATUS_CLOSED = 'closed';
+    const OA_STATUS_ACTIVE = 'active';
+    const OA_STATUS_AWAITING_DELIVERY = 'awaiting_delivery';
+    const OA_STATUS_PARTIALLY_RECEIVED = 'partially_received';
+    const OA_STATUS_FULLY_RECEIVED = 'fully_received';
+    const OA_STATUS_UNMATCHED_PRODUCTS = 'unmatched_products';
+
+    const OA_STATUSES = [
+        self::STATUS_DRAFT => 'Draft',
+        self::OA_STATUS_ACTIVE => 'Active',
+        self::OA_STATUS_UNMATCHED_PRODUCTS => 'Unmatched Products',
+        self::OA_STATUS_AWAITING_DELIVERY => 'Awaiting Delivery',
+        self::OA_STATUS_PARTIALLY_RECEIVED => 'Partially Received',
+        self::OA_STATUS_FULLY_RECEIVED => 'Fully Received',
+        self::OA_STATUS_CLOSED => 'Closed',
+    ];
+
 	protected $fillable = [
 		'sent_at',
         'reference',
@@ -53,7 +73,7 @@ class SalesOrder extends BaseSalesOrder
         'shipping_cost_per_cubic_foot',
         'supplier_reference',
         'supplier_finalised_at',
-        'sales_order_fx_rate'
+        'sales_order_fx_rate',
 	];
 
 	public function setSalesOrderFxRateAttribute($value)
@@ -100,6 +120,11 @@ class SalesOrder extends BaseSalesOrder
 
     }
 
+    public function getHasUnmatchedProductsAttribute(){
+        return $this->lines()->whereNull('product_id')->exists();
+    }
+
+
     /**
      * @return string
      */
@@ -107,8 +132,15 @@ class SalesOrder extends BaseSalesOrder
     {
 
         $description = 'Unknown';
-        if (array_key_exists($this->status, self::STATUSES)) {
-            $description = self::STATUSES[$this->status];
+
+        if ($this->is_order_acknowledgement) {
+            if (array_key_exists($this->status, self::OA_STATUSES)) {
+                $description = self::OA_STATUSES[$this->status];
+            }
+        } else {
+            if (array_key_exists($this->status, self::STATUSES)) {
+                $description = self::STATUSES[$this->status];
+            }
         }
 
         switch(true) {
@@ -187,4 +219,21 @@ class SalesOrder extends BaseSalesOrder
             })
             ->get();
     }
+
+    public function invoices(){
+        return $this->invoices_sales_order;
+    }
+
+    public function getOaEtaAttribute(){
+        if(count($this->lines()->whereNotNull('oa_eta')->get()) >= 1) {
+            return SalesOrderLine::query()
+                ->where('sales_order_id', $this->id)
+                ->whereNotNull('oa_eta')
+                ->orderBy('oa_eta')
+                ->first()->oa_eta;
+        }
+        return null;
+    }
+
+
 }

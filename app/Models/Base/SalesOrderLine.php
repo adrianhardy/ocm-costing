@@ -8,6 +8,7 @@ namespace App\Models\Base;
 
 use App\Models\Consignment;
 use App\Models\InspectionReport;
+use App\Models\InvoiceLine;
 use App\Models\Medium;
 use App\Models\Product;
 use App\Models\ProductPricing;
@@ -49,11 +50,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_height_m
  * @property float|null $unit_weight_kg
  * @property int|null $media_id
+ * @property Carbon|null $oa_eta
+ * @property int|null $oa_reorder_number
+ * @property string|null $oa_primary_sku
  * 
  * @property Medium|null $media
  * @property Product|null $product
  * @property SalesOrder|null $sales_order
  * @property Collection|InspectionReport[] $inspection_reports_sales_order_line
+ * @property Collection|InvoiceLine[] $invoice_lines_sales_order_line
  * @property Collection|ProductPricing[] $product_pricings_sales_order_line
  * @property Collection|Consignment[] $consignments
  *
@@ -83,7 +88,12 @@ class SalesOrderLine extends Model
 		'unit_length_m' => 'float',
 		'unit_height_m' => 'float',
 		'unit_weight_kg' => 'float',
-		'media_id' => 'int'
+		'media_id' => 'int',
+		'oa_reorder_number' => 'int'
+	];
+
+	protected $dates = [
+		'oa_eta'
 	];
 
 	public function media()
@@ -104,6 +114,11 @@ class SalesOrderLine extends Model
 	public function inspection_reports_sales_order_line()
 	{
 		return $this->hasMany(InspectionReport::class);
+	}
+
+	public function invoice_lines_sales_order_line()
+	{
+		return $this->hasMany(InvoiceLine::class);
 	}
 
 	public function product_pricings_sales_order_line()

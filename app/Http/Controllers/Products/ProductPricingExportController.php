@@ -7,6 +7,7 @@ use App\Models\Country;
 use App\Models\Currency;
 use App\Models\ProductPricing;
 use App\Models\ProductPricingCountry;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -155,6 +156,8 @@ class ProductPricingExportController extends Controller
                     }
                 }
             }
+            $pricing->exported_at = Carbon::now();
+            $pricing->save();
         }
 
         $size = $csv->ftell();

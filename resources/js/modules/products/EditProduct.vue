@@ -13,8 +13,13 @@
                             </b-form-group>
                         </div>
                         <div class="col-6">
-                            <b-form-group label="Factories">
+                            <b-form-group v-if="isChina" label="Factories">
                                 <factory-select v-model="product.factories" multiple/>
+                            </b-form-group>
+                            <b-form-group v-if="isUk && canCustomProfit" label="Custom Minimum Profit">
+                                <b-input-group prepend="£">
+                                    <b-form-input type="number" v-model="product.custom_minimum_profit" />
+                                </b-input-group>
                             </b-form-group>
                         </div>
                     </div>
@@ -24,7 +29,7 @@
                         </b-form-group>
                     </div>
                     <b-form-group description="When estimating landed costs, no commission will be added"
-                                  v-if="!isSupplier && showCosting">
+                                  v-if="!isSupplier && showCosting && isChina">
                         <b-form-checkbox v-model="product.is_excluded_from_commission">Exclude from commission
                         </b-form-checkbox>
                     </b-form-group>
@@ -33,9 +38,10 @@
                         <div class="col-4">
                             <b-form-group label="Item Number">
                                 <b-form-input all v-model="product.item_number"/>
+                                <b-badge v-if="product.has_duplicate_item_number" variant="danger" class="text-center">Duplicate Item Number</b-badge>
                             </b-form-group>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4" v-if="isChina">
                             <b-form-group label="Article Number">
                                 <b-form-input all v-model="product.article_number"/>
                             </b-form-group>
@@ -43,6 +49,14 @@
                         <div class="col-4">
                             <b-form-group label="Barcode">
                                 <b-form-input all v-model="product.barcode"/>
+                                <b-badge v-if="product.has_duplicate_barcode" variant="danger">Duplicate Barcode</b-badge>
+                            </b-form-group>
+                        </div>
+                        <div class="col-4" v-if="isUk">
+                            <b-form-group label="Unit Price GBP">
+                                <b-input-group prepend="£">
+                                    <b-form-input v-model="product.unit_price_gbp"/>
+                                </b-input-group>
                             </b-form-group>
                         </div>
                     </div>
@@ -55,7 +69,7 @@
                             </b-form-group>
                         </div>
                     </div>
-                    <div class="row" v-if="!isSupplier && showCosting">
+                    <div class="row" v-if="!isSupplier && isChina">
                         <div class="col-4">
                             <b-form-group label="Unit Price">
                                 <b-input-group prepend="$">
@@ -63,14 +77,14 @@
                                 </b-input-group>
                             </b-form-group>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4" v-if="isChina">
                             <b-form-group label="Est. Land' Cost">
                                 <b-input-group prepend="£">
                                     <b-form-input readonly v-model="product.est_landed_cost_gbp"/>
                                 </b-input-group>
                             </b-form-group>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4" v-if="isChina">
                             <b-form-group label="Current Land' Cost" v-if="product.current_landed_cost_per_unit_gbp">
                                 <b-input-group prepend="£">
                                     <b-form-input readonly v-model="product.current_landed_cost_per_unit_gbp"/>
@@ -84,7 +98,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
-                    <b-tabs content-class="pt-3" small>
+                    <b-tabs v-model="tabIndex" content-class="pt-3" small>
                         <b-tab title="Description">
                             <b-form-group label="Product Details">
                                 <b-textarea v-model="product.product_description" maxlength="500" rows="7"/>
@@ -95,7 +109,7 @@
                                     <span v-else>0 / 500</span>
                                 </template>
                             </b-form-group>
-                            <b-form-group label="Packing Instructions">
+                            <b-form-group label="Packing Instructions" v-if="isChina">
                                 <b-textarea v-model="product.packing_instructions" maxlength="500" rows="7"/>
                                 <template #description>
                                   <span v-if="product.packing_instructions">
@@ -104,15 +118,6 @@
                                     <span v-else>0 / 500</span>
                                 </template>
                             </b-form-group>
-
-                            <b-button variant="outline-primary float-right" @click="save()">
-                                {{ this.productId ? 'Update' : 'Create' }} Product
-                            </b-button>
-
-                            <b-button @click="sendToPricing" v-if="this.productId"
-                                      variant="outline-secondary float-right" class="mr-2">
-                                Send To Pricing
-                            </b-button>
                         </b-tab>
                         <b-tab title="Dimensions">
                             <h4>Postage</h4>
@@ -161,7 +166,7 @@
                             </div>
                             <h5>
                                 Carton
-                                <small v-if="!isSupplier && product.id > 0">
+                                <small v-if="!isSupplier && product.id > 0 && isChina">
                                     <a href="#" @click.prevent="showTestCalculator = !showTestCalculator">{{
                                             showTestCalculator ? 'Hide' : 'Show'
                                         }} Test Calculator</a>
@@ -261,9 +266,6 @@
                                     </b-form-group>
                                 </div>
                             </div>
-                            <b-button variant="outline-primary float-right" @click="save()">
-                                {{ this.productId ? 'Update' : 'Create' }} Product
-                            </b-button>
                         </b-tab>
                         <product-sku-tab v-if="!isSupplier && product.id" :product="product"/>
                         <b-tab v-if="product.id">
@@ -305,54 +307,49 @@
                             <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
                         </b-tab>
                         <b-tab title="History" v-if="!isSupplier && product.id" :disabled="!showCosting">
-                            <b-table ref="product-history" small :items="productLog" :fields="productLogFields"
-                                     sticky-header="600px">
-                                <template #cell(updated_at)="data">
-                                    {{ new Date(data.value) | date('dd/MM/yy HH:mm') }}
-                                </template>
-                                <template #cell(unit_price)="data">
-                                    {{ data.value | 2dp_value }}
-                                </template>
-                                <template #cell(attributes.case_cubic_ft)="data">
-                                    <span
-                                        v-b-popover.hover="`${data.item.attributes.length_cm}cm x ${data.item.attributes.width_cm}cm x ${data.item.attributes.height_cm}cm`"
-                                        title="LxWxH" style="cursor:pointer">
-                                        {{ data.value }}
-                                    </span>
-                                </template>
-                                <template #cell(landed_cost_per_unit_gbp)="data">
-                                    {{ data.value | cash_value }}
-                                </template>
-                                <template #cell(extra)="data">
-                                    <div v-if="data.item && data.item.attributes">
-                                        <span v-b-popover.hover="data.item.attributes.primary_asin" title="ASIN"
-                                              style="cursor:pointer">
-                                        <b-icon-box-seam/>
-                                      </span>
-                                        <span v-b-popover.hover="data.item.attributes.primary_sku"
-                                              title="SKU" style="cursor:pointer">
-                                        <b-icon-box-seam/>
-                                      </span>
-                                        <span v-b-popover.hover="data.item.attributes.packing_instructions"
-                                              title="Packing Instructions" style="cursor:pointer">
-                                        <b-icon-box-seam/>
-                                      </span>
-                                        <span v-b-popover.hover="data.item.attributes.product_description"
-                                              title="Product Description" style="cursor:pointer">
-                                        <b-icon-tag/>
-                                      </span>
-                                        <span style="cursor:pointer" v-b-popover.hover="data.item.attributes.barcode"
-                                              title="Barcode">
-                                        <b-icon-upc-scan/>
-                                      </span>
-                                    </div>
-                                </template>
-                            </b-table>
+                            <div v-if="isUk">
+                                <div class="d-flex justify-content-end">
+                                    <b-form-select v-model="historyType" size="sm" class="w-25 mb-2">
+                                        <b-form-select-option value="changes">Changes</b-form-select-option>
+                                        <b-form-select-option value="stock">Stock</b-form-select-option>
+                                        <b-form-select-option value="daily_pricing">Daily Pricing</b-form-select-option>
+                                        <b-form-select-option value="order_acknowledgement">OA's</b-form-select-option>
+                                        <b-form-select-option value="invoices">Invoices</b-form-select-option>
+                                    </b-form-select>
+                                </div>
+                                <changes-history v-if="product && product.id && historyType === 'changes'" :product-id="product.id" :fields="productLogFields"></changes-history>
+                                <stock-history v-if="product && product.id && historyType === 'stock'" :product-id="product.id"></stock-history>
+                                <daily-pricing-history v-if="product && product.id && historyType === 'daily_pricing'" :product-id="product.id"></daily-pricing-history>
+                                <invoice-history v-if="product && product.id && historyType === 'invoices'" :product-id="product.id"></invoice-history>
+                                <order-acknowledgement-history v-if="product && product.id && historyType === 'order_acknowledgement'" :product-id="product.id"></order-acknowledgement-history>
+                            </div>
+                            <changes-history v-else :product-id="product.id" :fields="productLogFields"></changes-history>
                         </b-tab>
-                        <landed-cost-history-tab v-if="!isSupplier && product.id" :product="product"
+                        <landed-cost-history-tab v-if="!isSupplier && product.id && isChina" :product="product"
                                                  :disabled="!showCosting"/>
                     </b-tabs>
                 </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <div>
+                    <b-button v-if="this.productId && canDelete" variant="outline-danger" @click="deleteProduct">Delete</b-button>
+                    <b-button v-if="this.productId && canCopy" variant="outline-primary" @click="copyProduct">Copy Product</b-button>
+
+                </div>
+                <div v-if="tabIndex === 0">
+                    <b-button variant="outline-primary mr-2" @click="save()">
+                        {{ this.productId ? 'Update' : 'Create' }} Product
+                    </b-button>
+
+                    <b-button @click="sendToPricing" v-if="this.productId"
+                              variant="outline-secondary float-right" class="mr-2">
+                        Send To Pricing
+                    </b-button>
+                </div>
+                <b-button v-if="tabIndex === 1" variant="outline-primary float-right" @click="save()">
+                    {{ this.productId ? 'Update' : 'Create' }} Product
+                </b-button>
             </div>
         </b-card>
     </div>
@@ -366,10 +363,26 @@ import FactorySelect from "../../components/FactorySelect";
 import LandedCostHistoryTab from "./LandedCostHistoryTab";
 import ProductSkuTab from "./ProductSkuTab";
 import LandedCostCalculator from '../../library/LandedCostCalculator';
+import InvoiceHistory from "./HistoryLists/InvoiceHistory";
+import OrderAcknowledgementHistory from "./HistoryLists/OrderAcknowledgementHistory";
+import DailyPricingHistory from "./HistoryLists/DailyPricingHistory";
+import ChangesHistory from "./HistoryLists/ChangesHistory";
+import StockHistory from "./HistoryLists/StockHistory";
 
 export default {
     name: "EditProduct",
-    components: {ProductSkuTab, LandedCostHistoryTab, FactorySelect, EditProductMedia, SupplierSelect},
+    components: {
+        StockHistory,
+        ChangesHistory,
+        DailyPricingHistory,
+        OrderAcknowledgementHistory,
+        InvoiceHistory,
+        ProductSkuTab,
+        LandedCostHistoryTab,
+        FactorySelect,
+        EditProductMedia,
+        SupplierSelect
+    },
     props: {
         importDutyPc: Number,
         commissionRatePc: Number,
@@ -378,7 +391,12 @@ export default {
         showCosting: Boolean,
         productId: Number,
         isSupplier: Boolean,
-        cubicMetresToFeet: Number
+        cubicMetresToFeet: Number,
+        isUk: Boolean,
+        isChina: Boolean,
+        canDelete: Boolean,
+        canCopy: Boolean,
+        canCustomProfit: Boolean
     },
     filters: {
         date: dateFilter
@@ -434,11 +452,52 @@ export default {
                 label: 'U/Price'
             }, {
                 key: 'extra',
-                label: 'Desc'
+                label: 'Desc',
+                tdClass: 'w-25'
+            }, {
+                key: 'details',
+                label: '',
+                tdClass: 'w-1'
             }]
         }
     },
     methods: {
+        async deleteProduct(){
+            const result = await this.$bvModal.msgBoxConfirm('Are you sure you want to delete this product?', {
+                centered: true,
+                okTitle: 'Confirm',
+                title: 'Please Confirm'
+            })
+            if(!result) {
+                return;
+            }
+            const loading = this.$loading.show();
+            this.$http.delete(`/api/products/${this.product.id}`).then(response => {
+                loading.hide();
+                window.location.href = '/products'
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true)
+                loading.hide();
+            })
+        },
+        async copyProduct(){
+            const result = await this.$bvModal.msgBoxConfirm('Are you sure you want to copy this product?', {
+                centered: true,
+                okTitle: 'Confirm',
+                title: 'Please Confirm'
+            })
+            if(!result) {
+                return;
+            }
+            const loading = this.$loading.show();
+            this.$http.post(`/api/products/${this.product.id}/copy`).then(response => {
+                loading.hide();
+                window.location.href = `/products/${response.data.id}/edit`
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true);
+                loading.hide();
+            })
+        },
         sendToPricing() {
             this.$bvModal.msgBoxConfirm('Are you sure you want to send this product to pricing?', {
                 title: 'Send to pricing',
@@ -458,17 +517,6 @@ export default {
                 })
             })
 
-        },
-        productLog() {
-            const url = `/api/products/${this.productId}/history`;
-            return this.$http.get(url).then(response => {
-                return _.map(response.data.items, row => {
-                    return {
-                        updated_at: row.updated_at,
-                        attributes: row.properties.attributes
-                    }
-                });
-            });
         },
         save() {
             const method = this.product.id ? 'PUT' : 'POST';
@@ -532,7 +580,9 @@ export default {
                 packing_instructions: '',
                 comments: [],
                 supplier: {}
-            }
+            },
+            tabIndex: 0,
+            historyType: 'changes',
         }
     }
 }

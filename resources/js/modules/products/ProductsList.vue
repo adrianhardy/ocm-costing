@@ -8,17 +8,26 @@
                             <slot>
                                 <b-dropdown class="align-middle float-right" size="lg" text="" variant="outline-secondary" right>
                                     <b-dropdown-form style="width:400px">
-                                        <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
-                                        <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
-                                        <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
-                                        <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
-                                        <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
+                                        <b-form-group label="Search by">
+                                            <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
+                                            <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
+                                            <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
+                                            <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
+                                            <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
+                                        </b-form-group>
                                         <b-dropdown-divider/>
-                                        <factory-select v-model="searchFactory" @selected="factorySelect"/>
+                                        <b-form-group label="Filter by Supplier">
+                                            <factory-select v-model="searchFactory" @selected="factorySelect"/>
+                                        </b-form-group>
+                                        <b-dropdown-divider/>
+                                        <b-form-group label="Stock Levels">
+                                            <b-form-checkbox v-model="includeStockLevels">Include stock levels on export (warning: slow)</b-form-checkbox>
+                                        </b-form-group>
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
                         </search-input>
+                        <b-button variant="primary" class="ml-2" @click="exportProducts">Export</b-button>
                         <b-button class="ml-2" href="/products/create" variant="primary">Create</b-button>
                     </slot>
                 </table-header>
@@ -132,6 +141,27 @@ export default {
         }
     },
     methods: {
+        async exportProducts(){
+            let params = new URLSearchParams({
+                include: this.include,
+                includeStockLevels: this.includeStockLevels,
+                export: true
+            });
+
+            if(this.search !== '') {
+                params.append('search', this.search)
+            }
+
+            if(this.country) {
+                params.append('search_factory_id', this.searchFactory.id)
+            }
+
+            const link = document.createElement('a');
+            link.href = '/api/products?' + params.toString();
+            link.download = 'products_export.csv';
+            console.log(link);
+            link.click();
+        },
         createSalesOrder(){
             this.$refs['create-sales-order-modal'].open()
         },
@@ -186,7 +216,7 @@ export default {
             const payload = {
                 search: this.search,
                 search_factory_id: this.searchFactory?this.searchFactory.id:null,
-                include: 'quotes_lines,media,factories'
+                include: 'quotes_lines,media,factories',
             };
 
             if (this.searchField) {
@@ -216,8 +246,8 @@ export default {
                 total: 0,
                 perPage: 100,
                 currentPage: 1,
-
             },
+            includeStockLevels: false,
             loading: false
         }
     }

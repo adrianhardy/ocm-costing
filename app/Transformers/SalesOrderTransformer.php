@@ -99,7 +99,10 @@ class SalesOrderTransformer extends TransformerAbstract
             'sales_order_notes',
             'shipping_cost_per_cubic_foot',
             'supplier_reference',
-            'sales_order_fx_rate'
+            'sales_order_fx_rate',
+            'is_order_acknowledgement',
+            'oa_eta',
+            'has_unmatched_products'
         ]);
     }
 }

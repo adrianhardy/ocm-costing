@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Domain\Excel\ParseProductSheet;
 use App\Domain\Excel\PrepareProductsForImport;
 use App\Domain\LandedCostCalculator;
+use App\Events\ProductInformationChanged;
 use App\Models\Currency;
 use App\Models\Factory;
 use App\Models\Import;
@@ -256,6 +257,11 @@ class ImportProductsCommand extends Command
             }
 
             $product->save();
+            // run this even if the product is new, as it will not find any sales orders and won't do anything
+            event(new ProductInformationChanged($product));
+
+
+
             if (!$product->factories->pluck('id')->contains($factory->id)) {
                 $product->factories()->save($factory);
             }

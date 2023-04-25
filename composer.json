@@ -25,6 +25,7 @@
         "laravel/tinker": "^2.5",
         "laravelcollective/html": "^6.2",
         "lasserafn/php-initials": "^3.0",
+        "league/csv": "^9.6",
         "league/fractal": "^0.19.2",
         "phpoffice/phpspreadsheet": "^1.18",
         "prettus/l5-repository": "^2.7",
@@ -34,7 +35,8 @@
         "spatie/laravel-fractal": "5.8.0",
         "spatie/laravel-medialibrary": "^7.0.0",
         "spatie/laravel-model-status": "^1.10",
-        "spatie/laravel-permission": "^4.2"
+        "spatie/laravel-permission": "^4.2",
+        "symfony/property-access": "^5.4"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.5",

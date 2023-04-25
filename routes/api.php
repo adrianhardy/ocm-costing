@@ -7,19 +7,28 @@ use Illuminate\Http\Request;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
+| Here is where you can register API routes for  your application. These
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
 Route::group(['as' => 'api.'], function() {
     Route::post('login', 'Api\AuthController@login');
+    Route::resource('products', 'Api\Products\ProductsController')->only(['index']);
+
+
+    Route::group(['middleware' => ['auth:api']], function() {
+        Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
+    });
+
+
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super|products']], function() {
-        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['store']);
+        Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index','store']);
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
-        Route::resource('products', 'Api\Products\ProductsController')->only(['index', 'show', 'store', 'update', 'delete']);
+        Route::resource('products', 'Api\Products\ProductsController')->only(['show', 'store', 'update', 'destroy']);
+        Route::post('products/{product}/copy', 'Api\Products\ProductsController@copy');
         Route::resource('products.history', 'Api\Products\ProductHistoryController')->only(['index']);
         Route::resource('products.comments', 'Api\Products\CommentsController')->only(['store']);
         Route::resource('suppliers', 'Api\SuppliersController')->only(['index']);
@@ -35,7 +44,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
         Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['store']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['update']);
-        Route::resource('countries', 'Api\Countries\CountriesController')->only(['index', 'update']);
+        Route::resource('countries', 'Api\Countries\CountriesController')->only(['update']);
         Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
         Route::resource('sales-orders.lines.media', 'Api\SalesOrders\Lines\MediaController')->only(['store']);
         Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'destroy']);
@@ -80,7 +89,20 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('sales-orders.consignments', 'Api\SalesOrders\ConsignmentsController')->only(['index', 'store', 'update']);
     });
 
+
+    Route::group(['middleware' => ['auth:api','permission:uk']], function () {
+        Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
+        Route::resource('order-acknowledgements', 'Api\Uk\OrderAcknowledgementsController')->only(['index', 'store', 'show', 'destroy', 'update']);
+        Route::put('/order-acknowledgements/{order_acknowledgement}/restore', 'Api\Uk\OrderAcknowledgementsController@restore');
+        Route::resource('order-acknowledgements.lines', 'Api\Uk\OrderAcknowledgementLinesController')->only('store', 'update', 'destroy');
+        Route::resource('order-acknowledgements.lines.product', 'Api\Uk\OrderAcknowledgementProductController')->only('store');
+        Route::resource('products.stock-changes', 'Api\Products\ProductRafStockController')->only(['index']);
+        Route::resource('invoices', 'Api\Uk\Invoices\InvoiceController')->only(['index', 'store', 'update', 'destroy', 'show']);
+    });
+
+
     Route::group(['middleware' => ['auth:api']], function() {
+        Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
         Route::resource('admin/factories', 'Api\Admin\FactoriesController')->only(['index']);
     });
 
@@ -89,7 +111,4 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('supplier/sales-orders.lines', 'Api\SalesOrders\LinesController')->only(['update', 'store', 'destroy']);
     });
 });
-
-
-
 

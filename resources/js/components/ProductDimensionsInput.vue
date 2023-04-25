@@ -22,31 +22,39 @@
                 <b-input v-model="value.unit_height_cm" @change="$emit('updated', $event)"/>
             </b-input-group>
         </b-form-group>
-        <b-form-group label-size="sm" size="sm" label-cols-sm="4" class="mb-0">
-            <template #label>
-                Carton<br />
-                <small>ft<sup>3</sup></small>
-            </template>
-            <b-input-group size="sm">
-                <b-input readonly :value="caseCubicFt"/>
-            </b-input-group>
-        </b-form-group>
-        <b-form-group label-size="sm" size="sm" label-cols-sm="4">
-            <template #label>
-                Carton<br />
-                <small>m<sup>3</sup></small>
-            </template>
-            <b-input-group size="sm">
-                <b-input readonly :value="caseCubicM"/>
-            </b-input-group>
-        </b-form-group>
+        <div v-if="!orderAcknowledgement">
+            <b-form-group label-size="sm" size="sm" label-cols-sm="4" class="mb-0">
+                <template #label>
+                    Carton<br />
+                    <small>ft<sup>3</sup></small>
+                </template>
+                <b-input-group size="sm">
+                    <b-input readonly :value="caseCubicFt"/>
+                </b-input-group>
+            </b-form-group>
+            <b-form-group label-size="sm" size="sm" label-cols-sm="4">
+                <template #label>
+                    Carton<br />
+                    <small>m<sup>3</sup></small>
+                </template>
+                <b-input-group size="sm">
+                    <b-input readonly :value="caseCubicM"/>
+                </b-input-group>
+            </b-form-group>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
     name: "ProductDimensionsInput",
-    props: {value: Object},
+    props: {
+        value: Object,
+        orderAcknowledgement: {
+            type: Boolean,
+            default: false
+        }
+    },
     computed: {
         caseCubicFt() {
             return this.value.case_cubic_ft.toFixed(2);

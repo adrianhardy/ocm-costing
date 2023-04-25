@@ -2,9 +2,7 @@
 
 namespace App\Transformers;
 
-use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
-use Illuminate\Support\Facades\DB;
 use League\Fractal\TransformerAbstract;
 use Spatie\MediaLibrary\Models\Media;
 
@@ -136,7 +134,15 @@ class SalesOrderLineTransformer extends TransformerAbstract
             'unit_length_cm',
             'unit_height_cm',
             'unit_weight_kg',
-            'barcode'
+            'barcode',
+
+            'oa_eta',
+            'oa_reorder_number',
+            'oa_primary_sku',
+            'qty_remaining',
+            'qty_received',
+            'has_duplicate_item_number',
+            'has_duplicate_barcode',
         ]);
     }
 }

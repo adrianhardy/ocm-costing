@@ -5,8 +5,6 @@ namespace App\Observers;
 use App\Models\SalesOrder;
 use App\Models\Version;
 use App\Transformers\SalesOrderTransformer;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class SalesOrderObserver
 {
@@ -37,6 +35,44 @@ class SalesOrderObserver
         if (!$salesOrder->shipping_cost_per_cubic_foot) {
             $salesOrder->shipping_cost_per_cubic_foot = setting('shipping_cost_per_cubic_foot');
         }
+
+        if($salesOrder->is_order_acknowledgement && !$salesOrder->is_finalised && $salesOrder->id) {
+            if($salesOrder->has_unmatched_products) {
+                $salesOrder->setStatus(SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS);
+            } else {
+                $salesOrder->setStatus(SalesOrder::STATUS_DRAFT);
+            }
+        }
+
+        /*
+         * If we're trying to finalise the order (or it's already finalised) then
+         * if we've received > 0, it's partially received. If we've got <= remaining
+         * then it's fully received.
+         *
+         * This will require whatever modifies received quantities to touch the OA.
+         */
+        if($salesOrder->is_order_acknowledgement && $salesOrder->is_finalised && $salesOrder->status !== 'closed') {
+
+            $remaining = 0;
+            $received = 0;
+            foreach($salesOrder->lines as $line) {
+                $remaining += $line->qty_remaining;
+                $received += $line->qty_received;
+            }
+
+            if  ($received > 0) {
+                if($remaining > 0) {
+                    $salesOrder->setStatus(SalesOrder::OA_STATUS_PARTIALLY_RECEIVED);
+                }
+
+                if ($remaining <= 0) {
+                    $salesOrder->setStatus(SalesOrder::OA_STATUS_FULLY_RECEIVED);
+                }
+            } else {
+                $salesOrder->setStatus(SalesOrder::OA_STATUS_ACTIVE);
+            }
+        };
+
     }
 
     /**
