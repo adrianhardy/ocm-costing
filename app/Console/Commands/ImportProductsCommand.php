@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Intervention\Image\Exception\NotReadableException;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -262,9 +263,13 @@ class ImportProductsCommand extends Command
             if ($data->get('images') && $data->get('images')->isNotEmpty()) {
                 $product->clearMediaCollection('default');
                 foreach ($data->get('images') as $i => $blob) {
-                    $product->addMediaFromBase64($blob)
-                        ->usingFileName("product-{$product->id}-{$i}.png")
-                        ->toMediaCollection('default');
+                    try {
+                        $product->addMediaFromBase64($blob)
+                            ->usingFileName("product-{$product->id}-{$i}.png")
+                            ->toMediaCollection('default');
+                    } catch (NotReadableException $ex) {
+                        $this->log->info("Failed to read image for item number '{$product->item_number}'");
+                    }
                 }
             }
 

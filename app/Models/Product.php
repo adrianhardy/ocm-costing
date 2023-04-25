@@ -112,7 +112,7 @@ class Product extends BaseProduct implements HasMedia
     public function registerMediaCollections()
     {
         $this->addMediaCollection('default')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'application/octet-stream'])
             ->registerMediaConversions(function () {
                 return $this
                     ->addMediaConversion('thumb')

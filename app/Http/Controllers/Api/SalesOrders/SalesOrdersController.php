@@ -114,6 +114,9 @@ class SalesOrdersController extends Controller
             $so->supplier()->associate(\Auth::user()->supplier);
         } else {
             $so->supplier()->associate(Supplier::find($request->input('supplier.id')));
+            if ($request->input('factory.id')) {
+                $so->factory()->associate(Factory::find($request->input('factory.id')));
+            }
         }
 
         $so->fx_rate = $so->currency->default_fx_to_gbp;
