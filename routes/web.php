@@ -43,7 +43,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('sales-orders', 'SalesOrders\SalesOrdersController')->only(['index', 'edit']);
 });
 
-Route::group(['middleware' => ['auth', 'role:admin|super']], function() {
+Route::group(['middleware' => ['auth', 'role_or_permission:admin|super|china']], function() {
     Route::resource('/global-notes', 'Admin\NotesController')->only(['store']);
     Route::resource('/admin/media', 'Admin\MediaController')->only(['show', 'destroy']);
     Route::resource('/admin/imports/preview', 'Admin\Imports\PreviewController')->only(['store', 'update']);
