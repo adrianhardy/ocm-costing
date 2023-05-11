@@ -52,7 +52,9 @@ class ProductInformationChangedListener
                 'unit_weight_kg',
                 'unit_height_m',
                 'unit_length_m',
-                'unit_width_m'
+                'unit_width_m',
+                'unit_price',
+                'est_landed_cost_gbp'
             ]));
 
             $line->save();

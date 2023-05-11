@@ -285,7 +285,7 @@ class ProductsController extends Controller
     public function copy(Request $request, Product $product)
     {
         $this->authorize('copy', $product);
-        $newProduct = $product->replicate(['item_number', 'article_number', 'sorted_article_number']);
+        $newProduct = $product->replicate(['sorted_article_number']);
         $newProduct->name = "Copy of {$product->name}";
         $newProduct->save();
 

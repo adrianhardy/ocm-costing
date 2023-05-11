@@ -25,19 +25,21 @@ class ProductObserver
     public function saving(Product $product)
     {
 
-        foreach (Country::query()->where('has_pricing', 1) as $country) {
-            $hasDailyPricing = DailyPricing::query()
-                ->where('country_id', $country->id)
-                ->where('product_id', $product->id)
-                ->exists();
+        if($product->id) {
+            foreach (Country::query()->where('has_pricing', true)->get() as $country) {
+                $hasDailyPricing = DailyPricing::query()
+                    ->where('country_id', $country->id)
+                    ->where('product_id', $product->id)
+                    ->exists();
 
-            if(!$hasDailyPricing) {
-                $dailyPricing = new DailyPricing();
-                $dailyPricing->country()->associate($country);
-                $dailyPricing->product()->associate($product);
-                $dailyPricing->submitted_at = Carbon::now();
-                $dailyPricing->submitter()->associate(auth()->user());
-                $dailyPricing->save();
+                if(!$hasDailyPricing) {
+                    $dailyPricing = new DailyPricing();
+                    $dailyPricing->country()->associate($country);
+                    $dailyPricing->product()->associate($product);
+                    $dailyPricing->submitted_at = Carbon::now();
+                    $dailyPricing->submitter()->associate(auth()->user());
+                    $dailyPricing->save();
+                }
             }
         }
 
