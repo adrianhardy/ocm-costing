@@ -62,7 +62,6 @@ class DailyPricingController extends Controller
             $dailyPricing->approver()->associate(auth()->user());
 
 
-            // $factor = $dailyPricing->country->currency->default_fx_to_gbp;
             $factor = $dailyPricing->country->currency->currency_fx_rate;
             $dailyPricing->product->current_product_pricing->unit_price_gbp = ($factor * $dailyPricing->suggested_price);
             $dailyPricing->product->current_product_pricing->marketplace_fee = $dailyPricing->fba_fee;

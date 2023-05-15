@@ -16,7 +16,7 @@
                                             <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
                                         </b-form-group>
                                         <b-dropdown-divider/>
-                                        <b-form-group label="Filter by Supplier">
+                                        <b-form-group label="Filter by Factory">
                                             <factory-select v-model="searchFactory" @selected="factorySelect"/>
                                         </b-form-group>
                                         <b-dropdown-header>Export Options</b-dropdown-header>
@@ -66,6 +66,11 @@
                     {{ data.value | cash_value }}
                   </span>
                 </template>
+                <template #cell(unit_price_gbp)="data">
+                  <span v-if="data.value">
+                    {{ data.value | cash_value }}
+                  </span>
+                </template>
             </b-table>
             <b-button @click="createSalesOrder" size="lg" block :disabled="selectedForExport.length < 1" variant="primary">
                 <a v-if="selectedForExport < 1">No Products Selected</a>
@@ -85,7 +90,8 @@ export default {
     name: "ProductsList",
     components: {FactorySelect, SearchInput, TableHeader, CreateSalesOrderModal},
     props: {
-        isSupplier: Boolean
+        isSupplier: Boolean,
+        isUk: Boolean
     },
     mounted(){
         this.updateSearch();
@@ -130,11 +136,19 @@ export default {
             ];
 
             if (!this.isSupplier) {
-                fields.push({
-                    key: 'est_landed_cost_gbp',
-                    label: 'ELC GBP',
-                    sortable: true
-                });
+                if(!this.isUk) {
+                    fields.push({
+                        key: 'est_landed_cost_gbp',
+                        label: 'ELC GBP',
+                        sortable: true
+                    });
+                } else {
+                    fields.push({
+                        key: 'unit_price_gbp',
+                        label: 'Unit Price GBP',
+                        sortable: true
+                    })
+                }
             }
 
             return fields;

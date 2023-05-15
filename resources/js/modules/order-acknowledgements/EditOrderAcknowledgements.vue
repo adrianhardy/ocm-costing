@@ -187,12 +187,15 @@
                         </div>
                     </b-form-group>
                 </template>
+                <template #head(checked)="data">
+                    <b-form-checkbox size="lg" @change="selectAllLines($event)" />
+                </template>
                 <template #cell(checked)="data">
-                    <b-form-checkbox size="lg" v-model="data.item.checked"/>
+                    <b-form-checkbox :rerenderCount="rerenderCount" size="lg" v-model="data.item.checked"/>
                 </template>
                 <template #custom-foot>
                     <b-tr>
-                        <b-th colspan="10">
+                        <b-th :colspan="getColspan">
                         </b-th>
                         <b-td>
                             <div><strong>Pieces</strong></div>
@@ -293,6 +296,9 @@ export default {
         this.refresh();
     },
     computed: {
+        getColspan(){
+            return this.salesOrder.is_finalised?12:10;
+        },
         state() {
             return window.__state;
         },
@@ -352,7 +358,8 @@ export default {
                 thClass: 'w-12',
             }, {
                 key: 'oa_primary_sku',
-                label: 'Primary Sku'
+                label: 'Primary Sku',
+                thClass: 'w-8'
             }, {
                 key: 'barcode',
                 label :'Barcode',
@@ -368,7 +375,15 @@ export default {
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
-                thClass: 'w-10'
+                thClass: 'w-8'
+            }, {
+                key: 'qty_received',
+                label: "Rcv'",
+                thClass: 'w-5'
+            },  {
+                key: 'qty_remaining',
+                label: "Rem'",
+                thClass: 'w-5'
             }, {
                 key: 'units_per_case',
                 label: 'units/case',
@@ -380,17 +395,17 @@ export default {
             }, {
                 key: 'total',
                 label: 'Sub-Total',
-                thClass: 'w-7 text-nowrap',
+                thClass: 'w-6 text-nowrap',
                 tdClass: 'text-nowrap'
             }, {
                 key: 'oa_eta',
                 label: 'ETA',
-                thClass: 'w-15'
+                thClass: 'w-10'
             }];
             if (this.salesOrder.is_finalised) {
                 return _.filter(fields, o => o.key !== 'id')
             } else {
-                return _.filter(fields, o => o.key !== 'checked')
+                return _.filter(fields, o => o.key !== 'checked' && o.key !== 'qty_received' && o.key !== 'qty_remaining')
             }
         },
         include() {
@@ -398,6 +413,12 @@ export default {
         }
     },
     methods: {
+        selectAllLines(event){
+            _.forEach(this.salesOrder.lines, function(line) {
+                line.checked = event
+            });
+            this.rerenderCount++;
+        },
         createInvoice() {
             this.$refs['invoice-modal'].open();
         },
@@ -410,7 +431,6 @@ export default {
             this.$http.post(url, {...line}, {
                 params: {include: this.include}
             }).then(response => {
-                console.log(response);
                 this.refresh();
                 this.showCreateProduct = null;
                 loading.hide();
@@ -594,6 +614,7 @@ export default {
                 currency: {}
             },
             note: '',
+            rerenderCount: 0,
         }
     }
 }

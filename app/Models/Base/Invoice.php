@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $approver_id
  * @property float|null $sub_total
  * @property bool $is_approval_required
+ * @property Carbon|null $invoice_date
  * 
  * @property User|null $approver
  * @property User $creator
@@ -50,7 +51,8 @@ class Invoice extends Model
 	];
 
 	protected $dates = [
-		'approved_at'
+		'approved_at',
+		'invoice_date'
 	];
 
 	public function approver()

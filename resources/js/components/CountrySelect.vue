@@ -17,6 +17,10 @@ export default {
             default: ''
         },
         'value': [Object, String, Array],
+        'amazon': {
+            type: Boolean,
+            default: false
+        }
     },
     mounted() {
         this.refresh();
@@ -25,7 +29,8 @@ export default {
         refresh() {
             const params = {
                 include: this.responseInclude,
-                all: true
+                all: true,
+                amazon: this.amazon
             };
 
             this.$refs['select'].toggleLoading(true);

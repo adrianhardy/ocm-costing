@@ -5,6 +5,9 @@
             @role('supplier')
                 is-supplier
             @endrole
+            @can('__uk')
+                is-uk
+            @endcan
         ></products-list>
     </div>
 @endsection

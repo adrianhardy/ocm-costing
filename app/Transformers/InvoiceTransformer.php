@@ -53,7 +53,8 @@ class InvoiceTransformer extends TransformerAbstract
     public function transform(Invoice $invoice)
     {
         return $invoice->only([
-            'id', 'created_at', 'updated_at', 'deleted_at','reference', 'approved_at', 'sub_total', 'is_approval_required'
+            'id', 'created_at', 'updated_at', 'deleted_at','reference', 'approved_at', 'sub_total', 'is_approval_required',
+            'invoice_date'
         ]);
     }
 }

@@ -35,7 +35,7 @@ class DailyPricing extends BaseDailyPricing
             ->where('id', '!=', $this->id)
             ->where('country_id', $this->country->id)
             ->where('product_id', $this->product->id)
-            ->where('submitted_at', '<', $this->submitted_at)
+            ->where('id', '<', $this->id)
             ->orderByDesc('submitted_at')
             ->first();
 
@@ -47,7 +47,7 @@ class DailyPricing extends BaseDailyPricing
             ->where('id', '!=', $this->id)
             ->where('country_id', $this->country->id)
             ->where('product_id', $this->product->id)
-            ->where('approved_at', '<', $this->submitted_at)
+            ->where('id', '<', $this->id)
             ->whereNotNull('approved_at')
             ->orderByDesc('approved_at')
             ->first();

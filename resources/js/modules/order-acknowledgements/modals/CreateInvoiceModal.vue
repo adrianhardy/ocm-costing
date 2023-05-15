@@ -1,12 +1,20 @@
 <template>
     <b-modal title="Create Invoice" size="xl" ref="modal" centered ok-title="Create" @ok.prevent="create()">
         <div class="row">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
                 <b-form-group label="Supplier Invoice Reference">
                     <b-form-input v-model="invoice.invoice_reference" />
                 </b-form-group>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
+                <b-form-group label="Invoice Date">
+                    <b-form-datepicker
+                        v-model="invoice.invoice_date"
+                        :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"
+                    />
+                </b-form-group>
+            </div>
+            <div class="col-12 col-md-4">
                 <b-form-group label="Pricing Priority / All">
                     <b-form-select @input="setAllPriority($event)">
                         <b-form-select-option value="low">Low</b-form-select-option>
@@ -48,6 +56,14 @@
                     <b-select-option value="high">High</b-select-option>
                 </b-form-select>
             </template>
+            <template #cell(errors)="data">
+                <b-badge v-show="data.item.invoice_qty_received > data.item.qty_remaining" variant="danger">
+                    Too many
+                </b-badge>
+                <b-badge variant="danger" v-show="data.item.invoice_unit_price > 0 && (parseFloat(data.item.invoice_unit_price) !== parseFloat(data.item.unit_price))">
+                    Price mismatch
+                </b-badge>
+            </template>
         </b-table>
     </b-modal>
 </template>
@@ -69,7 +85,8 @@ export default {
                 {key: 'qty_received', label: 'Received', tdClass: 'align-middle', thClass: 'align-middle w-5    '},
                 {key: 'ordered', label: 'Ordered', tdClass: 'align-middle', thClass: 'align-middle w-10'},
                 {key: 'unit_price', label: 'Unit Price', tdClass: 'align-middle', thClass: 'align-middle w-10'},
-                {key: 'priority', label: 'Priority', tdClass: 'align-middle', thClass: 'align-middle w-15'},
+                {key: 'priority', label: 'Priority', tdClass: 'align-middle', thClass: 'align-middle w-10'},
+                {key: 'errors', label: '', tdClass: 'align-middle', thClass: 'align-middle w-5'},
             ]
         }
     },

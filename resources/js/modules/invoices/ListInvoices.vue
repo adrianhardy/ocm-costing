@@ -8,7 +8,7 @@
                             <b-select-option :value="null">All</b-select-option>
                             <b-select-option value="approved">Approved</b-select-option>
                             <b-select-option value="approval_needed">Not Approved</b-select-option>
-                            <b-select-option value="deleted">Deleted</b-select-option>
+                            <b-select-option v-if="false" value="deleted">Deleted</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
                     </slot>
@@ -50,8 +50,8 @@
                     </div>
                     <b-badge v-if="!data.item.is_approval_required" variant="success">Manally Approved: {{ new Date(data.item.created_at) | date('dd/MM/yy HH:mm')}}</b-badge>
                 </template>
-                <template #cell(created_at)="data">
-                    <span>{{ new Date(data.value) | date('dd/MM/yy HH:mm') }}</span>
+                <template #cell(invoice_date)="data">
+                    <span v-if="data.item.invoice_date">{{ new Date(data.value) | date('dd/MM/yy') }}</span>
                 </template>
                 <template #cell(sub_total)="data">
                     <span>{{data.value | cash_value}}</span>
@@ -91,8 +91,8 @@ export default {
                     key: 'sales_order.reference',
                     label: 'OA'
                 }, {
-                    key: 'created_at',
-                    label: 'Date'
+                    key: 'invoice_date',
+                    label: 'Invoice Date'
                 }, {
                     key: 'sub_total',
                     label: 'Sub Total'
@@ -123,7 +123,7 @@ export default {
     data(){
         return {
             search: '',
-            stage: null,
+            stage: 'approved',
             pagination: {
                 total: 0,
                 perPage: 100,

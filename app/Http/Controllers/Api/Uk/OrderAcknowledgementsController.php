@@ -24,13 +24,13 @@ class OrderAcknowledgementsController extends Controller
 
         switch($request->input('stage')) {
             case 'draft':
-                $paginator = $paginator->currentStatus(SalesOrder::STATUS_DRAFT);
+                $paginator = $paginator->currentStatus([SalesOrder::STATUS_DRAFT, SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS]);
                 break;
             case 'unmatched_products':
                 $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS);
                 break;
             case 'active':
-                $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_ACTIVE);
+                $paginator = $paginator->currentStatus([SalesOrder::OA_STATUS_ACTIVE, SalesOrder::OA_STATUS_PARTIALLY_RECEIVED]);
                 break;
             case 'partially_received':
                 $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_PARTIALLY_RECEIVED);
@@ -39,6 +39,8 @@ class OrderAcknowledgementsController extends Controller
                 $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_FULLY_RECEIVED);
                 break;
         }
+
+
 
         if($request->input('product_id')) {
             $paginator = $paginator->whereHas('lines', function($query) use ($request) {
@@ -51,6 +53,7 @@ class OrderAcknowledgementsController extends Controller
             case 'deleted':
                 $paginator = $paginator->whereNotNull('deleted_at')->withTrashed();
         }
+
 
         $paginator = $paginator->paginate($request->input('per_page', 15));
 

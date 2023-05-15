@@ -7,14 +7,14 @@
                         <b-button v-if="canExport" variant="primary" class="mr-2" @click="exportNonViable">
                             Export Non Viable
                         </b-button>
-                        <country-select class="w-25 mr-2" @input="$refs['table'].refresh()" v-model="country"></country-select>
+                        <country-select amazon class="w-25 mr-2" @input="$refs['table'].refresh()" v-model="country"></country-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
                     </slot>
                 </table-header>
             </template>
             <b-table show-empty empty-text="No Daily Pricing Found" sort-by="submitted_at" :sort-desc="true" ref="table" :fields="fields" :items="items">
                 <template #cell(suggested_price)="data">
-                    <b-input-group prepend="£">
+                    <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
                             :readonly="data.item.approved_at !== null"
                             @change="updateDailyPricing(data.item)"
@@ -60,6 +60,16 @@
                         N/A
                     </span>
                 </template>
+                <template #cell(margin)="data">
+                    <span v-if="data.value">
+                        {{ data.value }}%
+                    </span>
+                </template>
+                <template #cell(profit)="data">
+                    <span v-if="data.value">
+                        {{ data.value }} {{ currencySymbol(data.item.country) }}
+                    </span>
+                </template>
                 <template #cell(approver)="data">
                     <b-button :disabled="!data.item.suggested_price || !data.item.fba_fee" variant="success" @click="approveDailyPricing(data.item)" v-if="!data.item.approved_at && canApprove">
                         Approve
@@ -81,6 +91,7 @@ import TableHeader from "../../components/table/TableHeader";
 import SearchInput from "../../components/SearchInput";
 import CountrySelect from "../../components/CountrySelect";
 import {dateFilter} from "vue-date-fns";
+import getSymbolFromCurrency from "currency-symbol-map";
 
 
 export default {
@@ -104,10 +115,10 @@ export default {
     },
     computed: {
         include(){
-            return 'submitter,approver,country,product,pricing_history'
+            return 'submitter,approver,country,country.currency,product,pricing_history'
         },
         fields(){
-            return [
+            const fields = [
                 {
                     key: 'product.item_number',
                     label: 'Item #',
@@ -129,7 +140,7 @@ export default {
                     tdClass: 'align-middle w-15',
                     thClass: 'align-middle'
                 }, {
-                    key: 'country.name',
+                    key: 'country.iso_2_code',
                     label: 'Marketplace',
                     tdClass: 'align-middle w-5',
                     thClass: 'align-middle'
@@ -173,12 +184,27 @@ export default {
                     label: 'Approver',
                     tdClass: 'align-middle w-5',
                     thClass: 'align-middle'
+                },{
+                    key: 'margin',
+                    label: 'Margin',
+                    thClass: 'align-middle',
+                    tdClass: 'align-middle'
+                },{
+                    key: 'profit',
+                    label: 'Profit',
+                    thClass: 'align-middle',
+                    tdClass: 'align-middle'
                 }
             ]
+
+            if(!this.canApprove) {
+                return _.filter(fields, o => o.key !== 'product.unit_price' && o.key !== 'margin' && o.key !== 'profit')
+            }
+            return fields;
         }
     },
     methods: {
-        exportNonViable() {
+        async exportNonViable() {
             let params = new URLSearchParams({
                 include: this.include,
                 export: true
@@ -230,13 +256,19 @@ export default {
                 this.pagination,
                 ctx, payload
             )
-        }
+        },
+        currencySymbol(country) {
+            if (country && country.currency) {
+                return getSymbolFromCurrency(country.currency.code)
+            }
+            return '';
+        },
     },
     data(){
         return {
             pagination: {
                 total: 0,
-                perPage: 100,
+                perPage: 25,
                 currentPage: 1,
             },
             search: '',

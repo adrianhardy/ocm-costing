@@ -59,9 +59,7 @@
             <div class="card-body">
                 <code class="">
                     item_number,
-                    article_number,
                     product_description,
-                    name,
                     barcode,
                     inner_qty,
                     case_weight_kg,
@@ -73,11 +71,12 @@
                     unit_length_m,
                     unit_width_m,
                     primary_sku,
-                    reorder_number,
                     eta,
                     unit_price,
                     units_requested
-                </code>
+                </code> <br/>
+                <span><a href="/admin/import/template/OA-LINES-IMPORT-TEMPLATE.csv">Click here</a> to download a template for this import</span>
+
             </div>
         </div>
     </div>

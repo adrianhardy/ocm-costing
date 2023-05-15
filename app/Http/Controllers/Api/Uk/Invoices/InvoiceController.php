@@ -69,12 +69,13 @@ class InvoiceController extends Controller
         // the ones that have been selected, and create invoice lines for them
         $this->validate($request, [
             'invoice_reference' => 'required|unique:invoices,reference',
+            'invoice_date' => 'required|date',
             'id' => 'required',
             'lines.*.product.id'    => 'required|',
             'lines.*.checked'       => 'sometimes|boolean',
             'lines.*.invoice_qty_received'  => 'nullable|numeric|min:0|required_if:lines.*.checked,true',
             'lines.*.invoice_unit_price'    => 'nullable|numeric|min:0|required_if:lines.*.checked,true',
-            'lines.*.priority' => 'required_if:lines.*.checked,true|in:low,medium,high',
+            'lines.*.priority' => 'required_if:lines.*.checked,true|sometimes|nullable|in:low,medium,high',
         ], [
             'lines.*.invoice_qty_received.required_if' => 'Qty received is required when line is checked',
             'lines.*.invoice_unit_price.required_if' => 'Unit price is required when line is checked',
@@ -90,6 +91,7 @@ class InvoiceController extends Controller
         $invoice = new Invoice();
 
         $invoice->reference = $request->input('invoice_reference');
+        $invoice->invoice_date = $request->input('invoice_date');
         $invoice->creator()->associate(auth()->user());
         $invoice->sales_order()->associate($salesOrder);
 

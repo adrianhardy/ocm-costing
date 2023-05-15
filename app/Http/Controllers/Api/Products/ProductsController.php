@@ -46,6 +46,10 @@ class ProductsController extends Controller
             ->where('barcode', $request->input('barcode'))
             ->ignoreModel($product);
 
+        $uniqueBarcode = Rule::unique('products', 'barcode')->ignoreModel($product);
+
+
+
         $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
 
         $this->validate($request, [
@@ -54,7 +58,7 @@ class ProductsController extends Controller
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => ['required', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
-            'barcode'               => 'nullable|sometimes|max:32',
+            'barcode'               => ['nullable','sometimes','max:32', $uniqueBarcode],
             'length_cm'             => 'nullable|sometimes|min:0|numeric',
             'width_cm'              => 'nullable|sometimes|min:0|numeric',
             'height_cm'             => 'nullable|sometimes|min:0|numeric',
@@ -134,6 +138,7 @@ class ProductsController extends Controller
         $unique = Rule::unique('products', 'item_number')
             ->whereNotNull('barcode')
             ->where('barcode', $request->input('barcode'));
+        $uniqueBarcode = Rule::unique('products', 'barcode');
 
         $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
 
@@ -143,7 +148,7 @@ class ProductsController extends Controller
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => 'required|min:1|max:64',
             'name'                  => 'required|min:1|max:200',
-            'barcode'               => 'sometimes|max:32',
+            'barcode'               => ['sometimes', 'max:32', $uniqueBarcode],
             'length_cm'             => 'sometimes|min:0|numeric',
             'width_cm'              => 'sometimes|min:0|numeric',
             'height_cm'             => 'sometimes|min:0|numeric',

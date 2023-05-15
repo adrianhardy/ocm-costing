@@ -12,7 +12,10 @@ class SalesOrderRepository extends BaseRepository
 {
     protected $fieldSearchable = [
         'reference' => 'LIKE',
-        'supplier.name' => 'LIKE'
+        'supplier.name' => 'LIKE',
+        'supplier_reference' => 'LIKE',
+        'lines.product.item_number' => 'LIKE',
+        'lines.product.primary_sku' => 'LIKE'
     ];
     public function model()
     {
