@@ -125,7 +125,12 @@ class ProductExport
     public function getStock(){
 
         if($this->stockLevelRequired === true) {
-            $client = new Client(['base_uri' => env('RAF_BASE_URI', 'http://127.0.0.1:8000')]);
+            $client = new Client([
+                'base_uri' => config('raf.base_uri'),
+                'headers' => [
+                    'Authorization' => 'Bearer ' . config('raf.api_key')
+                ]
+            ]);
 
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [

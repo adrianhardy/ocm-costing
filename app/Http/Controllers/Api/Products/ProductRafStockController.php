@@ -14,7 +14,12 @@ class ProductRafStockController extends Controller
     {
         $dates = [];
 
-        $client = new Client(['base_uri' => env('RAF_BASE_URI', 'http://127.0.0.1:8000')]);
+        $client = new Client([
+            'base_uri' => config('raf.base_uri'),
+            'headers' => [
+                'Authorization' => 'Bearer ' . config('raf.api_key')
+            ]
+        ]);
 
         for($i = 0; $i < 13; $i++) {
 
