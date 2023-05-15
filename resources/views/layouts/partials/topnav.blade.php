@@ -8,7 +8,7 @@
             </a>
         </li>
         @endauth
-        @can('uk')
+        @can('__uk')
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('order-acknowledgements.index') }}">
                     <b-icon-list-task scale="0.8"></b-icon-list-task>
@@ -33,7 +33,7 @@
             @endrole
         @endcan
 
-        @can('china')
+        @can('__china')
                 @role('super|admin|supplier')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('sales-orders.index', ['stage' => 'order']) }}">
@@ -50,7 +50,7 @@
                     </li>
                 @endrole
         @endcan
-        @can('uk')
+        @can('__uk')
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('invoices.index') }}">
                     <b-icon-box-seam scale="0.8"></b-icon-box-seam>
@@ -105,7 +105,7 @@
             </a>
         </li>
         @endrole
-        @can('uk')
+        @can('__uk')
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('daily-pricing.index') }}">
                     <b-icon-file-ruled scale="0.8"></b-icon-file-ruled>
@@ -116,7 +116,7 @@
 
 
 
-        @can('china')
+        @can('__china')
             @role('super|admin|pricing|pricing_approver')
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('documents.index') }}">
@@ -136,7 +136,7 @@
                 <a class="dropdown-item" href="{{ route('product-asin.index') }}">Import ASIN/SKUs</a>
                 <a class="dropdown-item" href="{{ route('imports.create') }}">Import Products</a>
                 <a class="dropdown-item" href="{{ route('unit-dimensions.index') }}">Import Product Dimensions</a>
-                @can('china')
+                @can('__china')
                     <a class="dropdown-item" href="{{ route('shipments.index') }}">Import Shipment Details</a>
                 @endcan
             </div>

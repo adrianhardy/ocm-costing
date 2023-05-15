@@ -8,10 +8,10 @@
             @role('super')
             show-costing
             @endrole
-            @can('uk')
+            @can('__uk')
             is-uk
             @endcan
-            @can('china')
+            @can('__china')
             is-china
             @endcan
             @can('delete_products')

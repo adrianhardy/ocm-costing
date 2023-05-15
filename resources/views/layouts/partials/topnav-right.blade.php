@@ -38,7 +38,7 @@
                 @role('super|admin|pricing|pricing_admin')
                 <a class="dropdown-item" @click="$refs['quick-cost-modal'].show()">Quick Cost</a>
                 @endrole
-                @can('uk')
+                @can('__uk')
                 <a class="dropdown-item" @click="$refs['quick-price-modal'].show()">Quick Price</a>
                 @endcan
                 <div class="dropdown-divider"></div>
