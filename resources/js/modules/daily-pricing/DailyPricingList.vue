@@ -16,7 +16,7 @@
                 <template #cell(suggested_price)="data">
                     <b-input-group prepend="£">
                         <b-form-input
-                            :readonly="data.item.approved_at"
+                            :readonly="data.item.approved_at !== null"
                             @change="updateDailyPricing(data.item)"
                             v-model="data.item.suggested_price"
                             type="number"
@@ -30,7 +30,7 @@
                 <template #cell(fba_fee)="data">
                     <b-input-group prepend="£">
                         <b-form-input
-                            :readonly="data.item.approved_at"
+                            :readonly="data.item.approved_at !== null"
                             @change="updateDailyPricing(data.item)"
                             v-model="data.item.fba_fee"
                             type="number"
@@ -193,9 +193,8 @@ export default {
             }
 
             const link = document.createElement('a');
-            link.href = '/api/daily-pricing?' + params.toString();
+            link.href = '/daily-pricing/export?' + params.toString();
             link.download = 'daily_pricing_export.csv';
-            console.log(link);
             link.click();
         },
         approveDailyPricing(pricing) {

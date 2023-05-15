@@ -10,13 +10,13 @@ use App\Models\Repositories\DailyPricingRepository;
 use App\Transformers\DailyPricingTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DailyPricingController extends Controller
 {
     public function index(Request $request, DailyPricingRepository $repository)
     {
-        $paginator = $repository;
-
+        $paginator = $repository->with(['product', 'country', 'approver']);
 
         if($request->input('country_id')) {
             $paginator = $paginator->where('country_id', $request->input('country_id'));
@@ -32,12 +32,11 @@ class DailyPricingController extends Controller
         if($request->input('export')) {
             $paginator = $paginator->where('is_viable', false);
 
-            //  @todo unable to get the user to check if they are able to download
-//            abort_unless(
-//                auth('api')->user()->hasPermissionTo('daily_pricing_export'),
-//                403,
-//                'You do not have permission to export'
-//            );
+            if (Auth::check()) {
+                abort_unless($request->user()->hasPermissionTo('daily_pricing_export'),
+                403,
+                'You do not have permission to export');
+            }
             set_time_limit(120);
             ini_set('memory_limit', '256M');
             $export = new DailyPricingExport([]);

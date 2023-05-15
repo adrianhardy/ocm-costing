@@ -148,6 +148,10 @@ export default {
                 export: true
             });
 
+            if (this.selectedForExport && this.selectedForExport.length > 0) {
+                params.append('product_ids', this.selectedForExport.join(','));
+            }
+
             if(this.search !== '') {
                 params.append('search', this.search)
             }
@@ -157,9 +161,8 @@ export default {
             }
 
             const link = document.createElement('a');
-            link.href = '/api/products?' + params.toString();
+            link.href = '/products/export?' + params.toString();
             link.download = 'products_export.csv';
-            console.log(link);
             link.click();
         },
         createSalesOrder(){

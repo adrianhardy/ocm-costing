@@ -248,6 +248,11 @@ class ProductsController extends Controller
             ini_set('memory_limit', '256M');
             $export = new ProductExport([]);
 
+            $productIds = explode(',', $request->input('product_ids'));
+            if (count($productIds) > 0) {
+                $paginator->whereIn('id', $productIds);
+            }
+
             if($request->input('includeStockLevels') === "true") {
                 $export->setStockLevelRequired();
             }

@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 */
 Route::group(['as' => 'api.'], function() {
     Route::post('login', 'Api\AuthController@login');
-    Route::resource('products', 'Api\Products\ProductsController')->only(['index']);
 
 
     Route::group(['middleware' => ['auth:api']], function() {
@@ -22,6 +21,7 @@ Route::group(['as' => 'api.'], function() {
     });
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super|products']], function() {
+        Route::resource('products', 'Api\Products\ProductsController')->only(['index']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index','store']);
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
