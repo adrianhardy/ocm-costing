@@ -248,14 +248,25 @@ class ProductsController extends Controller
             ini_set('memory_limit', '256M');
             $export = new ProductExport([]);
 
-            $productIds = explode(',', $request->input('product_ids'));
-            if (count($productIds) > 0) {
-                $paginator->whereIn('id', $productIds);
+            if ($request->input('product_ids')) {
+                $productIds = explode(',', $request->input('product_ids'));
+                if (count(array_filter($productIds)) > 0) {
+                    $paginator->whereIn('id', array_filter($productIds));
+                }
             }
 
             if($request->input('includeStockLevels') === "true") {
                 $export->setStockLevelRequired();
             }
+
+            if($request->input('includeLandedCosts') === "true") {
+                $export->setLandedCostsRequired();
+            }
+
+            if($request->input('includeAgedLandedCosts') === "true") {
+                $export->setAgedLandedCostsRequired();
+            }
+
 
             $paginator->chunk(150, function ($products) use ($export) {
                 $export->setProducts($products);

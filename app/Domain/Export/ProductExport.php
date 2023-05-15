@@ -13,7 +13,10 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 class ProductExport
 {
     protected $writer;
-    protected $products = array();
+
+    /** @var \App\Models\Product[] */
+    protected $products = [];
+
     protected $log;
     protected $pa;
     protected $columns = array(
@@ -53,6 +56,10 @@ class ProductExport
      */
     private $stockLevelRequired = false;
 
+    private $landedCostsRequired = false;
+
+    private $agedLandedCostsRequired = false;
+
     public function __construct($products)
     {
         $this->products = $products;
@@ -73,6 +80,10 @@ class ProductExport
     {
         $headers = $this->columns;
 
+        if($this->landedCostsRequired) {
+            $headers[] = 'CLC (GBP)';
+        }
+
         if($this->stockLevelRequired) {
             $headers[] = 'Stock Level';
         }
@@ -91,9 +102,11 @@ class ProductExport
             foreach ($this->products as $product) {
                 $exportItem = [];
                 foreach ($this->columns as $column) {
-                    if($column !== 'Stock Level') {
-                        $exportItem[] = $this->extractProperty($product, $column);
-                    }
+                    $exportItem[] = $this->extractProperty($product, $column);
+                }
+
+                if ($this->landedCostsRequired) {
+                    $exportItem[] = $product->current_landed_cost_per_unit_gbp;
                 }
 
                 if($this->stockLevelRequired === true) {
@@ -142,18 +155,28 @@ class ProductExport
         }
     }
 
-    public function setStockLevelRequired(){
+    public function setStockLevelRequired()
+    {
         $this->stockLevelRequired = true;
     }
 
+    public function setLandedCostsRequired()
+    {
+        $this->landedCostsRequired = true;
+    }
 
+    public function setAgedLandedCostsRequired()
+    {
+        $this->agedLandedCostsRequired = true;
+    }
 
     /**
      *
      * @param $products
      * @return void
      */
-    public function setProducts($products){
+    public function setProducts($products)
+    {
         $this->products = $products;
     }
 

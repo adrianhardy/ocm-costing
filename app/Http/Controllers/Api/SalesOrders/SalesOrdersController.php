@@ -101,6 +101,7 @@ class SalesOrdersController extends Controller
         $this->validate($request, [
             'reference' => 'required|min:1|max:200',
             'currency.id' => 'required|exists:currencies,id',
+            'factory.id' => 'sometimes|exists:factories,id',
             'supplier.id' => ($isSupplier?'nullable':'required') . '|exists:suppliers,id'
         ]);
 
@@ -118,7 +119,6 @@ class SalesOrdersController extends Controller
                 $so->factory()->associate(Factory::find($request->input('factory.id')));
             }
         }
-
         $so->fx_rate = $so->currency->default_fx_to_gbp;
         $so->save();
 

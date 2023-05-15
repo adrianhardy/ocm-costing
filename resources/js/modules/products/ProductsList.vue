@@ -19,10 +19,10 @@
                                         <b-form-group label="Filter by Supplier">
                                             <factory-select v-model="searchFactory" @selected="factorySelect"/>
                                         </b-form-group>
-                                        <b-dropdown-divider/>
-                                        <b-form-group label="Stock Levels">
-                                            <b-form-checkbox v-model="includeStockLevels">Include stock levels on export (warning: slow)</b-form-checkbox>
-                                        </b-form-group>
+                                        <b-dropdown-header>Export Options</b-dropdown-header>
+                                        <b-form-checkbox v-model="includeStockLevels">Include stock levels from RAF (warning: slow)</b-form-checkbox>
+                                        <b-form-checkbox v-model="includeLandedCosts">Include current landed costs</b-form-checkbox>
+                                        <b-form-checkbox v-model="includeAgedLandedCosts">Include aged landed costs</b-form-checkbox>
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
@@ -145,6 +145,8 @@ export default {
             let params = new URLSearchParams({
                 include: this.include,
                 includeStockLevels: this.includeStockLevels,
+                includeAgedLandedCosts: this.includeAgedLandedCosts,
+                includeLandedCosts: this.includeLandedCosts,
                 export: true
             });
 
@@ -251,6 +253,7 @@ export default {
                 currentPage: 1,
             },
             includeStockLevels: false,
+            includeLandedCosts: false,
             loading: false
         }
     }
