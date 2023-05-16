@@ -105,7 +105,7 @@ export default {
             const url = '/api/invoices'
             this.$http.post(url, this.invoice).then(response => {
                 loading.hide()
-                // window.location.href = `/invoices/${response.data.id}/edit`
+                window.location.href = `/invoices/${response.data.id}/edit`
             }).catch(error => {
                 this.$handleExceptionResponse(error, true)
                 loading.hide();
