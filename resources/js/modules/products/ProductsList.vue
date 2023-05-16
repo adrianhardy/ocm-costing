@@ -22,7 +22,6 @@
                                         <b-dropdown-header>Export Options</b-dropdown-header>
                                         <b-form-checkbox v-model="includeStockLevels">Include stock levels from RAF (warning: slow)</b-form-checkbox>
                                         <b-form-checkbox v-model="includeLandedCosts">Include current landed costs</b-form-checkbox>
-                                        <b-form-checkbox v-model="includeAgedLandedCosts">Include aged landed costs</b-form-checkbox>
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
@@ -249,8 +248,13 @@ export default {
                     'article_number' : 'sorted_article_number'
                 }
             );
-            this.products = products
-            return products
+            // so, we're going to return the promise so items provider continues
+            // to work, but we're going to also grab the contents of that promise
+            // so we can get hard copies of all the products...
+            products.then(results => {
+                this.products = results;
+            });
+            return products;
         }
     },
     data() {

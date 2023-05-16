@@ -205,6 +205,7 @@ export default {
         async exportNonViable() {
             let params = new URLSearchParams({
                 include: this.include,
+                non_viable: true,
                 export: true
             });
 
