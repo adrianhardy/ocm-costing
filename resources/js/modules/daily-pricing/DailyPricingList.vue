@@ -7,7 +7,7 @@
                         <b-button v-if="canExport" variant="primary" class="mr-2" @click="exportNonViable">
                             Export Non Viable
                         </b-button>
-                        <country-select amazon class="w-25 mr-2" @input="$refs['table'].refresh()" v-model="country"></country-select>
+                        <country-select placeholder="Country" use-code amazon class="mr-2 w-20" @input="$refs['table'].refresh()" v-model="country" />
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
                     </slot>
                 </table-header>
@@ -42,9 +42,6 @@
                         <span v-if="data.item.last_checked_at">
                         {{ new Date(data.item.last_checked_at) | date('dd/MM/yy HH:mm') }}
                     </span>
-                        <span v-else>
-                        N/A
-                    </span>
                     </div>
                     <b-tooltip triggers="hover" :target="`checked-${data.item.id}`">
                         <div v-for="history in data.item.pricing_history">
@@ -55,9 +52,6 @@
                 <template #cell(last_approved_at)="data">
                     <span v-if="data.item.last_approved_at">
                         {{new Date(data.item.last_approved_at) | date('dd/MM/yy HH:mm')}}
-                    </span>
-                    <span v-else>
-                        N/A
                     </span>
                 </template>
                 <template #cell(margin)="data">
@@ -71,14 +65,13 @@
                     </span>
                 </template>
                 <template #cell(approver)="data">
-                    <b-button :disabled="!data.item.suggested_price || !data.item.fba_fee" variant="success" @click="approveDailyPricing(data.item)" v-if="!data.item.approved_at && canApprove">
+                    <b-button size="sm" :disabled="!data.item.suggested_price || !data.item.fba_fee" variant="success" @click="approveDailyPricing(data.item)" v-if="!data.item.approved_at && canApprove">
                         Approve
                     </b-button>
                     <div v-else>
                         <span v-if="data.item.approved_at">
-                            {{data.item.approver.name}}
+                            {{data.item.approver.initials}}
                         </span>
-                        <span v-else>N/A</span>
                     </div>
                 </template>
             </b-table>
@@ -141,12 +134,12 @@ export default {
                     thClass: 'align-middle'
                 }, {
                     key: 'country.iso_2_code',
-                    label: 'Marketplace',
+                    label: 'Market.',
                     tdClass: 'align-middle w-5',
                     thClass: 'align-middle'
                 }, {
-                    key: 'product.unit_price',
-                    label: 'Price',
+                    key: 'last_est_landed_cost',
+                    label: 'GBP/Unit',
                     tdClass: 'align-middle w-1',
                     thClass: 'align-middle'
                 }, {
@@ -175,7 +168,7 @@ export default {
                     tdClass: 'align-middle w-10',
                     thClass: 'align-middle'
                 }, {
-                    key: 'submitter.name',
+                    key: 'submitter.initials',
                     label: 'Checker',
                     tdClass: 'align-middle w-5 ',
                     thClass: 'align-middle'

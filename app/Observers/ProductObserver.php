@@ -41,9 +41,10 @@ class ProductObserver
                     $dailyPricing->save();
                 }
             }
+        } else {
+            $product->sorted_article_number = SortedArticleNumberGenerator::convert($product->article_number);
         }
 
-        $product->sorted_article_number = SortedArticleNumberGenerator::convert($product->article_number);
 
         if ($product->isDirty([
             'length_m',

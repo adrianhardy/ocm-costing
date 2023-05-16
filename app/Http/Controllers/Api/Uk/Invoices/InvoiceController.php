@@ -62,8 +62,28 @@ class InvoiceController extends Controller
         return response()->json(fractal($invoice, new InvoiceTransformer));
     }
 
+    /**
+     * @param Request $request
+     * @param PricingService $pricingService
+     * @param InvoiceService $invoiceService
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request, PricingService $pricingService, InvoiceService $invoiceService)
     {
+
+        // work out how many lines they've checked before we go any further
+        $checked = array_filter($request->input('lines'), function($line){
+            return isset($line['checked']);
+        });
+
+        abort_unless(
+            count($checked) > 0,
+            400,
+            'You must check at least one OA line to create an invoice'
+        );
+
+
         // we're basically just giving this a sales order,
         // so we need to go through the lines and pick out
         // the ones that have been selected, and create invoice lines for them
@@ -71,7 +91,8 @@ class InvoiceController extends Controller
             'invoice_reference' => 'required|unique:invoices,reference',
             'invoice_date' => 'required|date',
             'id' => 'required',
-            'lines.*.product.id'    => 'required|',
+            'lines' => 'required|array|min:1',
+            'lines.*.product.id'    => 'required',
             'lines.*.checked'       => 'sometimes|boolean',
             'lines.*.invoice_qty_received'  => 'nullable|numeric|min:0|required_if:lines.*.checked,true',
             'lines.*.invoice_unit_price'    => 'nullable|numeric|min:0|required_if:lines.*.checked,true',
@@ -131,6 +152,14 @@ class InvoiceController extends Controller
         return response()->json(fractal($invoice, new InvoiceTransformer));
     }
 
+    /**
+     * @param Request $request
+     * @param PricingService $pricingService
+     * @param Invoice $invoice
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Spatie\ModelStatus\Exceptions\InvalidStatus
+     */
     public function update(Request $request, PricingService $pricingService, Invoice $invoice)
     {
 

@@ -56,4 +56,6 @@
     @endguest
 </ul>
 <quick-cost-modal ref="quick-cost-modal"></quick-cost-modal>
+@can('__uk')
 <quick-price-modal ref="quick-price-modal"></quick-price-modal>
+@endcan

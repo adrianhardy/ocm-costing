@@ -70,5 +70,15 @@ class DailyPricing extends BaseDailyPricing
         return parent::product()->withTrashed();
     }
 
+    public function getLastEstLandedCostAttribute()
+    {
+        if(!$this->product->current_product_pricing) {
+            return $this->product->unit_price_gbp;
+        }
+
+	    return $this->product->current_product_pricing->unit_price_gbp;
+    }
+
+
 
 }

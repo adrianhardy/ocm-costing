@@ -30,7 +30,8 @@ class PricingService
 
     /**
      * @param $productOrSalesOrderLine
-     * @return void
+     * @param null $unitPriceGbp set if it's a UK product
+     * @param null $pricingPriority set if it's a UK product
      */
     public function sendToPricing($productOrSalesOrderLine, $unitPriceGbp = null, $pricingPriority = null)
     {
@@ -45,6 +46,9 @@ class PricingService
         } else {
             throw new \InvalidArgumentException("Only accepts either a Product or a SalesOrderLine");
         }
+
+        // calling touch() b/c we need to generate daily pricing for the product
+        $product->touch();
 
         ProductPricing::query()
             ->whereNull('superseded_at')
@@ -83,6 +87,12 @@ class PricingService
             $pricing->product()->associate($product);
         }
 
+        // for UK products, just set the ELC/Cost to $unitPriceGbp
+        if ($unitPriceGbp && $pricingPriority) {
+            $costingData['est_landed_cost_per_unit_gbp'] = $unitPriceGbp;
+            $grossCost = $unitPriceGbp;
+        }
+
         /** @var Currency $eur */
         $eur = Currency::query()->where('code', 'EUR')->first();
         $pricing->fill([
@@ -93,6 +103,9 @@ class PricingService
             'eur_fx_rate' => $eur->default_fx_to_gbp
         ]);
 
+        // support UK-centric products by keeping the price up to date
+        // the only reason china lags behind is because of import/shipping
+        // But with UK we get a price immediately from the invoice
         if($unitPriceGbp) {
             $pricing->unit_price_gbp = $unitPriceGbp;
         }

@@ -18,6 +18,7 @@ Route::group(['as' => 'api.'], function() {
 
     Route::group(['middleware' => ['auth:api']], function() {
         Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
+        Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
     });
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super|products']], function() {
@@ -39,7 +40,6 @@ Route::group(['as' => 'api.'], function() {
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super']], function() {
         Route::resource('settings', 'Api\Settings\SettingsController')->only(['index']);
-        Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
         Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['store']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['update']);
         Route::resource('countries', 'Api\Countries\CountriesController')->only(['update']);

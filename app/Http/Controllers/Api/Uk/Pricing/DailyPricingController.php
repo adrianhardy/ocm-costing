@@ -6,6 +6,7 @@ use App\Domain\Export\DailyPricingExport;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\DailyPricing;
+use App\Models\ProductPricingCountry;
 use App\Models\Repositories\DailyPricingRepository;
 use App\Transformers\DailyPricingTransformer;
 use Carbon\Carbon;
@@ -63,8 +64,13 @@ class DailyPricingController extends Controller
 
 
             $factor = $dailyPricing->country->currency->currency_fx_rate;
-            $dailyPricing->product->current_product_pricing->unit_price_gbp = ($factor * $dailyPricing->suggested_price);
-            $dailyPricing->product->current_product_pricing->marketplace_fee = $dailyPricing->fba_fee;
+            $dailyPricing->product->current_product_pricing->save();
+
+            /** @var ProductPricingCountry $pricingCountry */
+            $pricingCountry = $dailyPricing->product->current_product_pricing->product_pricing_countries()->where('country_id', $dailyPricing->country_id)->firstOrFail();
+            $pricingCountry->unit_fba_price = ($factor * $dailyPricing->suggested_price);
+            $pricingCountry->unit_fba_fee = $dailyPricing->fba_fee;
+            $pricingCountry->save();
 
             $newDailyPricing = new DailyPricing();
             $newDailyPricing->country()->associate($dailyPricing->country);

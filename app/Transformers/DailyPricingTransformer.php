@@ -73,7 +73,8 @@ class DailyPricingTransformer extends TransformerAbstract
             'margin',
             'profit',
             'last_checked_at',
-            'last_approved_at'
+            'last_approved_at',
+            'last_est_landed_cost'
         ]);
     }
 }
