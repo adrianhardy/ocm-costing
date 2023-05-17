@@ -153,7 +153,7 @@ class ProductExport
 
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
-                    'items' => collect($this->products)->pluck('item_number')->toArray(),
+                    'items' => collect($this->products)->pluck('article_number')->toArray(),
                     'selected_date' => Carbon::now()
                 ]]);
 
