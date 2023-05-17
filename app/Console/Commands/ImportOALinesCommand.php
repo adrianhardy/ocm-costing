@@ -6,6 +6,7 @@ use App\Models\Import;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -171,6 +172,9 @@ class ImportOALinesCommand extends Command
                 'units_requested' => $row['units_requested'],
             ]);
 
+            if($row['oa_eta'] !== '') {
+                $line->oa_eta = Carbon::parse($row['oa_eta']);
+            }
 
             // some fields are nullable, so we don't want them getting
             // set when they aren't present on the import, or we'll get

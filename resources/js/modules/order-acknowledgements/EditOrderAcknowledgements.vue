@@ -138,6 +138,7 @@
 
                 <template #cell(oa_eta)="data">
                     <b-form-datepicker
+                        right
                         @input="updateLine(data.item)"
                         v-model="data.item.oa_eta"
                         placeholder="ETA"

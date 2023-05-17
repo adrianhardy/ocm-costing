@@ -52,7 +52,10 @@ class DailyPricingTransformer extends TransformerAbstract
 
     public function includeSubmitter(DailyPricing $pricing)
     {
-        return $this->item($pricing->submitter, new UserTransformer);
+        if($pricing->submitter) {
+            return $this->item($pricing->submitter, new UserTransformer);
+        };
+        return $this->null();
     }
 
     

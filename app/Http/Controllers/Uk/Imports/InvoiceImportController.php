@@ -51,7 +51,6 @@ class InvoiceImportController extends Controller
         Artisan::call('import:invoice', [
             'import' => $import->id,
             '--skip-first-row' => $import->skip_header_rows,
-            '--pretend' => true
         ]);
 
         return response()->json(fractal($import->fresh(), new ImportTransformer())->parseIncludes('log'));

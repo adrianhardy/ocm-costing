@@ -64,6 +64,10 @@ class DailyPricingController extends Controller
 
 
             $factor = $dailyPricing->country->currency->currency_fx_rate;
+            // PRICING is entered in local currency, no need for conversion
+            $factor = 1; // undo currency conversion below
+
+
             $dailyPricing->product->current_product_pricing->save();
 
             /** @var ProductPricingCountry $pricingCountry */
@@ -88,6 +92,8 @@ class DailyPricingController extends Controller
             $dailyPricing->fill($request->only([
                 'fba_fee', 'suggested_price'
             ]));
+
+            $dailyPricing->submitter()->associate(auth()->user());
 
             $dailyPricing->submitted_at = Carbon::now();
             $dailyPricing->submitter()->associate(auth()->user());
