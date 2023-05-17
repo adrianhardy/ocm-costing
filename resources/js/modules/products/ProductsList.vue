@@ -21,7 +21,19 @@
                                         </b-form-group>
                                         <b-dropdown-header>Export Options</b-dropdown-header>
                                         <b-form-checkbox v-model="includeStockLevels">Include stock levels from RAF (warning: slow)</b-form-checkbox>
-                                        <b-form-checkbox v-model="includeLandedCosts">Include current landed costs</b-form-checkbox>
+                                        <b-dropdown-header>Export Format</b-dropdown-header>
+                                        <b-form-radio-group
+                                            v-model="format"
+                                            stacked
+                                            :options="[{
+                                                    value: 'full',
+                                                    text: 'Full, RAF compatible'
+                                                }, {
+                                                    value: 'simplified_china',
+                                                    text: 'Simplified, China'
+                                                }
+                                            ]"
+                                        />
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
@@ -157,9 +169,7 @@ export default {
         async exportProducts(){
             let params = new URLSearchParams({
                 include: this.include,
-                includeStockLevels: this.includeStockLevels,
-                includeAgedLandedCosts: this.includeAgedLandedCosts,
-                includeLandedCosts: this.includeLandedCosts,
+                format: this.format,
                 export: true
             });
 
@@ -259,6 +269,7 @@ export default {
     },
     data() {
         return {
+            format: 'full',
             selected: [],
             selectedForExport: [],
             search: '',

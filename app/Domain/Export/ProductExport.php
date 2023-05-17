@@ -19,7 +19,9 @@ class ProductExport
 
     protected $log;
     protected $pa;
-    protected $columns = array(
+
+
+    protected $fullExportColumns = [
         'item_number',
         'article_number',
         'name',
@@ -44,8 +46,20 @@ class ProductExport
         'additional_asins',
         'uk_postage_method',
         'eu_postage_method',
-        'row_postage_method',
-    );
+        'row_postage_method'
+    ];
+
+    protected $columns;
+
+    protected $simplifiedChinaExportColumns = [
+        'item_number',
+        'article_number',
+        'name',
+        'packing_instructions',
+        'product_description',
+        'current_landed_cost_per_unit_gbp'
+    ];
+
 
     /**
      * @var mixed
@@ -56,15 +70,18 @@ class ProductExport
      */
     private $stockLevelRequired = false;
 
-    private $landedCostsRequired = false;
-
-    private $agedLandedCostsRequired = false;
-
     public function __construct($products)
     {
         $this->products = $products;
         $this->pa = PropertyAccess::createPropertyAccessor();
+        $this->columns = $this->fullExportColumns;
+    }
 
+
+    public function setSimplifiedChinaExport()
+    {
+        $this->columns = $this->simplifiedChinaExportColumns;
+        return true;
     }
 
     /**
@@ -79,14 +96,6 @@ class ProductExport
     public function buildExport()
     {
         $headers = $this->columns;
-
-        if($this->landedCostsRequired) {
-            $headers[] = 'CLC (GBP)';
-        }
-
-        if($this->stockLevelRequired) {
-            $headers[] = 'Stock Level';
-        }
 
         try {
             if ($this->writer) {
@@ -103,10 +112,6 @@ class ProductExport
                 $exportItem = [];
                 foreach ($this->columns as $column) {
                     $exportItem[] = $this->extractProperty($product, $column);
-                }
-
-                if ($this->landedCostsRequired) {
-                    $exportItem[] = $product->current_landed_cost_per_unit_gbp;
                 }
 
                 if($this->stockLevelRequired === true) {
@@ -135,7 +140,8 @@ class ProductExport
         }
     }
 
-    public function getStock(){
+    public function getStock()
+    {
 
         if($this->stockLevelRequired === true) {
             $client = new Client([
@@ -153,21 +159,6 @@ class ProductExport
 
             $this->stockLevels = json_decode($response->getBody());
         }
-    }
-
-    public function setStockLevelRequired()
-    {
-        $this->stockLevelRequired = true;
-    }
-
-    public function setLandedCostsRequired()
-    {
-        $this->landedCostsRequired = true;
-    }
-
-    public function setAgedLandedCostsRequired()
-    {
-        $this->agedLandedCostsRequired = true;
     }
 
     /**
