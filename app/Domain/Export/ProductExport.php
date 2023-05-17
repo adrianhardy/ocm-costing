@@ -77,6 +77,11 @@ class ProductExport
         $this->columns = $this->fullExportColumns;
     }
 
+    public function setStockLevelRequired()
+    {
+        $this->stockLevelRequired = true;
+        return $this;
+    }
 
     public function setSimplifiedChinaExport()
     {
@@ -96,6 +101,13 @@ class ProductExport
     public function buildExport()
     {
         $headers = $this->columns;
+
+        if ($this->stockLevelRequired) {
+            $headers[] = 'Current Stock';
+            $headers[] = 'Stock as at XXXX';
+            $headers[] = 'Goods In';
+            $headers[] = 'Dispatched';
+        }
 
         try {
             if ($this->writer) {
@@ -125,6 +137,9 @@ class ProductExport
                         }
                     }
                     $exportItem[] = $stock??'N/A';
+                    $exportItem[] = ''; // stock as at date X
+                    $exportItem[] = ''; // Goods In
+                    $exportItem[] = ''; // Dispatched
                 }
 
 

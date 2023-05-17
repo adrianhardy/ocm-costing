@@ -36,8 +36,7 @@ export default {
                 {value: 100, text: '100 rows'},
                 {value: 50, text: '50 rows'},
                 {value: 25, text: '25 rows'},
-                {value: 15, text: '15 rows'},
-                {value: 2, text: '2 rows'}
+                {value: 15, text: '15 rows'}
             ];
         }
     }

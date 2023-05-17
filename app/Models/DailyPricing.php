@@ -80,7 +80,8 @@ class DailyPricing extends BaseDailyPricing
     }
 
 
-    public function getLocalProfitAttribute(){
+    public function getLocalProfitAttribute()
+    {
 	    if(!$this->profit){
 	        return null;
         }

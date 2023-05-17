@@ -266,6 +266,10 @@ class ProductsController extends Controller
                 $export->setSimplifiedChinaExport();
             }
 
+            if($request->input('format') === 'full_with_stock_data') {
+                $export->setStockLevelRequired();
+            }
+
             $paginator->chunk(150, function ($products) use ($export) {
                 $export->setProducts($products);
                 $export->getStock();

@@ -2,7 +2,7 @@
     <div>
         <b-card class="shadow-sm">
             <template #header>
-                <table-header v-model="pagination" @input="$refs['table'].refresh()">
+                <table-header v-model="pagination">
                     <slot>
                         <b-button v-if="canExport" variant="primary" class="mr-2" @click="exportNonViable">
                             Export Non Viable
@@ -12,7 +12,17 @@
                     </slot>
                 </table-header>
             </template>
-            <b-table show-empty empty-text="No Daily Pricing Found" sort-by="submitted_at" :sort-desc="true" ref="table" :fields="fields" :items="items">
+            <b-table
+                show-empty
+                empty-text="No Daily Pricing Found"
+                sort-by="submitted_at"
+                :sort-desc="true"
+                ref="table"
+                :fields="fields"
+                :items="items"
+                :current-page="pagination.currentPage"
+                :per-page="pagination.perPage"
+            >
                 <template #cell(suggested_price)="data">
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
@@ -139,7 +149,7 @@ export default {
                     thClass: 'align-middle'
                 }, {
                     key: 'country.iso_2_code',
-                    label: 'Market.',
+                    label: 'Mk\'t',
                     tdClass: 'align-middle w-5',
                     thClass: 'align-middle'
                 }, {
@@ -151,7 +161,7 @@ export default {
                     key: 'suggested_price',
                     label: 'Sugg. Price',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle w-7'
+                    thClass: 'align-middle w-10'
                 }, {
                     key: 'viable',
                     label: '',
@@ -161,16 +171,16 @@ export default {
                     key: 'fba_fee',
                     label: 'FBA Fee',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle w-7'
+                    thClass: 'align-middle w-10'
                 }, {
                     key: 'last_checked_at',
                     label: 'Last Checked',
-                    tdClass: 'align-middle w-10',
+                    tdClass: 'align-middle w-1 text-nowrap',
                     thClass: 'align-middle'
                 }, {
                     key: 'last_approved_at',
                     label: 'Last Apprv.',
-                    tdClass: 'align-middle w-10',
+                    tdClass: 'align-middle w-1 text-nowrap',
                     thClass: 'align-middle'
                 }, {
                     key: 'submitter.initials',

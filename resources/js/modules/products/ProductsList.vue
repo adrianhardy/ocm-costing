@@ -28,9 +28,12 @@
                                             :options="[{
                                                     value: 'full',
                                                     text: 'Full, RAF compatible'
+                                                },{
+                                                    value: 'full_with_stock_data',
+                                                    text: 'Full with Stock Data'
                                                 }, {
                                                     value: 'simplified_china',
-                                                    text: 'Simplified, China'
+                                                    text: 'Simplified with Current Landed Cost (CN)'
                                                 }
                                             ]"
                                         />
@@ -168,7 +171,6 @@ export default {
     methods: {
         async exportProducts(){
             let params = new URLSearchParams({
-                include: this.include,
                 format: this.format,
                 export: true
             });
@@ -188,6 +190,7 @@ export default {
             const link = document.createElement('a');
             link.href = '/products/export?' + params.toString();
             link.download = 'products_export.csv';
+            console.log(link.href);
             link.click();
         },
         createSalesOrder(){
