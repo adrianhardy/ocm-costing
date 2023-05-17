@@ -21,8 +21,22 @@
                                         </b-form-group>
                                         <b-dropdown-header>Export Options</b-dropdown-header>
                                         <b-form-checkbox v-model="includeStockLevels">Include stock levels from RAF (warning: slow)</b-form-checkbox>
-                                        <b-form-checkbox v-model="includeLandedCosts">Include current landed costs</b-form-checkbox>
-                                        <b-form-checkbox v-model="includeAgedLandedCosts">Include aged landed costs</b-form-checkbox>
+                                        <b-dropdown-header>Export Format</b-dropdown-header>
+                                        <b-form-radio-group
+                                            v-model="format"
+                                            stacked
+                                            :options="[{
+                                                    value: 'full',
+                                                    text: 'Full, RAF compatible'
+                                                },{
+                                                    value: 'full_with_stock_data',
+                                                    text: 'Full with Stock Data'
+                                                }, {
+                                                    value: 'simplified_china',
+                                                    text: 'Simplified with Current Landed Cost (CN)'
+                                                }
+                                            ]"
+                                        />
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
@@ -157,10 +171,7 @@ export default {
     methods: {
         async exportProducts(){
             let params = new URLSearchParams({
-                include: this.include,
-                includeStockLevels: this.includeStockLevels,
-                includeAgedLandedCosts: this.includeAgedLandedCosts,
-                includeLandedCosts: this.includeLandedCosts,
+                format: this.format,
                 export: true
             });
 
@@ -179,6 +190,7 @@ export default {
             const link = document.createElement('a');
             link.href = '/products/export?' + params.toString();
             link.download = 'products_export.csv';
+            console.log(link.href);
             link.click();
         },
         createSalesOrder(){
@@ -249,12 +261,18 @@ export default {
                     'article_number' : 'sorted_article_number'
                 }
             );
-            this.products = products
-            return products
+            // so, we're going to return the promise so items provider continues
+            // to work, but we're going to also grab the contents of that promise
+            // so we can get hard copies of all the products...
+            products.then(results => {
+                this.products = results;
+            });
+            return products;
         }
     },
     data() {
         return {
+            format: 'full',
             selected: [],
             selectedForExport: [],
             search: '',

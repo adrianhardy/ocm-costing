@@ -27,7 +27,7 @@ class ProductRafStockController extends Controller
 
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
-                    'items' => [$product->item_number],
+                    'items' => [$product->article_number],
                     'selected_date' => $date->toDateString()
                 ]]
             );

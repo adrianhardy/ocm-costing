@@ -132,7 +132,7 @@ class ImportOALinesCommand extends Command
             $validator = Validator::make($row, [
                 'item_number' => 'required',
                 'product_description' => 'sometimes',
-                'barcode' => 'required',
+                'barcode' => 'sometimes|max:16',
                 'inner_qty' => 'sometimes|numeric',
                 'case_weight_kg' => 'sometimes|numeric',
                 'height_m' => 'sometimes|numeric',

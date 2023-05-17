@@ -262,18 +262,13 @@ class ProductsController extends Controller
                 }
             }
 
-            if($request->input('includeStockLevels') === "true") {
+            if($request->input('format') === 'simplified_china') {
+                $export->setSimplifiedChinaExport();
+            }
+
+            if($request->input('format') === 'full_with_stock_data') {
                 $export->setStockLevelRequired();
             }
-
-            if($request->input('includeLandedCosts') === "true") {
-                $export->setLandedCostsRequired();
-            }
-
-            if($request->input('includeAgedLandedCosts') === "true") {
-                $export->setAgedLandedCostsRequired();
-            }
-
 
             $paginator->chunk(150, function ($products) use ($export) {
                 $export->setProducts($products);

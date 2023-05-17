@@ -18,28 +18,35 @@ class OrderAcknowledgementsController extends Controller
 {
     public function index(Request $request, SalesOrderRepository $repository){
         $paginator = $repository->pushCriteria(app(RequestCriteria::class));
-
-        $paginator = $paginator->where('is_order_acknowledgement', true);
-
-
+        // $paginator = $paginator->where('is_order_acknowledgement', true);
+        // adding on "SalesOrder::STATUS_CONFIRMED_SALES_ORDER" onto status so that we always
+        // get through all of WS's Sales Orders that may be of interest to toni. But, we only
+        // do that on "ACTIVE" filter. BUT, all other non active statuses filter out WS' Orders.
         switch($request->input('stage')) {
             case 'draft':
+                $paginator = $paginator->where('is_order_acknowledgement', true);
                 $paginator = $paginator->currentStatus([SalesOrder::STATUS_DRAFT, SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS]);
                 break;
             case 'unmatched_products':
+                $paginator = $paginator->where('is_order_acknowledgement', true);
                 $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS);
                 break;
             case 'active':
-                $paginator = $paginator->currentStatus([SalesOrder::OA_STATUS_ACTIVE, SalesOrder::OA_STATUS_PARTIALLY_RECEIVED]);
+                // include confirmed sales orders
+                $paginator = $paginator->currentStatus([SalesOrder::OA_STATUS_ACTIVE, SalesOrder::OA_STATUS_PARTIALLY_RECEIVED, SalesOrder::STATUS_CONFIRMED_SALES_ORDER]);
                 break;
             case 'partially_received':
+                $paginator = $paginator->where('is_order_acknowledgement', true);
                 $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_PARTIALLY_RECEIVED);
                 break;
             case 'fully_received':
+                $paginator = $paginator->where('is_order_acknowledgement', true);
                 $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_FULLY_RECEIVED);
                 break;
+            default:
+                $paginator = $paginator->where('is_order_acknowledgement', true);
+                break;
         }
-
 
 
         if($request->input('product_id')) {

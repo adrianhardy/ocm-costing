@@ -12,6 +12,7 @@ use App\Transformers\DailyPricingTransformer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DailyPricingController extends Controller
 {
@@ -21,6 +22,35 @@ class DailyPricingController extends Controller
 
         if($request->input('country_id')) {
             $paginator = $paginator->where('country_id', $request->input('country_id'));
+        }
+
+        if ($request->input('non_viable')) {
+            $paginator = $paginator->where('is_viable', 0);
+        }
+
+        if ($request->input('search')) {
+            $paginator = $paginator->select('daily_pricing.*');
+            /*
+                SELECT MAX(id) as id, product_id, country_id, MAX(submitted_at) as submitted_at, GROUP_CONCAT(id), GROUP_CONCAT(submitted_at)
+                FROM daily_pricing
+                WHERE submitted_at IS NOT NULL
+                GROUP BY country_id, product_id,
+                ORDER BY MAX(submitted_at) DESC
+             */
+            $subQuery = DB::table('daily_pricing')
+                ->addSelect(DB::raw('MAX(id) as id'))
+                ->addSelect('product_id')
+                ->addSelect('country_id')
+                // for debugging:
+                // ->addSelect(DB::raw('MAX(submitted_at) as submitted_at'))
+                // ->addSelect(DB::raw('GROUP_CONCAT(id)'))
+                // ->addSelect(DB::raw('GROUP_CONCAT(submitted_at)'))
+                ->whereNotNull('submitted_at')
+                ->groupBy('country_id')
+                ->groupBy('product_id')
+                ->orderByRaw('MAX(submitted_at) DESC');
+
+            $paginator = $paginator->joinSub($subQuery, 'latest_daily_pricing', 'latest_daily_pricing.id', '=', 'daily_pricing.id');
         }
 
         if($request->input('product_id')) {
