@@ -84,10 +84,11 @@ export default {
                     key: 'date',
                     label: 'Date',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle'
+                    thClass: 'align-middle',
+                    sortable: true
                 }, {
                     key: 'supplier.name',
-                    sortable: true,
+                    sortable: false,
                     label: 'Supplier',
                     tdClass: 'align-middle',
                     thClass: 'align-middle'
