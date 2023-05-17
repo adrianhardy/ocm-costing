@@ -69,6 +69,14 @@ class ProductExport
      * @var bool
      */
     private $stockLevelRequired = false;
+    /**
+     * @var string
+     */
+    private $period;
+    /**
+     * @var mixed
+     */
+    private $periodicStockLevels;
 
     public function __construct($products)
     {
@@ -88,6 +96,11 @@ class ProductExport
         $this->columns = $this->simplifiedChinaExportColumns;
         return true;
     }
+
+    public function setPeriod($date){
+        $this->period = Carbon::parse($date);
+    }
+
 
     /**
      * If we call this multiple times, then the first time we'll get the
@@ -131,15 +144,26 @@ class ProductExport
                     // so we're making sure we have it so the foreach doesn't throw an issue
                     if($this->stockLevels) {
                         foreach($this->stockLevels as $level) {
-                            if ($level->item->item_number === $product->item_number) {
+                            if ($level->item->item_number === $product->article_number) {
                                 $stock = $level->level;
                             }
                         }
                     }
+                    if($this->periodicStockLevels) {
+                        foreach($this->periodicStockLevels as $level) {
+                            if($level->item->item_number === $product->article_number){
+                                $periodicStock = $level->level;
+                                $periodicGoodsIn = $level->goods_in;
+                                $periodicDispatches = $level->dispatched;
+                            }
+                        }
+                    }
+
+
                     $exportItem[] = $stock??'N/A';
-                    $exportItem[] = ''; // stock as at date X
-                    $exportItem[] = ''; // Goods In
-                    $exportItem[] = ''; // Dispatched
+                    $exportItem[] = $periodicStock??'N/A'; // stock as at date X
+                    $exportItem[] = $periodicGoodsIn??'N/A'; // Goods In
+                    $exportItem[] = $periodicDispatches??'N/A'; // Dispatched
                 }
 
 
@@ -171,6 +195,15 @@ class ProductExport
                     'items' => collect($this->products)->pluck('article_number')->toArray(),
                     'selected_date' => Carbon::now()
                 ]]);
+
+            $dateResponse = $client->request('GET', '/api/stock-export', [
+                'query' => [
+                    'items' => collect($this->products)->pluck('article_number')->toArray(),
+                    'selected_date' => $this->period
+                ]
+            ]);
+
+            $this->periodicStockLevels = json_decode($dateResponse->getBody());
 
             $this->stockLevels = json_decode($response->getBody());
         }

@@ -3,8 +3,8 @@
         <div class="d-flex justify-content-around">
             <div class="small">FBA <span v-html="presentProfitInGbp?'&pound;':currencySymbol"></span></div>
             <div class="small">FBA %</div>
-            <div class="small">SF <span v-html="presentProfitInGbp?'&pound;':currencySymbol"></span></div>
-            <div class="small">SF %</div>
+            <div v-if="!quickPrice" class="small">SF <span v-html="presentProfitInGbp?'&pound;':currencySymbol"></span></div>
+            <div v-if="!quickPrice" class="small">SF %</div>
         </div>
         <b-input-group size="sm">
             <div class="form-control bg-light">
@@ -13,10 +13,10 @@
             <div class="form-control bg-light">
                 {{ fbaMargin }}
             </div>
-            <div class="form-control bg-light">
+            <div v-if="!quickPrice" class="form-control bg-light">
                 {{ sfProfit }}
             </div>
-            <div class="form-control bg-light">
+            <div v-if="!quickPrice" class="form-control bg-light">
                 {{ sfMargin }}
             </div>
         </b-input-group>
@@ -37,7 +37,11 @@ export default {
         fbaReferralFee: [Number, String],
         sfReferralFee: [Number, String],
         currencySymbol: String,
-        presentProfitInGbp: Boolean
+        presentProfitInGbp: Boolean,
+        quickPrice: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         sfProfit() {

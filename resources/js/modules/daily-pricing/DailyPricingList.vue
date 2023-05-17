@@ -89,6 +89,11 @@
                         </span>
                     </div>
                 </template>
+                <template #cell(last_est_landed_cost)="data">
+                    <span v-if="data.item.last_est_landed_cost">
+                        {{data.item.last_est_landed_cost}}
+                    </span>
+                </template>
             </b-table>
         </b-card>
     </div>

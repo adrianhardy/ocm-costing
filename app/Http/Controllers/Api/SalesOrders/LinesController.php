@@ -26,7 +26,10 @@ class LinesController extends Controller
         }
 
         if($request->input('product_id')){
-            $paginator = $paginator->where('product_id', $request->input('product_id'));
+            $paginator = $paginator->where('product_id', $request->input('product_id'))
+                ->whereHas('sales_order', function($query){
+                    return $query->whereNotNull('finalised_at');
+                });
         }
 
         $paginator = $paginator->paginate($request->input('per_page', 25));

@@ -6,21 +6,22 @@
                     <slot>
                         <search-input class="w-50" v-model="search" @search="updateHash()">
                             <slot>
-                                <b-dropdown class="align-middle float-right" size="lg" text="" variant="outline-secondary" right>
+                                <b-dropdown ref="dropdown" class="align-middle float-right" @show="isClosable = false" @hide="handleHide($event)" size="lg" text="" variant="outline-secondary" right>
                                     <b-dropdown-form style="width:400px">
-                                        <b-form-group label="Search by">
-                                            <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
-                                            <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
-                                            <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
-                                            <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
-                                            <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
-                                        </b-form-group>
+                                        <div class="d-flex justify-content-between">
+                                            <b-form-group label="Search by">
+                                                <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
+                                            </b-form-group>
+                                            <a @click="closeDropdown()"><b-icon-x/></a>
+                                        </div>
                                         <b-dropdown-divider/>
                                         <b-form-group label="Filter by Factory">
                                             <factory-select v-model="searchFactory" @selected="factorySelect"/>
                                         </b-form-group>
-                                        <b-dropdown-header>Export Options</b-dropdown-header>
-                                        <b-form-checkbox v-model="includeStockLevels">Include stock levels from RAF (warning: slow)</b-form-checkbox>
                                         <b-dropdown-header>Export Format</b-dropdown-header>
                                         <b-form-radio-group
                                             v-model="format"
@@ -37,6 +38,10 @@
                                                 }
                                             ]"
                                         />
+                                        <b-dropdown-header>Stock Options</b-dropdown-header>
+                                        <b-form-group label="Start Date">
+                                            <b-form-datepicker v-model="start_date" :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"/>
+                                        </b-form-group>
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
@@ -169,6 +174,18 @@ export default {
         }
     },
     methods: {
+        handleHide(event) {
+            console.log(event);
+            if (!this.isClosable) {
+                event.preventDefault();
+            } else {
+                this.$refs['dropdown'].hide();
+            }
+        },
+        closeDropdown(){
+            this.isClosable = true;
+            this.$refs['dropdown'].hide();
+        },
         async exportProducts(){
             let params = new URLSearchParams({
                 format: this.format,
@@ -185,6 +202,10 @@ export default {
 
             if(this.country) {
                 params.append('search_factory_id', this.searchFactory.id)
+            }
+
+            if(this.start_date) {
+                params.append('start_date', this.start_date);
             }
 
             const link = document.createElement('a');
@@ -286,7 +307,9 @@ export default {
             },
             includeStockLevels: false,
             includeLandedCosts: false,
-            loading: false
+            loading: false,
+            start_date: null,
+            isClosable: false,
         }
     }
 }

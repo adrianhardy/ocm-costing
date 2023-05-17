@@ -8,18 +8,23 @@
             :fields="fields"
             :items="items"
             show-empty
-            empty-text="No Order Acknowledgements To Show"
+            empty-text="No Sales Orders To Show"
         >
             <template #table-busy>
                 <div class="text-center my-2">
                     <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
                 </div>
             </template>
-            <template #cell(reference)="data">
-                <a :href="`/order-acknowledgements/${data.item.id}/edit`">{{ data.value }}</a>
+            <template #cell(sales_order.reference)="data">
+                <a :href="`/sales-orders/${data.item.sales_order.id}/edit`">{{ data.value }}</a>
             </template>
             <template #cell(date)="data">
                 <span>{{ new Date(data.item.sales_order.created_at) | date('dd/MM/yy HH:mm') }}</span>
+            </template>
+            <template #cell(unit_price)="data">
+                <span v-if="data.item.id">
+                    {{data.item.unit_price | 2dp_value}}
+                </span>
             </template>
         </b-table>
     </div>
@@ -62,12 +67,18 @@ export default {
                     tdClass: 'align-middle',
                     thClass: 'align-middle'
                 },  {
-                    key: 'sales_order.supplier_reference',
-                    label: 'Supplier Reference',
+                    key: 'units_requested',
+                    label: 'QTY',
                     sortable: true,
                     tdClass: 'align-middle',
                     thClass: 'align-middle'
-                },
+                }, {
+                    key: 'unit_price',
+                    label: 'Price',
+                    sortable: true,
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                }
             ];
         }
     },

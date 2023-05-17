@@ -12,6 +12,7 @@ use App\Models\Repositories\ProductRepository;
 use App\Models\SalesOrder;
 use App\Models\Supplier;
 use App\Transformers\ProductTransformer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -269,6 +270,13 @@ class ProductsController extends Controller
             if($request->input('format') === 'full_with_stock_data') {
                 $export->setStockLevelRequired();
             }
+
+            if($request->input('start_date')) {{
+                $export->setPeriod($request->input('start_date'));
+            }} else {
+                $export->setPeriod(Carbon::now());
+            }
+
 
             $paginator->chunk(150, function ($products) use ($export) {
                 $export->setProducts($products);
