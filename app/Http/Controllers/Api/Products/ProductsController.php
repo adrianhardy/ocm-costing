@@ -44,11 +44,11 @@ class ProductsController extends Controller
         $unique = Rule::unique('products', 'item_number')
             ->whereNotNull('barcode')
             ->where('barcode', $request->input('barcode'))
+            ->whereNull('deleted_at')
             ->ignoreModel($product);
 
-        $uniqueBarcode = Rule::unique('products', 'barcode')->ignoreModel($product);
-
-
+        $uniqueBarcode = Rule::unique('products', 'barcode')->ignoreModel($product)
+            ->whereNull('deleted_at');
 
         $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
 
@@ -137,8 +137,10 @@ class ProductsController extends Controller
         $this->authorize('create', Product::class);
         $unique = Rule::unique('products', 'item_number')
             ->whereNotNull('barcode')
+            ->whereNull('deleted_at')
             ->where('barcode', $request->input('barcode'));
-        $uniqueBarcode = Rule::unique('products', 'barcode');
+        $uniqueBarcode = Rule::unique('products', 'barcode')
+            ->whereNull('deleted_at');
 
         $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
 

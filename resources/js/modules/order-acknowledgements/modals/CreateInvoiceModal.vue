@@ -24,10 +24,7 @@
                 </b-form-group>
             </div>
         </div>
-        <b-table v-if="invoice.lines" :fields="fields" :items="invoice.lines">
-            <template #cell(selected)="data">
-                <b-form-checkbox v-model="data.item.checked"></b-form-checkbox>
-            </template>
+        <b-table v-if="invoice.lines" :fields="fields" :items="items">
             <template #cell(photo)="data">
                 <img style="max-width: 100%; max-height: 100px" v-if="data.item.product.media && data.item.product.media[0]" :src="data.item.product.media[0].url" />
             </template>
@@ -77,7 +74,6 @@ export default {
     computed: {
         fields(){
             return [
-                {key: 'selected', label: '', tdClass: 'align-middle', thClass: 'align-middle'},
                 {key: 'photo', label: 'Photo', tdClass: 'align-middle', thClass: 'align-middle'},
                 {key: 'item_number', label: 'Item #', tdClass: 'align-middle', thClass: 'align-middle'},
                 {key: 'name', label: 'Product Details', tdClass: 'align-middle', thClass: 'align-middle'},
@@ -88,6 +84,11 @@ export default {
                 {key: 'priority', label: 'Priority', tdClass: 'align-middle', thClass: 'align-middle w-10'},
                 {key: 'errors', label: '', tdClass: 'align-middle', thClass: 'align-middle w-5'},
             ]
+        },
+        items(){
+            return _.filter(this.invoice.lines, function(line) {
+                return line.checked === true
+            })
         }
     },
     methods: {

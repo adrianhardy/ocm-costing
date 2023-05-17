@@ -23,7 +23,8 @@ class DailyPricingExport
         'suggested_price',
         'fba_fee',
         'submitted_at',
-        'submitter.name'
+        'submitter.name',
+        'local_profit',
     );
 
 

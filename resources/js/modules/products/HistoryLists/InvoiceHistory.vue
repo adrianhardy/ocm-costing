@@ -8,7 +8,6 @@
             hover
             :fields="fields"
             :items="items"
-            sort-by="reference"
             show-empty
             empty-text="No Invoices To Show"
         >
@@ -17,12 +16,12 @@
                     <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
                 </div>
             </template>
-            <template #cell(status)="data">
-                <div v-if="!data.item.deleted_at">
-                    <div v-if="data.item.is_approval_required">
-                        <b-badge :id="`approval-required-${data.item.id}`" v-if="!data.item.approved_at" variant="danger">X</b-badge>
+            <template #cell(invoice.status)="data">
+                <div v-if="!data.item.invoice.deleted_at">
+                    <div v-if="data.item.invoice.is_approval_required">
+                        <b-badge :id="`approval-required-${data.item.invoice.id}`" v-if="!data.item.invoice.approved_at" variant="danger">X</b-badge>
                         <div v-else>
-                            <b-badge :id="`approved-${data.item.id}`" variant="warning">
+                            <b-badge :id="`approved-${data.item.invoice.id}`" variant="warning">
                                 <b-icon-check></b-icon-check>
                             </b-badge>
                             <br/>
@@ -31,32 +30,35 @@
                 </div>
                 <div v-else>
                     <b-badge variant="danger">
-                        Deleted At: {{ new Date(data.item.deleted_at) | date('dd/MM/yy HH:mm') }}
+                        Deleted At: {{ new Date(data.item.invoice.deleted_at) | date('dd/MM/yy HH:mm') }}
                     </b-badge>
                 </div>
-                <b-badge :id="`auto-approved-${data.item.id}`" v-if="!data.item.is_approval_required" variant="success">
+                <b-badge :id="`auto-approved-${data.item.invoice.id}`" v-if="!data.item.invoice.is_approval_required" variant="success">
                     <b-icon-check></b-icon-check>
                 </b-badge>
 
-                <b-tooltip triggers="hover" :target="`approved-${data.item.id}`">
-                    <span>Approved: {{new Date(data.item.approved_at) | date('dd/MM/yy HH:mm')}}</span>
+                <b-tooltip triggers="hover" :target="`approved-${data.item.invoice.id}`">
+                    <span>Approved: {{new Date(data.item.invoice.approved_at) | date('dd/MM/yy HH:mm')}}</span>
                 </b-tooltip>
-                <b-tooltip triggers="hover" :target="`auto-approved-${data.item.id}`">
-                    <span>Auto Approved: {{new Date(data.item.created_at) | date('dd/MM/yy HH:mm')}}</span>
+                <b-tooltip triggers="hover" :target="`auto-approved-${data.item.invoice.id}`">
+                    <span>Auto Approved: {{new Date(data.item.invoice.created_at) | date('dd/MM/yy HH:mm')}}</span>
                 </b-tooltip>
-                <b-tooltip triggers="hover" :target="`approval-required-${data.item.id}`">
+                <b-tooltip triggers="hover" :target="`approval-required-${data.item.invoice.id}`">
                     <span>Approval Required</span>
                 </b-tooltip>
             </template>
-            <template #cell(created_at)="data">
+            <template #cell(invoice.created_at)="data">
                 <span>{{ new Date(data.value) | date('dd/MM/yy HH:mm') }}</span>
             </template>
-            <template #cell(sub_total)="data">
+            <template #cell(invoice.sub_total)="data">
                 <span>{{ data.value | cash_value }}</span>
             </template>
-            <template #cell(reference)="data">
-                <b-link v-if="!data.item.deleted_at" :href="`/invoices/${data.item.id}/edit`">{{ data.value }}</b-link>
+            <template #cell(invoice.reference)="data">
+                <b-link v-if="!data.item.invoice.deleted_at" :href="`/invoices/${data.item.invoice.id}/edit`">{{ data.value }}</b-link>
                 <span v-else>{{ data.value }}</span>
+            </template>
+            <template #cell(unit_price)="data">
+                <span v-if="data.item.unit_price">£{{data.item.unit_price | 2dp_value}}</span>
             </template>
         </b-table>
     </div>
@@ -82,42 +84,47 @@ export default {
         fields() {
             return [
                 {
-                    key: 'sales_order.supplier.name',
+                    key: 'invoice.sales_order.supplier.name',
                     label: 'Supplier',
-                    tdClass: 'w-1 align-middle text-center',
+                    tdClass: 'align-middle text-center',
                     thClass: 'align-middle text-center'
                 }, {
-                    key: 'reference',
+                    key: 'invoice.reference',
                     label: 'Invoice #',
-                    tdClass: 'w-1 text-center',
+                    tdClass: 'text-center align-middle',
                     thClass: 'align-middle text-center'
 
                 }, {
-                    key: 'created_at',
+                    key: 'invoice.created_at',
                     label: 'Date',
-                    tdClass: 'w-5 text-center',
+                    tdClass: 'text-center align-middle',
                     thClass: 'align-middle text-center'
                 }, {
-                    key: 'sub_total',
-                    label: 'Sub Total',
-                    tdClass: 'w-1 text-center',
+                    key: 'qty',
+                    label: 'QTY',
+                    tdClass: 'text-center align-middle',
                     thClass: 'align-middle text-center'
                 }, {
-                    key: 'status',
+                    key: 'unit_price',
+                    label: 'Price',
+                    tdClass: 'text-center align-middle',
+                    thClass: 'align-middle text-center'
+                }, {
+                    key: 'invoice.status',
                     label: 'Status',
-                    tdClass: 'w-1 text-center align-middle',
+                    tdClass: 'text-center align-middle',
                     thClass: 'align-middle text-center'
 
                 }
             ];
         },
         include() {
-            return 'creator,approver,sales_order,sales_order.supplier';
+            return 'invoice.creator,invoice.approver,invoice.sales_order,invoice.sales_order.supplier';
         }
     },
     methods: {
         items(ctx) {
-            const url = `/api/invoices`;
+            const url = `/api/invoice-lines`;
             return this.$paginatedFetch(
                 url,
                 this.pagination,

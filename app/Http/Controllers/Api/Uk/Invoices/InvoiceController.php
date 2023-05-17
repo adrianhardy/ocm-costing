@@ -136,6 +136,8 @@ class InvoiceController extends Controller
 
         if($invoiceService->checkIfInvoiceApprovalRequired($invoice)) {
             $invoice->is_approval_required = true;
+
+
         } else {
             foreach ($invoice->invoice_lines as $line) {
                 $pricingService->sendToPricing($line->sales_order_line->product, $line->unit_price, $line->pricing_priority);

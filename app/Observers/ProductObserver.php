@@ -73,6 +73,8 @@ class ProductObserver
                 $pricing->est_landed_cost_per_unit_gbp = $product->est_landed_cost_gbp;
                 $pricing->save();
             }
+
+            $product->unit_price_gbp = $product->est_landed_cost_gbp;
         }
     }
 }

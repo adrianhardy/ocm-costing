@@ -75,6 +75,7 @@ class DailyPricingTransformer extends TransformerAbstract
             'is_viable',
             'margin',
             'profit',
+            'local_profit',
             'last_checked_at',
             'last_approved_at',
             'last_est_landed_cost'

@@ -44,6 +44,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['update']);
         Route::resource('countries', 'Api\Countries\CountriesController')->only(['update']);
         Route::group(['middleware' => ['role_or_permission:china']], function() {
+            Route::resource('sales-order-lines', 'Api\SalesOrders\LinesController');
             Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
             Route::resource('sales-orders.lines.media', 'Api\SalesOrders\Lines\MediaController')->only(['store']);
             Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'destroy']);
@@ -100,6 +101,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('order-acknowledgements.lines.product', 'Api\Uk\OrderAcknowledgementProductController')->only('store');
         Route::resource('products.stock-changes', 'Api\Products\ProductRafStockController')->only(['index']);
         Route::resource('invoices', 'Api\Uk\Invoices\InvoiceController')->only(['index', 'store', 'update', 'destroy', 'show']);
+        Route::resource('invoice-lines', 'Api\Uk\Invoices\InvoiceLinesController')->only(['index']);
     });
 
 

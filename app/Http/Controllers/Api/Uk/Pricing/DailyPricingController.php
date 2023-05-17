@@ -33,11 +33,11 @@ class DailyPricingController extends Controller
         if($request->input('export')) {
             $paginator = $paginator->where('is_viable', false);
 
-            if (Auth::check()) {
-                abort_unless($request->user()->hasPermissionTo('daily_pricing_export'),
-                403,
-                'You do not have permission to export');
-            }
+//            if (Auth::check()) {
+//                abort_unless($request->user()->hasPermissionTo('daily_pricing_export'),
+//                403,
+//                'You do not have permission to export');
+//            }
             set_time_limit(120);
             ini_set('memory_limit', '256M');
             $export = new DailyPricingExport([]);

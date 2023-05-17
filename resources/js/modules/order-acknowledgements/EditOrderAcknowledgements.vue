@@ -236,6 +236,7 @@
                         Add Line
                     </b-button>
                     <b-button
+                        :disabled="!canCreateInvoice"
                         class="mr-1"
                         size="lg"
                         variant="outline-primary"
@@ -411,6 +412,16 @@ export default {
         },
         include() {
             return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost,lines.received,lines.live_estimated_landed_cost';
+        },
+        canCreateInvoice(){
+            if(!this.salesOrder) {
+                return false;
+            }
+            return _.filter(this.salesOrder.lines, function(line) {
+                return line.checked === true;
+            }).length > 0
+
+
         }
     },
     methods: {

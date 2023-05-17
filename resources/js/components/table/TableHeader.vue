@@ -10,6 +10,7 @@
                     :total-rows="value.total"
                     :per-page="value.perPage"
                     aria-controls="my-table"
+                    @input="$emit('input', value)"
                 />
                 <b-select style="width: 10em"
                     :options="pageSizes"

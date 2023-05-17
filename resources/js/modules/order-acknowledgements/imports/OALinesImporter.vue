@@ -219,20 +219,22 @@ export default {
                 currentFile.uploaded = true;
                 currentFile.loaded = currentFile.size;
                 this.queue.shift();
-
-                if (this.queue.length < 1) {
-                    this.$bvModal.msgBoxOk("All files have been uploaded", {
-                        title: 'Congrats',
-                        centered: true
-                    });
-                }
                 if (response.data) {
                     this.log = response.data.log
                 }
 
 
             }).catch(error => {
-
+                currentFile.uploading = false;
+                currentFile.uploaded = true;
+                this.queue.shift();
+            }).finally(lastly => {
+                if (this.queue.length < 1) {
+                    this.$bvModal.msgBoxOk("All files have been uploaded", {
+                        title: 'Congrats',
+                        centered: true
+                    });
+                }
             });
         }
     },

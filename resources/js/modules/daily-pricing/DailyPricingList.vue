@@ -28,7 +28,7 @@
                     <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
                 </template>
                 <template #cell(fba_fee)="data">
-                    <b-input-group prepend="£">
+                    <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
                             :readonly="data.item.approved_at !== null"
                             @change="updateDailyPricing(data.item)"
@@ -60,9 +60,14 @@
                     </span>
                 </template>
                 <template #cell(profit)="data">
-                    <span v-if="data.value">
-                        {{ data.value }} {{ currencySymbol(data.item.country) }}
-                    </span>
+                    <div v-if="data.value">
+                        <span v-if="data.item.country.iso_2_code !== 'SE' && data.item.country.iso_2_code !== 'PL'">
+                            {{ currencySymbol(data.item.country) }}{{data.item.local_profit}}
+                        </span>
+                        <span v-else>
+                            £{{data.item.profit}}
+                        </span>
+                    </div>
                 </template>
                 <template #cell(approver)="data">
                     <b-button size="sm" :disabled="!data.item.suggested_price || !data.item.fba_fee" variant="success" @click="approveDailyPricing(data.item)" v-if="!data.item.approved_at && canApprove">
