@@ -69,25 +69,30 @@ class ProductExport
      * @var bool
      */
     private $stockLevelRequired = false;
-    /**
-     * @var string
-     */
-    private $period;
+
     /**
      * @var mixed
      */
-    private $periodicStockLevels;
+    private $stockTakeStartDate;
 
     public function __construct($products)
     {
         $this->products = $products;
         $this->pa = PropertyAccess::createPropertyAccessor();
         $this->columns = $this->fullExportColumns;
+        $this->stockTakeStartDate = Carbon::now()->subYear()->startOfDay();
     }
 
-    public function setStockLevelRequired()
+    /**
+     * @param Carbon $date
+     * @return $this
+     */
+    public function setStockLevelRequired(Carbon $date = null)
     {
         $this->stockLevelRequired = true;
+        if ($date) {
+            $this->stockTakeStartDate = $date;
+        }
         return $this;
     }
 
@@ -96,11 +101,6 @@ class ProductExport
         $this->columns = $this->simplifiedChinaExportColumns;
         return true;
     }
-
-    public function setPeriod($date){
-        $this->period = Carbon::parse($date);
-    }
-
 
     /**
      * If we call this multiple times, then the first time we'll get the
@@ -117,9 +117,9 @@ class ProductExport
 
         if ($this->stockLevelRequired) {
             $headers[] = 'Current Stock';
-            $headers[] = 'Stock as at XXXX';
-            $headers[] = 'Goods In';
-            $headers[] = 'Dispatched';
+            $headers[] = 'Stock as at ' . $this->stockTakeStartDate->format('d/m/Y');
+            $headers[] = 'Goods In since';
+            $headers[] = 'Dispatched since';
         }
 
         try {
@@ -139,31 +139,30 @@ class ProductExport
                     $exportItem[] = $this->extractProperty($product, $column);
                 }
 
+                $stockLevelToday = 'N/A';
+                $stockLevelHistoric = 'N/A';
+                $stockDispatched = 'N/A';
+                $stockReceived = 'N/A';
                 if($this->stockLevelRequired === true) {
                     // i'm assuming that stock levels can come in as null if nothing gets found
                     // so we're making sure we have it so the foreach doesn't throw an issue
                     if($this->stockLevels) {
                         foreach($this->stockLevels as $level) {
                             if ($level->item->item_number === $product->article_number) {
-                                $stock = $level->level;
-                            }
-                        }
-                    }
-                    if($this->periodicStockLevels) {
-                        foreach($this->periodicStockLevels as $level) {
-                            if($level->item->item_number === $product->article_number){
-                                $periodicStock = $level->level;
-                                $periodicGoodsIn = $level->goods_in;
-                                $periodicDispatches = $level->dispatched;
+                                $stockLevelToday = $level->level_today;
+                                $stockLevelHistoric = $level->level_historic;
+                                $stockDispatched = $level->dispatched;
+                                $stockReceived = $level->goods_in;
+                                break;
                             }
                         }
                     }
 
 
-                    $exportItem[] = $stock??'N/A';
-                    $exportItem[] = $periodicStock??'N/A'; // stock as at date X
-                    $exportItem[] = $periodicGoodsIn??'N/A'; // Goods In
-                    $exportItem[] = $periodicDispatches??'N/A'; // Dispatched
+                    $exportItem[] = $stockLevelToday;
+                    $exportItem[] = $stockLevelHistoric;
+                    $exportItem[] = $stockReceived;
+                    $exportItem[] = $stockDispatched;
                 }
 
 
@@ -193,17 +192,8 @@ class ProductExport
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
                     'items' => collect($this->products)->pluck('article_number')->toArray(),
-                    'selected_date' => Carbon::now()
+                    'selected_date' => $this->stockTakeStartDate->format('Y-m-d')
                 ]]);
-
-            $dateResponse = $client->request('GET', '/api/stock-export', [
-                'query' => [
-                    'items' => collect($this->products)->pluck('article_number')->toArray(),
-                    'selected_date' => $this->period
-                ]
-            ]);
-
-            $this->periodicStockLevels = json_decode($dateResponse->getBody());
 
             $this->stockLevels = json_decode($response->getBody());
         }

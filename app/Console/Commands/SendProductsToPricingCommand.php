@@ -33,8 +33,8 @@ class SendProductsToPricingCommand extends Command
     {
         /** @var Product[] $products */
         $products = Product::query()
+            // where no product pricings exist, create one.
             ->whereDoesntHave('product_pricings_product')
-            ->where('est_landed_cost_gbp', '>', 0)
             ->get();
 
         DB::beginTransaction();

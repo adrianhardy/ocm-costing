@@ -37,21 +37,25 @@ class DailyPricingController extends Controller
                 GROUP BY country_id, product_id,
                 ORDER BY MAX(submitted_at) DESC
              */
-            $subQuery = DB::table('daily_pricing')
-                ->addSelect(DB::raw('MAX(id) as id'))
-                ->addSelect('product_id')
-                ->addSelect('country_id')
+            $subQuery = DB::table('daily_pricing AS dp')
+                ->addSelect(DB::raw('MAX(dp.id) as id'))
+                ->addSelect('dp.product_id')
+                ->addSelect('dp.country_id')
                 // for debugging:
                 // ->addSelect(DB::raw('MAX(submitted_at) as submitted_at'))
                 // ->addSelect(DB::raw('GROUP_CONCAT(id)'))
                 // ->addSelect(DB::raw('GROUP_CONCAT(submitted_at)'))
-                ->whereNotNull('submitted_at')
-                ->groupBy('country_id')
-                ->groupBy('product_id')
+                ->whereNotNull('dp.submitted_at')
+                ->groupBy('dp.country_id')
+                ->groupBy('dp.product_id')
                 ->orderByRaw('MAX(submitted_at) DESC');
 
             $paginator = $paginator->joinSub($subQuery, 'latest_daily_pricing', 'latest_daily_pricing.id', '=', 'daily_pricing.id');
         }
+
+        // there must be at least one 'product_pricings' associated
+        // with this daily pricing before we can allow it to show...
+        $paginator = $paginator->has('product_pricings');
 
         if($request->input('product_id')) {
             $paginator = $paginator

@@ -249,6 +249,9 @@ class ProductsController extends Controller
         }
 
         if($request->input('export')) {
+            if (config('debugbar.enabled')) {
+
+            }
             $paginator = $paginator
                 ->whereNotNull('item_number')
                 ->where('item_number', '!=', '');
@@ -268,15 +271,12 @@ class ProductsController extends Controller
             }
 
             if($request->input('format') === 'full_with_stock_data') {
-                $export->setStockLevelRequired();
+                $start = Carbon::now()->startOfDay()->subYear();
+                if ($request->input('start_date')) {
+                    $start = Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->startOfDay();
+                }
+                $export->setStockLevelRequired($start);
             }
-
-            if($request->input('start_date')) {{
-                $export->setPeriod($request->input('start_date'));
-            }} else {
-                $export->setPeriod(Carbon::now());
-            }
-
 
             $paginator->chunk(150, function ($products) use ($export) {
                 $export->setProducts($products);
@@ -284,7 +284,8 @@ class ProductsController extends Controller
                 $export->buildExport();
             });
             $export->setProducts([]);
-            return $export->getCsvDownloadResponse();
+            $export->getCsvDownloadResponse();
+            die();
         }
 
         $paginator = $paginator->paginate(

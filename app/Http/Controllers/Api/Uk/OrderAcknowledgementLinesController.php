@@ -24,7 +24,8 @@ class OrderAcknowledgementLinesController extends Controller
     }
 
 
-    public function update(Request $request, SalesOrder $orderAcknowledgement, SalesOrderLine $line){
+    public function update(Request $request, SalesOrder $orderAcknowledgement, SalesOrderLine $line)
+    {
         $this->authorize('view', $orderAcknowledgement);
         $line->fill($request->only([
             'name',

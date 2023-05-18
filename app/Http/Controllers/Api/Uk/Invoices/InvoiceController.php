@@ -104,7 +104,6 @@ class InvoiceController extends Controller
         ]);
 
         // @todo make sure that the validation here works properly and looks nice too
-
         $salesOrder = SalesOrder::query()->findOrFail($request->input('id'));
 
         DB::beginTransaction();
@@ -136,11 +135,13 @@ class InvoiceController extends Controller
 
         if($invoiceService->checkIfInvoiceApprovalRequired($invoice)) {
             $invoice->is_approval_required = true;
-
-
         } else {
             foreach ($invoice->invoice_lines as $line) {
-                $pricingService->sendToPricing($line->sales_order_line->product, $line->unit_price, $line->pricing_priority);
+                $pricingService->sendToPricing(
+                    $line->sales_order_line->product,
+                    $line->unit_price,
+                    $line->pricing_priority
+                );
             }
         }
 

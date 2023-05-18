@@ -6,8 +6,8 @@
                     <slot>
                         <search-input class="w-50" v-model="search" @search="updateHash()">
                             <slot>
-                                <b-dropdown ref="dropdown" class="align-middle float-right" @show="isClosable = false" @hide="handleHide($event)" size="lg" text="" variant="outline-secondary" right>
-                                    <b-dropdown-form style="width:400px">
+                                <b-dropdown ref="dropdown" class="align-middle float-right" @show="isClosable = false" size="lg" text="" variant="outline-secondary" right>
+                                    <b-dropdown-form style="width:400px" id="product-list-filters">
                                         <div class="d-flex justify-content-between">
                                             <b-form-group label="Search by">
                                                 <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
@@ -22,31 +22,11 @@
                                         <b-form-group label="Filter by Factory">
                                             <factory-select v-model="searchFactory" @selected="factorySelect"/>
                                         </b-form-group>
-                                        <b-dropdown-header>Export Format</b-dropdown-header>
-                                        <b-form-radio-group
-                                            v-model="format"
-                                            stacked
-                                            :options="[{
-                                                    value: 'full',
-                                                    text: 'Full, RAF compatible'
-                                                },{
-                                                    value: 'full_with_stock_data',
-                                                    text: 'Full with Stock Data'
-                                                }, {
-                                                    value: 'simplified_china',
-                                                    text: 'Simplified with Current Landed Cost (CN)'
-                                                }
-                                            ]"
-                                        />
-                                        <b-dropdown-header>Stock Options</b-dropdown-header>
-                                        <b-form-group label="Start Date">
-                                            <b-form-datepicker v-model="start_date" :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"/>
-                                        </b-form-group>
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
                         </search-input>
-                        <b-button variant="primary" class="ml-2" @click="exportProducts">Export</b-button>
+                        <b-button variant="primary" class="ml-2" @click="$refs['export-modal'].show()">Export</b-button>
                         <b-button class="ml-2" href="/products/create" variant="primary">Create</b-button>
                     </slot>
                 </table-header>
@@ -97,6 +77,33 @@
             </b-button>
         </b-card>
         <create-sales-order-modal ref="create-sales-order-modal" :selected="this.selectedForExport"></create-sales-order-modal>
+        <b-modal ref="export-modal" title="Export" @ok="exportProducts">
+            <b-form-group label="Export Format">
+                <b-form-radio-group
+                    v-model="format"
+                    stacked
+                    :options="[{
+                    value: 'full',
+                    text: 'Full, RAF compatible'
+                },{
+                    value: 'full_with_stock_data',
+                    text: 'Full with Stock Data'
+                }, {
+                    value: 'simplified_china',
+                    text: 'Simplified with Current Landed Cost (CN)'
+                }
+                ]"/>
+            </b-form-group>
+            <b-form-group label="Start Date" description="Where 'stock data' has been selected above, this is the start date for the stock take">
+                <b-form-datepicker
+                    form="product-list-filters"
+                    no-close-on-select
+                    v-model="start_date"
+                    :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"
+                />
+            </b-form-group>
+
+        </b-modal>
     </div>
 </template>
 
@@ -185,6 +192,9 @@ export default {
         closeDropdown(){
             this.isClosable = true;
             this.$refs['dropdown'].hide();
+        },
+        openExportModal() {
+
         },
         async exportProducts(){
             let params = new URLSearchParams({

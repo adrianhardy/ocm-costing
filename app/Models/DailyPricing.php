@@ -29,6 +29,11 @@ class DailyPricing extends BaseDailyPricing
 		'profit'
 	];
 
+    public function product_pricings()
+    {
+        return $this->hasMany(ProductPricing::class, 'product_id', 'product_id');
+    }
+
 	public function getLastCheckedAtAttribute()
     {
         $pricing =  DailyPricing::query()

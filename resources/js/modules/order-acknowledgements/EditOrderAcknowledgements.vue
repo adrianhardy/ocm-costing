@@ -91,7 +91,16 @@
                     </b-input-group>
                 </template>
                 <template #cell(product.name)="data">
-                    <div v-if="showCreateProduct !== data.item.id">
+                    <!--
+                        if we have a product description, and it's saved, but we don't have a product to go
+                        with it then we'll offer the ability to create this as a new product
+                    -->
+                    <div v-if="data.item.id && data.item.product_description && !data.item.product.id">
+                        <b-form-input @change="updateLine(data.item)" v-model="data.item.name" size="sm" />
+                        <b-button variant="outline-success" size="sm" block class="mt-2" @click="createNewProduct(data.item)">Create</b-button>
+                    </div>
+                    <!-- or, if they've clicked "create new" on the drop down -->
+                    <div v-else-if="showCreateProduct !== data.item.id">
                         <product-select
                             :sales-order-id="salesOrder.id"
                             size="sm"
