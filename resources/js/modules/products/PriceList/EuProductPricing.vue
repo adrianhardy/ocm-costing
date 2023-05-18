@@ -11,7 +11,7 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
-        <b-form-group v-if="!quickPrice" class="mb-2">
+        <b-form-group class="mb-2" v-show="!quickPrice">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">
@@ -28,7 +28,7 @@
             </b-input-group>
         </b-form-group>
 
-        <b-form-group v-if="!quickPrice" class="mb-2">
+        <b-form-group class="mb-2" v-show="!quickPrice">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">SF VAT</b-input-group-text>
@@ -53,7 +53,7 @@
             </b-input-group>
         </b-form-group>
 
-        <b-form-group class="mb-2">
+        <b-form-group class="mb-2" v-show="!quickPrice">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA VAT</b-input-group-text>
@@ -65,7 +65,7 @@
             </b-input-group>
         </b-form-group>
 
-        <b-form-group size="sm" class="mb-2">
+        <b-form-group size="sm" class="mb-2" v-show="!quickPrice">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA Ship.</b-input-group-text>
@@ -87,7 +87,7 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
-        <b-form-group size="sm" class="mb-2">
+        <b-form-group size="sm" class="mb-2" v-show="!quickPrice">
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA Ref' Fee</b-input-group-text>
@@ -98,7 +98,7 @@
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
-        <b-form-group v-if="!quickPrice" size="sm" class="mb-2">
+        <b-form-group size="sm" class="mb-2" v-show="!quickPrice" >
             <b-input-group size="sm">
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">SF Ref' Fee</b-input-group-text>
@@ -143,7 +143,7 @@ export default {
         fxRate: Number,
         marketplaceCommissionPc: Number,
         fbaReferralFee: Number,
-        landedCostPerUnitGbp: Number,
+        landedCostPerUnitGbp: [Number, String],
         quickPrice: {
             type: Boolean,
             default: false

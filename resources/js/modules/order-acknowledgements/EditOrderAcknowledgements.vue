@@ -110,10 +110,10 @@
                         </product-select>
 
                         <b-badge variant="success" v-if="data.item.product.id">Product Selected</b-badge>
-                        <b-badge variant="warning"
-                                 v-if="!data.item.product.id && data.item.barcode && data.item.product.primary_sku">
-                            Missing Product
-                        </b-badge>
+                        <b-button @click="createNewProduct(data.item)" block class="mt-2" size="sm" variant="outline-success"
+                                 v-if="!data.item.product.id && data.item.barcode && (data.item.primary_sku || data.item.name)">
+                            Create
+                        </b-button>
                     </div>
                     <div v-else>
                         <b-form-input @change="updateLine(data.item)" v-model="data.item.name" size="sm" />
@@ -434,7 +434,7 @@ export default {
         createInvoice() {
             this.$refs['invoice-modal'].open();
         },
-        beginCreateProduct(line){
+        beginCreateProduct(line) {
             this.showCreateProduct = line.id;
         },
         createNewProduct(line){

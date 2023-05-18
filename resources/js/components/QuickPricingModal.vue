@@ -4,7 +4,7 @@
             <b-tab title="Pricing">
                 <div class="row">
                     <div class="col-12 col-md-6">
-                        <b-form-group label="Landed Cost">
+                        <b-form-group label="Cost Price">
                             <b-form-input v-model="landedCost" type="number" />
                         </b-form-group>
                     </div>
@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <eu-product-pricing
-                    country=""
+                    country="UK"
                     v-model="pricing"
                     :marketplace-commission-pc="marketplaceCommissionPc"
                     :landed-cost-per-unit-gbp="landedCost"
@@ -86,7 +86,10 @@ export default {
     data() {
         return {
             tab: 0,
-            pricing: {},
+            pricing: {
+                vat_rate: 20,
+                unit_fba_shipping: 0
+            },
             marketplaceCommissionPc: 15,
             landedCost: 0,
             images: {},
