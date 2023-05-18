@@ -10,6 +10,7 @@ use App\Models\ProductPricingCountry;
 use App\Models\Repositories\DailyPricingRepository;
 use App\Transformers\DailyPricingTransformer;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class DailyPricingController extends Controller
 {
     public function index(Request $request, DailyPricingRepository $repository)
     {
-        $paginator = $repository->with(['product', 'country', 'approver']);
+        $paginator = $repository->with(['product', 'country', 'approver', 'country.currency']);
 
         if($request->input('country_id')) {
             $paginator = $paginator->where('country_id', $request->input('country_id'));
@@ -89,50 +90,59 @@ class DailyPricingController extends Controller
         return response()->json(new SerializeLengthAwarePaginator($paginator, new DailyPricingTransformer()));
     }
 
+    /**
+     * User submits a new price for a given product/country combo ....
+     * @param Request $request
+     * @param DailyPricing $dailyPricing
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(Request $request, DailyPricing $dailyPricing)
     {
 
-        if($request->input('approve')) {
-            $dailyPricing->approved_at = Carbon::now();
-            $dailyPricing->approver()->associate(auth()->user());
+        if($request->input('replace')) {
 
-
-            $factor = $dailyPricing->country->currency->currency_fx_rate;
-            // PRICING is entered in local currency, no need for conversion
-            $factor = 1; // undo currency conversion below
-
-
-            $dailyPricing->product->current_product_pricing->save();
-
-            /** @var ProductPricingCountry $pricingCountry */
-            $pricingCountry = $dailyPricing->product->current_product_pricing->product_pricing_countries()->where('country_id', $dailyPricing->country_id)->firstOrFail();
-            $pricingCountry->unit_fba_price = ($factor * $dailyPricing->suggested_price);
-            $pricingCountry->unit_fba_fee = $dailyPricing->fba_fee;
-            $pricingCountry->save();
-
-            $newDailyPricing = new DailyPricing();
-            $newDailyPricing->country()->associate($dailyPricing->country);
-            $newDailyPricing->product()->associate($dailyPricing->product);
-            $newDailyPricing->submitted_at = Carbon::now();
-            $newDailyPricing->submitter()->associate(auth()->user());
-            $newDailyPricing->save();
-
-        } else {
             $this->validate($request, [
-                'fba_fee' => 'sometimes|numeric|nullable|min:0',
-                'suggested_price' => 'sometimes|numeric|nullable|min:0'
+                'replace.fba_fee' => 'sometimes|numeric|nullable|min:0',
+                'replace.suggested_price' => 'sometimes|numeric|nullable|min:0'
             ]);
 
-            $dailyPricing->fill($request->only([
-                'fba_fee', 'suggested_price'
-            ]));
+            $pricing = DailyPricing::query()
+                ->where('country_id', $dailyPricing->country_id)
+                ->where('product_id', $dailyPricing->product_id)
+                ->whereNull('approved_at')
+                ->first();
 
-            $dailyPricing->submitter()->associate(auth()->user());
+            if(!$pricing) {
+                $pricing = new DailyPricing();
+                $pricing->country()->associate($dailyPricing->country);
+                $pricing->product()->associate($dailyPricing->product);
+            }
 
+            $pricing->suggested_price = $request->input('replace.suggested_price');
+            $pricing->fba_fee = $request->input('replace.fba_fee');
+
+
+            $pricing->submitted_at = Carbon::now();
+            $pricing->save();
+
+            return response()->json(fractal($dailyPricing, new DailyPricingTransformer()));
+        }
+
+        $this->validate($request, [
+            'fba_fee' => 'sometimes|numeric|nullable|min:0',
+            'suggested_price' => 'sometimes|numeric|nullable|min:0'
+        ]);
+
+        $dailyPricing->fill($request->only([
+            'fba_fee', 'suggested_price'
+        ]));
+
+        if ($dailyPricing->fba_fee !== null && $dailyPricing->suggested_price !== null) {
+            // if it's viable, the observer will set the approver/approved_at
             $dailyPricing->submitted_at = Carbon::now();
             $dailyPricing->submitter()->associate(auth()->user());
         }
-
         $dailyPricing->save();
 
         return response()->json(fractal($dailyPricing, new DailyPricingTransformer()));

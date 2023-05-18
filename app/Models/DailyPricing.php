@@ -37,10 +37,8 @@ class DailyPricing extends BaseDailyPricing
 	public function getLastCheckedAtAttribute()
     {
         $pricing =  DailyPricing::query()
-            ->where('id', '!=', $this->id)
             ->where('country_id', $this->country->id)
             ->where('product_id', $this->product->id)
-            ->where('id', '<', $this->id)
             ->orderByDesc('submitted_at')
             ->first();
 
@@ -66,6 +64,7 @@ class DailyPricing extends BaseDailyPricing
             ->where('country_id', $this->country->id)
             ->where('product_id', $this->product->id)
             ->orderByDesc('submitted_at')
+            ->where('id', '<', $this->id)
             ->take(6)
             ->get();
     }

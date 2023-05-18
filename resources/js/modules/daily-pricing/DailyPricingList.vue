@@ -27,7 +27,6 @@
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
                             :readonly="data.item.approved_at !== null"
-                            @change="updateDailyPricing(data.item)"
                             v-model="data.item.suggested_price"
                             type="number"
                         ></b-form-input>
@@ -41,11 +40,18 @@
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
                             :readonly="data.item.approved_at !== null"
-                            @change="updateDailyPricing(data.item)"
                             v-model="data.item.fba_fee"
                             type="number"
                         ></b-form-input>
                     </b-input-group>
+                </template>
+                <template #cell(action)="data">
+                    <b-button block size="sm" @click="openReplaceModal(data.item.id)" v-if="data.item.approver.id" variant="success">
+                        Replace
+                    </b-button>
+                    <b-button block size="sm" @click="updateDailyPricing(data.item)" v-else variant="primary">
+                        Submit
+                    </b-button>
                 </template>
                 <template #cell(last_checked_at)="data">
                     <div :id="`checked-${data.item.id}`">
@@ -53,16 +59,35 @@
                         {{ new Date(data.item.last_checked_at) | date('dd/MM/yy HH:mm') }}
                     </span>
                     </div>
-                    <b-tooltip triggers="hover" :target="`checked-${data.item.id}`">
-                        <div v-for="history in data.item.pricing_history">
-                            {{ new Date(history.submitted_at) | date('dd/MM/yy HH:mm') }}
-                        </div>
-                    </b-tooltip>
-                </template>
-                <template #cell(last_approved_at)="data">
-                    <span v-if="data.item.last_approved_at">
-                        {{new Date(data.item.last_approved_at) | date('dd/MM/yy HH:mm')}}
-                    </span>
+                    <b-popover triggers="hover" :target="`checked-${data.item.id}`">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>When</th><th>Who</th><th>Price</th><th>Fee</th><th></th>
+                            </tr>
+                            <tr v-if="data.item.pricing_history.length < 1">
+                                <td colspan="5">No daily pricing history</td>
+                            </tr>
+                            <tr v-for="history in data.item.pricing_history">
+                                <td>
+                                    {{ new Date(history.submitted_at) | date('dd/MM/yy') }}
+                                </td>
+                                <td>
+                                    {{ history.submitter.initials }}
+                                </td>
+                                <td>
+                                    {{ currencySymbol(data.item.country) }}{{ history.suggested_price.toFixed(2) }}
+                                </td>
+                                <td>
+                                    {{ currencySymbol(data.item.country) }}{{ history.fba_fee.toFixed(2) }}
+                                </td>
+                                <td>
+                                    <b-icon-circle-fill variant="success" v-if="history.is_viable"/>
+                                    <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </b-popover>
                 </template>
                 <template #cell(margin)="data">
                     <span v-if="data.value">
@@ -79,23 +104,25 @@
                         </span>
                     </div>
                 </template>
-                <template #cell(approver)="data">
-                    <b-button size="sm" :disabled="!data.item.suggested_price || !data.item.fba_fee" variant="success" @click="approveDailyPricing(data.item)" v-if="!data.item.approved_at && canApprove">
-                        Approve
-                    </b-button>
-                    <div v-else>
-                        <span v-if="data.item.approved_at">
-                            {{data.item.approver.initials}}
-                        </span>
-                    </div>
-                </template>
-                <template #cell(last_est_landed_cost)="data">
-                    <span v-if="data.item.last_est_landed_cost">
-                        {{data.item.last_est_landed_cost}}
+                <template #cell(product.final_cost_gbp)="data">
+                    <span v-if="data.value">
+                        &pound;{{ data.value }}
                     </span>
                 </template>
             </b-table>
         </b-card>
+        <b-modal ref="replace-modal" centered size="md" title="Replace Daily Pricing" @ok="replaceDailyPricing">
+            <b-form-group label="Suggested Price">
+                <b-form-input type="number" v-model="replace.suggested_price" />
+            </b-form-group>
+            <b-form-group label="FBA Fee">
+                <b-form-input type="number" v-model="replace.fba_fee" />
+            </b-form-group>
+            <b-alert :show="true" variant="warning">
+                If there is an unapproved daily pricing for this product and country,
+                the fields above will be used to update that.
+            </b-alert>
+        </b-modal>
     </div>
 </template>
 
@@ -128,7 +155,7 @@ export default {
     },
     computed: {
         include(){
-            return 'submitter,approver,country,country.currency,product,pricing_history'
+            return 'submitter,approver,country,country.currency,product,pricing_history,pricing_history.submitter'
         },
         fields(){
             const fields = [
@@ -158,7 +185,7 @@ export default {
                     tdClass: 'align-middle w-5',
                     thClass: 'align-middle'
                 }, {
-                    key: 'last_est_landed_cost',
+                    key: 'product.final_cost_gbp',
                     label: 'GBP/Unit',
                     tdClass: 'align-middle w-1',
                     thClass: 'align-middle'
@@ -178,24 +205,18 @@ export default {
                     tdClass: 'align-middle',
                     thClass: 'align-middle w-10'
                 }, {
+                    key: 'action',
+                    label: '',
+                    tdClass: 'align-middle w-1',
+                }, {
                     key: 'last_checked_at',
                     label: 'Last Checked',
-                    tdClass: 'align-middle w-1 text-nowrap',
-                    thClass: 'align-middle'
-                }, {
-                    key: 'last_approved_at',
-                    label: 'Last Apprv.',
                     tdClass: 'align-middle w-1 text-nowrap',
                     thClass: 'align-middle'
                 }, {
                     key: 'submitter.initials',
                     label: 'Checker',
                     tdClass: 'align-middle w-5 ',
-                    thClass: 'align-middle'
-                }, {
-                    key: 'approver',
-                    label: 'Approver',
-                    tdClass: 'align-middle w-5',
                     thClass: 'align-middle'
                 },{
                     key: 'margin',
@@ -211,7 +232,11 @@ export default {
             ]
 
             if(!this.canApprove) {
-                return _.filter(fields, o => o.key !== 'product.unit_price' && o.key !== 'margin' && o.key !== 'profit')
+                return _.filter(fields, o =>
+                    o.key !== 'product.final_cost_gbp' &&
+                    o.key !== 'margin' &&
+                    o.key !== 'profit'
+                );
             }
             return fields;
         }
@@ -237,16 +262,21 @@ export default {
             link.download = 'daily_pricing_export.csv';
             link.click();
         },
-        approveDailyPricing(pricing) {
+        replaceDailyPricing() {
             const loading = this.$loading.show();
-            const url = `/api/daily-pricing/${pricing.id}`
-            this.$http.put(url, {approve: true}).then(response => {
+            const url = `/api/daily-pricing/${this.replacingId}`
+            this.$http.put(url, {replace: this.replace}).then(response => {
                 loading.hide();
                 this.$refs['table'].refresh();
             }).catch(error => {
                 this.$handleExceptionResponse(error, true)
                 loading.hide();
             })
+        },
+        openReplaceModal(id){
+            this.replacingId = id
+            this.replace = {};
+            this.$refs['replace-modal'].show();
         },
         updateDailyPricing(pricing) {
             const loading = this.$loading.show();
@@ -287,6 +317,7 @@ export default {
             },
             search: '',
             country: null,
+            replace: {}
         }
     }
 }

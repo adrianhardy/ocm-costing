@@ -25,22 +25,25 @@ class DailyPricingTransformer extends TransformerAbstract
         'approver', 'country', 'product', 'submitter', 'pricing_history'
     ];
 
-    public function includePricingHistory(DailyPricing $pricing){
-        if(!$pricing->pricing_history) {
+    public function includePricingHistory(DailyPricing $pricing)
+    {
+        if (!$pricing->pricing_history) {
             return $this->null();
         }
         return $this->collection($pricing->pricing_history, new DailyPricingTransformer());
     }
 
-    public function includeApprover(DailyPricing $pricing){
-        if($pricing->approver) {
+    public function includeApprover(DailyPricing $pricing)
+    {
+        if ($pricing->approver) {
             return $this->item($pricing->approver, new UserTransformer());
         }
         return $this->null();
     }
 
 
-    public function includeCountry(DailyPricing $pricing) {
+    public function includeCountry(DailyPricing $pricing)
+    {
         return $this->item($pricing->country, new CountryTransformer());
     }
 
