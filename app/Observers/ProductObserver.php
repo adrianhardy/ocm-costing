@@ -36,6 +36,7 @@ class ProductObserver
                     $dailyPricing = new DailyPricing();
                     $dailyPricing->country()->associate($country);
                     $dailyPricing->product()->associate($product);
+                    $dailyPricing->submitted_at = Carbon::now();
                     $dailyPricing->save();
                 }
             }
