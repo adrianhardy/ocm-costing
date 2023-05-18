@@ -141,35 +141,6 @@ class InvoiceController extends Controller
             foreach ($invoice->invoice_lines as $line) {
                 $pricingService->sendToPricing($line->sales_order_line->product, $line->unit_price, $line->pricing_priority);
             }
-
-            // foreach line, get the amount that has been invoiced on invoices that either didn't need approval,
-            // or did and were approved, if the amount sum of quantity on invoice_lines is = total on OA.
-            // if this for all lines, set OA status to closed
-
-            $allInvoiced = true;
-
-            foreach($request->input('lines') as $line) {
-                /** @var SalesOrderLine $salesOrderLine */
-                $salesOrderLine = SalesOrderLine::query()->findOrFail($line['id']);
-
-                // @todo move this into the invoice observer so that it works for both creating and approving
-                // @todo make this only look at invoices that have been approved, manually or otherwise
-
-                $totalInvoiced = InvoiceLine::query()
-                    ->where('sales_order_line_id', $line['id'])
-                    ->sum('qty');
-
-                if(intval($totalInvoiced) !== intVal($salesOrderLine->units_requested)) {
-                    $allInvoiced = false;
-                }
-            }
-
-            if($allInvoiced) {
-                $salesOrder->setStatus(SalesOrder::OA_STATUS_CLOSED);
-                $salesOrder->save();
-            }
-
-
         }
 
 
