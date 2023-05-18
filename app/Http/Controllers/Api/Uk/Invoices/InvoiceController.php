@@ -104,6 +104,8 @@ class InvoiceController extends Controller
         ]);
 
         // @todo make sure that the validation here works properly and looks nice too
+
+        /** @var SalesOrder $salesOrder */
         $salesOrder = SalesOrder::query()->findOrFail($request->input('id'));
 
         DB::beginTransaction();
