@@ -41,7 +41,7 @@ class OrderAcknowledgementsController extends Controller
                 break;
             case 'fully_received':
                 $paginator = $paginator->where('is_order_acknowledgement', true);
-                $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_FULLY_RECEIVED);
+                $paginator = $paginator->currentStatus([SalesOrder::OA_STATUS_FULLY_RECEIVED, SalesOrder::OA_STATUS_CLOSED]);
                 break;
             default:
                 $paginator = $paginator->where('is_order_acknowledgement', true);
@@ -147,10 +147,11 @@ class OrderAcknowledgementsController extends Controller
 
             $orderAcknowledgement->save();
 
+            // Decision by cat 19/May/23 - allow orders which have invoices
+            // against them to be unfinalised
             $completedInvoices = $orderAcknowledgement->invoices()->count();
-
-
-            if($completedInvoices >= 1) {
+            $completedInvoices = 0;
+            if( $completedInvoices >= 1) {
                 throw new \Exception('You cannot unfinalise an order that has an invoice');
             }
 

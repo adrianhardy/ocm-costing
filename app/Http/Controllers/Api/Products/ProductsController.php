@@ -270,7 +270,7 @@ class ProductsController extends Controller
                 $export->setSimplifiedChinaExport();
             }
 
-            if($request->input('format') === 'full_with_stock_data') {
+            if($request->input('format') === 'simplified_with_stock_data') {
                 $start = Carbon::now()->startOfDay()->subYear();
                 if ($request->input('start_date')) {
                     $start = Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->startOfDay();

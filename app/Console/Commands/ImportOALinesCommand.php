@@ -207,7 +207,6 @@ class ImportOALinesCommand extends Command
             $line->total_gbp = $line->total * $acknowledgement->fx_rate;
             $line->unit_price_gbp = $line->unit_price * $acknowledgement->fx_rate;
 
-
             if(!$this->option('pretend')) {
                 $line->save();
             }

@@ -96,4 +96,38 @@ class DailyPricing extends BaseDailyPricing
 
 	    return round($this->profit * $this->country->currency->currency_fx_rate, 2);
     }
+
+    public function recalculteProfitAndMargin()
+    {
+        $vatRate = 0.2;
+        $shippingCost = 0;
+
+        /** @var ProductPricingCountry $productPricingCountry */
+        $currentProductPricing = $this
+            ->product
+            ->current_product_pricing;
+
+        if ($currentProductPricing) {
+            $productPricingCountry = $currentProductPricing->product_pricing_countries()
+                ->where('country_id', $this->country->id)
+                ->first();
+
+            if ($productPricingCountry) {
+                $vatRate = $productPricingCountry->vat_rate/100;
+                $shippingCost = $productPricingCountry->unit_fba_shipping;
+            }
+        }
+
+        $vat            = $this->suggested_price * $vatRate;
+        $commission     = $this->suggested_price * 0.15;
+        $fbaFee         = $this->fba_fee;
+        $localUnitCost  = $this->product->final_cost_gbp * $this->country->currency->currency_fx_rate;
+
+        $costOfSale = round($localUnitCost + $fbaFee + $commission + $vat + $shippingCost, 2);
+        $this->profit = $this->suggested_price - $costOfSale;
+        $this->margin = round( $this->profit / $this->suggested_price, 4) * 100;
+        if ($this->profit <= 0) {
+            $this->margin = 0;
+        }
+    }
 }

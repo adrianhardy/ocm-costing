@@ -94,7 +94,7 @@ Route::group(['as' => 'api.'], function() {
 
 
     Route::group(['middleware' => ['auth:api','permission:uk']], function () {
-        Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
+        Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'store', 'show']);
         Route::resource('order-acknowledgements', 'Api\Uk\OrderAcknowledgementsController')->only(['index', 'store', 'show', 'destroy', 'update']);
         Route::put('/order-acknowledgements/{order_acknowledgement}/restore', 'Api\Uk\OrderAcknowledgementsController@restore');
         Route::resource('order-acknowledgements.lines', 'Api\Uk\OrderAcknowledgementLinesController')->only('store', 'update', 'destroy');

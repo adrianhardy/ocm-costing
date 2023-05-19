@@ -37,7 +37,7 @@ class ProductRafStockController extends Controller
             $total = 0;
             foreach($response as $stock) {
                 if($stock->item->item_number === $product->item_number) {
-                    $total = $stock->level;
+                    $total = $stock->level_today;
                 };
             }
 

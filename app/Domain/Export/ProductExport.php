@@ -61,6 +61,15 @@ class ProductExport
     ];
 
 
+    protected $stockExportColumns = [
+        'item_number',
+        'article_number',
+        'primary_sku',
+        'primary_asin',
+        'name',
+        'final_cost_gbp'
+    ];
+
     /**
      * @var mixed
      */
@@ -93,6 +102,7 @@ class ProductExport
         if ($date) {
             $this->stockTakeStartDate = $date;
         }
+        $this->columns = $this->stockExportColumns;
         return $this;
     }
 
@@ -116,10 +126,10 @@ class ProductExport
         $headers = $this->columns;
 
         if ($this->stockLevelRequired) {
-            $headers[] = 'Current Stock';
             $headers[] = 'Stock as at ' . $this->stockTakeStartDate->format('d/m/Y');
             $headers[] = 'Goods In since';
             $headers[] = 'Dispatched since';
+            $headers[] = 'Current Stock';
         }
 
         try {
@@ -159,10 +169,10 @@ class ProductExport
                     }
 
 
-                    $exportItem[] = $stockLevelToday;
                     $exportItem[] = $stockLevelHistoric;
                     $exportItem[] = $stockReceived;
                     $exportItem[] = $stockDispatched;
+                    $exportItem[] = $stockLevelToday;
                 }
 
 

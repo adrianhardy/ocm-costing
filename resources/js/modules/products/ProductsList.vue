@@ -86,8 +86,8 @@
                     value: 'full',
                     text: 'Full, RAF compatible'
                 },{
-                    value: 'full_with_stock_data',
-                    text: 'Full with Stock Data'
+                    value: 'simplified_with_stock_data',
+                    text: 'Simplified with Stock Data'
                 }, {
                     value: 'simplified_china',
                     text: 'Simplified with Current Landed Cost (CN)'

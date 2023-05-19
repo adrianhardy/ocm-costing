@@ -32,11 +32,12 @@ class ProductObserver
                     ->where('product_id', $product->id)
                     ->exists();
 
+                // Let's make sure there's an empty daily pricing, which means it'll show in the
+                // DailyPricing list, which means it can be updated.
                 if(!$hasDailyPricing) {
                     $dailyPricing = new DailyPricing();
                     $dailyPricing->country()->associate($country);
                     $dailyPricing->product()->associate($product);
-                    $dailyPricing->submitted_at = Carbon::now();
                     $dailyPricing->save();
                 }
             }

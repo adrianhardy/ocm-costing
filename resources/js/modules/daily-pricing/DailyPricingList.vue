@@ -23,41 +23,37 @@
                 :current-page="pagination.currentPage"
                 :per-page="pagination.perPage"
             >
-                <template #cell(suggested_price)="data">
+                <template #table-busy>
+                    <div class="text-center my-2">
+                        <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
+                    </div>
+                </template>
+                <template #cell(new_suggested_price)="data">
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
-                            :readonly="data.item.approved_at !== null"
-                            v-model="data.item.suggested_price"
+                            @blur="checkViable(data.item)"
+                            v-model="data.item.new_suggested_price"
                             type="number"
                         ></b-form-input>
                     </b-input-group>
                 </template>
-                <template #cell(viable)="data">
-                    <b-icon-circle-fill variant="success" v-if="data.item.is_viable"/>
-                    <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
-                </template>
-                <template #cell(fba_fee)="data">
+                <template #cell(new_fba_fee)="data">
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
-                            :readonly="data.item.approved_at !== null"
-                            v-model="data.item.fba_fee"
+                            @blur="checkViable(data.item)"
+                            v-model="data.item.new_fba_fee"
                             type="number"
                         ></b-form-input>
                     </b-input-group>
                 </template>
                 <template #cell(action)="data">
-                    <b-button block size="sm" @click="openReplaceModal(data.item.id)" v-if="data.item.approver.id" variant="success">
-                        Replace
-                    </b-button>
-                    <b-button block size="sm" @click="updateDailyPricing(data.item)" v-else variant="primary">
+                    <b-button block size="sm" @click="updateDailyPricing(data.item)" variant="primary">
                         Submit
                     </b-button>
                 </template>
-                <template #cell(last_checked_at)="data">
+                <template #cell(submitted_at)="data">
                     <div :id="`checked-${data.item.id}`">
-                        <span v-if="data.item.last_checked_at">
-                        {{ new Date(data.item.last_checked_at) | date('dd/MM/yy HH:mm') }}
-                    </span>
+                        {{ new Date(data.item.submitted_at) | date('dd/MM/yy HH:mm') }}
                     </div>
                     <b-popover triggers="hover" :target="`checked-${data.item.id}`">
                         <table class="table table-sm">
@@ -75,10 +71,10 @@
                                     {{ history.submitter.initials }}
                                 </td>
                                 <td>
-                                    {{ currencySymbol(data.item.country) }}{{ history.suggested_price.toFixed(2) }}
+                                    {{ currencySymbol(data.item.country) }}{{ history.suggested_price?history.suggested_price.toFixed(2):'' }}
                                 </td>
                                 <td>
-                                    {{ currencySymbol(data.item.country) }}{{ history.fba_fee.toFixed(2) }}
+                                    {{ currencySymbol(data.item.country) }}{{ history.fba_fee?history.fba_fee.toFixed(2):'' }}
                                 </td>
                                 <td>
                                     <b-icon-circle-fill variant="success" v-if="history.is_viable"/>
@@ -86,14 +82,36 @@
                                 </td>
                             </tr>
                         </table>
-
                     </b-popover>
                 </template>
                 <template #cell(margin)="data">
                     <span v-if="data.value">
                         {{ data.value }}%
                     </span>
+                    <div v-if="data.item.new_suggested_profit">
+                        <b-badge>{{ data.item.new_suggested_margin.toFixed(2) }}%</b-badge>
+                    </div>
                 </template>
+                <template #cell(suggested_price)="data">
+                    <span v-if="data.value">
+                        {{ currencySymbol(data.item.country) }}{{data.value.toFixed(2)}}
+                        <b-icon-circle-fill variant="success" v-if="data.item.is_viable"/>
+                        <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
+                    </span>
+                    <div v-if="data.item.new_suggested_profit">
+                        <b-badge>
+                            {{ currencySymbol(data.item.country) }}{{data.item.new_suggested_price }}
+                            <b-icon-circle-fill variant="success" v-if="data.item.new_suggested_is_viable"/>
+                            <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
+                        </b-badge>
+                    </div>
+                </template>
+                <template #cell(fba_fee)="data">
+                    <span v-if="data.value">
+                        {{ currencySymbol(data.item.country) }}{{data.value.toFixed(2)}}
+                    </span>
+                </template>
+
                 <template #cell(profit)="data">
                     <div v-if="data.value">
                         <span v-if="data.item.country.iso_2_code !== 'SE' && data.item.country.iso_2_code !== 'PL'">
@@ -103,6 +121,11 @@
                             £{{data.item.profit}}
                         </span>
                     </div>
+                    <div v-if="data.item.new_suggested_profit">
+                        <b-badge>
+                            {{ data.item.new_suggested_profit.toFixed(2) }}
+                        </b-badge>
+                    </div>
                 </template>
                 <template #cell(product.final_cost_gbp)="data">
                     <span v-if="data.value">
@@ -111,18 +134,6 @@
                 </template>
             </b-table>
         </b-card>
-        <b-modal ref="replace-modal" centered size="md" title="Replace Daily Pricing" @ok="replaceDailyPricing">
-            <b-form-group label="Suggested Price">
-                <b-form-input type="number" v-model="replace.suggested_price" />
-            </b-form-group>
-            <b-form-group label="FBA Fee">
-                <b-form-input type="number" v-model="replace.fba_fee" />
-            </b-form-group>
-            <b-alert :show="true" variant="warning">
-                If there is an unapproved daily pricing for this product and country,
-                the fields above will be used to update that.
-            </b-alert>
-        </b-modal>
     </div>
 </template>
 
@@ -163,71 +174,85 @@ export default {
                     key: 'product.item_number',
                     label: 'Item #',
                     tdClass: 'align-middle w-8',
-                    thClass: 'align-middle'
+                    thClass: 'align-middle',
+                    sortable: true
                 }, {
                     key: 'product.primary_sku',
                     label: 'SKU',
                     tdClass: 'align-middle w-5',
-                    thClass: 'align-middle'
+                    thClass: 'align-middle',
+                    sortable: true
                 }, {
                     key: 'product.primary_asin',
                     label: 'ASIN',
                     tdClass: 'align-middle w-5',
-                    thClass: 'align-middle'
+                    thClass: 'align-middle',
+                    sortable: true
                 }, {
                     key: 'product.name',
                     label: 'Description',
                     tdClass: 'align-middle w-15',
-                    thClass: 'align-middle'
+                    thClass: 'align-middle',
+                    sortable: true
                 }, {
                     key: 'country.iso_2_code',
                     label: 'Mk\'t',
-                    tdClass: 'align-middle w-5',
-                    thClass: 'align-middle'
+                    tdClass: 'align-middle w-1',
+                    thClass: 'align-middle text-nowrap'
                 }, {
                     key: 'product.final_cost_gbp',
                     label: 'GBP/Unit',
                     tdClass: 'align-middle w-1',
                     thClass: 'align-middle'
                 }, {
-                    key: 'suggested_price',
-                    label: 'Sugg. Price',
+                    key: 'new_suggested_price',
+                    label: 'New Price',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle w-10'
+                    thClass: 'align-middle w-7'
                 }, {
-                    key: 'viable',
-                    label: '',
+                    key: 'new_fba_fee',
+                    label: 'New FBA Fee',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle w-1'
-                }, {
-                    key: 'fba_fee',
-                    label: 'FBA Fee',
-                    tdClass: 'align-middle',
-                    thClass: 'align-middle w-10'
+                    thClass: 'align-middle w-7'
                 }, {
                     key: 'action',
                     label: '',
                     tdClass: 'align-middle w-1',
                 }, {
-                    key: 'last_checked_at',
-                    label: 'Last Checked',
-                    tdClass: 'align-middle w-1 text-nowrap',
-                    thClass: 'align-middle'
+                    key: 'submitted_at',
+                    label: 'Submitted At',
+                    tdClass: 'align-middle text-nowrap',
+                    thClass: 'align-middle w-1 text-nowrap',
+                    sortable: true,
                 }, {
                     key: 'submitter.initials',
                     label: 'Checker',
-                    tdClass: 'align-middle w-5 ',
-                    thClass: 'align-middle'
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle w-1'
+                },{
+                    key: 'suggested_price',
+                    label: 'Price',
+                    thClass: 'align-middle w-1 text-nowrap',
+                    tdClass: 'align-middle',
+                    sortable: true
+                },{
+                    key: 'fba_fee',
+                    label: 'FBA Fee',
+                    thClass: 'align-middle w-1 text-nowrap',
+                    tdClass: 'align-middle',
+                    sortable: true
                 },{
                     key: 'margin',
                     label: 'Margin',
-                    thClass: 'align-middle',
-                    tdClass: 'align-middle'
+                    thClass: 'align-middle w-1',
+                    tdClass: 'align-middle',
+                    sortable: true
                 },{
                     key: 'profit',
                     label: 'Profit',
-                    thClass: 'align-middle',
-                    tdClass: 'align-middle'
+                    thClass: 'align-middle w-1',
+                    tdClass: 'align-middle text-nowrap',
+                    sortable: true
                 }
             ]
 
@@ -242,6 +267,46 @@ export default {
         }
     },
     methods: {
+        /**
+         * Send a dummy check to the API, get it to fill out the daily pricing's
+         * viability, profit and margin, and we'll use that to red/green the
+         * suggested price...
+         * @param pricing
+         */
+        checkViable(pricing) {
+            if (!(pricing.new_suggested_price && pricing.new_fba_fee)) {
+
+                const oldPrice = pricing.new_suggested_price;
+                pricing.new_suggested_price = 0;
+                pricing.new_suggested_margin = null;
+                pricing.new_suggested_profit = null;
+                pricing.new_suggested_is_viable = null;
+                // trigger a repaint
+                pricing.new_suggested_price = oldPrice;
+                return;
+            }
+            const url = `/api/daily-pricing/${pricing.id}`;
+            const payload = {
+                suggested_price: pricing.new_suggested_price,
+                suggested_fba_fee: pricing.new_fba_fee,
+            }
+            this.$http.get(url, {params: payload}).then(response => {
+                pricing.new_suggested_margin = response.data.margin;
+                pricing.new_suggested_profit = response.data.profit;
+                pricing.new_suggested_is_viable = response.data.is_viable;
+
+                // trigger a repaint
+                const oldPrice = pricing.new_suggested_price;
+                pricing.new_suggested_price = 0;
+                pricing.new_suggested_price = oldPrice;
+
+                console.log(pricing);
+
+
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true);
+            });
+        },
         async exportNonViable() {
             let params = new URLSearchParams({
                 include: this.include,
@@ -262,26 +327,16 @@ export default {
             link.download = 'daily_pricing_export.csv';
             link.click();
         },
-        replaceDailyPricing() {
-            const loading = this.$loading.show();
-            const url = `/api/daily-pricing/${this.replacingId}`
-            this.$http.put(url, {replace: this.replace}).then(response => {
-                loading.hide();
-                this.$refs['table'].refresh();
-            }).catch(error => {
-                this.$handleExceptionResponse(error, true)
-                loading.hide();
-            })
-        },
-        openReplaceModal(id){
-            this.replacingId = id
-            this.replace = {};
-            this.$refs['replace-modal'].show();
-        },
         updateDailyPricing(pricing) {
+            const url = `/api/daily-pricing/`;
+            const payload = {
+                product_id: pricing.product.id,
+                country_id: pricing.country.id,
+                suggested_price: pricing.new_suggested_price,
+                suggested_fba_fee: pricing.new_fba_fee,
+            }
             const loading = this.$loading.show();
-            const url = `/api/daily-pricing/${pricing.id}`
-            this.$http.put(url, pricing).then(response => {
+            this.$http.post(url, payload).then(response => {
                 loading.hide();
                 this.$refs['table'].refresh();
             }).catch(error => {
@@ -298,7 +353,12 @@ export default {
             return this.$paginatedFetch(
                 '/api/daily-pricing',
                 this.pagination,
-                ctx, payload
+                ctx, payload, {
+                    'product.item_number': 'products.item_number',
+                    'product.name': 'products.name',
+                    'product.primary_sku': 'products.primary_sku',
+                    'product.primary_asin': 'products.primary_asin'
+                }
             )
         },
         currencySymbol(country) {
@@ -316,8 +376,7 @@ export default {
                 currentPage: 1,
             },
             search: '',
-            country: null,
-            replace: {}
+            country: null
         }
     }
 }

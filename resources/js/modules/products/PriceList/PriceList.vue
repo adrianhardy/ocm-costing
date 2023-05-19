@@ -213,9 +213,9 @@ export default {
                 {key: 'product.primary_asin', label: 'ASIN', tdClass: 'align-middle'},
                 {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
                 {key: 'submitted_at', label: 'Priced', tdClass: 'align-middle', sortable: true},
-                {key: 'submitter.name', label: 'Priced By', tdClass: 'align-middle'},
+                {key: 'submitter.initials', label: 'Priced By', tdClass: 'align-middle'},
                 {key: 'approved_at', label: 'Approved', tdClass: 'align-middle', sortable: true},
-                {key: 'approver.name', label: 'Appr. by', tdClass: 'align-middle'},
+                {key: 'approver.initials', label: 'Appr. by', tdClass: 'align-middle'},
                 {key: 'exported_at', label: 'exported', tdClass: 'align-middle', sortable: true},
                 {key: 'priority', label: 'Priority', tdClass: 'align-middle'},
             ]

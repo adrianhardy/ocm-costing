@@ -86,13 +86,16 @@ export default {
                     label: 'Supplier',
                 }, {
                     key: 'reference',
-                    label: 'Invoice #'
-                }, {
-                    key: 'sales_order.reference',
-                    label: 'OA'
+                    label: 'Invoice #',
+                    sortable: true
                 }, {
                     key: 'invoice_date',
-                    label: 'Invoice Date'
+                    label: 'Invoice Date',
+                    sortable: true
+                }, {
+                    key: 'sales_order.reference',
+                    label: 'OA',
+                    sortable: false
                 }, {
                     key: 'sub_total',
                     label: 'Sub Total'

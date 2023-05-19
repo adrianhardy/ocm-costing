@@ -18,14 +18,14 @@
                             </b-badge>
                         </div>
                     </div>
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-2 offset-md-8">
                         <b-form-group label="Invoice Date">
                             <b-form-datepicker :disabled="!invoice.is_approval_required || invoice.approved_at" v-model="invoice.invoice_date"/>
                         </b-form-group>
                     </div>
-                    <div class="col-12 col-md-4">
-                        <b-form-group  v-if="invoice.is_approval_required && !invoice.approved_at" label="Pricing Priority / All">
-                            <b-form-select class="w-25" @input="setAllPriority($event)">
+                    <div class="col-12 col-md-2">
+                        <b-form-group  v-if="invoice.is_approval_required && !invoice.approved_at" label="Set Priority All">
+                            <b-form-select class="w-100" @input="setAllPriority($event)">
                                 <b-form-select-option value="low">Low</b-form-select-option>
                                 <b-form-select-option value="medium">Medium</b-form-select-option>
                                 <b-form-select-option value="high">High</b-form-select-option>
@@ -47,7 +47,10 @@
                     <span v-else>{{ data.item.qty }}</span>
                 </template>
                 <template #cell(unit_price)="data">
-                    <b-input-group prepend="£" v-if="invoice.is_approval_required && !invoice.approved_at">
+                    <b-input-group
+                        prepend="£"
+                        v-if="invoice.is_approval_required && !invoice.approved_at"
+                    >
                         <b-form-input :readonly="!canApprove" v-model="data.item.unit_price"/>
                     </b-input-group>
                     <span v-else>{{ data.item.unit_price | cash_value }}</span>
@@ -59,7 +62,7 @@
                     <span>{{ data.item.qty_received_excl_me }}</span>
                 </template>
                 <template #cell(qty_received_total)="data">
-                    <span>{{ data.item.qty_received_excl_me + data.item.qty }}</span>
+                    <span>{{ data.item.qty_received_excl_me + (parseInt(data.item.qty) || 0) }}</span>
                 </template>
                 <template #cell(sub_total)="data">
                     <span>{{ data.item.qty * data.item.unit_price | cash_value }}</span>
@@ -71,6 +74,14 @@
                         <b-form-select-option value="high">High</b-form-select-option>
                     </b-form-select>
                     <span v-else>{{data.item.pricing_priority}}</span>
+                </template>
+                <template #cell(status)="data">
+                    <b-badge v-show="data.item.qty_received_excl_me + (parseInt(data.item.qty) || 0) > data.item.sales_order_line.qty_remaining" variant="danger">
+                        Too many
+                    </b-badge>
+                    <b-badge variant="danger" v-show="data.item.unit_price > 0 && (parseFloat(data.item.sales_order_line.unit_price) !== parseFloat(data.item.unit_price))">
+                        Price mismatch
+                    </b-badge>
                 </template>
             </b-table>
 
@@ -165,6 +176,10 @@ export default {
                     key: 'pricing_priority',
                     label: 'Priority',
                     thClass: 'align-middle',
+                    tdClass: 'align-middle'
+                },{
+                    key: 'status',
+                    label: '',
                     tdClass: 'align-middle'
                 }
             ]

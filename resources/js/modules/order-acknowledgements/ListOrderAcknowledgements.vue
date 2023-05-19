@@ -27,7 +27,8 @@
                 hover
                 :fields="fields"
                 :items="items"
-                sort-by="reference"
+                sort-by="created_at"
+                :sort-desc="true"
                 show-empty
                 empty-text="No Order Acknowledgements To Show"
             >
@@ -42,7 +43,7 @@
                         {{ data.value }}
                     </b-link>
                 </template>
-                <template #cell(date)="data">
+                <template #cell(created_at)="data">
                     <span>{{ new Date(data.item.created_at) | date('dd/MM/yy HH:mm') }}</span>
                 </template>
                 <template #cell(eta)="data">
@@ -81,7 +82,7 @@ export default {
         fields() {
             return [
                 {
-                    key: 'date',
+                    key: 'created_at',
                     label: 'Date',
                     tdClass: 'align-middle',
                     thClass: 'align-middle',

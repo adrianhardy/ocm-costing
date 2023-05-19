@@ -472,8 +472,9 @@ export default {
                 title: 'Please confirm',
                 okTitle: 'Yes'
             });
-
-            this.restore();
+            if (result) {
+                this.restore();
+            }
         },
         async finalise() {
             let result = await this.$bvModal.msgBoxConfirm(

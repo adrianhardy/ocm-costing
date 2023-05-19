@@ -19,12 +19,13 @@ class DailyPricingExport
     protected $columns = array(
         'product.item_number',
         'product.name',
-        'country.name',
+        'country.iso_2_code',
         'suggested_price',
         'fba_fee',
         'submitted_at',
         'submitter.name',
         'local_profit',
+        'product.final_cost_gbp'
     );
 
 

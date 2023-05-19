@@ -40,9 +40,7 @@ class ProductPricingController extends Controller
             // if they're an approver, show ones where they're submitted, but not
             // approved
             if(auth()->user()->hasPermissionTo('pricing_approve')) {
-                $paginator = $paginator
-                    ->whereNull('approved_at')
-                    ->whereNotNull('submitted_at');
+                $paginator = $paginator->whereNull('approved_at');
             } elseif (auth()->user()->hasPermissionTo('pricing')) {
                 // if they're a regular pricer, show where neither submitted
                 // nor approved (but as above, they will have a unit price /
@@ -142,10 +140,9 @@ class ProductPricingController extends Controller
             if(auth()->user()->hasPermissionTo('pricing_approve') || auth()->user()->hasRole('admin')) {
                 $pricing->approved_at = Carbon::now();
                 $pricing->approver()->associate(auth()->user());
-            } else {
-                $pricing->submitted_at = Carbon::now();
-                $pricing->submitter()->associate(auth()->user());
             }
+            $pricing->submitted_at = Carbon::now();
+            $pricing->submitter()->associate(auth()->user());
         }
 
         $pricing->save();
