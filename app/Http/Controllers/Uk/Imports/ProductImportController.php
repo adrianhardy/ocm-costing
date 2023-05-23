@@ -43,10 +43,10 @@ class ProductImportController extends Controller
         $import->save();
         $import->setStatus(Import::STATUS_PENDING);
 
-        Artisan::call('import:uk-products', [
+        Artisan::call('import:products:uk', [
             'import' => $import->id,
             '--skip-first-row' => $import->skip_header_rows,
-            '--pretend' => true
+            '--pretend' => false
         ]);
 
         return response()->json(fractal($import->fresh(), new ImportTransformer())->parseIncludes('log'));

@@ -30,6 +30,9 @@ class DailyPricingController extends Controller
 
         if ($request->input('non_viable')) {
             $paginator = $paginator->where('is_viable', 0);
+            if ($request->input('non_viable_submitted_since')) {
+                $paginator->where('submitted_at', '>', Carbon::createFromFormat('Y-m-d', $request->input('non_viable_submitted_since')));
+            }
         }
 
         $paginator = $paginator->select('daily_pricing.*');
@@ -65,9 +68,17 @@ class DailyPricingController extends Controller
                 break;
         }
 
-        // there must be at least one 'product_pricings' associated
-        // with this daily pricing before we can allow it to show...
-        $paginator = $paginator->has('product_pricings');
+        // SINCE 23/05/2022 the below reasoning is incorrect:
+        // We only put this in because we needed the "unit_fba_shipping"
+        // amount to accurately work out the cost, and thus viability. However,
+        // Cat says that they'll only do a full round of pricing when they get
+        // an invoice from a supplier, so we can't insist on there being product
+        // pricings available...
+
+        // OLD AND WRONG ASSUMPTION:
+        // there must be at least one 'product_pricings' associated with this
+        // daily pricing before we can allow it to show...
+        // $paginator = $paginator->has('product_pricings');
 
         if($request->input('product_id')) {
             $paginator = $paginator
@@ -77,7 +88,6 @@ class DailyPricingController extends Controller
 
 
         if($request->input('export')) {
-            $paginator = $paginator->where('is_viable', false);
             set_time_limit(120);
             ini_set('memory_limit', '256M');
             $export = new DailyPricingExport([]);

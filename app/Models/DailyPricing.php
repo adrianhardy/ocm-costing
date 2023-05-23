@@ -102,18 +102,24 @@ class DailyPricing extends BaseDailyPricing
         $vatRate = 0.2;
         $shippingCost = 0;
 
+        if ($this->country) {
+            $vatRate = $this->country->vat_rate/100;
+        }
+
         /** @var ProductPricingCountry $productPricingCountry */
         $currentProductPricing = $this
             ->product
             ->current_product_pricing;
 
+        // Products may not have daily pricing, so we won't know their "unit_fba_shipping"
+        // amount. This can mean that products get triggered as being viable before we
+        // know the full cost of shipping them.
         if ($currentProductPricing) {
             $productPricingCountry = $currentProductPricing->product_pricing_countries()
                 ->where('country_id', $this->country->id)
                 ->first();
 
             if ($productPricingCountry) {
-                $vatRate = $productPricingCountry->vat_rate/100;
                 $shippingCost = $productPricingCountry->unit_fba_shipping;
             }
         }

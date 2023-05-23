@@ -4,11 +4,18 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
-                        <b-button v-if="canExport" variant="primary" class="mr-2" @click="exportNonViable">
-                            Export Non Viable
-                        </b-button>
-                        <country-select placeholder="Country" use-code amazon class="mr-2 w-20" @input="$refs['table'].refresh()" v-model="country" />
-                        <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
+                        <b-input-group class="w-30">
+                            <b-form-datepicker v-model="nonViableStartDate"
+                               placeholder="All Dates"
+                               style="width: 8em"
+                               :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"
+                            />
+                            <b-button v-if="canExport" variant="primary" class="mr-2" @click="exportNonViable">
+                                Export Non Viable
+                            </b-button>
+                        </b-input-group>
+                        <country-select placeholder="Country" use-code amazon class="mr-2 w-15" @input="$refs['table'].refresh()" v-model="country" />
+                        <search-input class="w-15" v-model="search" @search="$refs['table'].refresh()"/>
                     </slot>
                 </table-header>
             </template>
@@ -112,13 +119,13 @@
                     </span>
                 </template>
 
-                <template #cell(profit)="data">
+                <template #cell(local_profit)="data">
                     <div v-if="data.value">
                         <span v-if="data.item.country.iso_2_code !== 'SE' && data.item.country.iso_2_code !== 'PL'">
-                            {{ currencySymbol(data.item.country) }}{{data.item.local_profit}}
+                            {{data.item.local_profit.toFixed(2)}}
                         </span>
                         <span v-else>
-                            £{{data.item.profit}}
+                            {{data.item.local_profit.toFixed(2)}} GBP
                         </span>
                     </div>
                     <div v-if="data.item.new_suggested_profit">
@@ -173,7 +180,7 @@ export default {
                 {
                     key: 'product.item_number',
                     label: 'Item #',
-                    tdClass: 'align-middle w-8',
+                    tdClass: 'align-middle',
                     thClass: 'align-middle',
                     sortable: true
                 }, {
@@ -191,7 +198,7 @@ export default {
                 }, {
                     key: 'product.name',
                     label: 'Description',
-                    tdClass: 'align-middle w-15',
+                    tdClass: 'align-middle w-25',
                     thClass: 'align-middle',
                     sortable: true
                 }, {
@@ -233,7 +240,7 @@ export default {
                     key: 'suggested_price',
                     label: 'Price',
                     thClass: 'align-middle w-1 text-nowrap',
-                    tdClass: 'align-middle',
+                    tdClass: 'align-middle text-nowrap',
                     sortable: true
                 },{
                     key: 'fba_fee',
@@ -248,7 +255,7 @@ export default {
                     tdClass: 'align-middle',
                     sortable: true
                 },{
-                    key: 'profit',
+                    key: 'local_profit',
                     label: 'Profit',
                     thClass: 'align-middle w-1',
                     tdClass: 'align-middle text-nowrap',
@@ -309,6 +316,7 @@ export default {
         },
         async exportNonViable() {
             let params = new URLSearchParams({
+                non_viable_submitted_since: this.nonViableStartDate,
                 include: this.include,
                 non_viable: true,
                 export: true
@@ -370,6 +378,7 @@ export default {
     },
     data(){
         return {
+            nonViableStartDate: null,
             pagination: {
                 total: 0,
                 perPage: 25,

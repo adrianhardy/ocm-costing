@@ -136,13 +136,16 @@ class ProductPricingController extends Controller
             $pricing->product->save();
         }
 
-        if($request->input(['submitted'])){
-            if(auth()->user()->hasPermissionTo('pricing_approve') || auth()->user()->hasRole('admin')) {
-                $pricing->approved_at = Carbon::now();
-                $pricing->approver()->associate(auth()->user());
-            }
+        // IT'S ALWAYS A TWO STEP PROCESS, SUPER USERS CAN SUBMIT FOR APPROVAL
+        // USERS CAN SUBMIT FOR APPROVAL, BUT APPROVERS CAN SUBMIT AND APPROVE IN ONE GO
+        if($request->input(['submitted'])) {
             $pricing->submitted_at = Carbon::now();
             $pricing->submitter()->associate(auth()->user());
+        }
+
+        if($request->input('approved') && auth()->user()->hasPermissionTo('pricing_approve') || auth()->user()->hasRole('admin')) {
+            $pricing->approved_at = Carbon::now();
+            $pricing->approver()->associate(auth()->user());
         }
 
         $pricing->save();

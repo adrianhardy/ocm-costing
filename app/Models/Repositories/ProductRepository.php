@@ -12,6 +12,8 @@ class ProductRepository extends BaseRepository
 {
     protected $fieldSearchable = [
         'name' => 'LIKE',
+        'primary_sku' => 'LIKE',
+        'primary_asin' => 'LIKE',
         'barcode' => 'LIKE',
         'item_number' => 'LIKE',
         'article_number' => 'LIKE'

@@ -134,7 +134,12 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{{ route('product-asin.index') }}">Import ASIN/SKUs</a>
-                <a class="dropdown-item" href="{{ route('imports.create') }}">Import Products</a>
+                @can('__uk')
+                    <a class="dropdown-item" href="{{ route('imports.create', ['format' => 'uk']) }}">Import UK Products</a>
+                @endcan
+                @can('__china')
+                    <a class="dropdown-item" href="{{ route('imports.create', ['format' => 'cn']) }}">Import China Products</a>
+                @endcan
                 <a class="dropdown-item" href="{{ route('unit-dimensions.index') }}">Import Product Dimensions</a>
                 @can('__china')
                     <a class="dropdown-item" href="{{ route('shipments.index') }}">Import Shipment Details</a>

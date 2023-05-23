@@ -22,9 +22,23 @@ class ProductObserver
         $this->productService = $productService;
     }
 
+    /**
+     * Always make sure products have daily pricing as soon as they're created.
+     *
+     * 1. Daily pricing is needed from the get-go
+     * 2. Pricing (where we price all 30 countries in one go) happens after invoicing
+     *
+     * @param Product $product
+     * @return void
+     * @throws \Exception
+     */
     public function saving(Product $product)
     {
 
+        // this should probably be done on 'saved', however, there are a few hacks
+        // dotted around the system that trigger a touch() just to make sure this
+        // kicks in. Not worth it now. The better approach would've been to hook into
+        // saved()....
         if($product->id) {
             foreach (Country::query()->where('has_pricing', true)->get() as $country) {
                 $hasDailyPricing = DailyPricing::query()
@@ -35,7 +49,14 @@ class ProductObserver
                 // Let's make sure there's an empty daily pricing, which means it'll show in the
                 // DailyPricing list, which means it can be updated.
                 if(!$hasDailyPricing) {
-                    $dailyPricing = new DailyPricing();
+                    $dailyPricing = new DailyPricing([
+                        'submitted_at'      => Carbon::now(),
+                        'suggested_price'   => 0,
+                        'fba_fee'           => 0,
+                        'is_viable'         => false,
+                        'margin'            => 0,
+                        'profit'            => 0
+                    ]);
                     $dailyPricing->country()->associate($country);
                     $dailyPricing->product()->associate($product);
                     $dailyPricing->save();
@@ -45,7 +66,8 @@ class ProductObserver
             $product->sorted_article_number = SortedArticleNumberGenerator::convert($product->article_number);
         }
 
-
+        // if we change anything in a china product that would impact
+        // the shipping cost, update our estimated landed cost
         if ($product->isDirty([
             'length_m',
             'width_m',

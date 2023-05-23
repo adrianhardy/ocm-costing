@@ -1,26 +1,28 @@
 <template>
     <div>
         <b-card header="Drag and drop files to upload here" class="mt-3" body-class="p-0">
-            <label for="file-upload-input" class="d-block p-0 m-0">
+            <label class="d-block p-0 m-0">
                 <b-card-body>
                     <div @drop.prevent="addFile" @dragover.prevent class="d-flex justify-content-between align-items-center">
-                        <div>
-                            Please drag and drop your file here, or click to select a file
-                        </div>
-                        <b-button size="lg" variant="primary" @click="start" :disabled="!files || !files.length >= 1 || !supplier">Upload</b-button>
+                        <label for="file-upload-input" class=" alert alert-info w-80 mb-0">
+                            Please <strong>drag and drop</strong> your file here, or <strong>click</strong> to select a file
+                        </label>
+                        <b-button size="lg" variant="primary" @click="start" :disabled="!files || !files.length >= 1 || !supplier || queue.length > 0">Upload</b-button>
                     </div>
-                    <supplier-select v-model="supplier" class="w-50"></supplier-select>
+                    <b-form-group label="Supplier">
+                        <supplier-select v-model="supplier" class="w-50"></supplier-select>
+                    </b-form-group>
                     <b-form-checkbox class="mt-2" v-model="skip_first_row" value="1" unchecked-value="0">Skip First Row?</b-form-checkbox>
+                    <input
+                        :disabled="queue.length > 0"
+                        type="file"
+                        class="d-none"
+                        id="file-upload-input"
+                        @change="addFile"
+                        ref="input"
+                        accept="text/csv"
+                    />
                 </b-card-body>
-                <input
-                    :disabled="queue.length > 0"
-                    type="file"
-                    id="file-upload-input"
-                    class="d-none"
-                    @change="addFile"
-                    ref="input"
-                    accept="text/csv"
-                />
             </label>
             <b-list-group>
                 <b-list-group-item v-for="(file, i) in files" :key="i">
@@ -59,27 +61,10 @@
             </div>
             <div class="card-body">
                 <code class="">
+                    sku,
                     item_number,
-                    article_number,
-                    name,
-                    barcode,
-                    product_description,
-                    primary_asin,
-                    primary_sku,
-                    unit_price_gbp,
-                    uk_postage,
-                    eu_postage,
-                    worldwide_postage,
-                    units_per_case,
-                    inner_qty,
-                    weight,
-                    length,
-                    width,
-                    height,
-                    unit_weight,
-                    unit_length,
-                    unit_width,
-                    unit_height
+                    description,
+                    cost
                 </code>
             </div>
         </div>
@@ -252,7 +237,7 @@ export default {
             queue: [],
             files: null,
             log: [],
-            skip_first_row: 0,
+            skip_first_row: 1,
             supplier: null,
         }
     }
