@@ -17,6 +17,7 @@ class DailyPricingExport
     protected $log;
     protected $pa;
     protected $columns = array(
+        'product.primary_sku',
         'product.item_number',
         'product.name',
         'country.iso_2_code',

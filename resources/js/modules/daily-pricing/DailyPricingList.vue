@@ -39,8 +39,7 @@
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
                             @blur="checkViable(data.item)"
-                            v-model="data.item.new_suggested_price"
-                            type="number"
+                            v-model.number="data.item.new_suggested_price"
                         ></b-form-input>
                     </b-input-group>
                 </template>
@@ -48,9 +47,12 @@
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
                             @blur="checkViable(data.item)"
-                            v-model="data.item.new_fba_fee"
-                            type="number"
+                            v-model.number="data.item.new_fba_fee"
                         ></b-form-input>
+                        <b-input-group-append is-text v-if="data.item.new_suggested_price && data.item.new_suggested_profit">
+                            <b-icon-circle-fill scale="0.5" variant="success" v-if="data.item.new_suggested_is_viable"/>
+                            <b-icon-circle-fill scale="0.5" variant="danger" v-else></b-icon-circle-fill>
+                        </b-input-group-append>
                     </b-input-group>
                 </template>
                 <template #cell(action)="data">
@@ -102,20 +104,13 @@
                 <template #cell(suggested_price)="data">
                     <span v-if="data.value">
                         {{ currencySymbol(data.item.country) }}{{data.value.toFixed(2)}}
-                        <b-icon-circle-fill variant="success" v-if="data.item.is_viable"/>
-                        <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
                     </span>
-                    <div v-if="data.item.new_suggested_profit">
-                        <b-badge>
-                            {{ currencySymbol(data.item.country) }}{{data.item.new_suggested_price }}
-                            <b-icon-circle-fill variant="success" v-if="data.item.new_suggested_is_viable"/>
-                            <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
-                        </b-badge>
-                    </div>
                 </template>
                 <template #cell(fba_fee)="data">
                     <span v-if="data.value">
                         {{ currencySymbol(data.item.country) }}{{data.value.toFixed(2)}}
+                        <b-icon-circle-fill variant="success" v-if="data.item.is_viable"/>
+                        <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
                     </span>
                 </template>
 
@@ -215,16 +210,28 @@ export default {
                     key: 'new_suggested_price',
                     label: 'New Price',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle w-7'
+                    thClass: 'align-middle w-8'
                 }, {
                     key: 'new_fba_fee',
                     label: 'New FBA Fee',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle w-7'
+                    thClass: 'align-middle w-9'
                 }, {
                     key: 'action',
                     label: '',
                     tdClass: 'align-middle w-1',
+                },{
+                    key: 'suggested_price',
+                    label: 'Price',
+                    thClass: 'align-middle w-1 text-nowrap',
+                    tdClass: 'align-middle text-nowrap',
+                    sortable: true
+                },{
+                    key: 'fba_fee',
+                    label: 'FBA Fee',
+                    thClass: 'align-middle w-1 text-nowrap',
+                    tdClass: 'align-middle text-nowrap',
+                    sortable: true
                 }, {
                     key: 'submitted_at',
                     label: 'Submitted At',
@@ -236,18 +243,6 @@ export default {
                     label: 'Checker',
                     tdClass: 'align-middle',
                     thClass: 'align-middle w-1'
-                },{
-                    key: 'suggested_price',
-                    label: 'Price',
-                    thClass: 'align-middle w-1 text-nowrap',
-                    tdClass: 'align-middle text-nowrap',
-                    sortable: true
-                },{
-                    key: 'fba_fee',
-                    label: 'FBA Fee',
-                    thClass: 'align-middle w-1 text-nowrap',
-                    tdClass: 'align-middle',
-                    sortable: true
                 },{
                     key: 'margin',
                     label: 'Margin',
