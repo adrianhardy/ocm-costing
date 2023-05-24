@@ -12,6 +12,7 @@ use App\Models\Repositories\ProductRepository;
 use App\Models\SalesOrder;
 use App\Models\Supplier;
 use App\Transformers\ProductTransformer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -44,7 +45,11 @@ class ProductsController extends Controller
         $unique = Rule::unique('products', 'item_number')
             ->whereNotNull('barcode')
             ->where('barcode', $request->input('barcode'))
+            ->whereNull('deleted_at')
             ->ignoreModel($product);
+
+        $uniqueBarcode = Rule::unique('products', 'barcode')->ignoreModel($product)
+            ->whereNull('deleted_at');
 
         $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
 
@@ -54,7 +59,7 @@ class ProductsController extends Controller
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => ['required', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
-            'barcode'               => 'nullable|sometimes|max:32',
+            'barcode'               => ['nullable','sometimes','max:32', $uniqueBarcode],
             'length_cm'             => 'nullable|sometimes|min:0|numeric',
             'width_cm'              => 'nullable|sometimes|min:0|numeric',
             'height_cm'             => 'nullable|sometimes|min:0|numeric',
@@ -133,7 +138,10 @@ class ProductsController extends Controller
         $this->authorize('create', Product::class);
         $unique = Rule::unique('products', 'item_number')
             ->whereNotNull('barcode')
+            ->whereNull('deleted_at')
             ->where('barcode', $request->input('barcode'));
+        $uniqueBarcode = Rule::unique('products', 'barcode')
+            ->whereNull('deleted_at');
 
         $supplierRequired = \Auth::user()->hasRole(['supplier'])?'nullable|sometimes|':'required';
 
@@ -143,7 +151,7 @@ class ProductsController extends Controller
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
             'article_number'        => 'required|min:1|max:64',
             'name'                  => 'required|min:1|max:200',
-            'barcode'               => 'sometimes|max:32',
+            'barcode'               => ['sometimes', 'max:32', $uniqueBarcode],
             'length_cm'             => 'sometimes|min:0|numeric',
             'width_cm'              => 'sometimes|min:0|numeric',
             'height_cm'             => 'sometimes|min:0|numeric',
@@ -241,6 +249,9 @@ class ProductsController extends Controller
         }
 
         if($request->input('export')) {
+            if (config('debugbar.enabled')) {
+
+            }
             $paginator = $paginator
                 ->whereNotNull('item_number')
                 ->where('item_number', '!=', '');
@@ -248,8 +259,23 @@ class ProductsController extends Controller
             ini_set('memory_limit', '256M');
             $export = new ProductExport([]);
 
-            if($request->input('includeStockLevels') === "true") {
-                $export->setStockLevelRequired();
+            if ($request->input('product_ids')) {
+                $productIds = explode(',', $request->input('product_ids'));
+                if (count(array_filter($productIds)) > 0) {
+                    $paginator->whereIn('id', array_filter($productIds));
+                }
+            }
+
+            if($request->input('format') === 'simplified_china') {
+                $export->setSimplifiedChinaExport();
+            }
+
+            if($request->input('format') === 'simplified_with_stock_data') {
+                $start = Carbon::now()->startOfDay()->subYear();
+                if ($request->input('start_date')) {
+                    $start = Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->startOfDay();
+                }
+                $export->setStockLevelRequired($start);
             }
 
             $paginator->chunk(150, function ($products) use ($export) {
@@ -258,7 +284,8 @@ class ProductsController extends Controller
                 $export->buildExport();
             });
             $export->setProducts([]);
-            return $export->getCsvDownloadResponse();
+            $export->getCsvDownloadResponse();
+            die();
         }
 
         $paginator = $paginator->paginate(

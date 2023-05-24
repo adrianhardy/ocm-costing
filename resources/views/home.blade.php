@@ -12,10 +12,10 @@
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between w-100">
-                @can('china')
+                @can('__china')
                 <div>Sales Order Progress Dashboard</div>
                 @endcan
-                @can('uk')
+                @can('__uk')
                 <div>Order Acknowledgement Progress Dashboard</div>
                 @endcan
                 <div>
@@ -30,7 +30,7 @@
         <div class="card-body">
             <table class="table">
                 <tr class="text-center">
-                    @can('china')
+                    @can('__china')
                     <th class="w-20 ">
                         Draft<br />
                     </th>
@@ -48,7 +48,7 @@
                     </th>
                     <th></th>
                     @endcan
-                    @can('uk')
+                    @can('__uk')
                             <th class="w-15 ">
                                 Draft<br />
                             </th>
@@ -70,7 +70,7 @@
                     @endcan
                 </tr>
                 <tr>
-                    @can('uk')
+                    @can('__uk')
                     <td>
                         @foreach ($orders['oa_draft'] as $order)
                             <a class="btn btn-primary btn-block mb-1" href="{{ route('order-acknowledgements.edit', $order) }}">{{ $order->reference }}</a>
@@ -102,7 +102,7 @@
                         @endforeach
                     </td>
                     @endcan
-                    @can('china')
+                    @can('__china')
                     <td>
                         @foreach ($orders['draft'] as $order)
                             <a class="btn btn-primary btn-block mb-1"

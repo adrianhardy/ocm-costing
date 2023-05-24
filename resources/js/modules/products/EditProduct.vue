@@ -307,23 +307,30 @@
                             <b-button variant="outline-primary float-right" @click="addNewNote">Add Note</b-button>
                         </b-tab>
                         <b-tab title="History" v-if="!isSupplier && product.id" :disabled="!showCosting">
-                            <div v-if="isUk">
-                                <div class="d-flex justify-content-end">
-                                    <b-form-select v-model="historyType" size="sm" class="w-25 mb-2">
-                                        <b-form-select-option value="changes">Changes</b-form-select-option>
-                                        <b-form-select-option value="stock">Stock</b-form-select-option>
-                                        <b-form-select-option value="daily_pricing">Daily Pricing</b-form-select-option>
-                                        <b-form-select-option value="order_acknowledgement">OA's</b-form-select-option>
-                                        <b-form-select-option value="invoices">Invoices</b-form-select-option>
-                                    </b-form-select>
-                                </div>
-                                <changes-history v-if="product && product.id && historyType === 'changes'" :product-id="product.id" :fields="productLogFields"></changes-history>
-                                <stock-history v-if="product && product.id && historyType === 'stock'" :product-id="product.id"></stock-history>
-                                <daily-pricing-history v-if="product && product.id && historyType === 'daily_pricing'" :product-id="product.id"></daily-pricing-history>
-                                <invoice-history v-if="product && product.id && historyType === 'invoices'" :product-id="product.id"></invoice-history>
-                                <order-acknowledgement-history v-if="product && product.id && historyType === 'order_acknowledgement'" :product-id="product.id"></order-acknowledgement-history>
+                            <div class="d-flex justify-content-end">
+                                <b-form-select v-model="historyType" size="sm" class="w-25 mb-2">
+                                    <b-form-select-option value="changes">Changes</b-form-select-option>
+                                    <b-form-select-option value="stock">Stock</b-form-select-option>
+                                    <b-form-select-option value="daily_pricing">Daily Pricing</b-form-select-option>
+                                    <b-form-select-option value="order_acknowledgement">OA's</b-form-select-option>
+                                    <b-form-select-option value="invoices">Invoices</b-form-select-option>
+                                    <b-form-select-option value="sales_order">Sales Order</b-form-select-option>
+                                </b-form-select>
                             </div>
-                            <changes-history v-else :product-id="product.id" :fields="productLogFields"></changes-history>
+                            <changes-history v-if="product && product.id && historyType === 'changes'"
+                                             :product-id="product.id" :fields="productLogFields"></changes-history>
+                            <stock-history v-if="product && product.id && historyType === 'stock'"
+                                           :product-id="product.id"></stock-history>
+                            <daily-pricing-history v-if="product && product.id && historyType === 'daily_pricing'"
+                                                   :product-id="product.id"></daily-pricing-history>
+                            <invoice-history v-if="product && product.id && historyType === 'invoices'"
+                                             :product-id="product.id"></invoice-history>
+                            <order-acknowledgement-history
+                                v-if="product && product.id && historyType === 'order_acknowledgement'"
+                                :product-id="product.id"></order-acknowledgement-history>
+                            <sales-order-history
+                                v-if="product && product.id && historyType === 'sales_order'"
+                                :product-id="product.id"></sales-order-history>
                         </b-tab>
                         <landed-cost-history-tab v-if="!isSupplier && product.id && isChina" :product="product"
                                                  :disabled="!showCosting"/>
@@ -368,10 +375,12 @@ import OrderAcknowledgementHistory from "./HistoryLists/OrderAcknowledgementHist
 import DailyPricingHistory from "./HistoryLists/DailyPricingHistory";
 import ChangesHistory from "./HistoryLists/ChangesHistory";
 import StockHistory from "./HistoryLists/StockHistory";
+import SalesOrderHistory from "./HistoryLists/SalesOrderHistory";
 
 export default {
     name: "EditProduct",
     components: {
+        SalesOrderHistory,
         StockHistory,
         ChangesHistory,
         DailyPricingHistory,

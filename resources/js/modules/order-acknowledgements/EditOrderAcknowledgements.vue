@@ -91,7 +91,16 @@
                     </b-input-group>
                 </template>
                 <template #cell(product.name)="data">
-                    <div v-if="showCreateProduct !== data.item.id">
+                    <!--
+                        if we have a product description, and it's saved, but we don't have a product to go
+                        with it then we'll offer the ability to create this as a new product
+                    -->
+                    <div v-if="data.item.id && data.item.product_description && !data.item.product.id">
+                        <b-form-input @change="updateLine(data.item)" v-model="data.item.name" size="sm" />
+                        <b-button variant="outline-success" size="sm" block class="mt-2" @click="createNewProduct(data.item)">Create</b-button>
+                    </div>
+                    <!-- or, if they've clicked "create new" on the drop down -->
+                    <div v-else-if="showCreateProduct !== data.item.id">
                         <product-select
                             :sales-order-id="salesOrder.id"
                             size="sm"
@@ -110,10 +119,10 @@
                         </product-select>
 
                         <b-badge variant="success" v-if="data.item.product.id">Product Selected</b-badge>
-                        <b-badge variant="warning"
-                                 v-if="!data.item.product.id && data.item.barcode && data.item.product.primary_sku">
-                            Missing Product
-                        </b-badge>
+                        <b-button @click="createNewProduct(data.item)" block class="mt-2" size="sm" variant="outline-success"
+                                 v-if="!data.item.product.id && data.item.barcode && (data.item.primary_sku || data.item.name)">
+                            Create
+                        </b-button>
                     </div>
                     <div v-else>
                         <b-form-input @change="updateLine(data.item)" v-model="data.item.name" size="sm" />
@@ -138,6 +147,7 @@
 
                 <template #cell(oa_eta)="data">
                     <b-form-datepicker
+                        right
                         @input="updateLine(data.item)"
                         v-model="data.item.oa_eta"
                         placeholder="ETA"
@@ -187,12 +197,15 @@
                         </div>
                     </b-form-group>
                 </template>
+                <template #head(checked)="data">
+                    <b-form-checkbox size="lg" @change="selectAllLines($event)" />
+                </template>
                 <template #cell(checked)="data">
-                    <b-form-checkbox size="lg" v-model="data.item.checked"/>
+                    <b-form-checkbox :rerenderCount="rerenderCount" size="lg" v-model="data.item.checked"/>
                 </template>
                 <template #custom-foot>
                     <b-tr>
-                        <b-th colspan="10">
+                        <b-th :colspan="getColspan">
                         </b-th>
                         <b-td>
                             <div><strong>Pieces</strong></div>
@@ -232,6 +245,7 @@
                         Add Line
                     </b-button>
                     <b-button
+                        :disabled="!canCreateInvoice"
                         class="mr-1"
                         size="lg"
                         variant="outline-primary"
@@ -293,6 +307,9 @@ export default {
         this.refresh();
     },
     computed: {
+        getColspan(){
+            return this.salesOrder.is_finalised?12:10;
+        },
         state() {
             return window.__state;
         },
@@ -352,7 +369,8 @@ export default {
                 thClass: 'w-12',
             }, {
                 key: 'oa_primary_sku',
-                label: 'Primary Sku'
+                label: 'Primary Sku',
+                thClass: 'w-8'
             }, {
                 key: 'barcode',
                 label :'Barcode',
@@ -368,7 +386,15 @@ export default {
             }, {
                 key: 'unit_price',
                 label: 'Unit Price',
-                thClass: 'w-10'
+                thClass: 'w-8'
+            }, {
+                key: 'qty_received',
+                label: "Rcv'",
+                thClass: 'w-5'
+            },  {
+                key: 'qty_remaining',
+                label: "Rem'",
+                thClass: 'w-5'
             }, {
                 key: 'units_per_case',
                 label: 'units/case',
@@ -380,28 +406,44 @@ export default {
             }, {
                 key: 'total',
                 label: 'Sub-Total',
-                thClass: 'w-7 text-nowrap',
+                thClass: 'w-6 text-nowrap',
                 tdClass: 'text-nowrap'
             }, {
                 key: 'oa_eta',
                 label: 'ETA',
-                thClass: 'w-15'
+                thClass: 'w-10'
             }];
             if (this.salesOrder.is_finalised) {
                 return _.filter(fields, o => o.key !== 'id')
             } else {
-                return _.filter(fields, o => o.key !== 'checked')
+                return _.filter(fields, o => o.key !== 'checked' && o.key !== 'qty_received' && o.key !== 'qty_remaining')
             }
         },
         include() {
             return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost,lines.received,lines.live_estimated_landed_cost';
+        },
+        canCreateInvoice(){
+            if(!this.salesOrder) {
+                return false;
+            }
+            return _.filter(this.salesOrder.lines, function(line) {
+                return line.checked === true;
+            }).length > 0
+
+
         }
     },
     methods: {
+        selectAllLines(event){
+            _.forEach(this.salesOrder.lines, function(line) {
+                line.checked = event
+            });
+            this.rerenderCount++;
+        },
         createInvoice() {
             this.$refs['invoice-modal'].open();
         },
-        beginCreateProduct(line){
+        beginCreateProduct(line) {
             this.showCreateProduct = line.id;
         },
         createNewProduct(line){
@@ -410,7 +452,6 @@ export default {
             this.$http.post(url, {...line}, {
                 params: {include: this.include}
             }).then(response => {
-                console.log(response);
                 this.refresh();
                 this.showCreateProduct = null;
                 loading.hide();
@@ -431,8 +472,9 @@ export default {
                 title: 'Please confirm',
                 okTitle: 'Yes'
             });
-
-            this.restore();
+            if (result) {
+                this.restore();
+            }
         },
         async finalise() {
             let result = await this.$bvModal.msgBoxConfirm(
@@ -594,6 +636,7 @@ export default {
                 currency: {}
             },
             note: '',
+            rerenderCount: 0,
         }
     }
 }

@@ -27,13 +27,24 @@ class ProductPricingController extends Controller
 
 
         if ($request->query->getBoolean('todo_only', false)) {
-            // Pricing's to be approved/done:
 
+            // This helps us completely back fill ALL products with pricing
+            // (so every product a have product_pricing created) but they
+            // won't show up in "todo_only" because they don't have a unit price
+            // yet, nor do they have an est_landed_cost.
+            $paginator = $paginator->whereHas('product', function($query) {
+                $query->whereNotNull('unit_price_gbp')
+                    ->orWhereNotNull('est_landed_cost_gbp');
+            });
+
+            // if they're an approver, show ones where they're submitted, but not
+            // approved
             if(auth()->user()->hasPermissionTo('pricing_approve')) {
-                $paginator = $paginator
-                    ->whereNull('approved_at')
-                    ->whereNotNull('submitted_at');
+                $paginator = $paginator->whereNull('approved_at');
             } elseif (auth()->user()->hasPermissionTo('pricing')) {
+                // if they're a regular pricer, show where neither submitted
+                // nor approved (but as above, they will have a unit price /
+                // est landed cost)
                 $paginator = $paginator
                     ->whereNull('submitted_at')
                     ->whereNull('approved_at');
@@ -125,14 +136,16 @@ class ProductPricingController extends Controller
             $pricing->product->save();
         }
 
-        if($request->input(['submitted'])){
-            if(auth()->user()->hasPermissionTo('pricing_approve') || auth()->user()->hasRole('admin')) {
-                $pricing->approved_at = Carbon::now();
-                $pricing->approver()->associate(auth()->user());
-            } else {
-                $pricing->submitted_at = Carbon::now();
-                $pricing->submitter()->associate(auth()->user());
-            }
+        // IT'S ALWAYS A TWO STEP PROCESS, SUPER USERS CAN SUBMIT FOR APPROVAL
+        // USERS CAN SUBMIT FOR APPROVAL, BUT APPROVERS CAN SUBMIT AND APPROVE IN ONE GO
+        if($request->input(['submitted'])) {
+            $pricing->submitted_at = Carbon::now();
+            $pricing->submitter()->associate(auth()->user());
+        }
+
+        if($request->input('approved') && auth()->user()->hasPermissionTo('pricing_approve') || auth()->user()->hasRole('admin')) {
+            $pricing->approved_at = Carbon::now();
+            $pricing->approver()->associate(auth()->user());
         }
 
         $pricing->save();

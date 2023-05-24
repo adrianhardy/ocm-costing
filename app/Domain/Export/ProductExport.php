@@ -13,10 +13,15 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 class ProductExport
 {
     protected $writer;
-    protected $products = array();
+
+    /** @var \App\Models\Product[] */
+    protected $products = [];
+
     protected $log;
     protected $pa;
-    protected $columns = array(
+
+
+    protected $fullExportColumns = [
         'item_number',
         'article_number',
         'name',
@@ -41,8 +46,29 @@ class ProductExport
         'additional_asins',
         'uk_postage_method',
         'eu_postage_method',
-        'row_postage_method',
-    );
+        'row_postage_method'
+    ];
+
+    protected $columns;
+
+    protected $simplifiedChinaExportColumns = [
+        'item_number',
+        'article_number',
+        'name',
+        'packing_instructions',
+        'product_description',
+        'current_landed_cost_per_unit_gbp'
+    ];
+
+
+    protected $stockExportColumns = [
+        'item_number',
+        'article_number',
+        'primary_sku',
+        'primary_asin',
+        'name',
+        'final_cost_gbp'
+    ];
 
     /**
      * @var mixed
@@ -53,11 +79,37 @@ class ProductExport
      */
     private $stockLevelRequired = false;
 
+    /**
+     * @var mixed
+     */
+    private $stockTakeStartDate;
+
     public function __construct($products)
     {
         $this->products = $products;
         $this->pa = PropertyAccess::createPropertyAccessor();
+        $this->columns = $this->fullExportColumns;
+        $this->stockTakeStartDate = Carbon::now()->subYear()->startOfDay();
+    }
 
+    /**
+     * @param Carbon $date
+     * @return $this
+     */
+    public function setStockLevelRequired(Carbon $date = null)
+    {
+        $this->stockLevelRequired = true;
+        if ($date) {
+            $this->stockTakeStartDate = $date;
+        }
+        $this->columns = $this->stockExportColumns;
+        return $this;
+    }
+
+    public function setSimplifiedChinaExport()
+    {
+        $this->columns = $this->simplifiedChinaExportColumns;
+        return true;
     }
 
     /**
@@ -73,8 +125,11 @@ class ProductExport
     {
         $headers = $this->columns;
 
-        if($this->stockLevelRequired) {
-            $headers[] = 'Stock Level';
+        if ($this->stockLevelRequired) {
+            $headers[] = 'Stock as at ' . $this->stockTakeStartDate->format('d/m/Y');
+            $headers[] = 'Goods In since';
+            $headers[] = 'Dispatched since';
+            $headers[] = 'Current Stock';
         }
 
         try {
@@ -91,22 +146,33 @@ class ProductExport
             foreach ($this->products as $product) {
                 $exportItem = [];
                 foreach ($this->columns as $column) {
-                    if($column !== 'Stock Level') {
-                        $exportItem[] = $this->extractProperty($product, $column);
-                    }
+                    $exportItem[] = $this->extractProperty($product, $column);
                 }
 
+                $stockLevelToday = 'N/A';
+                $stockLevelHistoric = 'N/A';
+                $stockDispatched = 'N/A';
+                $stockReceived = 'N/A';
                 if($this->stockLevelRequired === true) {
                     // i'm assuming that stock levels can come in as null if nothing gets found
                     // so we're making sure we have it so the foreach doesn't throw an issue
                     if($this->stockLevels) {
                         foreach($this->stockLevels as $level) {
-                            if ($level->item->item_number === $product->item_number) {
-                                $stock = $level->level;
+                            if ($level->item->item_number === $product->article_number) {
+                                $stockLevelToday = $level->level_today;
+                                $stockLevelHistoric = $level->level_historic;
+                                $stockDispatched = $level->dispatched;
+                                $stockReceived = $level->goods_in;
+                                break;
                             }
                         }
                     }
-                    $exportItem[] = $stock??'N/A';
+
+
+                    $exportItem[] = $stockLevelHistoric;
+                    $exportItem[] = $stockReceived;
+                    $exportItem[] = $stockDispatched;
+                    $exportItem[] = $stockLevelToday;
                 }
 
 
@@ -122,33 +188,34 @@ class ProductExport
         }
     }
 
-    public function getStock(){
+    public function getStock()
+    {
 
         if($this->stockLevelRequired === true) {
-            $client = new Client(['base_uri' => env('RAF_BASE_URI', 'http://127.0.0.1:8000')]);
+            $client = new Client([
+                'base_uri' => config('raf.base_uri'),
+                'headers' => [
+                    'Authorization' => 'Bearer ' . config('raf.api_key')
+                ]
+            ]);
 
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
-                    'items' => collect($this->products)->pluck('item_number')->toArray(),
-                    'selected_date' => Carbon::now()
+                    'items' => collect($this->products)->pluck('article_number')->toArray(),
+                    'selected_date' => $this->stockTakeStartDate->format('Y-m-d')
                 ]]);
 
             $this->stockLevels = json_decode($response->getBody());
         }
     }
 
-    public function setStockLevelRequired(){
-        $this->stockLevelRequired = true;
-    }
-
-
-
     /**
      *
      * @param $products
      * @return void
      */
-    public function setProducts($products){
+    public function setProducts($products)
+    {
         $this->products = $products;
     }
 

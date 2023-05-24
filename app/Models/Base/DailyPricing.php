@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * @property Carbon $submitted_at
- * @property int $submitter_id
+ * @property int|null $submitter_id
  * @property int $product_id
  * @property int $country_id
  * @property float|null $suggested_price
@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property User|null $approver
  * @property Country $country
  * @property Product $product
- * @property User $submitter
+ * @property User|null $submitter
  *
  * @package App\Models\Base
  */

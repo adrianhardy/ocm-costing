@@ -3,24 +3,82 @@
 namespace App\Http\Controllers\Api\Uk\Pricing;
 
 use App\Domain\Export\DailyPricingExport;
+use App\Domain\ProductPricingViabilityChecker;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
+use App\Models\Country;
 use App\Models\DailyPricing;
+use App\Models\Product;
+use App\Models\ProductPricingCountry;
 use App\Models\Repositories\DailyPricingRepository;
 use App\Transformers\DailyPricingTransformer;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DailyPricingController extends Controller
 {
     public function index(Request $request, DailyPricingRepository $repository)
     {
-        $paginator = $repository;
-
+        $paginator = $repository->with(['product', 'country', 'approver', 'country.currency']);
 
         if($request->input('country_id')) {
-            $paginator = $paginator->where('country_id', $request->input('country_id'));
+            $paginator = $paginator->where('daily_pricing.country_id', $request->input('country_id'));
         }
+
+        if ($request->input('non_viable')) {
+            $paginator = $paginator->where('is_viable', 0);
+            if ($request->input('non_viable_submitted_since')) {
+                $paginator->where('submitted_at', '>', Carbon::createFromFormat('Y-m-d', $request->input('non_viable_submitted_since')));
+            }
+        }
+
+        $paginator = $paginator->select('daily_pricing.*');
+        /*
+            SELECT MAX(id) as id, product_id, country_id, MAX(submitted_at) as submitted_at, GROUP_CONCAT(id), GROUP_CONCAT(submitted_at)
+            FROM daily_pricing
+            WHERE submitted_at IS NOT NULL
+            GROUP BY country_id, product_id,
+            ORDER BY MAX(submitted_at) DESC
+         */
+        $subQuery = DB::table('daily_pricing AS dp')
+            ->addSelect(DB::raw('MAX(dp.id) as id'))
+            ->addSelect('dp.product_id')
+            ->addSelect('dp.country_id')
+            // for debugging:
+            // ->addSelect(DB::raw('MAX(submitted_at) as submitted_at'))
+            // ->addSelect(DB::raw('GROUP_CONCAT(id)'))
+            // ->addSelect(DB::raw('GROUP_CONCAT(submitted_at)'))
+            ->whereNotNull('dp.submitted_at')
+            ->groupBy('dp.country_id')
+            ->groupBy('dp.product_id')
+            ->orderByRaw('MAX(submitted_at) DESC');
+
+        $paginator = $paginator->joinSub($subQuery, 'latest_daily_pricing', 'latest_daily_pricing.id', '=', 'daily_pricing.id');
+
+        switch ($request->input('orderBy')) {
+            case 'products.item_number':
+            case 'products.name':
+            case 'products.primary_sku':
+            case 'products.primary_asin':
+                $paginator = $paginator
+                    ->leftJoin('products', 'products.id', '=', 'daily_pricing.product_id');
+                break;
+        }
+
+        // SINCE 23/05/2022 the below reasoning is incorrect:
+        // We only put this in because we needed the "unit_fba_shipping"
+        // amount to accurately work out the cost, and thus viability. However,
+        // Cat says that they'll only do a full round of pricing when they get
+        // an invoice from a supplier, so we can't insist on there being product
+        // pricings available...
+
+        // OLD AND WRONG ASSUMPTION:
+        // there must be at least one 'product_pricings' associated with this
+        // daily pricing before we can allow it to show...
+        // $paginator = $paginator->has('product_pricings');
 
         if($request->input('product_id')) {
             $paginator = $paginator
@@ -30,14 +88,6 @@ class DailyPricingController extends Controller
 
 
         if($request->input('export')) {
-            $paginator = $paginator->where('is_viable', false);
-
-            //  @todo unable to get the user to check if they are able to download
-//            abort_unless(
-//                auth('api')->user()->hasPermissionTo('daily_pricing_export'),
-//                403,
-//                'You do not have permission to export'
-//            );
             set_time_limit(120);
             ini_set('memory_limit', '256M');
             $export = new DailyPricingExport([]);
@@ -46,7 +96,8 @@ class DailyPricingController extends Controller
                 $export->buildExport();
             });
             $export->setPricings([]);
-            return $export->getCsvDownloadResponse();
+            $export->getCsvDownloadResponse();
+            die();
         }
 
         $paginator = $paginator->paginate($request->input('per_page', 100));
@@ -55,41 +106,60 @@ class DailyPricingController extends Controller
         return response()->json(new SerializeLengthAwarePaginator($paginator, new DailyPricingTransformer()));
     }
 
-    public function update(Request $request, DailyPricing $dailyPricing)
+    /**
+     * User submits a new price for a given product/country combo ....
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request)
     {
+        $this->validate($request, [
+            'product_id'            => 'required|exists:products,id',
+            'country_id'            => 'required|exists:countries,id',
+            'suggested_fba_fee'     => 'required|numeric|nullable|min:0',
+            'suggested_price'       => 'required|numeric|nullable|min:0'
+        ]);
 
-        if($request->input('approve')) {
-            $dailyPricing->approved_at = Carbon::now();
-            $dailyPricing->approver()->associate(auth()->user());
+        $pricing = new DailyPricing();
+        $pricing->country()->associate(Country::query()->findOrFail($request->input('country_id')));
+        $pricing->product()->associate(Product::query()->findOrFail($request->input('product_id')));
+        $pricing->suggested_price = $request->input('suggested_price');
+        $pricing->fba_fee = $request->input('suggested_fba_fee');
+        $pricing->submitted_at = Carbon::now();
+        $pricing->submitter()->associate(auth()->user());
+        $pricing->save();
+
+        return response()->json(fractal($pricing, new DailyPricingTransformer()));
+    }
 
 
-            // $factor = $dailyPricing->country->currency->default_fx_to_gbp;
-            $factor = $dailyPricing->country->currency->currency_fx_rate;
-            $dailyPricing->product->current_product_pricing->unit_price_gbp = ($factor * $dailyPricing->suggested_price);
-            $dailyPricing->product->current_product_pricing->marketplace_fee = $dailyPricing->fba_fee;
+    /**
+     * @param Request $request
+     * @param DailyPricing $dailyPricing
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function show(Request $request, DailyPricing $dailyPricing)
+    {
+        $this->validate($request, [
+            'suggested_fba_fee'     => 'required|numeric|nullable|min:0',
+            'suggested_price'       => 'required|numeric|nullable|min:0'
+        ]);
 
-            $newDailyPricing = new DailyPricing();
-            $newDailyPricing->country()->associate($dailyPricing->country);
-            $newDailyPricing->product()->associate($dailyPricing->product);
-            $newDailyPricing->submitted_at = Carbon::now();
-            $newDailyPricing->submitter()->associate(auth()->user());
-            $newDailyPricing->save();
-
-        } else {
-            $this->validate($request, [
-                'fba_fee' => 'sometimes|numeric|nullable|min:0',
-                'suggested_price' => 'sometimes|numeric|nullable|min:0'
-            ]);
-
-            $dailyPricing->fill($request->only([
-                'fba_fee', 'suggested_price'
-            ]));
-
-            $dailyPricing->submitted_at = Carbon::now();
-            $dailyPricing->submitter()->associate(auth()->user());
-        }
-
-        $dailyPricing->save();
+        // NOTE: we're not planning on SAVING this, we're just updating it
+        // so we can recalc margins and test viability, then we explicitly do
+        // ***NOT SAVE***
+        DB::beginTransaction();
+        $dailyPricing->suggested_price = $request->input('suggested_price');
+        $dailyPricing->fba_fee = $request->input('suggested_fba_fee');
+        $dailyPricing->recalculteProfitAndMargin();
+        $viability = new ProductPricingViabilityChecker();
+        $dailyPricing->is_viable = $viability->isViable(
+            $dailyPricing->profit,
+            $dailyPricing->product->final_cost_gbp,
+            $dailyPricing->product->custom_minimum_profit
+        );
 
         return response()->json(fractal($dailyPricing, new DailyPricingTransformer()));
     }

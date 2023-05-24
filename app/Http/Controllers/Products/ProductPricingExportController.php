@@ -209,12 +209,16 @@ class ProductPricingExportController extends Controller
         $row[] = ''; // WEB QTY
 
         $ukPrice = $this->getProductPricingForCountry($pricing, $gb);
-        $row[] = $ukPrice->unit_sf_price; // EBAY
-        $row[] = ''; // EBAY QTY
-        $row[] = ''; // ADDED SS
-        $row[] = ''; // PAUL
-        $row[] = ''; // TAGS
-        $row[] = ''; // CLICK AND DROP
+
+        if($ukPrice) {
+            $row[] = $ukPrice->unit_sf_price; // EBAY
+            $row[] = ''; // EBAY QTY
+            $row[] = ''; // ADDED SS
+            $row[] = ''; // PAUL
+            $row[] = ''; // TAGS
+            $row[] = ''; // CLICK AND DROP
+        }
+
         foreach ($eu as $country) {
             $row = $this->appendProductPricingForCountry($row, $pricing, $country, false);
         }
@@ -253,7 +257,7 @@ class ProductPricingExportController extends Controller
         $price = $this->getProductPricingForCountry($pricing, $country);
         // poland is only via FBA at the moment ....
         if ($country->iso_2_code == 'PL') {
-            $row[] = $price->unit_fba_price;
+            $row[] = $price->unit_fba_price??'';
             return $row;
         }
 
@@ -270,7 +274,7 @@ class ProductPricingExportController extends Controller
             $row[] = $postage;
 
             if (!$isRow) {
-                $row[] = $price->unit_fba_price;
+                $row[] = $price->unit_fba_price??'';
             }
         } else {
             $row[] = 'N/A';

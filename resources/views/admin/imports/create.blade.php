@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        @can('china')
+        @can('__china')
         <create-import
             :types='{!! json_encode($types, JSON_HEX_APOS) !!}'
             :columns='{!! json_encode($columns, JSON_HEX_APOS) !!}'
@@ -11,7 +11,7 @@
             code="{{ $code }}"
         ></create-import>
         @endcan
-        @can('uk')
+        @can('__uk')
             <uk-product-importer>
 
             </uk-product-importer>

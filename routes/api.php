@@ -14,14 +14,15 @@ use Illuminate\Http\Request;
 */
 Route::group(['as' => 'api.'], function() {
     Route::post('login', 'Api\AuthController@login');
-    Route::resource('products', 'Api\Products\ProductsController')->only(['index']);
 
 
     Route::group(['middleware' => ['auth:api']], function() {
         Route::resource('countries', 'Api\Countries\CountriesController')->only(['index']);
+        Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
     });
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super|products']], function() {
+        Route::resource('products', 'Api\Products\ProductsController')->only(['index']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['index','store']);
         Route::resource('products.skus', 'Api\Products\SkusController')->only(['store']);
         Route::resource('products.media', 'Api\Products\MediaController')->only(['destroy', 'store']);
@@ -39,11 +40,11 @@ Route::group(['as' => 'api.'], function() {
 
     Route::group(['middleware' => ['auth:api', 'role_or_permission:admin|super']], function() {
         Route::resource('settings', 'Api\Settings\SettingsController')->only(['index']);
-        Route::resource('guidance', 'Api\Admin\AmazonGuidanceController')->only(['store']);
         Route::resource('products.landed-costs', 'Api\Products\LandedCostsController')->only(['store']);
         Route::resource('currencies', 'Api\Currencies\CurrencyController')->only(['update']);
         Route::resource('countries', 'Api\Countries\CountriesController')->only(['update']);
         Route::group(['middleware' => ['role_or_permission:china']], function() {
+            Route::resource('sales-order-lines', 'Api\SalesOrders\LinesController');
             Route::resource('sales-orders/lines/pricing', 'Api\Pricing\CreatePricingFromOrderLinesController')->only(['store']);
             Route::resource('sales-orders.lines.media', 'Api\SalesOrders\Lines\MediaController')->only(['store']);
             Route::resource('sales-orders', 'Api\SalesOrders\SalesOrdersController')->only(['index', 'show', 'store', 'update', 'destroy']);
@@ -93,13 +94,14 @@ Route::group(['as' => 'api.'], function() {
 
 
     Route::group(['middleware' => ['auth:api','permission:uk']], function () {
-        Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'update']);
+        Route::resource('/daily-pricing', 'Api\Uk\Pricing\DailyPricingController')->only(['index', 'store', 'show']);
         Route::resource('order-acknowledgements', 'Api\Uk\OrderAcknowledgementsController')->only(['index', 'store', 'show', 'destroy', 'update']);
         Route::put('/order-acknowledgements/{order_acknowledgement}/restore', 'Api\Uk\OrderAcknowledgementsController@restore');
         Route::resource('order-acknowledgements.lines', 'Api\Uk\OrderAcknowledgementLinesController')->only('store', 'update', 'destroy');
         Route::resource('order-acknowledgements.lines.product', 'Api\Uk\OrderAcknowledgementProductController')->only('store');
         Route::resource('products.stock-changes', 'Api\Products\ProductRafStockController')->only(['index']);
         Route::resource('invoices', 'Api\Uk\Invoices\InvoiceController')->only(['index', 'store', 'update', 'destroy', 'show']);
+        Route::resource('invoice-lines', 'Api\Uk\Invoices\InvoiceLinesController')->only(['index']);
     });
 
 

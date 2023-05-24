@@ -6,28 +6,27 @@
                     <slot>
                         <search-input class="w-50" v-model="search" @search="updateHash()">
                             <slot>
-                                <b-dropdown class="align-middle float-right" size="lg" text="" variant="outline-secondary" right>
-                                    <b-dropdown-form style="width:400px">
-                                        <b-form-group label="Search by">
-                                            <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
-                                            <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
-                                            <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
-                                            <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
-                                            <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
-                                        </b-form-group>
+                                <b-dropdown ref="dropdown" class="align-middle float-right" @show="isClosable = false" size="lg" text="" variant="outline-secondary" right>
+                                    <b-dropdown-form style="width:400px" id="product-list-filters">
+                                        <div class="d-flex justify-content-between">
+                                            <b-form-group label="Search by">
+                                                <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
+                                            </b-form-group>
+                                            <a @click="closeDropdown()"><b-icon-x/></a>
+                                        </div>
                                         <b-dropdown-divider/>
-                                        <b-form-group label="Filter by Supplier">
+                                        <b-form-group label="Filter by Factory">
                                             <factory-select v-model="searchFactory" @selected="factorySelect"/>
-                                        </b-form-group>
-                                        <b-dropdown-divider/>
-                                        <b-form-group label="Stock Levels">
-                                            <b-form-checkbox v-model="includeStockLevels">Include stock levels on export (warning: slow)</b-form-checkbox>
                                         </b-form-group>
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
                         </search-input>
-                        <b-button variant="primary" class="ml-2" @click="exportProducts">Export</b-button>
+                        <b-button variant="primary" class="ml-2" @click="$refs['export-modal'].show()">Export</b-button>
                         <b-button class="ml-2" href="/products/create" variant="primary">Create</b-button>
                     </slot>
                 </table-header>
@@ -66,6 +65,11 @@
                     {{ data.value | cash_value }}
                   </span>
                 </template>
+                <template #cell(unit_price_gbp)="data">
+                  <span v-if="data.value">
+                    {{ data.value | cash_value }}
+                  </span>
+                </template>
             </b-table>
             <b-button @click="createSalesOrder" size="lg" block :disabled="selectedForExport.length < 1" variant="primary">
                 <a v-if="selectedForExport < 1">No Products Selected</a>
@@ -73,6 +77,33 @@
             </b-button>
         </b-card>
         <create-sales-order-modal ref="create-sales-order-modal" :selected="this.selectedForExport"></create-sales-order-modal>
+        <b-modal ref="export-modal" title="Export" @ok="exportProducts">
+            <b-form-group label="Export Format">
+                <b-form-radio-group
+                    v-model="format"
+                    stacked
+                    :options="[{
+                    value: 'full',
+                    text: 'Full, RAF compatible'
+                },{
+                    value: 'simplified_with_stock_data',
+                    text: 'Simplified with Stock Data'
+                }, {
+                    value: 'simplified_china',
+                    text: 'Simplified with Current Landed Cost (CN)'
+                }
+                ]"/>
+            </b-form-group>
+            <b-form-group label="Start Date" description="Where 'stock data' has been selected above, this is the start date for the stock take">
+                <b-form-datepicker
+                    form="product-list-filters"
+                    no-close-on-select
+                    v-model="start_date"
+                    :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"
+                />
+            </b-form-group>
+
+        </b-modal>
     </div>
 </template>
 
@@ -85,7 +116,8 @@ export default {
     name: "ProductsList",
     components: {FactorySelect, SearchInput, TableHeader, CreateSalesOrderModal},
     props: {
-        isSupplier: Boolean
+        isSupplier: Boolean,
+        isUk: Boolean
     },
     mounted(){
         this.updateSearch();
@@ -130,23 +162,49 @@ export default {
             ];
 
             if (!this.isSupplier) {
-                fields.push({
-                    key: 'est_landed_cost_gbp',
-                    label: 'ELC GBP',
-                    sortable: true
-                });
+                if(!this.isUk) {
+                    fields.push({
+                        key: 'est_landed_cost_gbp',
+                        label: 'ELC GBP',
+                        sortable: true
+                    });
+                } else {
+                    fields.push({
+                        key: 'unit_price_gbp',
+                        label: 'Unit Price GBP',
+                        sortable: true
+                    })
+                }
             }
 
             return fields;
         }
     },
     methods: {
+        handleHide(event) {
+            console.log(event);
+            if (!this.isClosable) {
+                event.preventDefault();
+            } else {
+                this.$refs['dropdown'].hide();
+            }
+        },
+        closeDropdown(){
+            this.isClosable = true;
+            this.$refs['dropdown'].hide();
+        },
+        openExportModal() {
+
+        },
         async exportProducts(){
             let params = new URLSearchParams({
-                include: this.include,
-                includeStockLevels: this.includeStockLevels,
+                format: this.format,
                 export: true
             });
+
+            if (this.selectedForExport && this.selectedForExport.length > 0) {
+                params.append('product_ids', this.selectedForExport.join(','));
+            }
 
             if(this.search !== '') {
                 params.append('search', this.search)
@@ -156,10 +214,14 @@ export default {
                 params.append('search_factory_id', this.searchFactory.id)
             }
 
+            if(this.start_date) {
+                params.append('start_date', this.start_date);
+            }
+
             const link = document.createElement('a');
-            link.href = '/api/products?' + params.toString();
+            link.href = '/products/export?' + params.toString();
             link.download = 'products_export.csv';
-            console.log(link);
+            console.log(link.href);
             link.click();
         },
         createSalesOrder(){
@@ -230,12 +292,18 @@ export default {
                     'article_number' : 'sorted_article_number'
                 }
             );
-            this.products = products
-            return products
+            // so, we're going to return the promise so items provider continues
+            // to work, but we're going to also grab the contents of that promise
+            // so we can get hard copies of all the products...
+            products.then(results => {
+                this.products = results;
+            });
+            return products;
         }
     },
     data() {
         return {
+            format: 'full',
             selected: [],
             selectedForExport: [],
             search: '',
@@ -248,7 +316,10 @@ export default {
                 currentPage: 1,
             },
             includeStockLevels: false,
-            loading: false
+            includeLandedCosts: false,
+            loading: false,
+            start_date: null,
+            isClosable: false,
         }
     }
 }

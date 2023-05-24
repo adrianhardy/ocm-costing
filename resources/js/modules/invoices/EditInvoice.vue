@@ -1,29 +1,45 @@
 <template>
     <div>
-        <b-card class="shadow-sm" header-class="justify-content-between">
+        <b-card class="shadow-sm">
             <template #header>
-                <div>
-                    <h4 class="m-0">
-                        Invoice: {{ reference }}
-                    </h4>
-                    <b-badge variant="success" v-if="!invoice.is_approval_required && invoice.created_at">
-                        Approved At:
-                        {{ new Date(invoice.created_at) | date('dd/MM/yy HH:mm') }}
-                    </b-badge>
-                    <b-badge variant="success" v-if="invoice.approved_at">
-                        Approved At:
-                        {{ new Date(invoice.approved_at) | date('dd/MM/yy HH:mm') }}
-                    </b-badge>
+                <div class="row w-100">
+                    <div class="col-12 col-md-4">
+                        <div>
+                            <h4 class="m-0">
+                                Invoice: {{ reference }}
+                            </h4>
+                            <b-badge variant="success" v-if="!invoice.is_approval_required && invoice.created_at">
+                                Approved At:
+                                {{ new Date(invoice.created_at) | date('dd/MM/yy HH:mm') }}
+                            </b-badge>
+                            <b-badge variant="success" v-if="invoice.approved_at">
+                                Approved At:
+                                {{ new Date(invoice.approved_at) | date('dd/MM/yy HH:mm') }}
+                            </b-badge>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-2 offset-md-8">
+                        <b-form-group label="Invoice Date">
+                            <b-form-datepicker :disabled="!invoice.is_approval_required || invoice.approved_at" v-model="invoice.invoice_date"/>
+                        </b-form-group>
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <b-form-group  v-if="invoice.is_approval_required && !invoice.approved_at" label="Set Priority All">
+                            <b-form-select class="w-100" @input="setAllPriority($event)">
+                                <b-form-select-option value="low">Low</b-form-select-option>
+                                <b-form-select-option value="medium">Medium</b-form-select-option>
+                                <b-form-select-option value="high">High</b-form-select-option>
+                            </b-form-select>
+                        </b-form-group>
+                    </div>
                 </div>
-                <b-form-select v-if="!invoice.approved_at" class="w-25" @input="setAllPriority($event)">
-                    <b-form-select-option value="low">Low</b-form-select-option>
-                    <b-form-select-option value="medium">Medium</b-form-select-option>
-                    <b-form-select-option value="high">High</b-form-select-option>
-                </b-form-select>
             </template>
             <b-table :items="invoice.lines" :fields="fields">
                 <template #cell(product)="data">
                     <span>{{ data.item.sales_order_line.product.name }} / {{ data.item.sales_order_line.product.primary_sku }}</span>
+                </template>
+                <template #cell(item_number)="data">
+                    <span>{{data.item.sales_order_line.product.item_number}}</span>
                 </template>
                 <template #cell(qty)="data">
                     <b-form-input v-if="invoice.is_approval_required && !invoice.approved_at" :readonly="!canApprove"
@@ -31,7 +47,10 @@
                     <span v-else>{{ data.item.qty }}</span>
                 </template>
                 <template #cell(unit_price)="data">
-                    <b-input-group prepend="£" v-if="invoice.is_approval_required && !invoice.approved_at">
+                    <b-input-group
+                        prepend="£"
+                        v-if="invoice.is_approval_required && !invoice.approved_at"
+                    >
                         <b-form-input :readonly="!canApprove" v-model="data.item.unit_price"/>
                     </b-input-group>
                     <span v-else>{{ data.item.unit_price | cash_value }}</span>
@@ -43,7 +62,7 @@
                     <span>{{ data.item.qty_received_excl_me }}</span>
                 </template>
                 <template #cell(qty_received_total)="data">
-                    <span>{{ data.item.qty_received_excl_me + data.item.qty }}</span>
+                    <span>{{ data.item.qty_received_excl_me + (parseInt(data.item.qty) || 0) }}</span>
                 </template>
                 <template #cell(sub_total)="data">
                     <span>{{ data.item.qty * data.item.unit_price | cash_value }}</span>
@@ -55,6 +74,14 @@
                         <b-form-select-option value="high">High</b-form-select-option>
                     </b-form-select>
                     <span v-else>{{data.item.pricing_priority}}</span>
+                </template>
+                <template #cell(status)="data">
+                    <b-badge v-show="data.item.qty_received_excl_me + (parseInt(data.item.qty) || 0) > data.item.sales_order_line.qty_remaining" variant="danger">
+                        Too many
+                    </b-badge>
+                    <b-badge variant="danger" v-show="data.item.unit_price > 0 && (parseFloat(data.item.sales_order_line.unit_price) !== parseFloat(data.item.unit_price))">
+                        Price mismatch
+                    </b-badge>
                 </template>
             </b-table>
 
@@ -106,6 +133,11 @@ export default {
                     thClass: 'align-middle',
                     tdClass: 'align-middle'
                 }, {
+                    key: 'item_number',
+                    label: "Item #",
+                    thClass: 'align-middle',
+                    tdClass: 'align-middle'
+                }, {
                     key: 'qty_received_excl_me',
                     label: "Received (other invoices)",
                     thClass: 'align-middle',
@@ -128,7 +160,7 @@ export default {
                 }, {
                     key: 'unit_price',
                     label: "Unit Price",
-                    thClass: 'align-middle w-15',
+                    thClass: 'align-middle w-10',
                     tdClass: 'align-middle'
                 }, {
                     key: 'sales_order_line.unit_price',
@@ -144,6 +176,10 @@ export default {
                     key: 'pricing_priority',
                     label: 'Priority',
                     thClass: 'align-middle',
+                    tdClass: 'align-middle'
+                },{
+                    key: 'status',
+                    label: '',
                     tdClass: 'align-middle'
                 }
             ]

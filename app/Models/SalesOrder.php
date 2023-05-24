@@ -50,13 +50,15 @@ class SalesOrder extends BaseSalesOrder
     const OA_STATUS_FULLY_RECEIVED = 'fully_received';
     const OA_STATUS_UNMATCHED_PRODUCTS = 'unmatched_products';
 
+    // Status labels decided by CC on 18/May/23
     const OA_STATUSES = [
-        self::STATUS_DRAFT => 'Draft',
+        self::STATUS_DRAFT => 'Creating',
         self::OA_STATUS_ACTIVE => 'Active',
-        self::OA_STATUS_UNMATCHED_PRODUCTS => 'Unmatched Products',
-        self::OA_STATUS_AWAITING_DELIVERY => 'Awaiting Delivery',
-        self::OA_STATUS_PARTIALLY_RECEIVED => 'Partially Received',
+        self::OA_STATUS_UNMATCHED_PRODUCTS => 'Creating',
+        self::OA_STATUS_AWAITING_DELIVERY => 'Active',
+        self::OA_STATUS_PARTIALLY_RECEIVED => 'Active',
         self::OA_STATUS_FULLY_RECEIVED => 'Fully Received',
+        self::STATUS_CONFIRMED_SALES_ORDER => 'Active',
         self::OA_STATUS_CLOSED => 'Closed',
     ];
 

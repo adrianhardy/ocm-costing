@@ -17,13 +17,16 @@ class DailyPricingExport
     protected $log;
     protected $pa;
     protected $columns = array(
+        'product.primary_sku',
         'product.item_number',
         'product.name',
-        'country.name',
+        'country.iso_2_code',
         'suggested_price',
         'fba_fee',
         'submitted_at',
-        'submitter.name'
+        'submitter.name',
+        'local_profit',
+        'product.final_cost_gbp'
     );
 
 

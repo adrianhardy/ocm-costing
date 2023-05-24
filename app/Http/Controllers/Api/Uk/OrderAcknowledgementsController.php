@@ -18,27 +18,36 @@ class OrderAcknowledgementsController extends Controller
 {
     public function index(Request $request, SalesOrderRepository $repository){
         $paginator = $repository->pushCriteria(app(RequestCriteria::class));
-
-        $paginator = $paginator->where('is_order_acknowledgement', true);
-
-
+        // $paginator = $paginator->where('is_order_acknowledgement', true);
+        // adding on "SalesOrder::STATUS_CONFIRMED_SALES_ORDER" onto status so that we always
+        // get through all of WS's Sales Orders that may be of interest to toni. But, we only
+        // do that on "ACTIVE" filter. BUT, all other non active statuses filter out WS' Orders.
         switch($request->input('stage')) {
             case 'draft':
-                $paginator = $paginator->currentStatus(SalesOrder::STATUS_DRAFT);
+                $paginator = $paginator->where('is_order_acknowledgement', true);
+                $paginator = $paginator->currentStatus([SalesOrder::STATUS_DRAFT, SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS]);
                 break;
             case 'unmatched_products':
+                $paginator = $paginator->where('is_order_acknowledgement', true);
                 $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_UNMATCHED_PRODUCTS);
                 break;
             case 'active':
-                $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_ACTIVE);
+                // include confirmed sales orders
+                $paginator = $paginator->currentStatus([SalesOrder::OA_STATUS_ACTIVE, SalesOrder::OA_STATUS_PARTIALLY_RECEIVED, SalesOrder::STATUS_CONFIRMED_SALES_ORDER]);
                 break;
             case 'partially_received':
+                $paginator = $paginator->where('is_order_acknowledgement', true);
                 $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_PARTIALLY_RECEIVED);
                 break;
             case 'fully_received':
-                $paginator = $paginator->currentStatus(SalesOrder::OA_STATUS_FULLY_RECEIVED);
+                $paginator = $paginator->where('is_order_acknowledgement', true);
+                $paginator = $paginator->currentStatus([SalesOrder::OA_STATUS_FULLY_RECEIVED, SalesOrder::OA_STATUS_CLOSED]);
+                break;
+            default:
+                $paginator = $paginator->where('is_order_acknowledgement', true);
                 break;
         }
+
 
         if($request->input('product_id')) {
             $paginator = $paginator->whereHas('lines', function($query) use ($request) {
@@ -51,6 +60,7 @@ class OrderAcknowledgementsController extends Controller
             case 'deleted':
                 $paginator = $paginator->whereNotNull('deleted_at')->withTrashed();
         }
+
 
         $paginator = $paginator->paginate($request->input('per_page', 15));
 
@@ -137,10 +147,11 @@ class OrderAcknowledgementsController extends Controller
 
             $orderAcknowledgement->save();
 
+            // Decision by cat 19/May/23 - allow orders which have invoices
+            // against them to be unfinalised
             $completedInvoices = $orderAcknowledgement->invoices()->count();
-
-
-            if($completedInvoices >= 1) {
+            $completedInvoices = 0;
+            if( $completedInvoices >= 1) {
                 throw new \Exception('You cannot unfinalise an order that has an invoice');
             }
 

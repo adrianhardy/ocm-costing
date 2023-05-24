@@ -19,6 +19,10 @@ class CountriesController extends Controller
         $paginator = Country::query()
             ->orderBy('name');
 
+        if($request->input('amazon') === "true"){
+            $paginator = $paginator->where('has_pricing', true);
+        }
+
         if($request->input('all')) {
             return response()->json([
                 'items' => fractal($paginator->get(), new CountryTransformer())

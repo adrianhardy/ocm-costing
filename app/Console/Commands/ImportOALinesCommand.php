@@ -6,6 +6,7 @@ use App\Models\Import;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -32,9 +33,7 @@ class ImportOALinesCommand extends Command
 
     protected $columns = [
         'item_number',
-        'article_number',
         'product_description',
-        'name',
         'barcode',
         'inner_qty',
         'case_weight_kg',
@@ -47,7 +46,6 @@ class ImportOALinesCommand extends Command
         'unit_length_m',
         'unit_width_m',
         'primary_sku',
-        'oa_reorder_number',
         'oa_eta',
         'unit_price',
         'units_requested',
@@ -64,7 +62,6 @@ class ImportOALinesCommand extends Command
         'unit_height_m',
         'unit_length_m',
         'unit_width_m',
-        'oa_reorder_number'
     ];
 
 
@@ -134,10 +131,8 @@ class ImportOALinesCommand extends Command
 
             $validator = Validator::make($row, [
                 'item_number' => 'required',
-                'article_number' => 'sometimes',
                 'product_description' => 'sometimes',
-                'name' => 'required',
-                'barcode' => 'required',
+                'barcode' => 'sometimes|max:16',
                 'inner_qty' => 'sometimes|numeric',
                 'case_weight_kg' => 'sometimes|numeric',
                 'height_m' => 'sometimes|numeric',
@@ -149,7 +144,6 @@ class ImportOALinesCommand extends Command
                 'unit_length_m' => 'sometimes|numeric',
                 'unit_width_m' => 'sometimes|numeric',
                 'primary_sku' => 'sometimes',
-                'oa_reorder_number' => 'sometimes|numeric',
                 'oa_eta' => 'sometimes|date',
                 'unit_price' => 'required|numeric',
                 'units_requested' => 'required|numeric',
@@ -170,15 +164,17 @@ class ImportOALinesCommand extends Command
 
             $line->fill([
                 'item_number' => $row['item_number'],
-                'article_number' => $row['article_number'],
                 'product_description' => $row['product_description'],
-                'name' => $row['name'],
+                'name' => $row['product_description'],
                 'barcode' => $row['barcode'],
                 'oa_primary_sku' => $row['primary_sku'],
                 'unit_price' => $row['unit_price'],
                 'units_requested' => $row['units_requested'],
             ]);
 
+            if($row['oa_eta'] !== '') {
+                $line->oa_eta = Carbon::parse($row['oa_eta']);
+            }
 
             // some fields are nullable, so we don't want them getting
             // set when they aren't present on the import, or we'll get
@@ -210,7 +206,6 @@ class ImportOALinesCommand extends Command
             $line->total = $line->units_requested * $line->unit_price;
             $line->total_gbp = $line->total * $acknowledgement->fx_rate;
             $line->unit_price_gbp = $line->unit_price * $acknowledgement->fx_rate;
-
 
             if(!$this->option('pretend')) {
                 $line->save();

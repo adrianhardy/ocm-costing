@@ -40,6 +40,7 @@ class UserTransformer extends TransformerAbstract
             'created_at',
             'last_seen_at',
             'is_locked',
+            'initials'
         ]);
         $json['me'] = \Auth::id() == $user->id;
         $pivot = $user->getAttribute('pivot');

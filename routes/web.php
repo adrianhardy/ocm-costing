@@ -30,6 +30,12 @@ Route::group([
 ], function(){
     Route::post('/uk/product/import', 'Uk\Imports\ProductImportController@import');
     Route::resource('daily-pricing', 'Uk\Pricing\DailyPricingController')->only(['index']);
+
+    // route 'daily-pricing/export' to our Api Controller because that does all the filtering
+    // and pagination correctly.
+    Route::resource('daily-pricing/export', 'Api\Uk\Pricing\DailyPricingController')->only(['index']);
+
+
     Route::resource('order-acknowledgements', 'Uk\OrderAcknowledgementsController')->only(['index', 'edit']);
     Route::resource('order-acknowledgements.import-lines', 'Uk\Imports\OrderAcknowledgmentLinesImportController')->only(['index','store']);
     Route::resource('order-acknowledgements.import-invoice', 'Uk\Imports\InvoiceImportController')->only(['index','store']);
@@ -40,6 +46,7 @@ Route::group([
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('products', 'Products\ProductsController')->only(['index', 'create', 'edit']);
+    Route::resource('products/export', 'Api\Products\ProductsController')->only(['index']);
     Route::resource('sales-orders', 'SalesOrders\SalesOrdersController')->only(['index', 'edit']);
 });
 

@@ -3,9 +3,9 @@
         <b-card header="Drag and drop files to upload here" class="mt-3" body-class="p-0">
             <label for="file-upload-input" class="d-block p-0 m-0">
                 <b-card-body>
-                    <div @drop.prevent="addFile" @dragover.prevent class="d-flex justify-content-between align-items-center">
-                        <div>
-                            Please drag and drop your file here, or click to select a file
+                    <div @drop.prevent="addFile" @dragover.prevent class="d-flex justify-content-between align-items-center alert alert-info">
+                        <div class=" alert alert-info w-80 mb-0">
+                            Please <strong>drag and drop</strong> your file here, or <strong>click</strong> to select a file
                         </div>
                         <b-button size="lg" variant="primary" @click="start" :disabled="!files || !files.length >= 1 || !reference">Upload</b-button>
                     </div>
@@ -60,14 +60,13 @@
                 <h5 class="card-title">Template</h5>
             </div>
             <div class="card-body">
-                <code class="">
-                    item_number,
-                    barcode,
-                    unit_price,
-                    quantity,
-                    pricing_priority
-                </code>
+                <div class="my-3">
+                    <code class="">item_number,barcode,unit_price,quantity,pricing_priority</code>
+                </div>
+                <code>pricing_priority</code> can only be "low","medium", or "high". All other fields are required.
+                <div class="my-3"><a href="/admin/import/template/OA-INVOICE-IMPORT-TEMPLATE.csv">Click here</a> to download a template for this import</div>
             </div>
+
         </div>
     </div>
 </template>
@@ -211,19 +210,22 @@ export default {
                 currentFile.loaded = currentFile.size;
                 this.queue.shift();
 
-                if (this.queue.length < 1) {
-                    this.$bvModal.msgBoxOk("All files have been uploaded", {
-                        title: 'Congrats',
-                        centered: true
-                    });
-                }
                 if (response.data) {
                     this.log = response.data.log
                 }
 
 
             }).catch(error => {
-
+                currentFile.uploading = false;
+                currentFile.uploaded = true;
+                this.queue.shift();
+            }).finally(last => {
+                if (this.queue.length < 1) {
+                    this.$bvModal.msgBoxOk("All files have been uploaded", {
+                        title: 'Congrats',
+                        centered: true
+                    });
+                }
             });
         }
     },
@@ -232,7 +234,7 @@ export default {
             queue: [],
             files: null,
             log: [],
-            skip_first_row: 0,
+            skip_first_row: 1,
             reference: null,
         }
     }

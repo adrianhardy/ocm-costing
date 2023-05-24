@@ -2,7 +2,12 @@
 
 namespace App\Observers;
 
+use App\Domain\ProductPricingViabilityChecker;
 use App\Models\DailyPricing;
+use App\Models\ProductPricing;
+use App\Models\ProductPricingCountry;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class DailyPricingObserver
 {
@@ -14,30 +19,38 @@ class DailyPricingObserver
     {
 
         if($pricing->suggested_price && $pricing->fba_fee) {
-            $pricing->profit = ($pricing->suggested_price - $pricing->fba_fee - $pricing->product->final_cost_gbp) * $pricing->country->currency->currency_fx_rate;
-            $pricing->margin = round($pricing->product->final_cost_gbp / $pricing->profit, 4) * 100;
-
-
-            if($pricing->product->custom_minimum_profit) {
-                $minimumProfit = $pricing->product->custom_minimum_profit;
-            } else {
-                $minimumProfit = 2.50;
-                switch(true) {
-                    case $pricing->product->final_cost_gbp <= 9.99:
-                        $minimumProfit = 2.50;
-                        break;
-                    case $pricing->product->final_cost_gbp <= 19.99:
-                        $minimumProfit = 6;
-                        break;
-                    case $pricing->product->final_cost_gbp > 20:
-                        $minimumProfit = 10;
-                        break;
-                }
-            }
-
-            $pricing->is_viable = $pricing->profit >= $minimumProfit;
+            $pricing->recalculteProfitAndMargin();
+            $viability = new ProductPricingViabilityChecker();
+            $pricing->is_viable = $viability->isViable(
+                $pricing->profit,
+                $pricing->product->final_cost_gbp,
+                $pricing->product->custom_minimum_profit
+            );
         } else {
             $pricing->is_viable = false;
         }
+
+        if($pricing->is_viable) {
+            $pricing->approved_at = Carbon::now();
+            $pricing->approver()->associate(auth()->user());
+
+
+            $factor = $pricing->country->currency->currency_fx_rate;
+            // PRICING is entered in local currency, no need for conversion
+            $factor = 1; // undo currency conversion below
+
+            // AH Not sure why this line is here?
+            $pricing->product->current_product_pricing->save();
+
+            /** @var ProductPricingCountry $pricingCountry */
+            $pricingCountry = $pricing->product->current_product_pricing->product_pricing_countries()
+                ->where('country_id', $pricing->country_id)->firstOrFail();
+
+            $pricingCountry->unit_fba_price = ($factor * $pricing->suggested_price);
+            $pricingCountry->unit_fba_fee = $pricing->fba_fee;
+            $pricingCountry->save();
+        }
+
+
     }
 }

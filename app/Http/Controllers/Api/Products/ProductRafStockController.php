@@ -14,7 +14,12 @@ class ProductRafStockController extends Controller
     {
         $dates = [];
 
-        $client = new Client(['base_uri' => env('RAF_BASE_URI', 'http://127.0.0.1:8000')]);
+        $client = new Client([
+            'base_uri' => config('raf.base_uri'),
+            'headers' => [
+                'Authorization' => 'Bearer ' . config('raf.api_key')
+            ]
+        ]);
 
         for($i = 0; $i < 13; $i++) {
 
@@ -22,7 +27,7 @@ class ProductRafStockController extends Controller
 
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
-                    'items' => [$product->item_number],
+                    'items' => [$product->article_number],
                     'selected_date' => $date->toDateString()
                 ]]
             );
@@ -32,7 +37,7 @@ class ProductRafStockController extends Controller
             $total = 0;
             foreach($response as $stock) {
                 if($stock->item->item_number === $product->item_number) {
-                    $total = $stock->level;
+                    $total = $stock->level_today;
                 };
             }
 

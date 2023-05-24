@@ -15,13 +15,13 @@
                 <b-button class="mr-1" @click="copyPricing">Copy Pricing</b-button>
                 <b-button v-if="copiedPricing" @click="pastePricing">Paste Pricing</b-button>
             </div>
-            <b-button v-if="isApprover && value.submitted_at" variant="success" @click="submitOrder">
+            <b-button variant="secondary" @click="cancel">Cancel</b-button>
+            <b-button variant="primary" @click="submitForApproval" v-if="!value.submitted_at">
+                Submit for Approval
+            </b-button>
+            <b-button v-if="isApprover && value.submitted_at" variant="success" @click="submitApproved">
                 Approve
             </b-button>
-            <b-button v-if="!isApprover && !value.submitted_at" variant="success" @click="submitOrder">
-                Submit
-            </b-button>
-            <b-button variant="secondary" @click="cancel">Cancel</b-button>
             <b-button variant="primary" @click.prevent="save($event)">Update</b-button>
         </template>
         <div>
@@ -345,7 +345,17 @@ export default {
         nonEuroEuCountries: Array,
         isApprover: Boolean
     },
-    mounted(){
+    created() {
+        this.$on('updated', e => {
+            if (e.submitted) {
+                this.close();
+            }
+            if (e.approved) {
+                this.close();
+            }
+        })
+    },
+    mounted() {
         this.getGuidance();
         console.log("****************", this.nonEuroEuCountries, "****************");
     },
@@ -382,20 +392,14 @@ export default {
         }
     },
     methods: {
-
-        submitOrder() {
+        submitForApproval() {
             this.value.submitted = true;
-            this.$http.put(`/api/pricing/${this.value.id}`, {...this.value}).then(response => {
-                this.$bvToast.toast('Pricing Submitted', {
-                    variant: 'success',
-                    title: 'Pricing'
-                })
-                this.$refs['table'].refresh();
-            }).catch(error => {
-                this.$handleExceptionResponse(error, true);
-            });
+            this.update();
         },
-
+        submitApproved() {
+            this.value.approved = true;
+            this.update();
+        },
         copyPricing(){
             this.$emit('copy', this.value)
             // this is more of a visual thing of saying
@@ -450,8 +454,9 @@ export default {
                     include: `product,product.media,sales_order_line,countries`
                 }
             }).then(response => {
+                // give a clue to anything watching as to what happened
+                this.$emit('updated', {submitted: this.value.submitted, approved: this.value.approved});
                 this.value = response.data;
-                this.$emit('updated');
             }).catch(error => {
                 this.$handleExceptionResponse(error, true)
             })

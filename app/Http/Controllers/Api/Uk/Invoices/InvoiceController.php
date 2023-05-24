@@ -62,19 +62,41 @@ class InvoiceController extends Controller
         return response()->json(fractal($invoice, new InvoiceTransformer));
     }
 
+    /**
+     * @param Request $request
+     * @param PricingService $pricingService
+     * @param InvoiceService $invoiceService
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request, PricingService $pricingService, InvoiceService $invoiceService)
     {
+
+        // work out how many lines they've checked before we go any further
+        $checked = array_filter($request->input('lines'), function($line){
+            return isset($line['checked']);
+        });
+
+        abort_unless(
+            count($checked) > 0,
+            400,
+            'You must check at least one OA line to create an invoice'
+        );
+
+
         // we're basically just giving this a sales order,
         // so we need to go through the lines and pick out
         // the ones that have been selected, and create invoice lines for them
         $this->validate($request, [
             'invoice_reference' => 'required|unique:invoices,reference',
+            'invoice_date' => 'required|date',
             'id' => 'required',
-            'lines.*.product.id'    => 'required|',
+            'lines' => 'required|array|min:1',
+            'lines.*.product.id'    => 'required',
             'lines.*.checked'       => 'sometimes|boolean',
             'lines.*.invoice_qty_received'  => 'nullable|numeric|min:0|required_if:lines.*.checked,true',
             'lines.*.invoice_unit_price'    => 'nullable|numeric|min:0|required_if:lines.*.checked,true',
-            'lines.*.priority' => 'required_if:lines.*.checked,true|in:low,medium,high',
+            'lines.*.priority' => 'required_if:lines.*.checked,true|sometimes|nullable|in:low,medium,high',
         ], [
             'lines.*.invoice_qty_received.required_if' => 'Qty received is required when line is checked',
             'lines.*.invoice_unit_price.required_if' => 'Unit price is required when line is checked',
@@ -83,6 +105,7 @@ class InvoiceController extends Controller
 
         // @todo make sure that the validation here works properly and looks nice too
 
+        /** @var SalesOrder $salesOrder */
         $salesOrder = SalesOrder::query()->findOrFail($request->input('id'));
 
         DB::beginTransaction();
@@ -90,6 +113,7 @@ class InvoiceController extends Controller
         $invoice = new Invoice();
 
         $invoice->reference = $request->input('invoice_reference');
+        $invoice->invoice_date = $request->input('invoice_date');
         $invoice->creator()->associate(auth()->user());
         $invoice->sales_order()->associate($salesOrder);
 
@@ -115,7 +139,11 @@ class InvoiceController extends Controller
             $invoice->is_approval_required = true;
         } else {
             foreach ($invoice->invoice_lines as $line) {
-                $pricingService->sendToPricing($line->sales_order_line->product, $line->unit_price, $line->pricing_priority);
+                $pricingService->sendToPricing(
+                    $line->sales_order_line->product,
+                    $line->unit_price,
+                    $line->pricing_priority
+                );
             }
         }
 
@@ -129,6 +157,14 @@ class InvoiceController extends Controller
         return response()->json(fractal($invoice, new InvoiceTransformer));
     }
 
+    /**
+     * @param Request $request
+     * @param PricingService $pricingService
+     * @param Invoice $invoice
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws \Spatie\ModelStatus\Exceptions\InvalidStatus
+     */
     public function update(Request $request, PricingService $pricingService, Invoice $invoice)
     {
 

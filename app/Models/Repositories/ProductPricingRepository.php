@@ -16,7 +16,8 @@ class ProductPricingRepository extends BaseRepository
         'created_at' => 'like',
         'product.name' => 'like',
         'product.item_number' => 'like',
-        'product.article_number' => 'like'
+        'product.article_number' => 'like',
+        'product.primary_sku' => 'like'
     ];
     public function model()
     {

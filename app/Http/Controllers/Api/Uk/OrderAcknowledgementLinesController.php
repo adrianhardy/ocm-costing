@@ -24,7 +24,8 @@ class OrderAcknowledgementLinesController extends Controller
     }
 
 
-    public function update(Request $request, SalesOrder $orderAcknowledgement, SalesOrderLine $line){
+    public function update(Request $request, SalesOrder $orderAcknowledgement, SalesOrderLine $line)
+    {
         $this->authorize('view', $orderAcknowledgement);
         $line->fill($request->only([
             'name',
@@ -57,7 +58,7 @@ class OrderAcknowledgementLinesController extends Controller
                 'item_number'           => '' . $product->item_number,
                 'article_number'        => '' . $product->article_number,
                 'unit_price'            => $product->unit_price_gbp > 0?$product->unit_price_gbp:$product->unit_price,
-                'primary_sku'           => $product->primary_sku
+                'oa_primary_sku'           => $product->primary_sku
             ]);
             $line->product()->associate($product);
         }

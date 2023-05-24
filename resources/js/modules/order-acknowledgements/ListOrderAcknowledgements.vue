@@ -6,10 +6,8 @@
                     <slot>
                         <b-select v-model="stage" style="width:20% !important" @change="$refs['table'].refresh()">
                             <b-select-option :value="null">All</b-select-option>
-                            <b-select-option value="draft">Draft</b-select-option>
-                            <b-select-option value="unmatched_products">Unmatched Products</b-select-option>
+                            <b-select-option value="draft">Creating</b-select-option>
                             <b-select-option value="active">Active</b-select-option>
-                            <b-select-option value="partially_received">Partially Received</b-select-option>
                             <b-select-option value="fully_received">Fully Received</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
@@ -29,7 +27,8 @@
                 hover
                 :fields="fields"
                 :items="items"
-                sort-by="reference"
+                sort-by="created_at"
+                :sort-desc="true"
                 show-empty
                 empty-text="No Order Acknowledgements To Show"
             >
@@ -44,7 +43,7 @@
                         {{ data.value }}
                     </b-link>
                 </template>
-                <template #cell(date)="data">
+                <template #cell(created_at)="data">
                     <span>{{ new Date(data.item.created_at) | date('dd/MM/yy HH:mm') }}</span>
                 </template>
                 <template #cell(eta)="data">
@@ -83,13 +82,14 @@ export default {
         fields() {
             return [
                 {
-                    key: 'date',
+                    key: 'created_at',
                     label: 'Date',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle'
+                    thClass: 'align-middle',
+                    sortable: true
                 }, {
                     key: 'supplier.name',
-                    sortable: true,
+                    sortable: false,
                     label: 'Supplier',
                     tdClass: 'align-middle',
                     thClass: 'align-middle'
@@ -175,7 +175,7 @@ export default {
     data() {
         return {
             search: '',
-            stage: this.initStage,
+            stage: 'active',
             pagination: {
                 total: 0,
                 perPage: 100,

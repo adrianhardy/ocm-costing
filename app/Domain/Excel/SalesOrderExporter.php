@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -130,7 +131,7 @@ class SalesOrderExporter
         $this->clone->getSheet(0)->removeRow($this->start);
 
         $maxLine = 0;
-        for ($current = 1; $current < $salesOrder->lines->count(); $current++) {
+        for ($current = 1; $current <= $salesOrder->lines->count(); $current++) {
             try {
                 $this->clone->getSheet(0)->insertNewRowBefore($this->start + $current, $this->sheetRowsPerLine);
             } catch (\PhpOffice\PhpSpreadsheet\Exception $ex) {
@@ -220,7 +221,7 @@ class SalesOrderExporter
                     $this->mapping[$name].($offset + 1)
                 )->getStyle()
                 ->getNumberFormat()
-                ->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                ->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD);
             }
         }
 
@@ -345,7 +346,7 @@ class SalesOrderExporter
             $salesOrder->stage_description,
             $salesOrder->reference,
             $salesOrder->reference,
-            $salesOrder->finalised_at->format('d M Y'),
+            $salesOrder->finalised_at?$salesOrder->finalised_at->format('d M Y'):'',
             $salesOrder->sales_order_notes
         ]);
         if ($cell->getValue() == '%NOTES%') {
@@ -378,10 +379,12 @@ class SalesOrderExporter
             case '%GRAND_TOTAL_PIECES%':
                 $column = $this->mapping['units_requested'];
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})");
+                $cell->getStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 break;
             case '%GRAND_TOTAL_CARTONS%':
                 $column = $this->mapping['cartons'];
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})");
+                $cell->getStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 break;
             case '%GRAND_TOTAL_CBM%':
                 // because the spreadsheet template doesn't contain a column for
@@ -389,10 +392,12 @@ class SalesOrderExporter
                 // by the magic number 35.3147
                 $column = $this->mapping['total_cuft'];
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})/35.3147");
+                $cell->getStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 break;
             case '%GRAND_TOTAL_CUFT%':
                 $column = $this->mapping['total_cuft'];
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})");
+                $cell->getStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 break;
 
         }

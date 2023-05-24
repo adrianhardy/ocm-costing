@@ -35,6 +35,7 @@ class ProductInformationChangedListener
             })
             ->get();
 
+        /** @var SalesOrderLine $line */
         foreach ($lines as $line) {
             $line->fill($event->product->only([
                 'item_number',
@@ -57,7 +58,13 @@ class ProductInformationChangedListener
                 'est_landed_cost_gbp'
             ]));
 
+            $line->total = $line->unit_price * $line->units_requested;
+            $line->total_gbp = $line->total * $line->sales_order->fx_rate;
+            $line->unit_price_gbp = $line->unit_price * $line->sales_order->fx_rate;
+
             $line->save();
+            $line->sales_order->touch();
+
         }
 
     }

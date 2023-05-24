@@ -5,7 +5,7 @@
                 <table-header v-model="pagination" @input="$refs['table'].refresh()">
                     <slot>
                         <b-form-select class="w-25 mr-2 " v-model="priority" @change="$refs['table'].refresh()">
-                            <b-form-select-option :value="null"></b-form-select-option>
+                            <b-form-select-option :value="null" disabled>Filter by priority</b-form-select-option>
                             <b-form-select-option value="low">Low</b-form-select-option>
                             <b-form-select-option value="medium">Medium</b-form-select-option>
                             <b-form-select-option value="High">High</b-form-select-option>
@@ -212,11 +212,11 @@ export default {
                 {key: 'product.primary_sku', label: 'SKU', tdClass: 'align-middle'},
                 {key: 'product.primary_asin', label: 'ASIN', tdClass: 'align-middle'},
                 {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
-                {key: 'submitted_at', label: 'Priced', tdClass: 'align-middle'},
-                {key: 'submitter.name', label: 'Priced By', tdClass: 'align-middle'},
-                {key: 'approved_at', label: 'Approved', tdClass: 'align-middle'},
-                {key: 'approver.name', label: 'Appr. by', tdClass: 'align-middle'},
-                {key: 'exported_at', label: 'exported', tdClass: 'align-middle'},
+                {key: 'submitted_at', label: 'Priced', tdClass: 'align-middle', sortable: true},
+                {key: 'submitter.initials', label: 'Priced By', tdClass: 'align-middle'},
+                {key: 'approved_at', label: 'Approved', tdClass: 'align-middle', sortable: true},
+                {key: 'approver.initials', label: 'Appr. by', tdClass: 'align-middle'},
+                {key: 'exported_at', label: 'exported', tdClass: 'align-middle', sortable: true},
                 {key: 'priority', label: 'Priority', tdClass: 'align-middle'},
             ]
         }

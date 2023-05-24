@@ -1,0 +1,121 @@
+<template>
+    <div>
+        <table-header v-model="pagination" />
+        <b-table
+            ref="table"
+            :current-page="pagination.currentPage"
+            hover
+            :fields="fields"
+            :items="items"
+            show-empty
+            empty-text="No Sales Orders To Show"
+        >
+            <template #table-busy>
+                <div class="text-center my-2">
+                    <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
+                </div>
+            </template>
+            <template #cell(sales_order.reference)="data">
+                <a :href="`/sales-orders/${data.item.sales_order.id}/edit`">{{ data.value }}</a>
+            </template>
+            <template #cell(date)="data">
+                <span>{{ new Date(data.item.sales_order.created_at) | date('dd/MM/yy HH:mm') }}</span>
+            </template>
+            <template #cell(unit_price)="data">
+                <span v-if="data.item.id">
+                    {{data.item.unit_price | 2dp_value}}
+                </span>
+            </template>
+        </b-table>
+    </div>
+</template>
+
+<script>
+import {dateFilter} from "vue-date-fns";
+import SupplierSelect from "../../../components/SupplierSelect";
+import SearchInput from "../../../components/SearchInput";
+import CreateSalesOrderModal from "../../sales-orders/CreateSalesOrderModal";
+import TableHeader from "../../../components/table/TableHeader";
+
+export default {
+    name: "SalesOrderHistory",
+    props: {
+        productId: Number
+    },
+    filters: {
+        date: dateFilter
+    },
+    components: {SupplierSelect, SearchInput, CreateSalesOrderModal, TableHeader},
+    computed: {
+        fields() {
+            return [
+                {
+                    key: 'date',
+                    label: 'Date',
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                }, {
+                    key: 'sales_order.supplier.name',
+                    sortable: true,
+                    label: 'Supplier',
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                }, {
+                    key: 'sales_order.reference',
+                    label: 'Our Reference',
+                    sortable: true,
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                },  {
+                    key: 'units_requested',
+                    label: 'QTY',
+                    sortable: true,
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                }, {
+                    key: 'unit_price',
+                    label: 'Price',
+                    sortable: true,
+                    tdClass: 'align-middle',
+                    thClass: 'align-middle'
+                }
+            ];
+        }
+    },
+    methods: {
+        items(ctx) {
+            const url = `/api/sales-order-lines`;
+            return this.$paginatedFetch(
+                url,
+                this.pagination,
+                ctx, {
+                    search: this.search,
+                    stage: this.stage,
+                    include: 'sales_order,sales_order.supplier',
+                    product_id: this.productId
+                }
+            );
+        }
+    },
+    data() {
+        return {
+            search: '',
+            stage: this.initStage,
+            pagination: {
+                total: 0,
+                perPage: 100,
+                currentPage: 1,
+            },
+            modal: {
+                supplier: {},
+                our_reference: null,
+                supplier_reference: null
+            }
+        }
+    }
+}
+</script>
+
+<style scoped>
+
+</style>

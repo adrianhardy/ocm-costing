@@ -214,17 +214,24 @@ class Product extends BaseProduct implements HasMedia
     }
 
     public function getHasDuplicateBarcodeAttribute(){
-        return Product::query()
-            ->where('id', '!=', $this->id)
-            ->where('barcode', $this->barcode)
-            ->exists();
+
+        if($this->barcode && $this->barcode !== ''){
+            return Product::query()
+                ->where('id', '!=', $this->id)
+                ->where('barcode', $this->barcode)
+                ->exists();
+        }
+        return false;
     }
 
     public function getHasDuplicateItemNumberAttribute(){
-        return Product::query()
-            ->where('id', '!=', $this->id)
-            ->where('item_number', $this->item_number)
-            ->exists();
+        if($this->item_number && $this->item_number !== '') {
+            return Product::query()
+                ->where('id', '!=', $this->id)
+                ->where('item_number', $this->item_number)
+                ->exists();
+        }
+        return false;
     }
 
     public function getFinalCostGbpAttribute(){

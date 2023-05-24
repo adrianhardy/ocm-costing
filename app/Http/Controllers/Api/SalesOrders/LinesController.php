@@ -3,15 +3,42 @@
 namespace App\Http\Controllers\Api\SalesOrders;
 
 use App\Http\Controllers\Controller;
+use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Currency;
 use App\Models\Product;
+use App\Models\Repositories\SalesOrderLineRepository;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderLine;
+use App\Transformers\SalesOrderLineTransformer;
 use App\Transformers\SalesOrderTransformer;
 use Illuminate\Http\Request;
 
 class LinesController extends Controller
 {
+    public function index(Request $request, SalesOrderLineRepository $repository)
+    {
+        $paginator = $repository->whereHas('sales_order', function($query){
+            return $query->where('is_order_acknowledgement', false);
+        });
+
+        if($request->input('sales_order_id')) {
+            $paginator = $paginator->where('sales_order_id', $request->input('sales_order_id'));
+        }
+
+        if($request->input('product_id')){
+            $paginator = $paginator->where('product_id', $request->input('product_id'))
+                ->whereHas('sales_order', function($query){
+                    return $query->whereNotNull('finalised_at');
+                });
+        }
+
+        $paginator = $paginator->paginate($request->input('per_page', 25));
+
+
+        return response()->json(new SerializeLengthAwarePaginator($paginator, new SalesOrderLineTransformer()));
+    }
+
+
     /**
      * @param SalesOrder $salesOrder
      * @return \Illuminate\Http\JsonResponse
