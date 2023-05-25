@@ -221,7 +221,25 @@ class TransformPickingListFileCommand extends Command
                     }
 
                     if (substr($titles[$value], 0, 14) == 'estimated_date') {
-                        $date = date_create_from_format('d/M/y', $nextCell->getFormattedValue());
+                        $date = date_create_from_format('d/M/Y', $nextCell->getFormattedValue());
+
+                        if (!$date) {
+                            $date = date_create_from_format('d/M/y', $nextCell->getFormattedValue());
+                        }
+
+
+                        if (!$date) {
+                            $date = date_create_from_format('d/m/Y', $nextCell->getFormattedValue());
+                        }
+
+                        if (!$date) {
+                            $date = date_create_from_format('d/m/y', $nextCell->getFormattedValue());
+                        }
+
+                        if (!$date) {
+                            throw new \Exception("Failed to parse estimated date in cell {$nextCell->getCoordinate()} -- {$nextCell->getFormattedValue()}");
+                        }
+
                         $pairs[$titles[$value]] = $date->setTime(0, 0)->format('Y-m-d');
                     } else {
                         $pairs[$titles[$value]] = $nextCell->getFormattedValue();

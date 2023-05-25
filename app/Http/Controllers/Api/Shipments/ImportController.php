@@ -52,7 +52,11 @@ class ImportController extends Controller
         }
 
         // convert the XLSX file to JSON ...
-        Artisan::call("import:shipping-file --type=$type {$file->getRealPath()} auto");
+        try {
+            Artisan::call("import:shipping-file --type=$type {$file->getRealPath()} auto");
+        } catch (\Exception $ex) {
+            abort(400, $ex->getMessage());
+        }
         $json = json_decode(Artisan::output(), true);
         $summary = collect();
         $uniqueSalesOrderReferences = [];

@@ -39,16 +39,19 @@ class DailyPricingObserver
             // PRICING is entered in local currency, no need for conversion
             $factor = 1; // undo currency conversion below
 
-            // AH Not sure why this line is here?
-            $pricing->product->current_product_pricing->save();
+            // For daily pricing, "ProductPricing" might not yet be set up,
+            // so we're checking to see if it is before we attempt to modify:
+            if ($pricing->product->current_product_pricing) {
+                $pricing->product->current_product_pricing->save();
 
-            /** @var ProductPricingCountry $pricingCountry */
-            $pricingCountry = $pricing->product->current_product_pricing->product_pricing_countries()
-                ->where('country_id', $pricing->country_id)->firstOrFail();
+                /** @var ProductPricingCountry $pricingCountry */
+                $pricingCountry = $pricing->product->current_product_pricing->product_pricing_countries()
+                    ->where('country_id', $pricing->country_id)->firstOrFail();
 
-            $pricingCountry->unit_fba_price = ($factor * $pricing->suggested_price);
-            $pricingCountry->unit_fba_fee = $pricing->fba_fee;
-            $pricingCountry->save();
+                $pricingCountry->unit_fba_price = ($factor * $pricing->suggested_price);
+                $pricingCountry->unit_fba_fee = $pricing->fba_fee;
+                $pricingCountry->save();
+            }
         }
 
 
