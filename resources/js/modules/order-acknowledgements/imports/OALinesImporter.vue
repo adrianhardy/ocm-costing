@@ -230,16 +230,12 @@ export default {
 
 
             }).catch(error => {
+                this.$handleExceptionResponse(error, true);
                 currentFile.uploading = false;
                 currentFile.uploaded = true;
                 this.queue.shift();
             }).finally(lastly => {
-                if (this.queue.length < 1) {
-                    this.$bvModal.msgBoxOk("All files have been uploaded", {
-                        title: 'Congrats',
-                        centered: true
-                    });
-                }
+
             });
         }
     },

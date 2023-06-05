@@ -340,23 +340,19 @@
 
             <div class="d-flex justify-content-between">
                 <div>
-                    <b-button v-if="this.productId && canDelete" variant="outline-danger" @click="deleteProduct">Delete</b-button>
+                    <b-button class="mr-2" v-if="this.productId && canDelete" variant="outline-danger" @click="deleteProduct">Delete</b-button>
                     <b-button v-if="this.productId && canCopy" variant="outline-primary" @click="copyProduct">Copy Product</b-button>
 
                 </div>
-                <div v-if="tabIndex === 0">
-                    <b-button variant="outline-primary mr-2" @click="save()">
+                <div>
+                    <b-button class="mr-2" variant="outline-primary" @click="save()">
                         {{ this.productId ? 'Update' : 'Create' }} Product
                     </b-button>
-
                     <b-button @click="sendToPricing" v-if="this.productId"
                               variant="outline-secondary float-right" class="mr-2">
                         Send To Pricing
                     </b-button>
                 </div>
-                <b-button v-if="tabIndex === 1" variant="outline-primary float-right" @click="save()">
-                    {{ this.productId ? 'Update' : 'Create' }} Product
-                </b-button>
             </div>
         </b-card>
     </div>

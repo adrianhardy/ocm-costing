@@ -216,6 +216,7 @@ export default {
 
 
             }).catch(error => {
+                this.$handleExceptionResponse(error, true)
                 currentFile.uploading = false;
                 currentFile.uploaded = true;
                 this.queue.shift();

@@ -76,7 +76,7 @@
                     <span v-else>{{data.item.pricing_priority}}</span>
                 </template>
                 <template #cell(status)="data">
-                    <b-badge v-show="data.item.qty_received_excl_me + (parseInt(data.item.qty) || 0) > data.item.sales_order_line.qty_remaining" variant="danger">
+                    <b-badge v-show="data.item.qty_received_excl_me + (parseInt(data.item.qty) || 0) > data.item.sales_order_line.units_requested" variant="danger">
                         Too many
                     </b-badge>
                     <b-badge variant="danger" v-show="data.item.unit_price > 0 && (parseFloat(data.item.sales_order_line.unit_price) !== parseFloat(data.item.unit_price))">
