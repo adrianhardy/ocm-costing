@@ -132,7 +132,7 @@
 
         <pricing-profit-summary
             :fba-price="value[priceField]"
-            :fba-vat="0"
+            :fba-vat="euPricing?fbaVat:0"
             :fba-shipping="value[shipField]"
             :fba-referral-fee="fbaReferralFeeValue"
             :sf-referral-fee="sfReferralFeeValue"
@@ -166,7 +166,11 @@ export default {
         country: Object,
         vatField: String,
         marketplaceCommissionPc: Number,
-        landedCostPerUnitGbp: Number
+        landedCostPerUnitGbp: Number,
+        euPricing: {
+            type: Boolean,
+            default: false
+        },
     },
     computed: {
         sfVat() {

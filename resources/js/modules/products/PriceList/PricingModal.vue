@@ -249,6 +249,7 @@
                                             price-field="unit_fba_price"
                                             vat-field="vat_rate"
                                             fx-field="current_gbp_fx_rate"
+                                            eu-pricing
                                         />
                                     </div>
                                 </div>
