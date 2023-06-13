@@ -79,7 +79,7 @@
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[shipField]" size="sm" />
                 <b-input-group-append class="w-20">
-                    <b-input-group-text class="w-100">&pound;</b-input-group-text>
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
@@ -90,7 +90,7 @@
                 </b-input-group-prepend>
                 <b-form-input v-model.number="value[feeField]" size="sm" />
                 <b-input-group-append class="w-20">
-                    <b-input-group-text class="w-100">&pound;</b-input-group-text>
+                    <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
             </b-input-group>
         </b-form-group>
@@ -138,7 +138,7 @@
             :sf-referral-fee="sfReferralFeeValue"
             :fee="value[feeField]"
             :sf-price="value[sfPriceField]"
-            :sf-vat="0"
+            :sf-vat="euPricing?sfVat:0"
             :fx-rate="value[fxField]"
             :currency-symbol="currencySymbol"
             :landed-cost-per-unit-gbp="landedCostPerUnitGbp"
@@ -196,11 +196,11 @@ export default {
             return (this.fbaReferralFeeValue * 0.2).toFixed(2);
         },
         fbaReferralFeeValue() {
-            const value = this.value[this.priceField] * (1 / this.marketplaceCommissionPc);
+            const value = this.value[this.priceField] * (this.marketplaceCommissionPc/100);
             return value.toFixed(2);
         },
         sfReferralFeeValue() {
-            const value = this.value[this.sfPriceField] * (1 / this.marketplaceCommissionPc);
+            const value = this.value[this.sfPriceField] * (this.marketplaceCommissionPc/100);
             return value.toFixed(2);
         },
         currencySymbol() {
