@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -74,6 +75,7 @@ class TransformPickingListFileCommand extends Command
 
             $columns = [
                 'po_number',
+                'factory_number',
                 'article_number',
                 'description',
                 'qty',
@@ -85,6 +87,8 @@ class TransformPickingListFileCommand extends Command
             foreach ($columns as $j => $name) {
                 $row[$name] = trim($this->sheet->getCellByColumnAndRow($j+1, $i)->getFormattedValue());
             }
+
+            $row['qty'] = str_replace(',', '', $row['qty']);
 
             if ($row['po_number'] && $row['po_number'] !== $currentPo) {
                 $currentPo = $row['po_number'];
@@ -104,6 +108,19 @@ class TransformPickingListFileCommand extends Command
                 $row['sub_total'] = trim(str_replace('US$', '', $row['sub_total']));
                 $row['unit_price'] = trim(str_replace('USD', '', $row['unit_price']));
                 $row['sub_total'] = trim(str_replace('USD', '', $row['sub_total']));
+
+
+                $validator = Validator::make($row, [
+                    'unit_price' => 'required|numeric|min:0',
+                    'qty' => 'required|numeric|min:0',
+                ], [
+                    'qty.numeric' => 'Column :attribute must be a number (found \':input\')'
+                ]);
+
+                if ($validator->fails()) {
+                    throw new \Exception("Validation error on line $i : " . $validator->getMessageBag()->first());
+                }
+
                 $lines[] = $row;
             }
         }
@@ -124,6 +141,7 @@ class TransformPickingListFileCommand extends Command
 
             $columns = [
                 'po_number',
+                'factory_item_number',
                 'article_number',
                 'description',
                 'qty',
