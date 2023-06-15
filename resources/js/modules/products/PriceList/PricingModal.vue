@@ -123,7 +123,7 @@
                                 <div class="col-4">
                                     <b-form-group label="Est. L' Cost" label-cols="4" label-size="sm">
                                         <b-input-group prepend="£" size="sm">
-                                            <b-form-input v-model.number="value.est_landed_cost_per_unit_gbp"/>
+                                            <b-form-input readonly v-model.number="value.est_landed_cost_per_unit_gbp"/>
                                         </b-input-group>
                                     </b-form-group>
                                 </div>
@@ -249,6 +249,7 @@
                                             price-field="unit_fba_price"
                                             vat-field="vat_rate"
                                             fx-field="current_gbp_fx_rate"
+                                            eu-pricing
                                         />
                                     </div>
                                 </div>

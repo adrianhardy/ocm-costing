@@ -20,6 +20,8 @@ class ProductImportController extends Controller
             'supplier_id' => 'required'
         ]);
 
+        abort_unless($request->file('file')->clientExtension() == 'csv', 400, 'You must supply a CSV file');
+
         $csv = $request->file('file');
         $supplier       = Supplier::query()->findOrFail($request->input('supplier_id'));
 

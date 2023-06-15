@@ -1,11 +1,11 @@
 <template>
     <div>
-        <b-card header="Drag and drop files to upload here" class="mt-3" body-class="p-0">
+        <b-card header="Drag and drop CSV to upload here" class="mt-3" body-class="p-0">
             <label for="file-upload-input" class="d-block p-0 m-0">
                 <b-card-body>
                     <div @drop.prevent="addFile" @dragover.prevent class="d-flex justify-content-between align-items-center">
                         <div class=" alert alert-info w-80 mb-0">
-                            Please <strong>drag and drop</strong> your file here, or <strong>click</strong> to select a file
+                            Please <strong>drag and drop</strong> your CSV here, or <strong>click</strong> to select a CSV
                         </div>
                         <b-button size="lg" variant="primary" @click="start" :disabled="!files || !files.length >= 1">Upload</b-button>
                     </div>
@@ -230,16 +230,12 @@ export default {
 
 
             }).catch(error => {
+                this.$handleExceptionResponse(error, true);
                 currentFile.uploading = false;
                 currentFile.uploaded = true;
                 this.queue.shift();
             }).finally(lastly => {
-                if (this.queue.length < 1) {
-                    this.$bvModal.msgBoxOk("All files have been uploaded", {
-                        title: 'Congrats',
-                        centered: true
-                    });
-                }
+
             });
         }
     },

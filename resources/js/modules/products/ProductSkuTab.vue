@@ -7,10 +7,10 @@
             <b-form-input v-model="primary_sku" @change="update()" />
         </b-form-group>
         <b-form-group label="Additional ASINs">
-            <b-tags placeholder="Add ASIN" v-model="additional_asins" @change="update()" />
+            <b-tags placeholder="Add ASIN" v-model="additional_asins" @input="startUpdate()" />
         </b-form-group>
         <b-form-group label="Additional SKUs">
-            <b-tags placeholder="Add SKU" v-model="additional_skus" @change="update()" />
+            <b-tags placeholder="Add SKU" v-model="additional_skus" @input="startUpdate()" />
         </b-form-group>
     </b-tab>
 </template>
@@ -25,6 +25,14 @@ export default {
         this.setup(this.product);
     },
     methods: {
+        // There was an infinite loop of update being called on
+        // products where either addition skus, or additional asins
+        // were null in the database, this is a fix for that
+        startUpdate(){
+            if(Array.isArray(this.additional_asins) && Array.isArray(this.additional_skus)) {
+                this.update();
+            }
+        },
         update() {
             const loader = this.$loading.show();
             this.$http.post(`/api/products/${this.product.id}/skus`, {
@@ -48,11 +56,6 @@ export default {
             this.additional_skus = product.additional_skus;
             this.primary_asin = product.primary_asin;
             this.primary_sku = product.primary_sku;
-        }
-    },
-    watch: {
-        product(newVal) {
-            this.setup(newVal);
         }
     },
     data() {

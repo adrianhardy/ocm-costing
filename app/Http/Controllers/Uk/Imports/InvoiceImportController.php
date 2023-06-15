@@ -24,6 +24,8 @@ class InvoiceImportController extends Controller
             'reference' => 'required|unique:invoices,reference'
         ]);
 
+        abort_unless($request->file('file')->clientExtension() == 'csv', 400, 'You must supply a CSV file');
+
         $csv = $request->file('file');
         $path = date('Y/m');
         $filename = Storage::disk('imports')->putFile($path, $csv);

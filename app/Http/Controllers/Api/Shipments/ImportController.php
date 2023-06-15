@@ -95,6 +95,8 @@ class ImportController extends Controller
                 $line->unit_price_gbp = $line->unit_price * $line->sales_order->fx_rate;
                 $line->save();
                 $line->sales_order->touch();
+                $log[] = "Modified SO Line for {$line->article_number} on PO {$line->sales_order->reference} to have units requested {$line->units_requested}";
+                $log[] = "Modified SO Line for {$line->article_number} on PO {$line->sales_order->reference} to have unit price {$line->unit_price}";
             }
 
             // If we're trying to update shipments as we're going lone
