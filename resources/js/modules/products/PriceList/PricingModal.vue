@@ -121,7 +121,7 @@
                         <b-tab title="UK/EUR Pricing">
                             <div class="row">
                                 <div class="col-4">
-                                    <b-form-group label="Est. L' Cost" label-cols="4" label-size="sm">
+                                    <b-form-group label="Cost Price" label-cols="4" label-size="sm">
                                         <b-input-group prepend="£" size="sm">
                                             <b-form-input readonly v-model.number="value.est_landed_cost_per_unit_gbp"/>
                                         </b-input-group>
@@ -215,7 +215,7 @@
                         <b-tab title="EU Pricing">
                             <div class="row">
                                 <div class="col-4">
-                                    <b-form-group label="Est. L' Cost" label-cols="4" label-size="sm">
+                                    <b-form-group label="Cost Price" label-cols="4" label-size="sm">
                                         <b-input-group prepend="£" size="sm">
                                             <b-form-input readonly v-model="value.est_landed_cost_per_unit_gbp"/>
                                         </b-input-group>
@@ -258,7 +258,7 @@
                         <b-tab title="RoW Pricing">
                             <div class="row">
                                 <div class="col-4">
-                                    <b-form-group label="Est. L' Cost" label-cols="4" label-size="sm">
+                                    <b-form-group label="Cost Price" label-cols="4" label-size="sm">
                                         <b-input-group prepend="£" size="sm">
                                             <b-form-input readonly v-model="value.est_landed_cost_per_unit_gbp"/>
                                         </b-input-group>
@@ -304,6 +304,23 @@
                                 </template>
                                 <template #cell(approved_at)="data">
                                     {{ data.value | date_dmY }}
+                                </template>
+                                <template #cell(unit_price_gbp)="data">
+                                    <span :id="`prices-${data.item.id}`" v-if="data.item.countries.gb">UK FBA: £{{ data.item.countries.gb.unit_fba_price  }} UK SF: £{{ data.item.countries.gb.unit_sf_price}} </span>
+                                    <b-popover v-if="data.item.countries" placement="top" triggers="hover" :target="`prices-${data.item.id}`">
+                                        <b-table-simple>
+                                            <b-tr>
+                                                <b-th>Co</b-th>
+                                                <b-th>FBA</b-th>
+                                                <b-th>SF</b-th>
+                                            </b-tr>
+                                            <b-tr v-for="(price) in getCountries(data.item)" :key="price.id">
+                                                <b-td>{{ price.isoCode.toUpperCase() }}</b-td>
+                                                <b-td>{{ price.pricing.unit_fba_price }}</b-td>
+                                                <b-td>{{ price.pricing.unit_sf_price }}</b-td>
+                                            </b-tr>
+                                        </b-table-simple>
+                                    </b-popover>
                                 </template>
                             </b-table>
                         </b-tab>
@@ -361,6 +378,11 @@ export default {
         console.log("****************", this.nonEuroEuCountries, "****************");
     },
     computed: {
+        countryFields() {
+            return [
+                {key: 'index', label: 'index'}
+            ]
+        },
         ukPostageMethod() {
             if (this.product.uk_postage_method) {
                 return this.product.uk_postage_method.toUpperCase().replaceAll('_', ' ');
@@ -393,6 +415,18 @@ export default {
         }
     },
     methods: {
+        getCountries(productPricing) {
+            const isoCodeToPricing = _.map(productPricing.countries, (pricing, isoCode) => {
+                if (pricing.unit_fba_price !== null && pricing.unit_sf_price !== null) {
+                    return {
+                        isoCode, pricing
+                    };
+                }
+                return null;
+            });
+            console.log(isoCodeToPricing);
+            return _.filter(isoCodeToPricing);
+        },
         submitForApproval() {
             this.value.submitted = true;
             this.update();
@@ -482,7 +516,7 @@ export default {
                 `api/pricing/${this.value.id}/history`,
                 this.pagination,
                 ctx, {
-                    include: 'approver'
+                    include: 'approver,countries'
                 });
         },
         close() {
@@ -502,8 +536,7 @@ export default {
             fields: [
                 {key: 'approved_at', label: 'Approved At', sortable: true},
                 {key: 'approver.name', label: 'Approved By', sortable: true},
-                {key: 'unit_price_gbp', label: 'Unit Price'},
-                {key: 'margin_pc', label: 'Margin'},
+                {key: 'unit_price_gbp', label: 'Unit Price', tdClass: 'w-25'},
             ],
             copiedPricing: null
         }

@@ -42,7 +42,7 @@
                 sort-by="article_number"
             >
                 <template #head(selected_for_export)="data">
-                    <a href="#" @click.prevent="selectAllForExport(true)">All</a>
+                    <b-form-checkbox size="lg" href="#" @change="selectAllForExport" />
                 </template>
                 <template #cell(selected_for_export)="data, index">
                     <b-form-checkbox size="lg" :checked="selectedForExport.indexOf(data.item.id) >= 0" @change="selectForExport(data.item, $event)" />
@@ -94,15 +94,30 @@
                 }
                 ]"/>
             </b-form-group>
-            <b-form-group label="Start Date" description="Where 'stock data' has been selected above, this is the start date for the stock take">
-                <b-form-datepicker
-                    form="product-list-filters"
-                    no-close-on-select
-                    v-model="start_date"
-                    :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"
-                />
+            <b-form-group description="Where 'stock data' has been selected above, this is the start and end for the stock take">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <b-form-group label="Start Date">
+                            <b-form-datepicker
+                                form="product-list-filters"
+                                no-close-on-select
+                                v-model="start_date"
+                                :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"
+                            />
+                        </b-form-group>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <b-form-group label="End Date">
+                            <b-form-datepicker
+                                form="product-list-filters"
+                                no-close-on-select
+                                v-model="end_date"
+                                :date-format-options="{ year: '2-digit', month: '2-digit', day: '2-digit'}"
+                            />
+                        </b-form-group>
+                    </div>
+                </div>
             </b-form-group>
-
         </b-modal>
     </div>
 </template>
@@ -141,8 +156,7 @@ export default {
             let fields = [
                 {
                     key: 'selected_for_export',
-                    sortable: false
-
+                    sortable: false,
                 },{
                     key: 'article_number',
                     sortable: true
@@ -218,6 +232,10 @@ export default {
                 params.append('start_date', this.start_date);
             }
 
+            if (this.end_date) {
+                params.append('end_date', this.end_date);
+            }
+
             const link = document.createElement('a');
             link.href = '/products/export?' + params.toString();
             link.download = 'products_export.csv';
@@ -228,8 +246,11 @@ export default {
             this.$refs['create-sales-order-modal'].open()
         },
         selectAllForExport(value) {
+            console.log(value)
             if (value) {
                 this.selectedForExport = _.uniq([...this.selectedForExport, ..._.map(this.products, 'id')]);
+            } else {
+                this.selectedForExport = [];
             }
         },
         selectForExport(product, value) {
@@ -319,6 +340,7 @@ export default {
             includeLandedCosts: false,
             loading: false,
             start_date: null,
+            end_date: null,
             isClosable: false,
         }
     }
