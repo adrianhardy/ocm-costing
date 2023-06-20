@@ -31,7 +31,7 @@ class DailyPricingController extends Controller
         if ($request->input('non_viable')) {
             $paginator = $paginator->where('is_viable', 0);
             if ($request->input('non_viable_submitted_since')) {
-                $paginator->where('submitted_at', '>', Carbon::createFromFormat('Y-m-d', $request->input('non_viable_submitted_since')));
+                $paginator->where('submitted_at', '>', Carbon::createFromFormat('y-m-d', $request->input('non_viable_submitted_since')));
             }
         }
 
@@ -82,7 +82,7 @@ class DailyPricingController extends Controller
 
         if($request->input('product_id')) {
             $paginator = $paginator
-                ->where('product_id', $request->input('product_id'))
+                ->where('daily_pricing.product_id', $request->input('product_id'))
                 ->whereNotNull('approved_at');
         }
 

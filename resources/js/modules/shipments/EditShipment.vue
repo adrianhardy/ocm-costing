@@ -142,6 +142,9 @@
                     <template #cell(case_cubic_ft)="data">
                         {{ data.value.toFixed(2) }}
                     </template>
+                    <template #cell(unit_price)="data">
+                        <span v-if="data.value">{{ data.value.toFixed(2) }}</span>
+                    </template>
                     <template #cell(cartons)="data">
                         {{ (data.item.received/data.item.units_per_case).toFixed(1) }}
                     </template>
@@ -203,13 +206,14 @@ export default {
                 {key: 'sales_order.sales_order_number', label: 'Sales Order', tdClass: 'align-middle'},
                 {key: 'article_number', label: 'Product', tdClass: 'align-middle'},
                 {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
-                {key: 'units_per_case', label: 'Unit/Case', tdClass: 'align-middle'},
-                {key: 'case_cubic_ft', label: 'Cuft/Case', tdClass: 'align-middle'},
+                {key: 'units_per_case', label: 'Unit/ctn', tdClass: 'align-middle'},
+                {key: 'case_cubic_ft', label: 'ft³/ctn', tdClass: 'align-middle'},
                 {key: 'cartons', label: 'Cartons', tdClass: 'align-middle'},
-                {key: 'total_cubic_ft', label: 'Total Cuft', thClass: 'text-nowrap', tdClass: 'align-middle'},
-                {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Ship\' Cost/Unit £', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
-                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Land\' Cost/Unit £', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
-                {key: 'received', label: 'Quantity', tdClass: 'align-middle'}
+                {key: 'total_cubic_ft', label: 'Total ft³', thClass: 'text-nowrap', tdClass: 'align-middle'},
+                {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Ship\' £/Unit', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
+                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Land\' £/Unit', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
+                {key: 'unit_price', label: '$/Unit', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
+                {key: 'received', label: 'Qty', tdClass: 'align-middle'}
             ]
         }
     },

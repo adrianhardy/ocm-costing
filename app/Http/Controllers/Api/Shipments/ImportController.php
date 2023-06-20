@@ -131,10 +131,14 @@ class ImportController extends Controller
                 $line->length_m = $row['outer_dimension_l'];
                 $line->height_m = $row['outer_dimension_h'];
                 $line->units_per_case = $row['pcs_per_ctn'];
+                $line->product->length_m = $line->length_m;
+                $line->product->width_m = $line->width_m;
+                $line->product->height_m = $line->height_m;
+                $line->product->save();
 
                 $log[] = [
                     'desc' => "Saved a shipment line for article {$row['article_number']}",
-                    'line' => $line->only(['unit_width_cm', 'unit_length_cm', 'unit_height_cm', 'units_per_case'])
+                    'line' => $line->only(['unit_width_cm', 'unit_length_cm', 'unit_height_cm', 'units_per_case', 'width_cm', 'length_cm', 'height_cm'])
                 ];
 
                 if (!$preview) {
