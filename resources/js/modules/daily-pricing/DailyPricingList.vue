@@ -118,16 +118,11 @@
 
                 <template #cell(local_profit)="data">
                     <div v-if="data.value">
-                        <span v-if="data.item.country.iso_2_code !== 'SE' && data.item.country.iso_2_code !== 'PL'">
-                            {{data.item.local_profit.toFixed(2)}}
-                        </span>
-                        <span v-else>
-                            {{data.item.local_profit.toFixed(2)}} GBP
-                        </span>
+                            {{ getLocalProfitCurrencySymbol(data.item.country) }} {{data.item.local_profit.toFixed(2)}}
                     </div>
                     <div v-if="data.item.new_suggested_profit">
                         <b-badge>
-                            {{ data.item.new_suggested_profit.toFixed(2) }}
+                            {{ getLocalProfitCurrencySymbol(data.item.country) }} {{ data.item.new_suggested_profit.toFixed(2) }}
                         </b-badge>
                     </div>
                 </template>
@@ -296,7 +291,7 @@ export default {
             }
             this.$http.get(url, {params: payload}).then(response => {
                 pricing.new_suggested_margin = response.data.margin;
-                pricing.new_suggested_profit = response.data.profit;
+                pricing.new_suggested_profit = response.data.local_profit;
                 pricing.new_suggested_is_viable = response.data.is_viable;
 
                 // trigger a repaint
@@ -365,6 +360,12 @@ export default {
                     'product.primary_asin': 'products.primary_asin'
                 }
             )
+        },
+        getLocalProfitCurrencySymbol(country) {
+            if (['SE', 'PL'].indexOf(country.iso_2_code) > -1) {
+                return getSymbolFromCurrency('GBP');
+            }
+            return this.currencySymbol(country);
         },
         currencySymbol(country) {
             if (country && country.currency) {
