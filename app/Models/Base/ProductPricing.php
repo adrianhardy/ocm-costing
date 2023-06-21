@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $unit_sf_fr_price
  * @property string|null $priority
  * @property Carbon|null $exported_at
+ * @property float|null $website_price
  * 
  * @property User|null $approver
  * @property Product $product
@@ -63,7 +64,8 @@ class ProductPricing extends Model
 		'approver_id' => 'int',
 		'sales_order_line_id' => 'int',
 		'eur_fx_rate' => 'float',
-		'unit_sf_fr_price' => 'float'
+		'unit_sf_fr_price' => 'float',
+		'website_price' => 'float'
 	];
 
 	protected $dates = [

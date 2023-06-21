@@ -10,6 +10,9 @@ use App\Models\ProductPricingCountry;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ProductPricingExportController extends Controller
 {
@@ -84,27 +87,17 @@ class ProductPricingExportController extends Controller
             'WEIGHT',
             'DIMENSIONS',
             'ASIN',
+            'APPROVER',
             'QTY DELIVERED',
             'QTY TO LIST',
             'UK',
             'PP',
             'FBA',
             'TL/PIGGY',
-            'VARIATION',
-            'CHECKED LISTING 1',
-            'CHECKED LISTING 2',
-            'PHOTO',
-            'SEND UK',
-            'SEND EU',
-            'RAF REORDER LEVEL',
             'WEBSITE',
-            'WEB QTY',
             'EBAY',
             'EBAY QTY',
             'ADDED SS',
-            'PAUL',
-            'TAGS',
-            'CLICK AND DROP',
         ];
 
         foreach ($eu as $country) {
@@ -123,6 +116,80 @@ class ProductPricingExportController extends Controller
             $headings[] = strtoupper($country->name);
             $headings[] = 'PP';
         }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getSheet(0);
+        $sheet->setTitle('Report');
+
+
+        $currentWriterRow = 0;
+
+        foreach($headings as $index => $heading) {
+            $column = $index + 1;
+            $sheet->setCellValueByColumnAndRow($column, $currentWriterRow + 1,  $heading);
+            $sheet->getStyleByColumnAndRow($column, $currentWriterRow + 1)->applyFromArray([
+                'font' => ['bold' => true, ]
+            ]);
+
+            foreach ($sheet->getColumnIterator() as $column) {
+                $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
+            }
+
+        }
+
+        $currentWriterRow++;
+
+        foreach($pricings as $pricing) {
+            $row = $this->createCsvRow(
+                $pricing,
+                $gb,
+                $eu,
+                $restOfWorld,
+                $pricing->product->primary_sku,
+                $pricing->product->primary_asin
+            );
+
+            $this->writeRow($row, $sheet, $currentWriterRow);
+
+            $asins = $pricing->product->additional_asins;
+            $skus = $pricing->product->additional_skus;
+
+            if (is_array($asins) || is_array($skus)) {
+                $biggestCount = max(count($asins), count($skus));
+                $asins = array_pad($asins, $biggestCount, null);
+                $skus = array_pad($skus, $biggestCount, null);
+
+                if ($biggestCount > 0) {
+                    foreach ($asins as $i => $asin) {
+                        $currentWriterRow++;
+                        $sku = $skus[$i]??null;
+                        $row = $this->createCsvRow($pricing, $gb, $eu, $restOfWorld, $sku, $asin);
+
+                        // make this a method or something
+                        $this->writeRow($row, $sheet, $currentWriterRow);
+                    }
+                }
+
+            }
+            $currentWriterRow++;
+            $pricing->exported_at = Carbon::now();
+            $pricing->save();
+        }
+
+        $sheet = $spreadsheet->createSheet();
+        $sheet->setTitle('Instructions');
+
+        $sheet->setCellValue('A1', setting('instructions'));
+        $sheet->getColumnDimension('A')->setWidth(250);
+        $sheet->getRowDimension(1)->setRowHeight(500);
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($path = storage_path('productPricing.xlsx'));
+
+        return response()->download($path)->deleteFileAfterSend();
+
 
         $csv = new \SplTempFileObject(256 * 1024 * 1024);
         $csv->fputcsv($headings);
@@ -194,19 +261,12 @@ class ProductPricingExportController extends Controller
         $row[] = $pricing->product->unit_weight_g . 'G';
         $row[] = "{$pricing->product->unit_length_cm} x {$pricing->product->unit_width_cm} x {$pricing->product->unit_height_cm}";
         $row[] = $asin;
+        $row[] = $pricing->approver_id?$pricing->approver->initials:''; // Initials
         $row[] = ''; // qty delivered
         $row[] = ''; // qty to list
         $row = $this->appendProductPricingForCountry($row, $pricing, $gb, false);
         $row[] = ''; // TL/PIGGY
-        $row[] = ''; // VARIATION
-        $row[] = ''; // CHECKED LIST 1
-        $row[] = ''; // CHECKED LIST 2
-        $row[] = ''; // PHOTO
-        $row[] = ''; // SEND UK
-        $row[] = ''; // SEND EU
-        $row[] = ''; // RAF REORDER LEVEL
-        $row[] = ''; // WEBSITE
-        $row[] = ''; // WEB QTY
+        $row[] = $pricing->website_price; // WEBSITE
 
         $ukPrice = $this->getProductPricingForCountry($pricing, $gb);
 
@@ -214,9 +274,6 @@ class ProductPricingExportController extends Controller
             $row[] = $ukPrice->unit_sf_price; // EBAY
             $row[] = ''; // EBAY QTY
             $row[] = ''; // ADDED SS
-            $row[] = ''; // PAUL
-            $row[] = ''; // TAGS
-            $row[] = ''; // CLICK AND DROP
         }
 
         foreach ($eu as $country) {
@@ -265,7 +322,7 @@ class ProductPricingExportController extends Controller
         if (in_array($country->iso_2_code, $this->euIso2Codes)) {
             $postage = $pricing->product->eu_postage_method;
         }
-        if ($country->iso_2_code = 'GB') {
+        if ($country->iso_2_code == 'GB') {
             $postage = $pricing->product->uk_postage_method;
         }
 
@@ -284,5 +341,20 @@ class ProductPricingExportController extends Controller
             }
         }
         return $row;
+    }
+
+    /**
+     * @param array $row
+     * @param \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet
+     * @param int $currentWriterRow
+     * @return array
+     */
+    protected function writeRow(array $row, \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $sheet, int $currentWriterRow): array
+    {
+        foreach ($row as $index => $field) {
+            $column = $index + 1;
+            $sheet->setCellValueByColumnAndRow($column, $currentWriterRow + 1, $field);
+        }
+        return array($index, $field, $column);
     }
 }

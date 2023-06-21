@@ -86,6 +86,7 @@ Vue.component('confirm-navigation-modal', require('./components/ConfirmNavigatio
 
 Vue.component('settings-list', require('./modules/settings/SettingsList.vue').default);
 Vue.component('amazon-guidance-upload', require('./modules/settings/AmazonGuidanceUpload').default)
+Vue.component('instructions-input', require('./modules/settings/InstructionsInput').default);
 Vue.component('document-list', require('./modules/documents/ListDocuments').default)
 
 Vue.component('unit-dimensions-import', require('./modules/imports/UnitDimensionsImport').default)

@@ -193,22 +193,33 @@
 
                                 </div>
                             </div>
-                            <div v-if="value.product">
-                                <h5>Pricing Notes</h5>
-                                <b-textarea
-                                    class="mb-3"
-                                    v-model="value.product.pricing_notes"
-                                />
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <div v-if="value.product">
+                                        <h5>Pricing Notes</h5>
+                                        <b-textarea
+                                            rows="4"
+                                            class="mb-3"
+                                            v-model="value.product.pricing_notes"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <b-form-group label="Priority">
+                                        <b-select v-model="value.priority">
+                                            <b-select-option value="low">Low</b-select-option>
+                                            <b-select-option value="medium">Medium</b-select-option>
+                                            <b-select-option value="high">High</b-select-option>
+                                        </b-select>
+                                    </b-form-group>
+                                    <b-form-group label="Website Price">
+                                        <b-input-group prepend="£">
+                                            <b-form-input type="number" v-model="value.website_price" />
+                                        </b-input-group>
+                                    </b-form-group>
+                                </div>
                             </div>
-                            <div>
-                                <b-form-group label="Priority">
-                                    <b-select v-model="value.priority">
-                                        <b-select-option value="low">Low</b-select-option>
-                                        <b-select-option value="medium">Medium</b-select-option>
-                                        <b-select-option value="high">High</b-select-option>
-                                    </b-select>
-                                </b-form-group>
-                            </div>
+                            <div></div>
 
 
                         </b-tab>

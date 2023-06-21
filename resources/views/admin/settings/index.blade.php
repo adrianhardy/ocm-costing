@@ -21,5 +21,6 @@
             </div>
         </div>
         <amazon-guidance-upload></amazon-guidance-upload>
+        <instructions-input></instructions-input>
     </div>
 @endsection
