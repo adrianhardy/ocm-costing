@@ -38,6 +38,7 @@
                 <template #cell(new_suggested_price)="data">
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
+                            class="border-success"
                             @blur="checkViable(data.item)"
                             v-model.number="data.item.new_suggested_price"
                         ></b-form-input>
@@ -46,6 +47,7 @@
                 <template #cell(new_fba_fee)="data">
                     <b-input-group :prepend="currencySymbol(data.item.country)">
                         <b-form-input
+                            class="border-success"
                             @blur="checkViable(data.item)"
                             v-model.number="data.item.new_fba_fee"
                         ></b-form-input>

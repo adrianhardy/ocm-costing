@@ -81,6 +81,7 @@ class ProductPricingController extends Controller
     public function update(Request $request, ProductPricing $pricing)
     {
         $this->validate($request, [
+            'website_price' => 'sometimes|nullable|numeric|min:0',
             'priority' => 'required|in:low,medium,high',
             'marketplace_commission_pc'     => 'required|numeric|min:0',
             'current_eur_fx_rate'           => 'required|numeric|min:0',
@@ -110,7 +111,8 @@ class ProductPricingController extends Controller
             'current_eur_fx_rate',
             'marketplace_commission_pc',
             'est_landed_cost_per_unit_gbp',
-            'priority'
+            'priority',
+            'website_price'
         ]));
         // copy the global "EUR" rate, set on ProductPricing, down to
         // all the ProductPricingCountry objects related to this $pricing

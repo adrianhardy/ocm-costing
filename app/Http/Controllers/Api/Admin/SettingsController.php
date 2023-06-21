@@ -21,7 +21,7 @@ class SettingsController extends Controller
 
         $all = collect($defaults)
             ->merge(setting()->all())
-            ->except('__history');
+            ->except('__history', 'instructions');
 
         $json = [];
         foreach ($all as $key => $value) {
