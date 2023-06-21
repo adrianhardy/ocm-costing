@@ -57,7 +57,7 @@ class ProductsController extends Controller
             'supplier.id'           => $supplierRequired . '|exists:suppliers,id',
             'factories.*.id'        => 'nullable|exists:factories,id',
             'item_number'           => ['required', 'min:1', 'max:64', $unique],
-            'article_number'        => ['nullable|sometimes', 'min:1', 'max:64'],
+            'article_number'        => ['nullable', 'sometimes', 'min:1', 'max:64'],
             'name'                  => 'required|min:1|max:200',
             'barcode'               => ['nullable','sometimes','max:32', $uniqueBarcode],
             'length_cm'             => 'nullable|sometimes|min:0|numeric',
