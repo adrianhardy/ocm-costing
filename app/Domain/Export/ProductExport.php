@@ -83,6 +83,14 @@ class ProductExport
      * @var mixed
      */
     private $stockTakeStartDate;
+    /**
+     * @var Carbon|null
+     */
+    private $stockTakeEndDate;
+    /**
+     * @var bool
+     */
+    private $hasEndDate = false;
 
     public function __construct($products)
     {
@@ -96,11 +104,15 @@ class ProductExport
      * @param Carbon $date
      * @return $this
      */
-    public function setStockLevelRequired(Carbon $date = null)
+    public function setStockLevelRequired(Carbon $date = null, Carbon $end = null)
     {
         $this->stockLevelRequired = true;
         if ($date) {
             $this->stockTakeStartDate = $date;
+        }
+        if ($end) {
+            $this->hasEndDate = true;
+            $this->stockTakeEndDate = $date;
         }
         $this->columns = $this->stockExportColumns;
         return $this;
@@ -127,6 +139,7 @@ class ProductExport
 
         if ($this->stockLevelRequired) {
             $headers[] = 'Stock as at ' . $this->stockTakeStartDate->format('d/m/Y');
+            $headers[] = 'Stock ending at ' . $this->stockTakeEndDate->format('d/m/Y');
             $headers[] = 'Goods In since';
             $headers[] = 'Dispatched since';
             $headers[] = 'Current Stock';
@@ -151,6 +164,7 @@ class ProductExport
 
                 $stockLevelToday = 'N/A';
                 $stockLevelHistoric = 'N/A';
+                $stockLevelLive = 'N/A';
                 $stockDispatched = 'N/A';
                 $stockReceived = 'N/A';
                 if($this->stockLevelRequired === true) {
@@ -163,6 +177,7 @@ class ProductExport
                                 $stockLevelHistoric = $level->level_historic;
                                 $stockDispatched = $level->dispatched;
                                 $stockReceived = $level->goods_in;
+                                $stockLevelLive = $level->level_live;
                                 break;
                             }
                         }
@@ -170,9 +185,10 @@ class ProductExport
 
 
                     $exportItem[] = $stockLevelHistoric;
+                    $exportItem[] = $stockLevelToday;
                     $exportItem[] = $stockReceived;
                     $exportItem[] = $stockDispatched;
-                    $exportItem[] = $stockLevelToday;
+                    $exportItem[] = $stockLevelLive;
                 }
 
 
@@ -202,7 +218,8 @@ class ProductExport
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
                     'items' => collect($this->products)->pluck('article_number')->toArray(),
-                    'selected_date' => $this->stockTakeStartDate->format('Y-m-d')
+                    'selected_date' => $this->stockTakeStartDate->format('Y-m-d'),
+                    'selected_end_date' => $this->stockTakeEndDate->format('Y-m-d'),
                 ]]);
 
             $this->stockLevels = json_decode($response->getBody());

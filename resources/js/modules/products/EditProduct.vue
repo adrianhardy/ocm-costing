@@ -17,6 +17,9 @@
                                 <factory-select v-model="product.factories" multiple/>
                             </b-form-group>
                             <b-form-group v-if="isUk && canCustomProfit" label="Custom Minimum Profit">
+                                <template #label>
+                                    Custom Minimum Profit <b-icon-info-circle-fill v-b-tooltip.right="'When set, overrides the red/green light on daily pricing\n'"/>
+                                </template>
                                 <b-input-group prepend="£">
                                     <b-form-input type="number" v-model="product.custom_minimum_profit" />
                                 </b-input-group>

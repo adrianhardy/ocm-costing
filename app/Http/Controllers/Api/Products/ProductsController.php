@@ -275,7 +275,11 @@ class ProductsController extends Controller
                 if ($request->input('start_date')) {
                     $start = Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->startOfDay();
                 }
-                $export->setStockLevelRequired($start);
+                $end = Carbon::now()->endOfDay();
+                if($request->input('end_date')) {
+                    $end = Carbon::createFromFormat('Y-m-d', $request->input('end_date'))->endOfDay();
+                }
+                $export->setStockLevelRequired($start, $end);
             }
 
             $paginator->chunk(150, function ($products) use ($export) {
