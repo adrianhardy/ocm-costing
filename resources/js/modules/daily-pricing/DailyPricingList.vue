@@ -259,7 +259,7 @@ export default {
                 return _.filter(fields, o =>
                     o.key !== 'product.final_cost_gbp' &&
                     o.key !== 'margin' &&
-                    o.key !== 'profit'
+                    o.key !== 'local_profit'
                 );
             }
             return fields;

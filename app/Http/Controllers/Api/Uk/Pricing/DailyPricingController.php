@@ -121,9 +121,19 @@ class DailyPricingController extends Controller
             'suggested_price'       => 'required|numeric|nullable|min:0'
         ]);
 
+
+
         $pricing = new DailyPricing();
         $pricing->country()->associate(Country::query()->findOrFail($request->input('country_id')));
         $pricing->product()->associate(Product::query()->findOrFail($request->input('product_id')));
+
+        try{
+            $pricing->product->current_product_pricing;
+        } catch (\Exception $ex) {
+            abort(400, 'This product has not been pushed through to pricing yet');
+        }
+
+
         $pricing->suggested_price = $request->input('suggested_price');
         $pricing->fba_fee = $request->input('suggested_fba_fee');
         $pricing->submitted_at = Carbon::now();
