@@ -1,6 +1,6 @@
 <template>
     <b-card>
-        <h3>Instructions</h3>
+        <h3>Pricing Export Instructions</h3>
         <b-input-group label="Instructions">
             <b-form-textarea rows="4" v-model="instructions"/>
         </b-input-group>
@@ -27,6 +27,10 @@ export default {
         updateInstructions(){
             this.$http.post('/api/admin/settings/instructions', {instructions: this.instructions}).then(response => {
                 console.log(response)
+            }).then(response => {
+                this.$bvToast.toast('Pricing export instructions updated', {
+                    variant: 'success'
+                })
             }).catch(error => {
                 this.$handleExceptionResponse(error, true)
             })

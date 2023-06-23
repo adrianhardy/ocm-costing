@@ -179,7 +179,10 @@ class ProductPricingExportController extends Controller
         $sheet = $spreadsheet->createSheet();
         $sheet->setTitle('Instructions');
 
-        $sheet->setCellValue('A1', setting('instructions'));
+        $sheet->setCellValue('A1', setting('instructions'))
+            ->getStyle('A1')
+            ->getAlignment()
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
         $sheet->getColumnDimension('A')->setWidth(250);
         $sheet->getRowDimension(1)->setRowHeight(500);
 
