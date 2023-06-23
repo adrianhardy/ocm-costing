@@ -38,14 +38,21 @@ class ProductRafStockController extends Controller
             foreach($response as $stock) {
                 if($stock->item->item_number === $product->item_number) {
                     $total = $stock->level_historic;
+                    if ($i < 1) {
+                        $dates[] = [
+                            'date' => Carbon::now(),
+                            'stock' => $stock->level_live
+                        ];
+                    }
                 };
             }
 
-            $dates[] = [
-                'date' => $date,
-                'stock' => $total
-            ];
-
+            if ($i > 0) {
+                $dates[] = [
+                    'date' => $date,
+                    'stock' => $total
+                ];
+            }
         }
 
         return response()->json(['items' => $dates]);

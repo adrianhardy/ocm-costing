@@ -86,15 +86,16 @@ class DailyPricing extends BaseDailyPricing
 
     public function getLocalProfitAttribute()
     {
-	    if(!$this->profit){
-	        return null;
+        if(!$this->profit){
+            return null;
         }
 
-	    if($this->country->iso_2_code === 'SE' || $this->country->iso_2_code === 'PL') {
-	        return $this->profit;
+        // for SE and PL, return GBP - GBP is considered "local"
+        if($this->country->iso_2_code === 'SE' || $this->country->iso_2_code === 'PL') {
+            return round($this->profit / $this->country->currency->currency_fx_rate, 2);
         }
 
-	    return round($this->profit * $this->country->currency->currency_fx_rate, 2);
+        return round($this->profit, 2);
     }
 
     public function recalculteProfitAndMargin()
