@@ -71,7 +71,8 @@ class Product extends BaseProduct implements HasMedia
         'additional_skus',
         'additional_asins',
         'unit_price_gbp',
-        'custom_minimum_profit'
+        'custom_minimum_profit',
+        'daily_pricing_notes'
     ];
 
 	protected $fillable = [
@@ -108,8 +109,8 @@ class Product extends BaseProduct implements HasMedia
         'row_postage_method',
         'pricing_notes',
         'unit_price_gbp',
-        'custom_minimum_profit'
-
+        'custom_minimum_profit',
+        'daily_pricing_notes'
     ];
 
 	protected $casts = [

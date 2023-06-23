@@ -93,7 +93,12 @@ Vue.component('unit-dimensions-import', require('./modules/imports/UnitDimension
 Vue.component('product-asin-import', require('./modules/imports/ProductASINImport').default);
 
 Vue.component('create-currency', require('./modules/currencies/CreateCurrency.vue').default);
-Vue.component('send-all-products-to-pricing', require('./modules/products/SendAllProductsToPricingLink').default)
+Vue.component('send-all-products-to-pricing', require('./modules/products/SendAllProductsToPricingLink').default);
+
+
+Vue.component('volumetric-calculator-modal', require('./components/VolumetricCalculatorModal').default);
+
+
 window.Vue = Vue;
 
 const router = new VueRouter({

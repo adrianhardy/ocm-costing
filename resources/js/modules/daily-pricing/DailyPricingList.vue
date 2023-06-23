@@ -95,6 +95,15 @@
                         </table>
                     </b-popover>
                 </template>
+                <template #cell(product.name)="data">
+                    <div>{{ data.value }}</div>
+                    <div class="small" v-if="data.item.product.daily_pricing_notes && data.item.product.daily_pricing_notes.length > 0">
+                        <span v-b-tooltip.bottom.hover.dh2000 :title="data.item.product.daily_pricing_notes">
+                            <b-icon-info-circle-fill  />
+                            Daily Pricing Notes
+                        </span>
+                    </div>
+                </template>
                 <template #cell(margin)="data">
                     <span v-if="data.value">
                         {{ data.value }}%
