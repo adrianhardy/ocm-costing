@@ -258,7 +258,11 @@ class ProductExport
             $propertyArray .= '['.$element.']';
         }
         try {
-            return "".$this->pa->getValue($data,$propertyArray);
+            $value = $this->pa->getValue($data,$propertyArray);
+            if (is_array($value)) {
+                return implode(', ', $value);
+            }
+            return $value;
         } catch (\Exception $ignore){}
         return "";
     }

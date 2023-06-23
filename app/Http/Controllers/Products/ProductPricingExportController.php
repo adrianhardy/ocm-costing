@@ -88,6 +88,7 @@ class ProductPricingExportController extends Controller
             'DIMENSIONS',
             'ASIN',
             'APPROVER',
+            'INITIALS',
             'QTY DELIVERED',
             'QTY TO LIST',
             'UK',
@@ -265,6 +266,7 @@ class ProductPricingExportController extends Controller
         $row[] = "{$pricing->product->unit_length_cm} x {$pricing->product->unit_width_cm} x {$pricing->product->unit_height_cm}";
         $row[] = $asin;
         $row[] = $pricing->approver_id?$pricing->approver->initials:''; // Initials
+        $row[] = ''; // BLANK SPACE - INITIALS OF WHO'S ASSIGNED TO DO THE JOB
         $row[] = ''; // qty delivered
         $row[] = ''; // qty to list
         $row = $this->appendProductPricingForCountry($row, $pricing, $gb, false);

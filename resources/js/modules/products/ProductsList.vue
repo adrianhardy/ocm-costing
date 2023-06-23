@@ -22,6 +22,9 @@
                                         <b-form-group label="Filter by Factory">
                                             <factory-select v-model="searchFactory" @selected="factorySelect"/>
                                         </b-form-group>
+                                        <b-form-group label="Filter by Supplier">
+                                            <supplier-select v-model="searchSupplier" @selected="supplierSelect"/>
+                                        </b-form-group>
                                     </b-dropdown-form>
                                 </b-dropdown>
                             </slot>
@@ -127,9 +130,10 @@ import TableHeader from '../../components/table/TableHeader';
 import SearchInput from "../../components/SearchInput";
 import FactorySelect from "../../components/FactorySelect";
 import CreateSalesOrderModal from "../sales-orders/CreateSalesOrderModal";
+import SupplierSelect from "../../components/SupplierSelect.vue";
 export default {
     name: "ProductsList",
-    components: {FactorySelect, SearchInput, TableHeader, CreateSalesOrderModal},
+    components: {SupplierSelect, FactorySelect, SearchInput, TableHeader, CreateSalesOrderModal},
     props: {
         isSupplier: Boolean,
         isUk: Boolean
@@ -149,7 +153,9 @@ export default {
                 search: this.search?this.search:'',
                 searchField: this.searchField?this.searchField:this.searchField,
                 searchFactoryID: this.searchFactory?this.searchFactory.id:'',
-                searchFactoryName: this.searchFactory?this.searchFactory.name:''
+                searchFactoryName: this.searchFactory?this.searchFactory.name:'',
+                searchSupplierID: this.searchSupplier?this.searchSupplier.id:'',
+                searchSupplierName: this.searchSupplier?this.searchSupplier.name:''
             }
         },
         fields() {
@@ -224,8 +230,12 @@ export default {
                 params.append('search', this.search)
             }
 
-            if(this.country) {
+            if(this.searchFactory) {
                 params.append('search_factory_id', this.searchFactory.id)
+            }
+
+            if(this.searchSupplier) {
+                params.append('search_supplier_id', this.searchSupplier.id)
             }
 
             if(this.start_date) {
@@ -270,6 +280,11 @@ export default {
                 this.updateHash();
             });
         },
+        supplierSelect(){
+            this.$nextTick(() => {
+                this.updateHash();
+            });
+        },
         // when we click "search" we change the fragment in the url bar
         // based on our current selection - we also request a navigation
         // purely to plonk it in history
@@ -291,7 +306,12 @@ export default {
                     name: parsedHash.get('searchFactoryName')
                 };
             }
-
+            if (parsedHash.get('searchSupplierID')) {
+                this.searchSupplier = {
+                    id: parsedHash.get('searchSupplierID'),
+                    name: parsedHash.get('searchSupplierName')
+                };
+            }
         },
 
         items(ctx) {
@@ -299,6 +319,7 @@ export default {
             const payload = {
                 search: this.search,
                 search_factory_id: this.searchFactory?this.searchFactory.id:null,
+                search_supplier_id: this.searchSupplier?this.searchSupplier.id:null,
                 include: 'quotes_lines,media,factories',
             };
 
@@ -328,8 +349,9 @@ export default {
             selected: [],
             selectedForExport: [],
             search: '',
-            searchField: 'article_number',
+            searchField: '',
             searchFactory: null,
+            searchSupplier: null,
             products: [],
             pagination: {
                 total: 0,

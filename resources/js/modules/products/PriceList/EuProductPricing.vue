@@ -5,7 +5,7 @@
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">VAT</b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model="value[vatField]" size="sm" />
+                <b-form-input v-model="value[vatField]" class="border-success" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100">%</b-input-group-text>
                 </b-input-group-append>
@@ -21,7 +21,7 @@
                         </a>
                     </b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model.number="value[sfPriceField]" size="sm" />
+                <b-form-input v-model.number="value[sfPriceField]" class="border-success" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
@@ -46,7 +46,7 @@
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA Price</b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model.number="value[priceField]" size="sm" />
+                <b-form-input v-model.number="value[priceField]" class="border-success" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
@@ -70,7 +70,7 @@
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA Ship.</b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model.number="value[shipField]" size="sm" />
+                <b-form-input v-model.number="value[shipField]" class="border-success" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>
@@ -81,7 +81,7 @@
                 <b-input-group-prepend class="w-50">
                     <b-input-group-text class="w-100">FBA Fee</b-input-group-text>
                 </b-input-group-prepend>
-                <b-form-input v-model.number="value[feeField]" size="sm" />
+                <b-form-input v-model.number="value[feeField]" class="border-success" size="sm" />
                 <b-input-group-append class="w-15">
                     <b-input-group-text class="w-100" v-html="currencySymbol" />
                 </b-input-group-append>

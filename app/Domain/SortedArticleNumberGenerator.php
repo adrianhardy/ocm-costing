@@ -15,7 +15,7 @@ class SortedArticleNumberGenerator
      * 1. Migration to add 'sortable_article_number'
      * 2. code:models (don't add this field to fillable)
      * 3. Observer needs to use this class to populate sortable_article_number
-     * 4. Trick RequestCriteria into using 'sortable_article_number' insteda of 'article_number' using $paginatedFetch's mapping
+     * 4. Trick RequestCriteria into using 'sortable_article_number' instead of 'article_number' using $paginatedFetch's mapping
      *
      * @param $articleNumber
      * @return mixed|string

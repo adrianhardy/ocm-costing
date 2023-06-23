@@ -62,8 +62,19 @@ class ProductObserver
                     $dailyPricing->save();
                 }
             }
-        } else {
+        }
+
+        // since the introduction of UK, we need to make the article number
+        // be optional. So we'll set number and "sorted_article_number"
+        // empty strings if we have to...
+        if ($product->article_number === null) {
+            $product->article_number = '';
+        }
+
+        if ($product->article_number) {
             $product->sorted_article_number = SortedArticleNumberGenerator::convert($product->article_number);
+        } else {
+            $product->sorted_article_number = '';
         }
 
         // if we change anything in a china product that would impact
