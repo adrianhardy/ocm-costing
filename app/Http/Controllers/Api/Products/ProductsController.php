@@ -76,7 +76,8 @@ class ProductsController extends Controller
             'uk_postage_method'     => 'nullable|sometimes',
             'eu_postage_method'     => 'nullable|sometimes',
             'row_postage_method'    => 'nullable|sometimes',
-            'custom_minimum_profit' => 'nullable|sometimes|numeric|min:0'
+            'custom_minimum_profit' => 'nullable|sometimes|numeric|min:0',
+            'daily_pricing_notes'   => 'nullable|sometimes|max:500'
         ], [], [
             'supplier.id' => 'Supplier',
             'factories.*.id' => 'Factory'
@@ -102,7 +103,8 @@ class ProductsController extends Controller
             'case_weight_kg',
             'unit_weight_kg',
             'unit_price_gbp',
-            'custom_minimum_profit'
+            'custom_minimum_profit',
+            'daily_pricing_notes'
         ];
 
         if (!\Auth::user()->is_supplier) {

@@ -40,11 +40,11 @@
                 @endrole
                 @can('__uk')
                 <a class="dropdown-item" @click="$refs['quick-price-modal'].show()">Quick Price</a>
+                <a class="dropdown-item" @click="$refs['volumetric-calculator-modal'].show()">Volumetric Calculator</a>
                 @endcan
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="{{ route('logout') }}"
-                   onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     {{ __('Logout') }}
                 </a>
 
@@ -57,5 +57,6 @@
 </ul>
 <quick-cost-modal ref="quick-cost-modal"></quick-cost-modal>
 @can('__uk')
+<volumetric-calculator-modal ref="volumetric-calculator-modal"></volumetric-calculator-modal>
 <quick-price-modal ref="quick-price-modal"></quick-price-modal>
 @endcan

@@ -56,6 +56,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $pricing_notes
  * @property float|null $unit_price_gbp
  * @property float|null $custom_minimum_profit
+ * @property string|null $daily_pricing_notes
  * 
  * @property Supplier $supplier
  * @property Collection|DailyPricing[] $daily_pricings_product

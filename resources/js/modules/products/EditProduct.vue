@@ -112,6 +112,19 @@
                                     <span v-else>0 / 500</span>
                                 </template>
                             </b-form-group>
+                            <b-form-group v-if="!isChina">
+                                <template #label>
+                                    Daily Pricing Notes
+                                    <b-icon-info-circle-fill v-b-tooltip.hover title="These notes will be available as a popover in daily pricing" />
+                                </template>
+                                <b-textarea v-model="product.daily_pricing_notes" maxlength="500" rows="3"/>
+                                <template #description>
+                                    <span v-if="product.daily_pricing_notes">
+                                        {{ product.daily_pricing_notes.length }} / 500 characters
+                                    </span>
+                                    <span v-else>0 / 500</span>
+                                </template>
+                            </b-form-group>
                             <b-form-group label="Packing Instructions" v-if="isChina">
                                 <b-textarea v-model="product.packing_instructions" maxlength="500" rows="7"/>
                                 <template #description>
