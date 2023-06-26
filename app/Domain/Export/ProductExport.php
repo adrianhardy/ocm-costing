@@ -112,7 +112,7 @@ class ProductExport
         }
         if ($end) {
             $this->hasEndDate = true;
-            $this->stockTakeEndDate = $date;
+            $this->stockTakeEndDate = $end;
         }
         $this->columns = $this->stockExportColumns;
         return $this;
@@ -172,7 +172,11 @@ class ProductExport
                     // so we're making sure we have it so the foreach doesn't throw an issue
                     if($this->stockLevels) {
                         foreach($this->stockLevels as $level) {
-                            if ($level->item->item_number === $product->article_number) {
+                            // K113|SD0961 issue:
+                            // K113|SDO9061 does not match the item number...
+                            // K113 not an article in raf, but an item SKU
+                            // tl;dr, they need to fix their data, it's not on us.
+                            if (in_array($level->item->item_number, array_filter([$product->article_number, $product->item_number]))) {
                                 $stockLevelToday = $level->level_today;
                                 $stockLevelHistoric = $level->level_historic;
                                 $stockDispatched = $level->dispatched;
@@ -215,12 +219,20 @@ class ProductExport
                 ]
             ]);
 
+            $products = collect($this->products);
 
-            // TODO: build an array up of product article numbers pipeed with item numbers
+            $items = [];
+            foreach($products as $product) {
+                if($product->item_number) {
+                    $items[] = "{$product->article_number}|{$product->item_number}";
+                    continue;
+                }
+                $items[] = "{$product->article_number}";
+            }
 
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
-                    'items' => collect($this->products)->pluck('article_number')->toArray(),
+                    'items' => $items,
                     'selected_date' => $this->stockTakeStartDate->format('Y-m-d'),
                     'selected_end_date' => $this->stockTakeEndDate->format('Y-m-d'),
                 ]]);
