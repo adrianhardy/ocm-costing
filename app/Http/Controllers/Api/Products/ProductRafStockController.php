@@ -25,9 +25,14 @@ class ProductRafStockController extends Controller
 
             $date = Carbon::now()->subMonths($i * 3);
 
+            // search by both article number AND item number in RAF for this product.
+            $itemNumber = $product->article_number;
+            if ($product->item_number) {
+                $itemNumber .= "|{$product->item_number}";
+            }
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
-                    'items' => [$product->article_number],
+                    'items' => [$itemNumber],
                     'selected_date' => $date->toDateString()
                 ]]
             );

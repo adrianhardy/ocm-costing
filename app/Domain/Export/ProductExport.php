@@ -215,6 +215,9 @@ class ProductExport
                 ]
             ]);
 
+
+            // TODO: build an array up of product article numbers pipeed with item numbers
+
             $response = $client->request('GET', '/api/stock-export', [
                 'query' => [
                     'items' => collect($this->products)->pluck('article_number')->toArray(),
