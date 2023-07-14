@@ -139,9 +139,9 @@ class ProductExport
 
         if ($this->stockLevelRequired) {
             $headers[] = 'Stock as at ' . $this->stockTakeStartDate->format('d/m/Y');
-            $headers[] = 'Stock ending at ' . $this->stockTakeEndDate->format('d/m/Y');
             $headers[] = 'Goods In since';
             $headers[] = 'Dispatched since';
+            $headers[] = 'Stock ending at ' . $this->stockTakeEndDate->format('d/m/Y');
             $headers[] = 'Current Stock';
         }
 
@@ -189,9 +189,9 @@ class ProductExport
 
 
                     $exportItem[] = $stockLevelHistoric;
-                    $exportItem[] = $stockLevelToday;
                     $exportItem[] = $stockReceived;
                     $exportItem[] = $stockDispatched;
+                    $exportItem[] = $stockLevelToday;
                     $exportItem[] = $stockLevelLive;
                 }
 

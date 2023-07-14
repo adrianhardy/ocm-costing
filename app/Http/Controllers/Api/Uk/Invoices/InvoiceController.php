@@ -140,7 +140,7 @@ class InvoiceController extends Controller
         } else {
             foreach ($invoice->invoice_lines as $line) {
                 $pricingService->sendToPricing(
-                    $line->sales_order_line->product,
+                    $line->sales_order_line,
                     $line->unit_price,
                     $line->pricing_priority
                 );

@@ -61,7 +61,13 @@ class PricingService
             });
 
         if ($line) {
-            $costingData = $line->worst_estimated_landed_cost_data;
+            if ($line->unit_price_gbp) {
+                $costingData['est_landed_cost_per_unit_gbp'] = $line->unit_price_gbp;
+            } elseif ($line->product->unit_price_gbp) {
+                $costingData['est_landed_cost_per_unit_gbp'] = $line->product->unit_price_gbp;
+            } else {
+                $costingData = $line->worst_estimated_landed_cost_data;
+            }
         } else {
             if ($product->current_landed_cost_per_unit_gbp) {
                 $costingData = [
@@ -78,7 +84,11 @@ class PricingService
             }
         }
 
-        abort_unless(isset($costingData['est_landed_cost_per_unit_gbp']), 400, 'Could not find suitable landed cost or unit price');
+        abort_unless(
+            isset($costingData['est_landed_cost_per_unit_gbp']),
+            400,
+            'Could not find suitable landed cost or unit price for ' . $product->item_number
+        );
 
         $suggestedPrice = $costingData['est_landed_cost_per_unit_gbp'] * setting('suggested_price_multiplier');
         $commission = $suggestedPrice * (1/setting('default_marketplace_commission_pc'));
