@@ -52,10 +52,10 @@
             >
                 <template #cell(item_number)="data">
                     <div v-if="!data.item.product.id" >
-                        <b-form-input size="sm" v-model="data.item.item_number" />
-                        <b-badge v-if="data.item.has_duplicate_item_number" variant="danger">Duplicate Item #</b-badge>
+                        <b-form-input size="sm" v-model="data.item.article_number" />
+                        <b-badge v-if="data.item.has_duplicate_article_number" variant="danger">Duplicate Item #</b-badge>
                     </div>
-                    <span v-else>{{data.item.product.item_number}}</span>
+                    <span v-else>{{data.item.product.article_number}}</span>
                 </template>
                 <template #cell(id)="data">
                     <b-icon-x class="text-danger" @click="trash(data.item)" style="cursor: pointer"/>
@@ -102,6 +102,7 @@
                     <!-- or, if they've clicked "create new" on the drop down -->
                     <div v-else-if="showCreateProduct !== data.item.id">
                         <product-select
+                            include="media,current_landed_cost_per_unit_gbp"
                             :sales-order-id="salesOrder.id"
                             size="sm"
                             :readonly="salesOrder.is_finalised"
@@ -586,6 +587,14 @@ export default {
             });
         },
         updateLine(line) {
+
+
+            if(!line.unit_price) {
+                line.unit_price = line.current_landed_cost_per_unit_gbp;
+            }
+
+
+
             const loader = this.$loading.show();
             const url = `${this.urlPrefix}/${this.salesOrder.id}/lines/${line.id}`;
             this.$http.put(url, {...line}, {

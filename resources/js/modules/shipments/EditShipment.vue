@@ -106,7 +106,7 @@
             <div class="mt-3 d-flex justify-content-between">
                 <div>
                     <b-button :href="`/shipments/${shipment.id}/generate-inspection-report?mode=inspection`">Generate Inspection Report</b-button>
-                    <b-button :href="`/shipments/${shipment.id}/generate-inspection-report?mode=shipping`">Generate Shipping List</b-button>
+                    <b-button :href="`/shipments/${shipment.id}/generate-inspection-report?mode=shipping`">Generate Landed Cost Report</b-button>
                 </div>
                 <div>
                     <b-input-group>

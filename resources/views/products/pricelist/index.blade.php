@@ -10,6 +10,9 @@
         @can('pricing_approve')
         is-approver
         @endcan
+        @can('__china')
+        is-china
+        @endcan
         >
             <template #name>
                 <h2>Price List</h2>

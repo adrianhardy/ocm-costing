@@ -164,10 +164,6 @@ export default {
                     key: 'selected_for_export',
                     sortable: false,
                 },{
-                    key: 'article_number',
-                    sortable: true
-
-                },{
                     key: 'item_number',
                     sortable: true
                 },{
@@ -181,6 +177,15 @@ export default {
                 }
             ];
 
+            if(!this.isUk) {
+                fields.splice(1, 0, {
+                    key: 'article_number',
+                    sortable: true
+                })
+            }
+
+
+
             if (!this.isSupplier) {
                 if(!this.isUk) {
                     fields.push({
@@ -191,7 +196,7 @@ export default {
                 } else {
                     fields.push({
                         key: 'unit_price_gbp',
-                        label: 'Unit Price GBP',
+                        label: 'Cost Price GBP',
                         sortable: true
                     })
                 }

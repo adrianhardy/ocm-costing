@@ -30,8 +30,9 @@
                     <h5>Product</h5>
                     <table class="table table-sm small">
                         <tr>
-                            <th class="w-50">Item Number</th>
-                            <td>{{ product.item_number }}</td>
+                            <th v-if="!isChina" class="w-50">Item Number</th>
+                            <th v-else class="w-50">Factory Item Number</th>
+                            <td>{{ product.article_number }}</td>
                         </tr>
                         <tr>
                             <th class="w-50">Primary SKU</th>
@@ -372,7 +373,11 @@ export default {
         rowCountries: Array,
         euroCountries: Array,
         nonEuroEuCountries: Array,
-        isApprover: Boolean
+        isApprover: Boolean,
+        isChina: {
+            type: Boolean,
+            default: false
+        }
     },
     created() {
         this.$on('updated', e => {

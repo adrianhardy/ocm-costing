@@ -235,6 +235,16 @@ class Product extends BaseProduct implements HasMedia
         return false;
     }
 
+    public function getHasDuplicateArticleNumberAttribute(){
+        if($this->article_number && $this->article_number !== '') {
+            return Product::query()
+                ->where('id', '!=', $this->id)
+                ->where('article_number', $this->article_number)
+                ->exists();
+        }
+        return false;
+    }
+
     public function getFinalCostGbpAttribute(){
         if(!$this->unit_price_gbp) {
             return $this->est_landed_cost_gbp;
