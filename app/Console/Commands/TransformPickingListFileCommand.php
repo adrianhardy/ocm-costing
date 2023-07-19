@@ -215,7 +215,7 @@ class TransformPickingListFileCommand extends Command
             'seal no:'      => 'seal_number'
         ];
         $pairs = [];
-        for ($i = 1; $i < 10; $i++) {
+        for ($i = 1; $i < 15; $i++) {
             for ($j = 1; $j < 15; $j++) {
                 $value = trim(strtolower($this->sheet->getCellByColumnAndRow($i, $j)->getValue()));
                 if (!$value) {

@@ -127,10 +127,10 @@ class ImportController extends Controller
                 ]);
 
                 // TODO: set the width/length/height_cm
-                $line->width_m = $row['outer_dimension_w'];
-                $line->length_m = $row['outer_dimension_l'];
-                $line->height_m = $row['outer_dimension_h'];
-                $line->units_per_case = $row['pcs_per_ctn'];
+                $line->width_m = $row['outer_dimension_w']/100;
+                $line->length_m = $row['outer_dimension_l']/100;
+                $line->height_m = $row['outer_dimension_h']/100;
+                $line->units_per_case = $row['pcs_per_ctn']/100;
                 $line->product->length_m = $line->length_m;
                 $line->product->width_m = $line->width_m;
                 $line->product->height_m = $line->height_m;

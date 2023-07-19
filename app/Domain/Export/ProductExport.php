@@ -214,6 +214,7 @@ class ProductExport
         if($this->stockLevelRequired === true) {
             $client = new Client([
                 'base_uri' => config('raf.base_uri'),
+                'timeout' => 600,
                 'headers' => [
                     'Authorization' => 'Bearer ' . config('raf.api_key')
                 ]

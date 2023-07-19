@@ -29,9 +29,17 @@ class DailyPricingController extends Controller
         }
 
         if ($request->input('non_viable')) {
-            $paginator = $paginator->where('is_viable', 0);
-            if ($request->input('non_viable_submitted_since')) {
-                $paginator->where('submitted_at', '>', Carbon::createFromFormat('y-m-d', $request->input('non_viable_submitted_since')));
+            $paginator = $paginator->where('is_viable', 0)
+                ->whereNotNull('submitter_id');
+
+            // work around a bug where URLSearchParams will quote 'null' as a string...
+            $nvSince = $request->input('non_viable_submitted_since');
+            if ($nvSince === 'null') {
+                $nvSince = null;
+            }
+
+            if ($nvSince) {
+                $paginator->where('submitted_at', '>', Carbon::createFromFormat('y-m-d', $nvSince));
             }
         }
 
