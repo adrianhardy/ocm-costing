@@ -97,6 +97,7 @@
             ref="pricing-modal"
             @updated="updatePricing"
             @copy="copyPricing($event)"
+            :is-china="isChina"
         />
     </div>
 </template>
@@ -114,7 +115,11 @@ export default {
         euroCountries: Array,
         rowCountries: Array,
         nonEuroEuCountries: Array,
-        uk: Object
+        uk: Object,
+        isChina: {
+            type: Boolean,
+            default: false
+        }
     },
     components: {
         TableHeader,

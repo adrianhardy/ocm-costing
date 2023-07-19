@@ -38,14 +38,14 @@
                     </b-form-group>
 
                     <div class="row">
-                        <div class="col-4">
+                        <div v-if="isChina" class="col-4">
                             <b-form-group label="Item Number">
                                 <b-form-input all v-model="product.item_number"/>
-                                <b-badge v-if="product.has_duplicate_item_number" variant="danger" class="text-center">Duplicate Item Number</b-badge>
+                                <b-badge v-if="product.has_duplicate_item_number" variant="danger" class="text-center">Duplicate Factory Item Number</b-badge>
                             </b-form-group>
                         </div>
-                        <div class="col-4" v-if="isChina">
-                            <b-form-group label="Article Number">
+                        <div class="col-4">
+                            <b-form-group label="Item Number">
                                 <b-form-input all v-model="product.article_number"/>
                             </b-form-group>
                         </div>
@@ -56,9 +56,14 @@
                             </b-form-group>
                         </div>
                         <div class="col-4" v-if="isUk">
-                            <b-form-group label="Unit Price GBP">
+                            <b-form-group v-if="product.unit_price_gbp" label="Cost Price GBP">
                                 <b-input-group prepend="£">
                                     <b-form-input v-model="product.unit_price_gbp"/>
+                                </b-input-group>
+                            </b-form-group>
+                            <b-form-group v-else label="Landed Cost">
+                                <b-input-group>
+                                    <b-form-input readonly v-model="product.est_landed_cost_gbp" />
                                 </b-input-group>
                             </b-form-group>
                         </div>

@@ -298,6 +298,14 @@ class ProductsController extends Controller
             die();
         }
 
+        if(auth()->user()->can('__china')) {
+            $paginator = $paginator->whereNull('unit_price_gbp');
+        }
+
+        if(auth()->user()->can('__uk')) {
+            $paginator = $paginator->whereNull('unit_price');
+        }
+
         $paginator = $paginator->paginate(
             $request->input('per_page', 100)
         );
@@ -315,6 +323,10 @@ class ProductsController extends Controller
      */
     public function destroy(Request $request, Product $product)
     {
+        foreach($product->daily_pricings_product as $dailyPricing) {
+            $dailyPricing->delete();
+        }
+
         $product->delete();
         return response()->json();
     }

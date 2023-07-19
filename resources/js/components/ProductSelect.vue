@@ -37,7 +37,11 @@ export default {
         'readonly': Boolean,
         'size': String,
         'value': [Object, String, Array],
-        factoryId: Number
+        factoryId: Number,
+        include: {
+            type: String,
+            default: 'media'
+        }
     },
     methods: {
         debounceFetch: _.debounce(async (search, loading, vm) => {
@@ -48,7 +52,7 @@ export default {
                 search: search,
                 page: 1,
                 per_page: 50,
-                include: 'media'
+                include: vm.include
             };
 
             loading(true);
