@@ -164,9 +164,6 @@ export default {
                     key: 'selected_for_export',
                     sortable: false,
                 },{
-                    key: 'item_number',
-                    sortable: true
-                },{
                     key: 'image',
                 },{
                     key: 'name',
@@ -180,8 +177,15 @@ export default {
             if(!this.isUk) {
                 fields.splice(1, 0, {
                     key: 'article_number',
+                    label: 'Factory Item Number',
                     sortable: true
                 })
+            } else {
+                fields.splice(1, 0, {
+                    key: 'article_number',
+                    label: 'Item Number',
+                    sortable: true
+                });
             }
 
 

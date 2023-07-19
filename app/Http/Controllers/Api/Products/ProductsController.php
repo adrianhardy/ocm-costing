@@ -302,10 +302,6 @@ class ProductsController extends Controller
             $paginator = $paginator->whereNull('unit_price_gbp');
         }
 
-        if(auth()->user()->can('__uk')) {
-            $paginator = $paginator->whereNull('unit_price');
-        }
-
         $paginator = $paginator->paginate(
             $request->input('per_page', 100)
         );

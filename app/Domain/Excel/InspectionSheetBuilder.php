@@ -88,6 +88,9 @@ class InspectionSheetBuilder
 
         /** @var Media $media */
         foreach ($line->product->getMedia()->take(2) as $i => $media) {
+            if (!file_exists($media->getPath('thumb'))) {
+                continue;
+            }
             $drawing = new Drawing();
             $drawing->setPath($media->getPath('thumb'));
             $drawing->setCoordinates('A' . $this->currentWriterRow);

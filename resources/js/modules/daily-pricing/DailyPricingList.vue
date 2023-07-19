@@ -179,7 +179,7 @@ export default {
         fields(){
             const fields = [
                 {
-                    key: 'product.item_number',
+                    key: 'product.article_number',
                     label: 'Item #',
                     tdClass: 'align-middle',
                     thClass: 'align-middle',
