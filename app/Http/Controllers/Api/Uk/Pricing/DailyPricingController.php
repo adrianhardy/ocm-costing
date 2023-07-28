@@ -39,7 +39,7 @@ class DailyPricingController extends Controller
             }
 
             if ($nvSince) {
-                $paginator->where('submitted_at', '>', Carbon::createFromFormat('y-m-d', $nvSince));
+                $paginator->where('submitted_at', '>', Carbon::createFromFormat('Y-m-d', $nvSince));
             }
         }
 
