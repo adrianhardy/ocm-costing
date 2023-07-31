@@ -36,6 +36,22 @@
                         <b-spinner class="align-middle" type="grow" variant="success"></b-spinner>
                     </div>
                 </template>
+                <template #head(item_number)="data">
+                    <span v-if="isChina">
+                        Factory Item #
+                    </span>
+                    <span v-else>
+                        Item #
+                    </span>
+                </template>
+                <template #cell(item_number)="data">
+                    <span v-if="isChina">
+                        {{ data.item.product.item_number }}
+                    </span>
+                    <span v-else>
+                        {{ data.item.product.article_number }}
+                    </span>
+                </template>
                 <template #head(selected_for_export)="data">
                     <a href="#" @click.prevent="selectAllForExport(true)">All</a>
                 </template>
@@ -213,7 +229,7 @@ export default {
             fields: [
                 {key: 'selected_for_export', label: '', tdClass: 'align-middle', thClass: 'align-middle'},
                 {key: 'product.image', label: 'Image', tdClass: 'align-middle'},
-                {key: 'product.item_number', label: 'Item #', tdClass: 'align-middle'},
+                {key: 'item_number', label: 'Item #', tdClass: 'align-middle'},
                 {key: 'product.primary_sku', label: 'SKU', tdClass: 'align-middle'},
                 {key: 'product.primary_asin', label: 'ASIN', tdClass: 'align-middle'},
                 {key: 'product.name', label: 'Name', tdClass: 'align-middle'},

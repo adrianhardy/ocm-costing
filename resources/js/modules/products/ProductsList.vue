@@ -11,8 +11,8 @@
                                         <div class="d-flex justify-content-between">
                                             <b-form-group label="Search by">
                                                 <b-form-radio v-model="searchField" name="filter" value="" class="text-nowrap" @change="updateHash">Everything</b-form-radio>
-                                                <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Article #</b-form-radio>
-                                                <b-form-radio v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
+                                                <b-form-radio v-model="searchField" name="filter" value="article_number:like" class="text-nowrap" @change="updateHash">By Item #</b-form-radio>
+                                                <b-form-radio v-if="!isUk" v-model="searchField" name="filter" value="item_number:like" class="text-nowrap" @change="updateHash">By Factory Item #</b-form-radio>
                                                 <b-form-radio v-model="searchField" name="filter" value="name:like" class="text-nowrap" @change="updateHash">By Name</b-form-radio>
                                                 <b-form-radio v-model="searchField" name="filter" value="barcode:like" class="text-nowrap" @change="updateHash">By Barcode</b-form-radio>
                                             </b-form-group>
@@ -167,6 +167,7 @@ export default {
                     key: 'image',
                 },{
                     key: 'name',
+                    label: 'Product Description',
                     sortable: true
                 },{
                     key: 'barcode',
@@ -177,7 +178,7 @@ export default {
             if(!this.isUk) {
                 fields.splice(1, 0, {
                     key: 'article_number',
-                    label: 'Factory Item Number',
+                    label: 'Item Number',
                     sortable: true
                 })
             } else {

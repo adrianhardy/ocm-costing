@@ -74,7 +74,7 @@ export default {
                     thClass: 'align-middle'
                 }, {
                     key: 'unit_price',
-                    label: 'Price',
+                    label: 'USD Price',
                     sortable: true,
                     tdClass: 'align-middle',
                     thClass: 'align-middle'

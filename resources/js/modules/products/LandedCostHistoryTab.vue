@@ -132,9 +132,6 @@ export default {
                 key: 'shipping_cost_per_cuft',
                 label: 'GBP/cuft'
             }, {
-                key: 'case_cubic_ft',
-                label: 'Case cuft'
-            }, {
                 key: 'units_per_case',
                 label: 'Qty/Ctn'
             }, {
