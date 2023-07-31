@@ -39,7 +39,7 @@
 
                     <div class="row">
                         <div v-if="isChina" class="col-4">
-                            <b-form-group label="Item Number">
+                            <b-form-group label="Factory Item Number">
                                 <b-form-input all v-model="product.item_number"/>
                                 <b-badge v-if="product.has_duplicate_item_number" variant="danger" class="text-center">Duplicate Factory Item Number</b-badge>
                             </b-form-group>
