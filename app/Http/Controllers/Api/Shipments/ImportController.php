@@ -135,6 +135,7 @@ class ImportController extends Controller
                 $line->length_m = $row['outer_dimension_l']/100;
                 $line->height_m = $row['outer_dimension_h']/100;
                 $line->units_per_case = $row['pcs_per_ctn'];
+                $line->product->unit_price = $row['unit_price'];
                 $line->product->length_m = $line->length_m;
                 $line->product->width_m = $line->width_m;
                 $line->product->height_m = $line->height_m;
