@@ -43,7 +43,7 @@ class CalculateLandedCostController extends Controller
             $calcs = $calculator->calculateWithDuties(
                 ceil($line->pivot->qty_shipped / $line->units_per_case) * $line->case_cubic_ft,
                 $line->pivot->qty_shipped,
-                $line->unit_price,
+                $line->product->unit_price,
                 $line->product->is_excluded_from_commission
             );
 
