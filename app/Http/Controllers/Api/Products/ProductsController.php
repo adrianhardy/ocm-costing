@@ -299,7 +299,7 @@ class ProductsController extends Controller
         }
 
         if(auth()->user()->can('__china')) {
-            $paginator = $paginator->whereNull('unit_price_gbp');
+            // $paginator = $paginator->whereNull('unit_price_gbp');
         }
 
         $paginator = $paginator->paginate(
