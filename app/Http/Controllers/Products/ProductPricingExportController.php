@@ -94,6 +94,7 @@ class ProductPricingExportController extends Controller
             'UK',
             'PP',
             'FBA',
+            'FBA FEE',
             'TL/PIGGY',
             'WEBSITE',
             'EBAY',
@@ -109,6 +110,7 @@ class ProductPricingExportController extends Controller
                 $headings[] = strtoupper($country->name);
                 $headings[] = 'PP';
                 $headings[] = 'FBA';
+                $headings[] = 'FBA FEE';
             }
         }
         // Row countries only have self fulfilled and PP cols
@@ -116,6 +118,7 @@ class ProductPricingExportController extends Controller
         foreach ($restOfWorld as $country) {
             $headings[] = strtoupper($country->name);
             $headings[] = 'PP';
+            $headings[] = 'FBA FEE';
         }
 
         $spreadsheet = new Spreadsheet();
@@ -338,6 +341,7 @@ class ProductPricingExportController extends Controller
             if (!$isRow) {
                 $row[] = $price->unit_fba_price??'';
             }
+
         } else {
             $row[] = 'N/A';
             $row[] = $postage;
@@ -345,6 +349,8 @@ class ProductPricingExportController extends Controller
                 $row[] = 'N/A';
             }
         }
+
+        $row[] = number_format($price->unit_fba_fee, 2, '.', '');
         return $row;
     }
 

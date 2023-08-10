@@ -90,6 +90,7 @@
             </a>
         </li>
         @endrole
+        @can('__uk')
         @role('super|pricing|pricing_approver')
         <li class="nav-item">
             <a class="nav-link" href="{{ route('price-list.index') }}">
@@ -105,6 +106,7 @@
             </a>
         </li>
         @endrole
+        @endcan
         @can('__uk')
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('daily-pricing.index') }}">
