@@ -7,6 +7,7 @@ use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Currency;
 use App\Models\Repositories\SalesOrderRepository;
 use App\Models\SalesOrder;
+use App\Models\SalesOrderLine;
 use App\Models\Supplier;
 use App\Transformers\SalesOrderTransformer;
 use Carbon\Carbon;
@@ -143,6 +144,7 @@ class OrderAcknowledgementsController extends Controller
         }
 
 
+        DB::beginTransaction();
         if($request->input('restore')) {
 
             $orderAcknowledgement->save();
@@ -160,6 +162,26 @@ class OrderAcknowledgementsController extends Controller
         }
 
         $orderAcknowledgement->save();
+
+        if ($orderAcknowledgement->wasChanged(['finalised_at']) && $orderAcknowledgement->is_finalised) {
+            $orderAcknowledgement->fresh()->lines->each(function (SalesOrderLine $line) {
+                // only update the product price if we've got a unit price, the unit_price is > 0
+                // it doesn't match the current unit_price and there isn't an associated shipping
+                // cost with the SO line
+                if ($line->product &&
+                    $line->unit_price > 0 &&
+                    $line->unit_price !== $line->product->unit_price_gbp &&
+                    $line->estimated_shipping_cost_gbp === null
+                ) {
+                    \Log::debug(
+                        __METHOD__ . "We're going to update Product #{$line->product->id} to have price {$line->unit_price}"
+                    );
+                    $line->product->unit_price_gbp = $line->unit_price;
+                    $line->product->save();
+                }
+            });
+        }
+        DB::commit();
 
         return response()->json(fractal($orderAcknowledgement, new SalesOrderTransformer()));
     }

@@ -183,6 +183,15 @@
                             />
                         </b-input-group>
                     </b-form-group>
+                    <b-form-group v-if="!data.value && data.item.est_landed_cost_gbp && data.item.est_landed_cost_gbp > 0">
+                        <b-input-group prepend="£" size="sm">
+                            <b-form-input
+                                readonly
+                                :value="data.item.est_landed_cost_gbp.toFixed(2)"
+                            />
+                        </b-input-group>
+
+                    </b-form-group>
                 </template>
                 <template #cell(units_per_case)="data">
                     <b-form-group>
@@ -421,7 +430,7 @@ export default {
             }
         },
         include() {
-            return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost,lines.received,lines.live_estimated_landed_cost';
+            return 'supplier,factory,currency,lines,lines.selected_media,lines.product,lines.product.media,lines.product.current_landed_cost_per_unit_gbp,lines.product.supplier,lines.landed_cost,lines.received';
         },
         canCreateInvoice(){
             if(!this.salesOrder) {

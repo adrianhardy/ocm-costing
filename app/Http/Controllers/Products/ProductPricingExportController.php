@@ -84,8 +84,6 @@ class ProductPricingExportController extends Controller
             'SKU',
             'ITEM NUMBER',
             'DESCRIPTION',
-            'WEIGHT',
-            'DIMENSIONS',
             'ASIN',
             'APPROVER',
             'INITIALS',
@@ -265,8 +263,6 @@ class ProductPricingExportController extends Controller
         $row[] = $sku;
         $row[] = $pricing->product->item_number;
         $row[] = $pricing->product->name;
-        $row[] = $pricing->product->unit_weight_g . 'G';
-        $row[] = "{$pricing->product->unit_length_cm} x {$pricing->product->unit_width_cm} x {$pricing->product->unit_height_cm}";
         $row[] = $asin;
         $row[] = $pricing->approver_id?$pricing->approver->initials:''; // Initials
         $row[] = ''; // BLANK SPACE - INITIALS OF WHO'S ASSIGNED TO DO THE JOB
