@@ -90,6 +90,10 @@ class ImportController extends Controller
             }
 
             if ($type == 'invoice' && !$preview) {
+                // Should we be updating the sales order here? Why? What calculations
+                // depend on the unit price in the SO? Unfortunately, it looks like we
+                // should've stored the unit price on invoiceline, but not sure where
+                // that gets created at this stage....
                 $line->units_requested = $row['qty'];
                 $line->unit_price = $row['unit_price'];
                 $line->unit_price_gbp = $line->unit_price * $line->sales_order->fx_rate;
@@ -133,7 +137,6 @@ class ImportController extends Controller
                 $line->length_m = $row['outer_dimension_l']/100;
                 $line->height_m = $row['outer_dimension_h']/100;
                 $line->units_per_case = $row['pcs_per_ctn'];
-                $line->product->unit_price = $row['unit_price'];
                 $line->product->length_m = $line->length_m;
                 $line->product->width_m = $line->width_m;
                 $line->product->height_m = $line->height_m;

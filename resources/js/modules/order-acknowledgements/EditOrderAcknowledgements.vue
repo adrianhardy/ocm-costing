@@ -171,26 +171,25 @@
                         {{ (data.item.units_requested / data.item.units_per_case).toFixed(2) }} Ctn
                     </div>
                 </template>
-                <template #cell(unit_price)="data">
+                <template #cell(unit_price_gbp)="data">
                     <b-form-group>
                         <b-input-group prepend="£" size="sm">
                             <b-form-input
+                                v-if="!data.value && data.item.product.est_landed_cost_gbp && data.item.product.est_landed_cost_gbp > 0"
+                                readonly
+                                type="number"
+                                class="no-stepper"
+                                :value="data.item.product.est_landed_cost_gbp"
+                            ></b-form-input>
+                            <b-form-input
+                                v-else
                                 :readonly="salesOrder.is_finalised"
                                 type="number"
                                 class="no-stepper"
-                                v-model="data.item.unit_price"
+                                v-model="data.item.unit_price_gbp"
                                 @change="updateLine(data.item)"
                             />
                         </b-input-group>
-                    </b-form-group>
-                    <b-form-group v-if="!data.value && data.item.est_landed_cost_gbp && data.item.est_landed_cost_gbp > 0">
-                        <b-input-group prepend="£" size="sm">
-                            <b-form-input
-                                readonly
-                                :value="data.item.est_landed_cost_gbp.toFixed(2)"
-                            />
-                        </b-input-group>
-
                     </b-form-group>
                 </template>
                 <template #cell(units_per_case)="data">
@@ -394,7 +393,7 @@ export default {
                 label: 'dimensions ',
                 thClass: 'w-12',
             }, {
-                key: 'unit_price',
+                key: 'unit_price_gbp',
                 label: 'Unit Price',
                 thClass: 'w-8'
             }, {
@@ -596,14 +595,12 @@ export default {
             });
         },
         updateLine(line) {
-
-
+            /** what the hell? **/
+            /*
             if(!line.unit_price) {
                 line.unit_price = line.current_landed_cost_per_unit_gbp;
             }
-
-
-
+             */
             const loader = this.$loading.show();
             const url = `${this.urlPrefix}/${this.salesOrder.id}/lines/${line.id}`;
             this.$http.put(url, {...line}, {
