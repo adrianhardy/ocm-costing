@@ -108,6 +108,7 @@ class SalesOrderLineTransformer extends TransformerAbstract
             'packing_instructions',
             'product_description',
             'unit_price',
+            'unit_price_gbp',
             'units_requested',
             'total',
             'total_gbp',

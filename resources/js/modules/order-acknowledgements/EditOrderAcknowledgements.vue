@@ -83,10 +83,11 @@
 
                     <b-input-group size="sm">
                         <b-form-input
+                            v-if="data.item.total_gbp"
                             readonly
                             type="number"
                             class="no-stepper"
-                            :value="data.value | 2dp_value"
+                            :value="data.item.total_gbp > 0?data.item.total_gbp:data.value | 2dp_value"
                         />
                     </b-input-group>
                 </template>
@@ -172,20 +173,20 @@
                     </div>
                 </template>
                 <template #cell(unit_price_gbp)="data">
-                    <b-form-group>
+                    <b-form-group :description="looksToBeFromChina(data.item.product)?'This price cannot be edited as it has been calculated using container data':''">
                         <b-input-group prepend="£" size="sm">
                             <b-form-input
-                                v-if="!data.value && data.item.product.est_landed_cost_gbp && data.item.product.est_landed_cost_gbp > 0"
+                                v-if="!data.value && looksToBeFromChina(data.item.product)"
                                 readonly
                                 type="number"
-                                class="no-stepper"
+                                class="no-stepper est_landed_cost_gbp"
                                 :value="data.item.product.est_landed_cost_gbp"
                             ></b-form-input>
                             <b-form-input
                                 v-else
                                 :readonly="salesOrder.is_finalised"
                                 type="number"
-                                class="no-stepper"
+                                class="no-stepper unit_price_gbp"
                                 v-model="data.item.unit_price_gbp"
                                 @change="updateLine(data.item)"
                             />
@@ -443,6 +444,9 @@ export default {
         }
     },
     methods: {
+        looksToBeFromChina(product) {
+            return product.est_landed_cost_gbp && product.est_landed_cost_gbp > 0;
+        },
         selectAllLines(event){
             _.forEach(this.salesOrder.lines, function(line) {
                 line.checked = event

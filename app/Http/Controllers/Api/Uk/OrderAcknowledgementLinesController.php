@@ -29,7 +29,6 @@ class OrderAcknowledgementLinesController extends Controller
         $this->authorize('view', $orderAcknowledgement);
         $line->fill($request->only([
             'name',
-            'unit_price',
             'units_requested',
             'article_number',
             'item_number',
@@ -46,6 +45,15 @@ class OrderAcknowledgementLinesController extends Controller
             'oa_primary_sku'
         ]));
 
+        if ($request->input('unit_price') !== null) {
+            $line->unit_price = $request->input('unit_price');
+            $line->unit_price_gbp = null;
+        }
+
+        if ($request->input('unit_price_gbp') !== null) {
+            $line->unit_price_gbp = $request->input('unit_price_gbp');
+            $line->unit_price = null;
+        }
 
         $line->oa_eta = Carbon::parse($request->input('oa_eta'));
 
@@ -57,8 +65,9 @@ class OrderAcknowledgementLinesController extends Controller
                 'name'                  => '' . $product->name,
                 'item_number'           => '' . $product->item_number,
                 'article_number'        => '' . $product->article_number,
-                'unit_price'            => $product->unit_price_gbp > 0?$product->unit_price_gbp:$product->unit_price,
-                'oa_primary_sku'           => $product->primary_sku
+                'unit_price'            => $product->unit_price,
+                'unit_price_pgb'        => $product->unit_price_gbp,
+                'oa_primary_sku'        => $product->primary_sku
             ]);
             $line->product()->associate($product);
         }
@@ -72,9 +81,14 @@ class OrderAcknowledgementLinesController extends Controller
             $line->total_cubic_m = $cases * ($line->width_m * $line->length_m * $line->height_m);
         }
 
-        $line->total = $line->units_requested * $line->unit_price;
-        $line->total_gbp = $line->total * $orderAcknowledgement->fx_rate;
-        $line->unit_price_gbp = $line->unit_price * $orderAcknowledgement->fx_rate;
+        if ($line->unit_price_gbp && $line->unit_price_gbp > 0) {
+            $line->total_gbp = $line->units_requested * $line->unit_price_gbp;
+            $line->total = null;
+        } else {
+            $line->total = $line->units_requested * $line->unit_price;
+            $line->total_gbp = $line->total * $orderAcknowledgement->fx_rate;
+        }
+
         $line->save();
 
         $orderAcknowledgement->touch();
