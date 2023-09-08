@@ -170,13 +170,24 @@ class OrderAcknowledgementsController extends Controller
                 // cost with the SO line
                 if ($line->product &&
                     $line->unit_price > 0 &&
-                    $line->unit_price !== $line->product->unit_price_gbp &&
+                    $line->unit_price !== $line->product->unit_price &&
                     $line->estimated_shipping_cost_gbp === null
                 ) {
-                    \Log::debug(
+                    \Log::info(
                         __METHOD__ . "We're going to update Product #{$line->product->id} to have price {$line->unit_price}"
                     );
-                    $line->product->unit_price_gbp = $line->unit_price;
+                    $line->product->unit_price = $line->unit_price;
+                    $line->product->save();
+                }
+
+                if ($line->product &&
+                    $line->unit_price_gbp > 0 &&
+                    $line->unit_price_gbp !== $line->product->unit_price_gbp
+                ) {
+                    \Log::critical(
+                        __METHOD__ . "We're going to update Product #{$line->product->id} to have price {$line->unit_price_gbp}"
+                    );
+                    $line->product->unit_price_gbp = $line->unit_price_gbp;
                     $line->product->save();
                 }
             });
