@@ -50,6 +50,13 @@ class OrderAcknowledgementProductController extends Controller
         $product->article_number = $request->input('item_number');
         $product->unit_price_gbp = $request->input('unit_price');
 
+        if (!$product->item_number &&
+            $request->input('item_number') === null &&
+            $product->article_number
+        ) {
+            $product->item_number = $product->article_number;
+        }
+
         $product->save();
 
 

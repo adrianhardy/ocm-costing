@@ -459,7 +459,8 @@ export default {
         beginCreateProduct(line) {
             this.showCreateProduct = line.id;
         },
-        createNewProduct(line){
+        createNewProduct(line)
+        {
             const loading = this.$loading.show();
             const url = `/api/order-acknowledgements/${this.salesOrder.id}/lines/${line.id}/product`
             this.$http.post(url, {...line}, {
