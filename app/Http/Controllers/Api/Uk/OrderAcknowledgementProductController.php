@@ -15,6 +15,7 @@ class OrderAcknowledgementProductController extends Controller
     public function store(Request $request, SalesOrder $orderAcknowledgement, SalesOrderLine $line){
         $this->validate($request, [
             'name' => 'required',
+            'article_number' => 'required|max:32',
             'barcode' => 'sometimes',
             'primary_sku' => 'sometimes',
             'length_m' => 'sometimes',
@@ -47,8 +48,12 @@ class OrderAcknowledgementProductController extends Controller
 
         $product->supplier()->associate($orderAcknowledgement->supplier);
         $product->item_number = $request->input('item_number');
-        $product->article_number = $request->input('item_number');
+        $product->article_number = $request->input('article_number');
         $product->unit_price_gbp = $request->input('unit_price');
+
+        if ($product->article_number && !$product->item_number) {
+            $product->item_number = $product->article_number;
+        }
 
         if (!$product->item_number &&
             $request->input('item_number') === null &&
@@ -56,6 +61,8 @@ class OrderAcknowledgementProductController extends Controller
         ) {
             $product->item_number = $product->article_number;
         }
+
+        abort_unless($product->item_number, 400, 'No item number has been provided');
 
         $product->save();
 
