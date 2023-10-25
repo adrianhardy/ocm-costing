@@ -32,7 +32,7 @@ class ShipmentsController extends Controller
         $filename = "INSPECTION REPORT {$consignment->sales_order->reference}.xlsx";
 
         if ($request->input('mode') == 'shipping') {
-            $filename = "SHIPPING LIST {$consignment->sales_order->reference}.xlsx";
+            $filename = "LANDED COST REPORT -- {$consignment->sales_order->reference}.xlsx";
         }
 
         $builder = new InspectionSheetBuilder();

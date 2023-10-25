@@ -22,9 +22,9 @@ class InspectionSheetBuilder
     protected $sheet;
     protected $inspectionColumns = [
         'Product Photo',
-        'Art No.',
-        'Barcode',
+        'Item No.',
         'Products Description',
+        'Barcode',
         'Packing',
         'BARCODE PRODUCT / INNER / OUTER CHECK IT IS CORRECT FOR PRODUCT',
         'PACKAGING MAILBOX / BAG / BUBBLE WRAP',
@@ -35,12 +35,12 @@ class InspectionSheetBuilder
     ];
     protected $shippingColumns = [
         'Product Photo',
-        'Art No.',
-        'Barcode',
+        'Item No.',
         'Products Description',
+        'Barcode',
         'Packing',
         'Landed Cost GBP',
-        'Quantity Received'
+        'Qty Received'
     ];
     protected $mode = 'inspection';
 
@@ -49,7 +49,7 @@ class InspectionSheetBuilder
         $this->mode = $mode;
         $spreadsheet = new Spreadsheet();
         $this->sheet = $spreadsheet->getSheet(0);
-        $this->drawTitle($consignment);
+        $this->drawTitle($consignment, $this->mode);
         if ($this->mode === 'inspection') {
             $this->drawHeaders($this->inspectionColumns);
         } else if($this->mode === 'shipping') {
@@ -103,7 +103,7 @@ class InspectionSheetBuilder
         $sheet->setCellValueByColumnAndRow(1, $this->currentWriterRow, '');
 
         $sheet->setCellValueByColumnAndRow(2, $this->currentWriterRow, $line->article_number);
-        $sheet->setCellValueByColumnAndRow(3, $this->currentWriterRow, $line->barcode);
+        $sheet->setCellValueByColumnAndRow(4, $this->currentWriterRow, $line->barcode);
         // border over the top of the current row
 
         if($this->mode === 'inspection') {
@@ -133,12 +133,12 @@ class InspectionSheetBuilder
 
         $description = preg_split(
             "/[\r\n]+/",
-            $line->product_description,
+            $line->product->product_description?:$line->product_description,
             null,
             PREG_SPLIT_NO_EMPTY
         );
         foreach ($description as $i => $text) {
-            $sheet->setCellValueByColumnAndRow(4, $this->currentWriterRow+$i, $text);
+            $sheet->setCellValueByColumnAndRow(3, $this->currentWriterRow+$i, $text);
         }
 
         $packing = preg_split(
@@ -225,26 +225,35 @@ class InspectionSheetBuilder
         $this->currentWriterRow++;
     }
 
-    protected function drawTitle(Consignment $consignment)
+    protected function drawTitle(Consignment $consignment, $mode = 'inspection')
     {
         $this->sheet->setCellValue('A1', "REFERENCE: " . $consignment->reference);
-        $this->sheet->setCellValue('A2', "CONTAINER: " . $consignment->container_number);
+        $this->sheet->setCellValue('A2', "ORDER NUMBER: " . $consignment->sales_order->reference);
         $this->sheet->setCellValue('A3', "SUPPLIER REF: " . $consignment->supplier_ref);
-        $this->sheet->setCellValue('A4', "DATE GENERATED: " . Carbon::now()->format('d/M/y'));
-        $this->sheet->setCellValue('C1', "ESTIMATED ARRIVAL: " . optional($consignment->estimated_arrival_at)->format('d/m/Y'));
-        $this->sheet->setCellValue('C2', "BOOKED IN: " . optional($consignment->booked_in_at)->format('d/m/Y'));
-        $this->sheet->setCellValue('C3', "DELIVERED: " . optional($consignment->docked_at)->format('d/m/Y'));
-        foreach (['A1', 'A2', 'A3', 'A4', 'C1', 'C2', 'C3', 'E1', 'E2', 'E3'] as $cell) {
+        $this->sheet->setCellValue('A4', "CONTAINER: " . $consignment->container_number);
+        $this->sheet->setCellValue('B1', "MID REF: " . $consignment->shipping_agent_ref);
+        $this->sheet->setCellValue('B2', "VESSEL: " . $consignment->vessel_name);
+        $this->sheet->setCellValue('D1', "B/L NUMBER: " . $consignment->bl_number);
+        $this->sheet->setCellValue('D2', "EST ARRIVAL: " . optional($consignment->estimated_arrival_at)->format('d/M/y'));
+        $this->sheet->setCellValue('D3', "DATE GENERATED: " . Carbon::now()->format('d/M/y'));
+
+        switch ($mode)  {
+            case 'inspection':
+                break;
+            case 'shipping':
+
+                $this->sheet
+                    ->setCellValue('E1', 'FX RATE: ' . number_format(1/$consignment->sales_order->fx_rate, 2))
+                    // This is calculated by doing invoice amount / total cuft at the point they update the shipment
+                    ->setCellValue('E2', 'SHIPPING RATE: ' . number_format($consignment->est_cost_cuft_gbp,2));
+                break;
+        }
+
+        foreach (['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3', 'E1', 'E2', 'E3'] as $cell) {
             $this->sheet->getStyle($cell)->applyFromArray([
                 'font' => ['bold' => true]
             ]);
         }
-
-        $this->sheet
-            ->setCellValue('E1', 'FX RATE: ' . number_format(1/$consignment->sales_order->fx_rate, 2))
-            ->setCellValue('E2', 'SHIPPING RATE: ' . number_format($consignment->sales_order->shipping_cost_per_cubic_foot,2))
-            ->setCellValue('E3', 'MID REF: ' . $consignment->shipping_agent_ref);
-
 
     }
 
