@@ -15,28 +15,12 @@
                     Order Acknowledgements
                 </a>
             </li>
-        @else
-            @role('super|admin')
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('sales-orders.index', ['stage' => 'quote']) }}">
-                    <b-icon-list-task scale="0.8"></b-icon-list-task>
-                    Quotes
-                </a>
-            </li>
-            @else
-            <li class="nav-item">
-                <a class="nav-link disabled" href="#" disabled>
-                    <b-icon-list-task scale="0.8"></b-icon-list-task>
-                    Quotes
-                </a>
-            </li>
-            @endrole
         @endcan
 
         @can('__china')
                 @role('super|admin|supplier')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('sales-orders.index', ['stage' => 'order']) }}">
+                        <a class="nav-link" href="{{ route('sales-orders.index') }}">
                             <b-icon-list-check scale="0.8"></b-icon-list-check>
                             Orders
                         </a>

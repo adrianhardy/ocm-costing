@@ -67,7 +67,7 @@
                     </b-form-group>
                 </div>
                 <div class="col-12 col-md-2">
-                    <b-form-group label="Est Cost Cuft">
+                    <b-form-group label="Cost/Cuft">
                         <b-input-group prepend="£">
                             <b-form-input readonly :value="shipment.est_cost_cuft_gbp.toFixed(2)" v-if="shipment.est_cost_cuft_gbp"/>
                             <b-form-input readonly :value="shipment.est_cost_cuft_gbp" v-else />
@@ -112,9 +112,6 @@
                     <b-input-group>
                         <b-input-group-addon is-text>
                             <b-checkbox v-model="updateLandedCosts">Calculate Landed Costs</b-checkbox>
-                        </b-input-group-addon>
-                        <b-input-group-addon is-text>
-                            <b-checkbox v-model="sendToPricing" :disabled="!updateLandedCosts">Send to pricing</b-checkbox>
                         </b-input-group-addon>
                         <b-button @click="update" variant="primary">Update</b-button>
                     </b-input-group>
@@ -204,15 +201,15 @@ export default {
         fields() {
             return [
                 {key: 'sales_order.sales_order_number', label: 'Sales Order', tdClass: 'align-middle'},
-                {key: 'article_number', label: 'Product', tdClass: 'align-middle'},
-                {key: 'product.name', label: 'Name', tdClass: 'align-middle'},
+                {key: 'article_number', label: 'Item #', tdClass: 'align-middle'},
+                {key: 'product.name', label: 'Product Description', tdClass: 'align-middle'},
                 {key: 'units_per_case', label: 'Unit/ctn', tdClass: 'align-middle'},
                 {key: 'case_cubic_ft', label: 'ft³/ctn', tdClass: 'align-middle'},
                 {key: 'cartons', label: 'Cartons', tdClass: 'align-middle'},
                 {key: 'total_cubic_ft', label: 'Total ft³', thClass: 'text-nowrap', tdClass: 'align-middle'},
                 {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Ship\' £/Unit', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
-                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'Land\' £/Unit', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
-                {key: 'unit_price', label: '$/Unit', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
+                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'CLC £', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
+                {key: 'unit_price', label: 'USD/UNIT', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
                 {key: 'received', label: 'Qty', tdClass: 'align-middle'}
             ]
         }

@@ -151,7 +151,7 @@
                     </b-form-group>
                 </div>
                 <div class="col-2">
-                    <b-form-group label="Landed Cost Report">
+                    <b-form-group label="Ship Invoice Amount">
                         <b-input-group prepend="GBP">
                             <b-form-input
                                 placeholder="REQUIRED"

@@ -22,12 +22,14 @@
                 <a class="dropdown-item" href="{{ route('users.index') }}">Users</a>
                 <a class="dropdown-item" href="{{ route('roles.index') }}">Manage Roles</a>
                 <div class="dropdown-divider"></div>
+                @can('__uk')
                 <div class="dropdown-header">Pricing Admin</div>
                 <a class="dropdown-item" href="#" @click="$refs['send-all-products-to-pricing'].send()">
                     <send-all-products-to-pricing ref="send-all-products-to-pricing"></send-all-products-to-pricing>
                     Re-price all products
                 </a>
                 <div class="dropdown-divider"></div>
+                @endcan
                 @endrole
                 @role('super')
                 <div class="dropdown-header">Settings</div>

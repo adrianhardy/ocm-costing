@@ -35,9 +35,6 @@
                         Draft<br />
                     </th>
                     <th class="w-20">
-                        Quote<br />
-                    </th>
-                    <th class="w-20">
                         Unconfirmed SO<br />
                     </th>
                     <th class="w-20">
@@ -46,7 +43,6 @@
                     <th class="w-20">
                         Shipped<br />
                     </th>
-                    <th></th>
                     @endcan
                     @can('__uk')
                             <th class="w-15 ">
@@ -105,12 +101,6 @@
                     @can('__china')
                     <td>
                         @foreach ($orders['draft'] as $order)
-                            <a class="btn btn-primary btn-block mb-1"
-                               href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
-                        @endforeach
-                    </td>
-                    <td>
-                        @foreach ($orders['quote'] as $order)
                             <a class="btn btn-primary btn-block mb-1"
                                href="{{ route('sales-orders.edit', $order) }}">{{ $order->reference }}</a>
                         @endforeach

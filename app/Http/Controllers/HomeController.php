@@ -28,11 +28,6 @@ class HomeController extends Controller
             ->whereBetween('created_at', [$start, $end])
             ->get();
 
-        $orders[SalesOrder::STATUS_QUOTE] = SalesOrder::query()
-            ->orderBy('created_at')
-            ->currentStatus(SalesOrder::STATUS_QUOTE)
-            ->whereBetween('created_at', [$start, $end])
-            ->get();
 
         $orders[SalesOrder::STATUS_SALES_ORDER] = SalesOrder::query()
             ->orderBy('created_at')

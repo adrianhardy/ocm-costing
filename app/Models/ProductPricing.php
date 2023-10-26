@@ -32,7 +32,8 @@ class ProductPricing extends BaseProductPricing
         'eur_fx_rate',
         'current_eur_fx_rate',
         'priority',
-        'website_price'
+        'website_price',
+        'is_skip_full_check'
 	];
 
     /**

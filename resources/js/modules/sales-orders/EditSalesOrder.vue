@@ -170,7 +170,7 @@
                     </b-form-group>
                     <b-form-group v-if="!isSupplier">
                         <b-input-group
-                            prepend="P'ELC" size="sm" class="no-input" v-b-tooltip.hover title="Product Estimated Landed Cost">
+                            prepend="ELC" size="sm" class="no-input" v-b-tooltip.hover title="Product Estimated Landed Cost">
                             <b-input class="w-50" readonly :value="data.item.product.est_landed_cost_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
@@ -400,7 +400,7 @@ export default {
                 tdClass: 'align-middle'
             }, {
                 key: 'item_number',
-                label: 'Item #',
+                label: 'Factory Item #',
                 thClass: 'w-5 text-nowrap',
                 tdClass: 'small'
             }, {
@@ -409,7 +409,7 @@ export default {
                 thClass: 'w-5 text-nowrap'
             }, {
                 key: 'article_number',
-                label: 'Art #',
+                label: 'Item #',
                 thClass: 'w-5 text-nowrap'
             }, {
                 key: 'product.name',

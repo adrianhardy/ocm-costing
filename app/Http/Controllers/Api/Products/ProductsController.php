@@ -299,6 +299,13 @@ class ProductsController extends Controller
         }
 
         if(auth()->user()->can('__china')) {
+            // I may have mentioned this elsewhere, but I know of at least one
+            // factory that has it's country set to 'CHIA' or something stupid
+            // like that. It won't get picked up by this, but idk if we should
+            // be working around stuff like this?
+            $paginator = $paginator->whereHas('factories', function($query) {
+                return $query->where('country', 'CHINA');
+            });
             // $paginator = $paginator->whereNull('unit_price_gbp');
         }
 

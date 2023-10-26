@@ -4,11 +4,15 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
+                        <b-select @change="$refs['table'].refresh()" style="width:15% !important" v-model="selectedYear">
+                            <b-select-option v-for="year in years" :key="year" :value="year">{{year}}</b-select-option>
+                        </b-select>
                         <b-select v-model="stage" style="width:20% !important" @change="$refs['table'].refresh()">
                             <b-select-option value="">All</b-select-option>
-                            <b-select-option value="quote">Quotes</b-select-option>
-                            <b-select-option value="order">Orders</b-select-option>
-                            <b-select-option value="deleted">Deleted</b-select-option>
+                            <b-select-option value="draft">Draft</b-select-option>
+                            <b-select-option value="unconfirmed_so">Unconfirmed SO</b-select-option>
+                            <b-select-option value="confirmed_so">Confirmed SO</b-select-option>
+                            <b-select-option value="shipped">Shipped</b-select-option>
                         </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
                         <b-button
@@ -71,6 +75,7 @@ export default {
     name: "SalesOrdersList",
     components: {SearchInput, CreateSalesOrderModal, TableHeader},
     props: {
+        years: Array,
         isSupplier: Boolean,
         initStage: String,
     },
@@ -146,7 +151,8 @@ export default {
                 ctx, {
                     search: this.search,
                     stage: this.stage,
-                    include
+                    include,
+                    year: this.selectedYear??null
                 }, {
                     'supplier.name': 'suppliers|name',
                     'factory.name': 'factories|name'
@@ -156,6 +162,7 @@ export default {
     },
     data() {
         return {
+            selectedYear: 2023,
             search: '',
             stage: this.initStage,
             pagination: {

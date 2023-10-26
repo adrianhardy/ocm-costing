@@ -8,6 +8,9 @@
             <template #header>
                 <table-header v-model="pagination">
                     <slot>
+                        <b-select @change="$refs['table'].refresh()" style="width:15% !important" v-model="selectedYear">
+                            <b-select-option v-for="year in years" :key="year" :value="year">{{year}}</b-select-option>
+                        </b-select>
                         <search-input class="w-50" v-model="search" @search="$refs['table'].refresh()"/>
                         <b-button class="ml-2" variant="primary" @click="$refs['import-shipment-modal'].show()">Import</b-button>
                     </slot>
@@ -49,6 +52,9 @@ export default {
         ImportShipmentModal,
         SearchInput,
         TableHeader
+    },
+    props: {
+        years: Array,
     },
     computed: {
         fields() {
@@ -106,12 +112,14 @@ export default {
                 this.pagination,
                 ctx, {
                     search: this.search,
-                    include
+                    include,
+                    year: this.selectedYear
                 })
         }
     },
     data() {
         return {
+            selectedYear: 2023,
             search: '',
             pagination: {
                 total: 0,

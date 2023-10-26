@@ -11,7 +11,9 @@ class SalesOrdersController extends Controller
 {
     public function index()
     {
-        return response()->view('sales-orders.index');
+        return response()->view('sales-orders.index', [
+            'years' => range(date('Y'), date('Y')-10)
+        ]);
     }
 
     public function edit(SalesOrder $sales_order)

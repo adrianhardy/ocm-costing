@@ -173,17 +173,9 @@
                     </div>
                 </template>
                 <template #cell(unit_price_gbp)="data">
-                    <b-form-group :description="looksToBeFromChina(data.item.product)?'This price cannot be edited as it has been calculated using container data':''">
+                    <b-form-group>
                         <b-input-group prepend="£" size="sm">
                             <b-form-input
-                                v-if="!data.value && looksToBeFromChina(data.item.product)"
-                                readonly
-                                type="number"
-                                class="no-stepper est_landed_cost_gbp"
-                                :value="data.item.product.est_landed_cost_gbp"
-                            ></b-form-input>
-                            <b-form-input
-                                v-else
                                 :readonly="salesOrder.is_finalised"
                                 type="number"
                                 class="no-stepper unit_price_gbp"
@@ -228,7 +220,7 @@
                         <b-td class="text-right">
                             <strong>Total</strong> <br/>
                             {{ salesOrder.currency.code }}
-                            {{ salesOrder.goods_cost | 2dp_value }} <br/>
+                            {{ salesOrder.goods_cost_gbp | 2dp_value }} <br/>
                         </b-td>
                     </b-tr>
                 </template>
@@ -444,9 +436,6 @@ export default {
         }
     },
     methods: {
-        looksToBeFromChina(product) {
-            return product.est_landed_cost_gbp && product.est_landed_cost_gbp > 0;
-        },
         selectAllLines(event){
             _.forEach(this.salesOrder.lines, function(line) {
                 line.checked = event

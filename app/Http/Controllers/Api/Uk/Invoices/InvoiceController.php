@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Uk\Invoices;
 
+use App\Events\UKInvoiceApprovedEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Invoice;
@@ -145,6 +146,8 @@ class InvoiceController extends Controller
                     $line->pricing_priority
                 );
             }
+            // Here, we'll update the product with unit_price_gbp
+            event(new UKInvoiceApprovedEvent($invoice));
         }
 
 
@@ -188,19 +191,15 @@ class InvoiceController extends Controller
 
         $invoice->approved_at = Carbon::now();
         $invoice->approver()->associate(auth()->user());
+        event(new UKInvoiceApprovedEvent($invoice));
 
         if ($request->input('close_oa')) {
             $invoice->sales_order->setStatus(SalesOrder::OA_STATUS_CLOSED);
         }
 
-
         $invoice->save();
         $invoice->sales_order->save();
 
-
         return response()->json(fractal($invoice, new InvoiceTransformer()));
-
     }
-
-
 }

@@ -57,7 +57,7 @@
                 <b-badge v-show="data.item.invoice_qty_received > data.item.qty_remaining" variant="danger">
                     Too many
                 </b-badge>
-                <b-badge variant="danger" v-show="data.item.invoice_unit_price > 0 && (parseFloat(data.item.invoice_unit_price) !== parseFloat(data.item.unit_price))">
+                <b-badge variant="danger" v-show="data.item.invoice_unit_price > 0 && (parseFloat(data.item.invoice_unit_price) !== parseFloat(data.item.unit_price_gbp))">
                     Price mismatch
                 </b-badge>
             </template>
@@ -75,10 +75,10 @@ export default {
         fields(){
             return [
                 {key: 'photo', label: 'Photo', tdClass: 'align-middle', thClass: 'align-middle'},
-                {key: 'item_number', label: 'Item #', tdClass: 'align-middle', thClass: 'align-middle'},
+                {key: 'item_number', label: 'Item #', tdClass: 'align-middle', thClass: 'align-middle w-15'},
                 {key: 'name', label: 'Product Details', tdClass: 'align-middle', thClass: 'align-middle'},
-                {key: 'barcode', label: 'Barcode', tdClass: 'align-middle', thClass: 'align-middle'},
-                {key: 'qty_received', label: 'Received', tdClass: 'align-middle', thClass: 'align-middle w-5    '},
+                {key: 'barcode', label: 'Barcode', tdClass: 'align-middle', thClass: 'align-middle w-15'},
+                {key: 'qty_received', label: 'Received', tdClass: 'align-middle', thClass: 'align-middle w-10'},
                 {key: 'ordered', label: 'Ordered', tdClass: 'align-middle', thClass: 'align-middle w-10'},
                 {key: 'unit_price', label: 'Unit Price', tdClass: 'align-middle', thClass: 'align-middle w-10'},
                 {key: 'priority', label: 'Priority', tdClass: 'align-middle', thClass: 'align-middle w-10'},

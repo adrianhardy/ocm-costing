@@ -163,35 +163,18 @@ class OrderAcknowledgementsController extends Controller
 
         $orderAcknowledgement->save();
 
+        /*
+         * CC 25/10/23 - We only update product prices based on INVOICED amounts, so just because
+         * we create an OA and finalise it, nothing happens to the product's price.
+         *
         if ($orderAcknowledgement->wasChanged(['finalised_at']) && $orderAcknowledgement->is_finalised) {
             $orderAcknowledgement->fresh()->lines->each(function (SalesOrderLine $line) {
                 // only update the product price if we've got a unit price, the unit_price is > 0
                 // it doesn't match the current unit_price and there isn't an associated shipping
                 // cost with the SO line
-                if ($line->product &&
-                    $line->unit_price > 0 &&
-                    $line->unit_price !== $line->product->unit_price &&
-                    $line->estimated_shipping_cost_gbp === null
-                ) {
-                    \Log::info(
-                        __METHOD__ . "We're going to update Product #{$line->product->id} to have price {$line->unit_price}"
-                    );
-                    $line->product->unit_price = $line->unit_price;
-                    $line->product->save();
-                }
-
-                if ($line->product &&
-                    $line->unit_price_gbp > 0 &&
-                    $line->unit_price_gbp !== $line->product->unit_price_gbp
-                ) {
-                    \Log::critical(
-                        __METHOD__ . "We're going to update Product #{$line->product->id} to have price {$line->unit_price_gbp}"
-                    );
-                    $line->product->unit_price_gbp = $line->unit_price_gbp;
-                    $line->product->save();
-                }
             });
         }
+        */
         DB::commit();
 
         return response()->json(fractal($orderAcknowledgement, new SalesOrderTransformer()));

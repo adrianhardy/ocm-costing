@@ -48,6 +48,7 @@ class OrderAcknowledgementLinesController extends Controller
         if ($request->input('unit_price') !== null) {
             $line->unit_price = $request->input('unit_price');
             $line->unit_price_gbp = null;
+            \Log::warning(__METHOD__ .  " something is setting 'unit_price' on the OA");
         }
 
         if ($request->input('unit_price_gbp') !== null) {
@@ -65,8 +66,9 @@ class OrderAcknowledgementLinesController extends Controller
                 'name'                  => '' . $product->name,
                 'item_number'           => '' . $product->item_number,
                 'article_number'        => '' . $product->article_number,
-                'unit_price'            => $product->unit_price,
-                'unit_price_pgb'        => $product->unit_price_gbp,
+                // AH : temporarily - remove if we need it pls
+                // 'unit_price'            => $product->unit_price,
+                'unit_price_gbp'        => $product->unit_price_gbp,
                 'oa_primary_sku'        => $product->primary_sku
             ]);
             $line->product()->associate($product);
