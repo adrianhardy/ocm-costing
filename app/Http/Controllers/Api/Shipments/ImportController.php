@@ -64,6 +64,9 @@ class ImportController extends Controller
         $consignment = null;
         DB::beginTransaction();
         $log = [];
+
+        $articleNumbersProcessed = [];
+
         // For every line found in the XLSX file
         foreach ($json['lines'] as $row) {
 
@@ -81,9 +84,31 @@ class ImportController extends Controller
             /** @var SalesOrderLine $line */
             $line = $line->first();
 
+            if (in_array($line->article_number, $articleNumbersProcessed)) {
+                $log[] = "Article {$row['article_number']} has already appeared and has been processed, skipping...";
+                continue;
+            }
+
             if (!$line) {
                 $log[] = "Failed to find article {$row['article_number']} on PO {$row['po_number']}";
                 continue;
+            }
+
+            // Decision by WS 31/10/23:
+            // We may receive the same article on multiple invoice or packing list lines
+            // We didn't ask or pay for them, but they should impact the shipping calculations
+            // because they always appear as a separate line (billed at $0.00) we're just going
+            // to use the first appearance, sum all quanities, and pretend that's what we asked
+            // for.
+            $linesCollection = collect($json['lines'])->map(function($rowToModify) {
+                $rowToModify['article_number'] = strtolower(trim($rowToModify['article_number']));
+                return $rowToModify;
+            });
+
+            $articleNumber = strtolower(trim($row['article_number']));
+            if ($linesCollection->where('article_number', $articleNumber)->count() > 1) {
+                $row['qty'] = $linesCollection->where('article_number', $articleNumber)->sum('qty');
+                $log[] = "Article {$row['article_number']} appears more than once, summing quantities so now qty = {$row['qty']}";
             }
 
             if (!in_array($line->sales_order->reference, $uniqueSalesOrderReferences)) {
@@ -179,6 +204,7 @@ class ImportController extends Controller
                 'raw' => $row
             ];
 
+            $articleNumbersProcessed[] = $line->article_number;
 
             if ($consignment && $consignment->wasChanged(['estimated_arrival_at']) && !$preview) {
                 $mail = new NewInboundShipmentReadyNotification($consignment);

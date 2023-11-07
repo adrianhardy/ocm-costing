@@ -60,7 +60,9 @@ class ProductInformationChangedListener
 
             $line->total = $line->unit_price * $line->units_requested;
             $line->total_gbp = $line->total * $line->sales_order->fx_rate;
-            $line->unit_price_gbp = $line->unit_price * $line->sales_order->fx_rate;
+            // 25/10/23 AH - Don't trash the unit_price_gbp which would've come from
+            // an invoice with our months out of date USD price....
+            // $line->unit_price_gbp = $line->unit_price * $line->sales_order->fx_rate;
 
             $line->save();
             $line->sales_order->touch();
