@@ -28,7 +28,7 @@ class DailyPricingExport
         'submitted_at',
         'submitter.name',
         'local_profit',
-        'product.final_cost_gbp',
+        'product.unit_cost_gbp',
         'product.daily_pricing_notes'
     );
 

@@ -175,7 +175,7 @@ class DailyPricingController extends Controller
         $viability = new ProductPricingViabilityChecker();
         $dailyPricing->is_viable = $viability->isViable(
             $dailyPricing->profit,
-            $dailyPricing->product->final_cost_gbp,
+            $dailyPricing->product->unit_price_gbp,
             $dailyPricing->product->custom_minimum_profit
         );
 

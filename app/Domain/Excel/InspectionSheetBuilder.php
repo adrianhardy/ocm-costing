@@ -243,7 +243,7 @@ class InspectionSheetBuilder
             case 'shipping':
 
                 $this->sheet
-                    ->setCellValue('E1', 'FX RATE: ' . number_format(1/$consignment->sales_order->fx_rate, 2))
+                    ->setCellValue('E1', 'FX RATE: ' . number_format($consignment->current_fx_rate, 2))
                     // This is calculated by doing invoice amount / total cuft at the point they update the shipment
                     ->setCellValue('E2', 'SHIPPING RATE: ' . number_format($consignment->est_cost_cuft_gbp,2));
                 break;

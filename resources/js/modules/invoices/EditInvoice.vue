@@ -79,7 +79,7 @@
                     <b-badge v-show="data.item.qty_received_excl_me + (parseInt(data.item.qty) || 0) > data.item.sales_order_line.units_requested" variant="danger">
                         Too many
                     </b-badge>
-                    <b-badge variant="danger" v-show="data.item.unit_price > 0 && (parseFloat(data.item.sales_order_line.unit_price) !== parseFloat(data.item.unit_price))">
+                    <b-badge variant="danger" v-show="data.item.unit_price > 0 && (parseFloat(data.item.sales_order_line.unit_price_gbp) !== parseFloat(data.item.unit_price))">
                         Price mismatch
                     </b-badge>
                 </template>

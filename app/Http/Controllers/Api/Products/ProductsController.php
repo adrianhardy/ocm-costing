@@ -258,9 +258,7 @@ class ProductsController extends Controller
         }
 
         if($request->input('export')) {
-            $paginator = $paginator
-                ->whereNotNull('item_number')
-                ->where('item_number', '!=', '');
+            $paginator = $paginator;
             set_time_limit(120);
             ini_set('memory_limit', '256M');
             $export = new ProductExport([]);

@@ -133,8 +133,8 @@
                     <template #cell(landed_cost.shipping_cost_gbp_per_unit)="data">
                         <b-input v-model="data.value"/>
                     </template>
-                    <template #cell(landed_cost.est_landed_cost_per_unit_gbp)="data">
-                        <b-input v-model="data.value"/>
+                    <template #cell(product.current_landed_cost_per_unit_gbp)="data">
+                        <b-input v-model="data.value" readonly/>
                     </template>
                     <template #cell(case_cubic_ft)="data">
                         {{ data.value.toFixed(2) }}
@@ -196,7 +196,7 @@ export default {
     },
     computed: {
         include() {
-            return 'cubic_totals,sales_order,sales_order_lines,sales_order_lines.received,sales_order_lines.product,sales_order_lines.landed_cost,sales_order_lines.sales_order,media'
+            return 'cubic_totals,sales_order,sales_order_lines,sales_order_lines.received,sales_order_lines.product,sales_order_lines.product.current_landed_cost_per_unit_gbp,sales_order_lines.landed_cost,sales_order_lines.sales_order,media'
         },
         fields() {
             return [
@@ -208,7 +208,8 @@ export default {
                 {key: 'cartons', label: 'Cartons', tdClass: 'align-middle'},
                 {key: 'total_cubic_ft', label: 'Total ft³', thClass: 'text-nowrap', tdClass: 'align-middle'},
                 {key: 'landed_cost.shipping_cost_gbp_per_unit', label: 'Ship\' £/Unit', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
-                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'CLC £', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
+                {key: 'landed_cost.est_landed_cost_per_unit_gbp', label: 'ELC £', thClass: 'text-nowrap w-7', tdClass: 'align-middle'},
+                {key: 'product.current_landed_cost_per_unit_gbp', label: 'CLC £', thClass: 'text-nowrap w-7', tdClass: 'align-middle'},
                 {key: 'unit_price', label: 'USD/UNIT', thClass: 'text-nowrap w-1', tdClass: 'align-middle'},
                 {key: 'received', label: 'Qty', tdClass: 'align-middle'}
             ]
