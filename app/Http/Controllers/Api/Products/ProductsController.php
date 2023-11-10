@@ -258,9 +258,7 @@ class ProductsController extends Controller
         }
 
         if($request->input('export')) {
-            $paginator = $paginator
-                ->whereNotNull('item_number')
-                ->where('item_number', '!=', '');
+            $paginator = $paginator;
             set_time_limit(120);
             ini_set('memory_limit', '256M');
             $export = new ProductExport([]);
@@ -299,6 +297,13 @@ class ProductsController extends Controller
         }
 
         if(auth()->user()->can('__china')) {
+            // I may have mentioned this elsewhere, but I know of at least one
+            // factory that has it's country set to 'CHIA' or something stupid
+            // like that. It won't get picked up by this, but idk if we should
+            // be working around stuff like this?
+            $paginator = $paginator->whereHas('factories', function($query) {
+                return $query->where('country', 'CHINA');
+            });
             // $paginator = $paginator->whereNull('unit_price_gbp');
         }
 

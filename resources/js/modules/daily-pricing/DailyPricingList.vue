@@ -135,7 +135,7 @@
                         </b-badge>
                     </div>
                 </template>
-                <template #cell(product.final_cost_gbp)="data">
+                <template #cell(product.unit_price_gbp)="data">
                     <span v-if="data.value">
                         &pound;{{ data.value }}
                     </span>
@@ -208,7 +208,7 @@ export default {
                     tdClass: 'align-middle w-1',
                     thClass: 'align-middle text-nowrap'
                 }, {
-                    key: 'product.final_cost_gbp',
+                    key: 'product.unit_price_gbp',
                     label: 'GBP/Unit',
                     tdClass: 'align-middle w-1',
                     thClass: 'align-middle'
@@ -266,7 +266,7 @@ export default {
 
             if(!this.canApprove) {
                 return _.filter(fields, o =>
-                    o.key !== 'product.final_cost_gbp' &&
+                    o.key !== 'product.unit_price_gbp' &&
                     o.key !== 'margin' &&
                     o.key !== 'local_profit'
                 );

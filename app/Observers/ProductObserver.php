@@ -108,7 +108,9 @@ class ProductObserver
                 $pricing->save();
             }
 
-            $product->unit_price_gbp = $product->est_landed_cost_gbp;
+            // AH 25/10/23 - not doing this any more because in order to consider
+            // the product price authoritative now, we need an invoice.
+            // $product->unit_price_gbp = $product->est_landed_cost_gbp;
         }
     }
 }

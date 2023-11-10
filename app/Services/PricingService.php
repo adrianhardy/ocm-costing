@@ -102,6 +102,9 @@ class PricingService
             $pricing->product()->associate($product);
         }
 
+        // Cat will price based on "estimated landed cost" normally, but sometimes
+        // there won't be any shipping data with this product, so in that case we'll
+        // just say that the cost to OCM = $unitPriceGbp
         // for UK products, just set the ELC/Cost to $unitPriceGbp
         if ($unitPriceGbp && $pricingPriority) {
             $costingData['est_landed_cost_per_unit_gbp'] = $unitPriceGbp;
@@ -122,6 +125,9 @@ class PricingService
         // the only reason china lags behind is because of import/shipping
         // But with UK we get a price immediately from the invoice
         if($unitPriceGbp) {
+            // AH : I don't know what the significance of unit_price_gbp
+            // is on the ProductPricing model - how is this different to
+            // est_landed_cost_gbp ?
             $pricing->unit_price_gbp = $unitPriceGbp;
         }
 

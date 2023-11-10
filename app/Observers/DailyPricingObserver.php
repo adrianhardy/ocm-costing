@@ -23,7 +23,7 @@ class DailyPricingObserver
             $viability = new ProductPricingViabilityChecker();
             $pricing->is_viable = $viability->isViable(
                 $pricing->profit,
-                $pricing->product->final_cost_gbp,
+                $pricing->product->unit_price_gbp,
                 $pricing->product->custom_minimum_profit
             );
         } else {

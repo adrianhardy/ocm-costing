@@ -245,7 +245,10 @@ class Product extends BaseProduct implements HasMedia
         return false;
     }
 
-    public function getFinalCostGbpAttribute(){
+    public function getFinalCostGbpAttribute()
+    {
+        return $this->unit_price_gbp;
+
         if(!$this->unit_price_gbp) {
             return $this->est_landed_cost_gbp;
         }

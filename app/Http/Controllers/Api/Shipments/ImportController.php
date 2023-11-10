@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use mysql_xdevapi\Exception;
 
 class ImportController extends Controller
 {
@@ -154,7 +155,8 @@ class ImportController extends Controller
                     'our_order_number' => implode(',', $uniqueSalesOrderReferences),
                     'invoice_amt' => $request->input('total_shipping_invoice_value'),
                     'bl_number' => $request->input('bl_number'),
-                    'current_fx_rate' => $request->input('current_fx_rate')
+                    'current_fx_rate' => $request->input('current_fx_rate'),
+                    'shipping_agent_ref' => $request->input('shipping_agent_ref')
                 ]);
 
                 // TODO: set the width/length/height_cm

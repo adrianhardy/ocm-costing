@@ -67,7 +67,7 @@ class ProductExport
         'primary_sku',
         'primary_asin',
         'name',
-        'final_cost_gbp'
+        'unit_price_gbp'
     ];
 
     /**

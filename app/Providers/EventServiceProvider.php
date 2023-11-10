@@ -28,6 +28,10 @@ class EventServiceProvider extends ServiceProvider
 
         Events\ProductInformationChanged::class => [
             Listeners\ProductInformationChangedListener::class
+        ],
+
+        Events\UKInvoiceApprovedEvent::class => [
+            Listeners\UKInvoiceApprovedListener::class
         ]
     ];
 

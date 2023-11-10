@@ -128,7 +128,7 @@ class DailyPricing extends BaseDailyPricing
         $vat            = $this->suggested_price * $vatRate;
         $commission     = $this->suggested_price * 0.15;
         $fbaFee         = $this->fba_fee;
-        $localUnitCost  = $this->product->final_cost_gbp * $this->country->currency->currency_fx_rate;
+        $localUnitCost  = $this->product->unit_price_gbp;
 
         $costOfSale = round($localUnitCost + $fbaFee + $commission + $vat + $shippingCost, 2);
         $this->profit = $this->suggested_price - $costOfSale;

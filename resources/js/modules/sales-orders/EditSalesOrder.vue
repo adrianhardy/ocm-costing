@@ -170,7 +170,7 @@
                     </b-form-group>
                     <b-form-group v-if="!isSupplier">
                         <b-input-group
-                            prepend="P'ELC" size="sm" class="no-input" v-b-tooltip.hover title="Product Estimated Landed Cost">
+                            prepend="ELC" size="sm" class="no-input" v-b-tooltip.hover title="Product Estimated Landed Cost">
                             <b-input class="w-50" readonly :value="data.item.product.est_landed_cost_gbp | cash_value"></b-input>
                         </b-input-group>
                     </b-form-group>
@@ -216,11 +216,9 @@
                         <b-th colspan="3">
                             <b-form-select v-model="salesOrder.status" class="mb-3" @change="save()">
                                 <b-form-select-option value="">[Not Set]</b-form-select-option>
-                                <b-form-select-option value="draft">Draft</b-form-select-option>
-                                <b-form-select-option value="quote">Quote</b-form-select-option>
-                                <b-form-select-option value="quote_request">Quote Request</b-form-select-option>
-                                <b-form-select-option value="sales_order">Sales Order</b-form-select-option>
-                                <b-form-select-option value="confirmed_sales_order">Confirmed Sales Order</b-form-select-option>
+                                <b-select-option value="draft">Draft</b-select-option>
+                                <b-select-option value="sales_order">Unconfirmed SO</b-select-option>
+                                <b-select-option value="confirmed_sales_order">Confirmed SO</b-select-option>
                             </b-form-select>
                         </b-th>
                         <b-th colspan="4">
@@ -400,7 +398,7 @@ export default {
                 tdClass: 'align-middle'
             }, {
                 key: 'item_number',
-                label: 'Item #',
+                label: 'Factory Item #',
                 thClass: 'w-5 text-nowrap',
                 tdClass: 'small'
             }, {
@@ -409,7 +407,7 @@ export default {
                 thClass: 'w-5 text-nowrap'
             }, {
                 key: 'article_number',
-                label: 'Art #',
+                label: 'Item #',
                 thClass: 'w-5 text-nowrap'
             }, {
                 key: 'product.name',

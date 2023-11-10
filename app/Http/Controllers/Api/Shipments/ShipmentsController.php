@@ -20,6 +20,12 @@ class ShipmentsController extends Controller
     {
         $paginator = $repository;
 
+        if($request->input('year')) {
+            $start = Carbon::createFromDate($request->input('year'))->startOfYear();
+            $end = $start->copy()->endOfYear();
+            $paginator = $paginator->whereBetween('created_at', [$start, $end]);
+        }
+
         $paginator = $paginator->paginate($request->input('per_page', 100));
 
         return response()->json(new SerializeLengthAwarePaginator($paginator, new ConsignmentTransformer()));

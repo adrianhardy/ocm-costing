@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
 class ShipmentsController extends Controller
 {
     public function index(){
-        return view('shipments.index');
+        return view('shipments.index', [
+            'years' => range(date('Y'), date('Y')-10)
+        ]);
     }
 
     public function show(Consignment $shipment){

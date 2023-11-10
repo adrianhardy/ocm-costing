@@ -8,12 +8,14 @@ use App\Models\DailyPricing;
 use Illuminate\Support\Collection;
 use League\Csv\Exception;
 use League\Csv\Writer;
+use Shuchkin\SimpleXLSXGen;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class DailyPricingExport
 {
     protected $writer;
     protected $dailyPricings = array();
+    protected $exportLines = array();
     protected $log;
     protected $pa;
     protected $columns = array(
@@ -26,7 +28,7 @@ class DailyPricingExport
         'submitted_at',
         'submitter.name',
         'local_profit',
-        'product.final_cost_gbp',
+        'product.unit_cost_gbp',
         'product.daily_pricing_notes'
     );
 
@@ -54,30 +56,23 @@ class DailyPricingExport
      * we can chunk the query and just call "setAccounts" followed by
      * "buildExport" as many times as we like and we end up with a .
      * single CSV file...
+     *
+     * We were using chunk and calling buildExport multiple times to
+     * add to a single csv export, since moving to using XLS, we want
+     * to build up a massive array of lines.
+     *
      * @return Writer|null
      */
     public function buildExport()
     {
-        $headers = $this->columns;
         try {
-            if ($this->writer) {
-                $export = $this->writer;
-            } else {
-                $export = Writer::createFromFileObject(new \SplTempFileObject(256 * 1024 * 1024));
-                $export->setDelimiter(',');
-                $export->setNewline("\r\n");
-                $export->insertOne($headers);
-                $this->writer = $export;
-            }
-
             foreach ($this->dailyPricings as $pricing) {
                 $exportItem = [];
                 foreach ($this->columns as $column) {
                     $exportItem[] = $this->extractProperty($pricing, $column);
                 }
-                $export->insertOne($exportItem);
+                $this->exportLines[] = $exportItem;
             }
-            return $export;
         } catch (Exception $e) {
             $this->log->critical(
                 $e->getMessage()
@@ -86,11 +81,28 @@ class DailyPricingExport
         }
     }
 
+    public function getXLSDownloadResponse()
+    {
+        $lines = [];
+        $lines[] = $this->columns;
+        foreach($this->exportLines as $line) {
+            $lines[] = $line;
+        }
 
+        $export = SimpleXLSXGen::fromArray($lines);
+        foreach($this->columns as $key=>$column) {
+            $export->setColWidth($key+1, 25);
+        }
+
+        return $export;
+    }
 
 
     /**
      * @return null
+     *
+     * @deprecated To have better control over column sizes, we're exporting as .xls
+     * @see DailyPricingExport::getXLSDownloadResponse()
      */
     public function getCsvDownloadResponse()
     {

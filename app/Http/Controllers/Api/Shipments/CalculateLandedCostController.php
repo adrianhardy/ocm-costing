@@ -32,6 +32,10 @@ class CalculateLandedCostController extends Controller
         Consignment $shipment,
         PricingService $pricingService
     ) {
+
+        if ($request->input('send_to_pricing')) {
+            abort('Send to pricing from Shipments is no longer supported', 400);
+        }
         $shipment->est_cost_cuft_gbp = round($shipment->invoice_amt / $shipment->total_calculated_cubic_ft, 4);
         $shipment->save();
 

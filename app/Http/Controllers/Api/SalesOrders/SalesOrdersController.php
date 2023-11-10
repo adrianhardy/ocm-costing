@@ -44,32 +44,36 @@ class SalesOrdersController extends Controller
         Request $request,
         SalesOrderRepository $salesOrderRepository
     ) {
-        $paginator = $salesOrderRepository->where('is_order_acknowledgement', false);
+        $paginator = $salesOrderRepository->where('is_order_acknowledgement', false)->orderBy('created_at');
 
         switch($request->query('stage'))
         {
-            case 'deleted':
-                $paginator = $paginator->withTrashed()->whereNotNull('deleted_at');
+            case 'draft':
+                $paginator = $paginator->currentStatus(SalesOrder::STATUS_DRAFT);
                 break;
-            case 'quote':
-                $paginator = $paginator
-                    ->currentStatus([
-                        SalesOrder::STATUS_DRAFT,
-                        SalesOrder::STATUS_QUOTE,
-                        SalesOrder::STATUS_QUOTE_REQUEST
-                    ]);
+            case 'unconfirmed_so':
+                $paginator = $paginator->currentStatus(SalesOrder::STATUS_SALES_ORDER);
                 break;
-            case 'order':
-                $paginator = $paginator
-                    ->currentStatus([
-                        SalesOrder::STATUS_CONFIRMED_SALES_ORDER,
-                        SalesOrder::STATUS_SALES_ORDER
-                    ]);
+            case 'confirmed_so':
+                $paginator = $paginator->currentStatus(SalesOrder::STATUS_CONFIRMED_SALES_ORDER);
+                break;
+            case 'shipped':
+                $paginator = $paginator->whereHas('lines', function($query) {
+                    $query->whereHas('consignments', function ($query) {
+                        $query->whereNull('deleted_at');
+                    });
+                });
                 break;
         }
 
         if (\Auth::user()->hasAnyRole(['supplier'])) {
-            $paginator->where('supplier_id', \Auth::user()->supplier_id);
+            $paginator = $paginator->where('supplier_id', \Auth::user()->supplier_id);
+        }
+
+        if($request->input('year')) {
+            $start = Carbon::createFromDate($request->input('year'))->startOfYear();
+            $end = $start->copy()->endOfYear();
+            $paginator = $paginator->whereBetween('created_at', [$start, $end]);
         }
 
         $paginator = $salesOrderRepository->paginate(

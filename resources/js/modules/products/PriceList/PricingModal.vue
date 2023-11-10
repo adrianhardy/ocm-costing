@@ -11,10 +11,11 @@
          size="xl"
     >
         <template #modal-footer="{ok, cancel}">
-            <div class="mr-auto">
+            <div>
                 <b-button class="mr-1" @click="copyPricing">Copy Pricing</b-button>
                 <b-button v-if="copiedPricing" @click="pastePricing">Paste Pricing</b-button>
             </div>
+            <b-form-checkbox class="mr-auto" v-show="isApprover && value" v-model="value.is_skip_full_check">Skip Full Check?</b-form-checkbox>
             <b-button variant="secondary" @click="cancel">Cancel</b-button>
             <b-button variant="primary" @click="submitForApproval" v-if="!value.submitted_at">
                 Submit for Approval

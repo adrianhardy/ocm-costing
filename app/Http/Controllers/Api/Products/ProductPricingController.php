@@ -27,28 +27,31 @@ class ProductPricingController extends Controller
 
 
         if ($request->query->getBoolean('todo_only', false)) {
-
-            // This helps us completely back fill ALL products with pricing
-            // (so every product a have product_pricing created) but they
-            // won't show up in "todo_only" because they don't have a unit price
-            // yet, nor do they have an est_landed_cost.
-            $paginator = $paginator->whereHas('product', function($query) {
-                $query->whereNotNull('unit_price_gbp')
-                    ->orWhereNotNull('est_landed_cost_gbp');
+            $paginator = $paginator->where(function ($query) {
+                // hide products which haven't been costed yet
+                return $query->whereHas('product', function ($query) {
+                    $query->whereNotNull('unit_price_gbp');
+                })->where(function ($query) {
+                    if(auth()->user()->hasPermissionTo('pricing_approve')) {
+                        // show mgrs who approve pricing all unapproved prices
+                        $query->whereNull('approved_at');
+                    } elseif (auth()->user()->hasPermissionTo('pricing')) {
+                        // if they're a regular pricer, show where neither submitted
+                        // nor approved (but as above, they will have a unit price /
+                        // est landed cost)
+                        $query
+                            ->whereNull('submitted_at')
+                            ->whereNull('approved_at');
+                    }
+                })->where(function($query) {
+                    // NEW what-counts-as-todo_only
+                    // not priced, exported or approved
+                    return $query
+                        ->whereNull('approved_at')
+                        ->orWhereNull('submitted_at')
+                        ->orWhereNull('exported_at');
+                })->where('is_skip_full_check', false);
             });
-
-            // if they're an approver, show ones where they're submitted, but not
-            // approved
-            if(auth()->user()->hasPermissionTo('pricing_approve')) {
-                $paginator = $paginator->whereNull('approved_at');
-            } elseif (auth()->user()->hasPermissionTo('pricing')) {
-                // if they're a regular pricer, show where neither submitted
-                // nor approved (but as above, they will have a unit price /
-                // est landed cost)
-                $paginator = $paginator
-                    ->whereNull('submitted_at')
-                    ->whereNull('approved_at');
-            }
         }
 
         if($request->input('priority')) {
@@ -83,6 +86,7 @@ class ProductPricingController extends Controller
         $this->validate($request, [
             'website_price' => 'sometimes|nullable|numeric|min:0',
             'priority' => 'required|in:low,medium,high',
+            'is_skip_full_check' => 'sometimes|boolean',
             'marketplace_commission_pc'     => 'required|numeric|min:0',
             'current_eur_fx_rate'           => 'required|numeric|min:0',
             'est_landed_cost_per_unit_gbp'  => 'required|numeric|min:0',
@@ -112,7 +116,8 @@ class ProductPricingController extends Controller
             'marketplace_commission_pc',
             'est_landed_cost_per_unit_gbp',
             'priority',
-            'website_price'
+            'website_price',
+            'is_skip_full_check',
         ]));
         // copy the global "EUR" rate, set on ProductPricing, down to
         // all the ProductPricingCountry objects related to this $pricing

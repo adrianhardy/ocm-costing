@@ -98,13 +98,13 @@ class DailyPricingController extends Controller
         if($request->input('export')) {
             set_time_limit(120);
             ini_set('memory_limit', '256M');
-            $export = new DailyPricingExport([]);
-            $paginator->chunk(500, function ($pricings) use ($export) {
-                $export->setPricings($pricings);
-                $export->buildExport();
+            $runExport = new DailyPricingExport([]);
+            $paginator->chunk(500, function ($pricings) use ($runExport) {
+                $runExport->setPricings($pricings);
+                $runExport->buildExport();
             });
-            $export->setPricings([]);
-            $export->getCsvDownloadResponse();
+            $export = $runExport->getXLSDownloadResponse();
+            $export->downloadAs('DailyPricingExport.xls');
             die();
         }
 
@@ -175,7 +175,7 @@ class DailyPricingController extends Controller
         $viability = new ProductPricingViabilityChecker();
         $dailyPricing->is_viable = $viability->isViable(
             $dailyPricing->profit,
-            $dailyPricing->product->final_cost_gbp,
+            $dailyPricing->product->unit_price_gbp,
             $dailyPricing->product->custom_minimum_profit
         );
 
