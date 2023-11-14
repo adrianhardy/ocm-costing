@@ -45,8 +45,15 @@ class DailyPricingController extends Controller
 
         if($request->input('product_id')) {
             $paginator = $paginator
-                ->where('daily_pricing.product_id', $request->input('product_id'))
-                ->whereNotNull('approved_at');
+                ->where('daily_pricing.product_id', $request->input('product_id'));
+
+            // by default, only return approved items
+            if ($request->input('include_full_history')) {
+                $paginator = $paginator->whereNotNull('submitter_id');
+            } else {
+                $paginator = $paginator->whereNotNull('approved_at');
+            }
+
         } else {
             $paginator = $paginator->select('daily_pricing.*');
             /*
