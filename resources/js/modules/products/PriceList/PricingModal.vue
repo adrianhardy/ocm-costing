@@ -16,7 +16,7 @@
                     <b-button class="mr-1" @click="copyPricing">Copy Pricing</b-button>
                     <b-button v-if="copiedPricing" @click="pastePricing">Paste Pricing</b-button>
                 </div>
-                <b-form-checkbox v-show="isPricingSkipper && value" v-model="value.is_skip_full_check">Skip Full Check?</b-form-checkbox>
+                <b-form-checkbox class="mt-1" v-show="isPricingSkipper && value" v-model="value.is_skip_full_check">Skip Full Check?</b-form-checkbox>
             </div>
             <b-button variant="secondary" @click="cancel">Cancel</b-button>
             <b-button variant="primary" @click="submitForApproval" v-if="!value.submitted_at">
