@@ -105,6 +105,7 @@
             </b-table>
         </b-card>
         <pricing-modal
+            :is-pricing-skipper="isPricingSkipper"
             :euro-countries="euroCountries"
             :row-countries="rowCountries"
             :non-euro-eu-countries="nonEuroEuCountries"
@@ -128,6 +129,7 @@ export default {
     name: "PriceList",
     props: {
         isApprover: Boolean,
+        isPricingSkipper: Boolean,
         euroCountries: Array,
         rowCountries: Array,
         nonEuroEuCountries: Array,

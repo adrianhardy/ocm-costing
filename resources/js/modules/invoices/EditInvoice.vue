@@ -163,7 +163,7 @@ export default {
                     thClass: 'align-middle w-10',
                     tdClass: 'align-middle'
                 }, {
-                    key: 'sales_order_line.unit_price',
+                    key: 'sales_order_line.unit_price_gbp',
                     label: 'OA Price',
                     thClass: 'align-middle ',
                     tdClass: 'align-middle'
