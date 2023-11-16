@@ -11,11 +11,13 @@
          size="xl"
     >
         <template #modal-footer="{ok, cancel}">
-            <div>
-                <b-button class="mr-1" @click="copyPricing">Copy Pricing</b-button>
-                <b-button v-if="copiedPricing" @click="pastePricing">Paste Pricing</b-button>
+            <div class="d-flex justify-content-start mr-auto">
+                <div class="mr-2">
+                    <b-button class="mr-1" @click="copyPricing">Copy Pricing</b-button>
+                    <b-button v-if="copiedPricing" @click="pastePricing">Paste Pricing</b-button>
+                </div>
+                <b-form-checkbox v-show="isPricingSkipper && value" v-model="value.is_skip_full_check">Skip Full Check?</b-form-checkbox>
             </div>
-            <b-form-checkbox class="mr-auto" v-show="isApprover && value" v-model="value.is_skip_full_check">Skip Full Check?</b-form-checkbox>
             <b-button variant="secondary" @click="cancel">Cancel</b-button>
             <b-button variant="primary" @click="submitForApproval" v-if="!value.submitted_at">
                 Submit for Approval
@@ -375,6 +377,7 @@ export default {
         euroCountries: Array,
         nonEuroEuCountries: Array,
         isApprover: Boolean,
+        isPricingSkipper: Boolean,
         isChina: {
             type: Boolean,
             default: false
