@@ -139,6 +139,11 @@
                     <span v-if="data.value">
                         &pound;{{ data.value }}
                     </span>
+                    <span v-else-if="data.item.product.current_landed_cost_per_unit_gbp">
+                        &pound;{{ data.item.product.current_landed_cost_per_unit_gbp }}
+                        <span class="small text-uppercase">cn</span>
+                    </span>
+                    <span v-else class="text-danger">NO COST</span>
                 </template>
             </b-table>
         </b-card>
@@ -174,7 +179,7 @@ export default {
     },
     computed: {
         include(){
-            return 'submitter,approver,country,country.currency,product,pricing_history,pricing_history.submitter'
+            return 'submitter,approver,country,country.currency,product,pricing_history,pricing_history.submitter,product.current_landed_cost_per_unit_gbp'
         },
         fields(){
             const fields = [

@@ -8,6 +8,7 @@ use App\Models\ProductPricing;
 use App\Models\Repositories\ProductPricingRepository;
 use App\Transformers\ProductPricingTransformer;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -32,25 +33,14 @@ class ProductPricingController extends Controller
                 return $query->whereHas('product', function ($query) {
                     $query->whereNotNull('unit_price_gbp');
                 })->where(function ($query) {
-                    if(auth()->user()->hasPermissionTo('pricing_approve')) {
-                        // show mgrs who approve pricing all unapproved prices
-                        $query->whereNull('approved_at');
-                    } elseif (auth()->user()->hasPermissionTo('pricing')) {
-                        // if they're a regular pricer, show where neither submitted
-                        // nor approved (but as above, they will have a unit price /
-                        // est landed cost)
-                        $query
-                            ->whereNull('submitted_at')
-                            ->whereNull('approved_at');
-                    }
+                    // CC: Items must be approved, submitted and exported
+                    // to disappear from this list.
+                    $query->whereRaw('(submitted_at IS NOT NULL AND approved_at IS NOT NULL AND exported_at IS NOT NULL) != TRUE');
+                    // if is_skip_full_check is true, then all this goes out the window and it skips
                 })->where(function($query) {
-                    // NEW what-counts-as-todo_only
-                    // not priced, exported or approved
-                    return $query
-                        ->whereNull('approved_at')
-                        ->orWhereNull('submitted_at')
-                        ->orWhereNull('exported_at');
-                })->where('is_skip_full_check', false);
+                    $query->where('is_skip_full_check', false)
+                        ->orWhereNull('is_skip_full_check');
+                });
             });
         }
 

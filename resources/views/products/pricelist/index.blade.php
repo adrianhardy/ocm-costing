@@ -11,7 +11,7 @@
         is-approver
         @endcan
         @can('skip_pricing_process')
-            is-pricing-skipper
+        is-pricing-skipper
         @endcan
         @can('__china')
         is-china

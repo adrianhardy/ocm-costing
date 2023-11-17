@@ -130,6 +130,14 @@ class DailyPricing extends BaseDailyPricing
         $fbaFee         = $this->fba_fee;
         $localUnitCost  = $this->product->unit_price_gbp;
 
+        if ($localUnitCost === null) {
+            $localUnitCost = $this->product->current_landed_cost_per_unit_gbp;
+        }
+
+        if ($localUnitCost === null || !($localUnitCost > 0)) {
+            throw new \RuntimeException("Cannot calculate profit without either unit_price_gbp or est_landed_cost_gbp");
+        }
+
         $costOfSale = round($localUnitCost + $fbaFee + $commission + $vat + $shippingCost, 2);
         $this->profit = $this->suggested_price - $costOfSale;
         $this->margin = round( $this->profit / $this->suggested_price, 4) * 100;
