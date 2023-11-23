@@ -143,7 +143,11 @@
                         &pound;{{ data.item.product.current_landed_cost_per_unit_gbp }}
                         <span class="small text-uppercase">cn</span>
                     </span>
-                    <span v-else class="text-danger">NO COST</span>
+                    <span v-else-if="data.item.product.est_landed_cost_gbp">
+                        &pound;{{ data.item.product.est_landed_cost_gbp }}
+                        <span class="small text-uppercase">est</span>
+                    </span>
+                    <span v-else class="text-danger small">NO COST</span>
                 </template>
             </b-table>
         </b-card>
