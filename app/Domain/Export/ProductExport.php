@@ -55,8 +55,8 @@ class ProductExport
         'item_number',
         'article_number',
         'name',
-        'packing_instructions',
-        'product_description',
+        'est_landed_cost_gbp',
+        'unit_price',
         'current_landed_cost_per_unit_gbp'
     ];
 

@@ -144,19 +144,19 @@ class ImportProductsCommand extends Command
 
                 $lc->unit_price = $data['unit_price'];
                 if(isset($data['case_depth_m'])) {
-                    $lc->length_m = $data['case_depth_m'];
+                    $lc->length_m = $data['case_depth_m'] / 100;
                 } else {
                     $lc->length_m = 0;
                 }
 
                 if(isset($data['case_height_m'])){
-                    $lc->height_m = $data['case_height_m'];
+                    $lc->height_m = $data['case_height_m'] / 100;
                 } else {
                     $lc->height_m = 0;
                 }
 
                 if(isset($data['case_width_m'])) {
-                    $lc->width_m = $data['case_width_m'];
+                    $lc->width_m = $data['case_width_m'] / 100;
                 } else {
                     $lc->width_m = 0;
                 }
