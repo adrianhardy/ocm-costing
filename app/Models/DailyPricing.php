@@ -98,7 +98,7 @@ class DailyPricing extends BaseDailyPricing
         return round($this->profit, 2);
     }
 
-    public function recalculteProfitAndMargin()
+    public function recalculteProfitAndMargin($debug = false)
     {
         $vatRate = 0.2;
         $shippingCost = 0;
@@ -138,8 +138,15 @@ class DailyPricing extends BaseDailyPricing
             throw new \RuntimeException("Cannot calculate profit without either unit_price_gbp or est_landed_cost_gbp");
         }
 
-        $costOfSale = round($localUnitCost + $fbaFee + $commission + $vat + $shippingCost, 2);
-        $this->profit = $this->suggested_price - $costOfSale;
+        if ($this->country->currency->currency_fx_rate != '1.00') {
+            $localUnitCost = $localUnitCost * $this->country->currency->currency_fx_rate;
+        }
+
+        // $costOfSale = round($localUnitCost + $fbaFee + $commission + $vat + $shippingCost, 2);
+        // CC: 4th December 2023:
+        // The correct formula should be;
+        // Price to sell for - vat - commision - fba fee - cost price (in local currency)
+        $this->profit = round($this->suggested_price - $vat - $commission - $fbaFee - $localUnitCost - $shippingCost, 2);
         $this->margin = round( $this->profit / $this->suggested_price, 4) * 100;
         if ($this->profit <= 0) {
             $this->margin = 0;
