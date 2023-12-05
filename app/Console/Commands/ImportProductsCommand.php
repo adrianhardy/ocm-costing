@@ -239,16 +239,17 @@ class ImportProductsCommand extends Command
                 'unit_price',
                 'case_weight_kg',
                 'unit_weight_kg',
-                'unit_height_m',
-                'unit_width_m',
             ])->toArray());
 
+            // decision 30/11/23 - assume all inputs are CM, not mm, nor m.
             $product->fill([
                 'units_per_case' => $data->get('case_qty'),
-                'height_m'      => $data->get('case_height_m'),
-                'width_m'       => $data->get('case_width_m'),
-                'length_m'      => $data->get('case_depth_m'),
-                'unit_length_m' => $data->get('unit_depth_m')
+                'height_m'      => $data->get('case_height_m') / 100,
+                'width_m'       => $data->get('case_width_m') / 100,
+                'length_m'      => $data->get('case_depth_m') / 100,
+                'unit_length_m' => $data->get('unit_depth_m')  / 100,
+                'unit_height_m' => $data->get('unit_height_m') / 100,
+                'unit_width_m'  => $data->get('unit_width_m') / 100,
             ]);
 
             // workaround not nullable constraint
