@@ -380,11 +380,13 @@ class SalesOrderExporter
                 $column = $this->mapping['units_requested'];
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})");
                 $cell->getStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                $cell->getStyle()->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                 break;
             case '%GRAND_TOTAL_CARTONS%':
                 $column = $this->mapping['cartons'];
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})");
                 $cell->getStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                $cell->getStyle()->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                 break;
             case '%GRAND_TOTAL_CBM%':
                 // because the spreadsheet template doesn't contain a column for
@@ -393,11 +395,13 @@ class SalesOrderExporter
                 $column = $this->mapping['total_cuft'];
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})/35.3147");
                 $cell->getStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                $cell->getStyle()->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                 break;
             case '%GRAND_TOTAL_CUFT%':
                 $column = $this->mapping['total_cuft'];
                 $cell->setValue("=SUM({$column}{$this->start}:{$column}{$maxLine})");
                 $cell->getStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                $cell->getStyle()->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
                 break;
 
         }
