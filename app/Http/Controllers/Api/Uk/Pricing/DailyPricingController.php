@@ -149,11 +149,15 @@ class DailyPricingController extends Controller
         }
 
 
-        $pricing->suggested_price = $request->input('suggested_price');
-        $pricing->fba_fee = $request->input('suggested_fba_fee');
-        $pricing->submitted_at = Carbon::now();
-        $pricing->submitter()->associate(auth()->user());
-        $pricing->save();
+        try {
+            $pricing->suggested_price = $request->input('suggested_price');
+            $pricing->fba_fee = $request->input('suggested_fba_fee');
+            $pricing->submitted_at = Carbon::now();
+            $pricing->submitter()->associate(auth()->user());
+            $pricing->save();
+        } catch (\Exception $ex) {
+            return response()->json(['message' => $ex->getMessage()], 400);
+        }
 
         return response()->json(fractal($pricing, new DailyPricingTransformer()));
     }

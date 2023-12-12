@@ -134,8 +134,12 @@ class DailyPricing extends BaseDailyPricing
             $localUnitCost = $this->product->current_landed_cost_per_unit_gbp;
         }
 
+        if ($localUnitCost === null) {
+            $localUnitCost = $this->product->est_landed_cost_gbp;
+        }
+
         if ($localUnitCost === null || !($localUnitCost > 0)) {
-            throw new \RuntimeException("Cannot calculate profit without either unit_price_gbp or est_landed_cost_gbp");
+            throw new \RuntimeException("Cannot calculate profit without unit_price_gbp, current_landed_cost_per_unit_gbp, est_landed_cost_gbp");
         }
 
         if ($this->country->currency->currency_fx_rate != '1.00') {
