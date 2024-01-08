@@ -268,15 +268,19 @@ class ImportProductsCommand extends Command
             }
 
             if ($data->get('images') && $data->get('images')->isNotEmpty()) {
-                $product->clearMediaCollection('default');
-                foreach ($data->get('images') as $i => $blob) {
-                    try {
-                        $product->addMediaFromBase64($blob)
-                            ->usingFileName("product-{$product->id}-{$i}.png")
-                            ->toMediaCollection('default');
-                    } catch (NotReadableException $ex) {
-                        $this->log->info("Failed to read image for item number '{$product->item_number}'");
+                try {
+                    $product->clearMediaCollection('default');
+                    foreach ($data->get('images') as $i => $blob) {
+                        try {
+                            $product->addMediaFromBase64($blob)
+                                ->usingFileName("product-{$product->id}-{$i}.png")
+                                ->toMediaCollection('default');
+                        } catch (NotReadableException $ex) {
+                            $this->log->info("Failed to read image for item number '{$product->item_number}'");
+                        }
                     }
+                } catch (\Exception $ex) {
+                    $this->log->info("Failed to clear image collection for Product #ID '{$product->id}'");
                 }
             }
 

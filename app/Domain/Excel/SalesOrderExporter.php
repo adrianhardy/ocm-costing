@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\HeaderFooter;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Spatie\MediaLibrary\Models\Media;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
@@ -134,6 +135,9 @@ class SalesOrderExporter
         for ($current = 1; $current <= $salesOrder->lines->count(); $current++) {
             try {
                 $this->clone->getSheet(0)->insertNewRowBefore($this->start + $current, $this->sheetRowsPerLine);
+                $this->log->debug(
+                    "inserting a row at row  " . ($this->start + $current)
+                );
             } catch (\PhpOffice\PhpSpreadsheet\Exception $ex) {
                 $this->log->debug(
                     "Caught exception when trying to process 'insertNewRowBefore': start '$this->start', current '$current'"
@@ -216,12 +220,25 @@ class SalesOrderExporter
                 $row[$name]
             );
 
+            $this->log->debug("Cell {{$this->mapping[$name]}$offset} : setting $name to value  to {$row[$name]}");
+
+            $this->clone->getSheet(0)->getCell($this->mapping[$name].($offset + 1))->getStyle()->getFont()->setBold(false);
+
             if (in_array($name, ['sub_total', 'unit_price'])) {
                 $this->clone->getSheet(0)->getCell(
                     $this->mapping[$name].($offset + 1)
                 )->getStyle()
                 ->getNumberFormat()
-                ->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD);
+                ->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+            }
+
+            if (in_array($name, ['units_requested', 'cartons', 'sub_total', 'unit_price', 'barcode'])) {
+                $this->clone->getSheet(0)->getCell(
+                    $this->mapping[$name].($offset + 1)
+                )
+                ->getStyle()
+                ->getAlignment()
+                ->setVertical(Alignment::VERTICAL_CENTER);
             }
         }
 
@@ -363,17 +380,29 @@ class SalesOrderExporter
     protected function replaceGlobalPlaceholderFormulae(Cell $cell, $maxLine)
     {
 
-        switch($cell->getValue()) {
+
+        // this seems to be necessary to get phpspreadsheet to update its understanding
+        // of what's in $cell.... It looks like if you insert new rows, but don't update the value
+        // then the value that was in that cell before carries over?
+        $contents = (string)$cell->getValue();
+
+        switch($contents) {
             case '%GRAND_TOTAL%':
+
+                if (false) {
+                    // use this to debug when nothing makes sense...
+                    $this->log->debug("**** updating cell : {$cell->getCoordinate()} to be like grand total b/c {$value} == '%GRAND_TOTAL%'");
+                }
+
                 $quantityColumn = $this->mapping['units_requested'];
                 $unitPriceColumn = $this->mapping['unit_price'];
                 $subTotalColumn = $this->mapping['sub_total'];
                 //$cell->setValue("=SUM({$quantityColumn}{$this->start}:{$quantityColumn}{$maxLine})*SUM({$unitPriceColumn}{$this->start}:{$unitPriceColumn}$maxLine)");
                 $cell->setValue("=SUM({$subTotalColumn}{$this->start}:{$subTotalColumn}{$maxLine})");
                 $cell->getStyle()
-                    ->getNumberFormat()
-                    ->setFormatCode(NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-
+                    ->getAlignment()
+                    ->setHorizontal(Alignment::HORIZONTAL_RIGHT)
+                    ->setVertical(Alignment::VERTICAL_CENTER);
                 break;
             case '%GRAND_TOTAL_UNITS%':
             case '%GRAND_TOTAL_PIECES%':
