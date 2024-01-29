@@ -80,6 +80,7 @@ class SettingsController extends Controller
         setting()->save();
 
 
+        set_time_limit(5 * 60);
         foreach ($fieldsToTrack as $field) {
             if (setting($field) != $originalValues[$field]) {
                 // Force a recalculation of all ELCs
