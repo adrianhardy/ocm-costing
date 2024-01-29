@@ -18,6 +18,12 @@
                 </a>
             </template>
         </b-table>
+        <p>
+            Please note that changing the anything that impacts shipping will
+            update the estimated landed cost of all products which may take
+            up to 5 minutes - please be patient and do not interrupt the
+            browser.
+        </p>
     </b-card>
 </template>
 
@@ -56,6 +62,8 @@ export default {
             this.$http.post('/api/admin/settings', {
                 key: this.editing,
                 value: this.newValue
+            },{
+                timeout: 5 * 60 * 1000 // 5 minute timeout
             }).then(() => {
                 loader.hide();
                 this.editing = false;

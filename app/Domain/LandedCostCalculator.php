@@ -90,10 +90,11 @@ class LandedCostCalculator
         }
 
         $unitPriceGbp = round($unitPrice * (1/$usdFxRate), 2);
-        $this->log->debug("Shipping Cost Per Carton: {$shipping['shipping_cost_gbp']}");
-        $this->log->debug("Shipping Cost Per Unit GBP: {$shippingCostPerUnitGbp}");
-        $this->log->debug("Cubic Ft: {$cubicFeet}");
-        $this->log->debug("unit price : $unitPrice, FX Rate {$usdFxRate}, Unit Cost (raw): $unitPriceGbp");
+        $prefix = class_basename(__METHOD__);
+        $this->log->debug("$prefix Shipping Cost Per Carton: {$shipping['shipping_cost_gbp']}");
+        $this->log->debug("$prefix Shipping Cost Per Unit GBP: {$shippingCostPerUnitGbp}");
+        $this->log->debug("$prefix Cubic Ft: {$cubicFeet}");
+        $this->log->debug("$prefix unit price : $unitPrice, FX Rate {$usdFxRate}, Unit Cost (raw): $unitPriceGbp");
 
         $commissionMultiplier = $excludedFromCommission?1:$commissionUplift;
         $importCostGbp = ($unitPriceGbp * $commissionMultiplier);

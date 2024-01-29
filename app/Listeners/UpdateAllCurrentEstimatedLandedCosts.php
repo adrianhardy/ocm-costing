@@ -30,9 +30,10 @@ class UpdateAllCurrentEstimatedLandedCosts
      */
     public function handle(ShippingCostSettingChanged $event)
     {
+        $prefix = class_basename(__METHOD__);
+        $this->log->debug("$prefix New cost settings have come in, forcing a recalculation of all products...");
         DB::beginTransaction();
-        $this->log->debug("New cost settings have come in, forcing a recalculation of all products...");
-        Product::query()->chunk(500, function($products) {
+        Product::query()->chunk(500, function($products) use ($prefix) {
             /** @var Product[] $products */
             $this->log->debug("Recalculating chunk of " . count($products) . " products...");
             foreach ($products as $product) {
@@ -40,15 +41,15 @@ class UpdateAllCurrentEstimatedLandedCosts
                     $before = $product->est_landed_cost_gbp;
                     $this->productService->updateEstimatedLandedCost($product);
                     $after = $product->est_landed_cost_gbp;
-                    $this->log->debug("Product #{$product->id}/{$product->item_number} was $before, now $after");
+                    $this->log->debug("$prefix Product #{$product->id}/{$product->item_number} was $before, now $after");
                 } catch (ZeroUnitsPerCaseException $ex) {
-                    $this->log->debug("Product #{$product->id}/{$product->item_number} cannot be calculated, zero units per case");
+                    $this->log->debug("$prefix Product #{$product->id}/{$product->item_number} cannot be calculated, zero units per case");
                 }
                 $product->save();
             }
             $this->log->debug("Chunk completed!");
         });
-        $this->log->debug("Finished recalculating ELC for all products");
         DB::commit();
+        $this->log->debug("$prefix Finished recalculating ELC for all products");
     }
 }
