@@ -56,12 +56,12 @@
                             </b-form-group>
                         </div>
                         <div class="col-4" v-if="isUk">
-                            <b-form-group v-if="product.unit_price_gbp" label="Cost Price GBP">
+                            <b-form-group label="Cost Price GBP">
                                 <b-input-group prepend="£">
                                     <b-form-input v-model="product.unit_price_gbp"/>
                                 </b-input-group>
                             </b-form-group>
-                            <b-form-group v-else label="Landed Cost">
+                            <b-form-group v-if="product.unit_price_gbp === null" label="Landed Cost" description="We don't have a GBP unit price, so we're showing the estimated landed cost instead">
                                 <b-input-group>
                                     <b-form-input readonly v-model="product.est_landed_cost_gbp" />
                                 </b-input-group>

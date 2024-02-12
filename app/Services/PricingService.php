@@ -69,17 +69,17 @@ class PricingService
                 $costingData = $line->worst_estimated_landed_cost_data;
             }
         } else {
-            if ($product->current_landed_cost_per_unit_gbp) {
+            if ($product->unit_price_gbp) {
+                $costingData = [
+                    'est_landed_cost_per_unit_gbp' => $product->unit_price_gbp
+                ];
+            } else if ($product->current_landed_cost_per_unit_gbp) {
                 $costingData = [
                     'est_landed_cost_per_unit_gbp' => $product->current_landed_cost_per_unit_gbp
                 ];
             } else if($product->est_landed_cost_gbp) {
                 $costingData = [
                     'est_landed_cost_per_unit_gbp' => $product->est_landed_cost_gbp
-                ];
-            } else if($product->unit_price_gbp) {
-                $costingData = [
-                    'est_landed_cost_per_unit_gbp' => $product->unit_price_gbp
                 ];
             }
         }

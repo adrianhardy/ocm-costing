@@ -19,7 +19,7 @@
             </template>
         </b-table>
         <p>
-            Please note that changing the anything that impacts shipping will
+            Please note that changing anything that impacts shipping will
             update the estimated landed cost of all products which may take
             up to 5 minutes - please be patient and do not interrupt the
             browser.
