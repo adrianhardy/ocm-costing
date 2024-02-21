@@ -178,6 +178,9 @@ class InvoiceController extends Controller
         ]);
 
 
+        DB::beginTransaction();
+
+        $linesToPrice = collect();
         foreach ($request->input('lines') as $line) {
             /** @var InvoiceLine $invoiceLine */
             $invoiceLine = InvoiceLine::query()->findOrFail($line['id']);
@@ -186,12 +189,33 @@ class InvoiceController extends Controller
             $invoiceLine->pricing_priority = $line['pricing_priority'];
             $invoiceLine->save();
 
-            $pricingService->sendToPricing($invoiceLine->sales_order_line->product, $invoiceLine->unit_price, $invoiceLine->pricing_priority);
+            $linesToPrice->push($invoiceLine);
+        }
+
+
+        $sendToPricing = false;
+        if (!$invoice->approved_at) {
+            $sendToPricing = true;
         }
 
         $invoice->approved_at = Carbon::now();
         $invoice->approver()->associate(auth()->user());
+        $invoice->save();
+
+        // modify unit price
         event(new UKInvoiceApprovedEvent($invoice));
+
+        // We only want to send the lines to pricing once, and that
+        // is when we approve the Invoice.
+        if ($sendToPricing) {
+            foreach ($linesToPrice as $invoiceLine) {
+                $pricingService->sendToPricing(
+                    $invoiceLine->sales_order_line->product,
+                    $invoiceLine->unit_price,
+                    $invoiceLine->pricing_priority
+                );
+            }
+        }
 
         if ($request->input('close_oa')) {
             $invoice->sales_order->setStatus(SalesOrder::OA_STATUS_CLOSED);
@@ -200,6 +224,7 @@ class InvoiceController extends Controller
         $invoice->save();
         $invoice->sales_order->save();
 
+        DB::commit();
         return response()->json(fractal($invoice, new InvoiceTransformer()));
     }
 }
