@@ -113,4 +113,12 @@ class UsersController extends Controller
 
         return response(fractal($user->fresh(), new UserTransformer));
     }
+
+    public function destroy(User $user)
+    {
+        $user->password = User::USER_LOCKED;
+        $user->save();
+
+        return response()->json(fractal($user, new UserTransformer));
+    }
 }

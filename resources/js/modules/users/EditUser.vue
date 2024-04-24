@@ -38,7 +38,12 @@
                     </div>
                 </div>
             </div>
-            <b-button class="float-right" variant="primary" @click="save()">Save</b-button>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <b-button v-if="user && user.id"  variant="danger" @click="deleteUser()">Lock</b-button>
+                </div>
+                <b-button variant="primary" @click="save()">Save</b-button>
+            </div>
         </b-card>
     </div>
 </template>
@@ -69,6 +74,24 @@ export default {
         }
     },
     methods: {
+        async deleteUser(){
+            const response = await this.$bvModal.msgBoxConfirm('Are you sure you want to lock out this user?', {
+                title: 'Lock User',
+                centered: true,
+                okTitle : 'Yes, lock user'
+            })
+            if(!response) {
+                return;
+            }
+            const loading = this.$loading.show();
+            this.$http.delete(this.saveUrl).then(response => {
+                loading.hide();
+                window.location.href = '/admin/users';
+            }).catch(error => {
+                this.$handleExceptionResponse(error, true);
+                loading.hide();
+            })
+        },
         save() {
             const loader = this.$loading.show();
             const method = this.isCreating ? 'post' : 'put'
