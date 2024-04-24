@@ -135,7 +135,13 @@ class ProductExport
      */
     public function buildExport()
     {
-        $headers = $this->columns;
+        // switch item/article number headers around
+        $headers = array_map(function($name) {
+            return strtr($name, [
+                'item_number' => 'article_number',
+                'article_number' => 'item_number'
+            ]);
+        }, $this->columns);
 
         if ($this->stockLevelRequired) {
             $headers[] = 'Stock as at ' . $this->stockTakeStartDate->format('d/m/Y');
