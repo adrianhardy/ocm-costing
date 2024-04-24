@@ -184,8 +184,11 @@ class DailyPricingController extends Controller
         $dailyPricing->fba_fee = $request->input('suggested_fba_fee');
         $dailyPricing->recalculteProfitAndMargin();
         $viability = new ProductPricingViabilityChecker();
+
+        $gbpProfit = round($dailyPricing->profit / $dailyPricing->country->currency->currency_fx_rate, 2);
+
         $dailyPricing->is_viable = $viability->isViable(
-            $dailyPricing->profit,
+            $gbpProfit,
             $dailyPricing->product->unit_price_gbp,
             $dailyPricing->product->custom_minimum_profit
         );

@@ -21,8 +21,10 @@ class DailyPricingObserver
         if($pricing->suggested_price && $pricing->fba_fee) {
             $pricing->recalculteProfitAndMargin();
             $viability = new ProductPricingViabilityChecker();
+            $gbpProfit = round($pricing->profit / $pricing->country->currency->currency_fx_rate, 2);
+
             $pricing->is_viable = $viability->isViable(
-                $pricing->profit,
+                $gbpProfit,
                 $pricing->product->unit_price_gbp,
                 $pricing->product->custom_minimum_profit
             );
