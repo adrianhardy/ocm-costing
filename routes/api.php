@@ -75,7 +75,7 @@ Route::group(['as' => 'api.'], function() {
         Route::resource('admin/factories.files', 'Api\Admin\Factories\MediaController')->only(['index', 'store']);
         Route::resource('admin/settings', 'Api\Admin\SettingsController')->only(['index', 'store']);
         Route::resource('admin/settings/instructions','Api\Admin\InstructionsController')->only(['index', 'store']);
-        Route::resource('admin/users', 'Api\Admin\UsersController')->only(['index', 'update', 'store', 'show']);
+        Route::resource('admin/users', 'Api\Admin\UsersController')->only(['index', 'update', 'store', 'show', 'destroy']);
         Route::resource('admin/documents','Api\Admin\DocumentsController')->only(['index']);
         Route::resource('admin/roles', 'Api\Admin\RolesController')->only(['index', 'store', 'destroy']);
         Route::put('admin/roles', 'Api\Admin\RolesController@updateAll')->name('roles.update');
