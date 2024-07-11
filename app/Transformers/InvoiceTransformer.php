@@ -25,7 +25,11 @@ class InvoiceTransformer extends TransformerAbstract
         'sales_order', 'creator', 'approver', 'lines'
     ];
 
-    public function includeSalesOrder(Invoice $invoice){
+    public function includeSalesOrder(Invoice $invoice)
+    {
+        if (!$invoice->sales_order) {
+            return $this->null();
+        }
         return $this->item($invoice->sales_order, new SalesOrderTransformer());
     }
 

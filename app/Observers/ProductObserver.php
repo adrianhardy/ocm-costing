@@ -92,7 +92,13 @@ class ProductObserver
             'is_excluded_from_commission'
         ]) || !$product->est_landed_cost_gbp) {
 
-            if ($product->units_per_case > 0) {
+            if ($product->unit_price_gbp) {
+                // we're not going to overwrite the estimated landed cost for
+                // this product just because someone updated the case weight,
+                // because we have something that supersedes it. If we're
+                // going to overwrite the est_landed_cost_gbp, it needs to be
+                // a more significant action.
+            } elseif ($product->unit_price && $product->units_per_case > 0) {
                 $this->productService->updateEstimatedLandedCost($product);
             }
         }
