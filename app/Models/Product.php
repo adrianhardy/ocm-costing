@@ -131,7 +131,8 @@ class Product extends BaseProduct implements HasMedia
             });
     }
 
-    public function current_product_pricing(){
+    public function current_product_pricing()
+    {
         return $this->hasOne(ProductPricing::class)->whereNull('superseded_at');
     }
 

@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $code
  * @property string $name
  * @property float|null $default_fx_to_gbp
+ * @property float|null $pricing_fx_to_gbp
  * 
  * @property Collection|Country[] $countries_currency
  * @property Collection|ProductLandedCost[] $product_landed_costs_currency
@@ -36,7 +37,8 @@ class Currency extends Model
 	protected $table = 'currencies';
 
 	protected $casts = [
-		'default_fx_to_gbp' => 'float'
+		'default_fx_to_gbp' => 'float',
+		'pricing_fx_to_gbp' => 'float'
 	];
 
 	public function countries_currency()
