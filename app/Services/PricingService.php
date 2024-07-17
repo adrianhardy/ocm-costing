@@ -17,6 +17,9 @@ class PricingService
      */
     protected $pricingCountries = [];
 
+    /**
+     * @return \App\Models\Country[]|\Illuminate\Database\Eloquent\Collection
+     */
     protected function getPricingCountries()
     {
         if (count($this->pricingCountries) < 1) {
@@ -70,14 +73,20 @@ class PricingService
             }
         } else {
             if ($product->unit_price_gbp) {
+                // we received a product, and it's been given a "real" price
+                // so we're feeding that into the costing / suggested price
                 $costingData = [
                     'est_landed_cost_per_unit_gbp' => $product->unit_price_gbp
                 ];
             } else if ($product->current_landed_cost_per_unit_gbp) {
+                // we've only got will's price through so far - but it's authoritative
+                // because current_landed_cost_per_unit_gbp is based on him paying his
+                // shipping and import invoices...
                 $costingData = [
                     'est_landed_cost_per_unit_gbp' => $product->current_landed_cost_per_unit_gbp
                 ];
             } else if($product->est_landed_cost_gbp) {
+                // the best we can do is a ball park ....
                 $costingData = [
                     'est_landed_cost_per_unit_gbp' => $product->est_landed_cost_gbp
                 ];
@@ -118,7 +127,7 @@ class PricingService
             'marketplace_commission_pc' => setting('default_marketplace_commission_pc'),
             'gross_unit_cost_gbp' => $grossCost,
             'margin_pc' => $suggestedPrice / $grossCost,
-            'eur_fx_rate' => $eur->default_fx_to_gbp
+            'eur_fx_rate' => $eur->pricing_fx_to_gbp?$eur->pricing_fx_to_gbp:$eur->default_fx_to_gbp
         ]);
 
         // support UK-centric products by keeping the price up to date
@@ -146,7 +155,7 @@ class PricingService
             // once for all countries
             $countryPricing = new ProductPricingCountry([
                 'vat_rate' => $country->vat_rate,
-                'gbp_fx_rate' => $country->currency->default_fx_to_gbp
+                'gbp_fx_rate' => $country->currency->smart_fx_to_gbp
             ]);
             $countryPricing->country()->associate($country);
             $pricing->product_pricing_countries()->save($countryPricing);

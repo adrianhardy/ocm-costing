@@ -54,11 +54,14 @@
 }
 
 .td-truncate {
-    max-width: 1px;
-    width: 100%;
-    overflow: hidden;
-
-    &.td-truncate-ellipsis {
+    max-width: 0;
+    span {
+        overflow: hidden;
         text-overflow: ellipsis;
+        display: inline-block;
+        white-space: nowrap;
+        max-width: 100%;
+        line-height: 100%;
+        vertical-align: middle;
     }
 }

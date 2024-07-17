@@ -117,6 +117,12 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/import.log'),
             'level' => 'debug'
+        ],
+
+        'pricing' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/pricing.log'),
+            'level' => 'debug'
         ]
     ],
 

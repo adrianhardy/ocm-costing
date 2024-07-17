@@ -182,16 +182,9 @@ class DailyPricingController extends Controller
         DB::beginTransaction();
         $dailyPricing->suggested_price = $request->input('suggested_price');
         $dailyPricing->fba_fee = $request->input('suggested_fba_fee');
-        $dailyPricing->recalculteProfitAndMargin();
-        $viability = new ProductPricingViabilityChecker();
 
-        $gbpProfit = round($dailyPricing->profit / $dailyPricing->country->currency->currency_fx_rate, 2);
-
-        $dailyPricing->is_viable = $viability->isViable(
-            $gbpProfit,
-            $dailyPricing->product->unit_price_gbp,
-            $dailyPricing->product->custom_minimum_profit
-        );
+        $dailyPricing->updateViability();
+        DB::rollback();
 
         return response()->json(fractal($dailyPricing, new DailyPricingTransformer()));
     }
