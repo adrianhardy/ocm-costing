@@ -51,6 +51,8 @@ class CurrencyController extends Controller
         } elseif ($request->input('pricing_fx_rate')) {
             $currency->pricing_fx_rate = $request->input('pricing_fx_rate');
         }
+
+        DB::beginTransaction();
         $currency->save();
 
         set_time_limit(60 * 30); // 30 minutes should be enough
@@ -58,6 +60,7 @@ class CurrencyController extends Controller
         if ($currency->wasChanged(['currency_fx_rate'])) {
             event(new ShippingCostSettingChanged());
         }
+        DB::commit();
 
         return response()->json(fractal($currency->fresh(), new CurrencyTransformer()));
     }
