@@ -12,6 +12,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property $currency_fx_rate
  * @property $pricing_fx_rate
  * @property-read $current_fx_rate return pricing if we have it, if not currency
+ * @property-read $current_fx_to_gbp as above, but return the inverse amt
  */
 class Currency extends BaseCurrency
 {
@@ -61,7 +62,20 @@ class Currency extends BaseCurrency
         if ($this->pricing_fx_to_gbp > 0) {
             return $this->pricing_fx_rate;
         }
+        // return the inverse of default_fx_to_gbp
         return $this->currency_fx_rate;
+    }
+
+    /**
+     * As above, but returning the 'inverse'
+     * @return mixed
+     */
+    public function getCurrentFxToGbpAttribute()
+    {
+        if ($this->pricing_fx_to_gbp > 0) {
+            return $this->pricing_fx_to_gbp;
+        }
+        return $this->default_fx_to_gbp;
     }
 
 

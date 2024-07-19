@@ -127,7 +127,7 @@ class PricingService
             'marketplace_commission_pc' => setting('default_marketplace_commission_pc'),
             'gross_unit_cost_gbp' => $grossCost,
             'margin_pc' => $suggestedPrice / $grossCost,
-            'eur_fx_rate' => $eur->pricing_fx_to_gbp?$eur->pricing_fx_to_gbp:$eur->default_fx_to_gbp
+            'eur_fx_rate' => $eur->current_fx_to_gbp
         ]);
 
         // support UK-centric products by keeping the price up to date
@@ -155,7 +155,7 @@ class PricingService
             // once for all countries
             $countryPricing = new ProductPricingCountry([
                 'vat_rate' => $country->vat_rate,
-                'gbp_fx_rate' => $country->currency->smart_fx_to_gbp
+                'gbp_fx_rate' => $country->currency->current_fx_to_gbp
             ]);
             $countryPricing->country()->associate($country);
             $pricing->product_pricing_countries()->save($countryPricing);
