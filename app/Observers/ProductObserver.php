@@ -99,11 +99,17 @@ class ProductObserver
                 // going to overwrite the est_landed_cost_gbp, it needs to be
                 // a more significant action.
             } elseif ($product->unit_price && $product->units_per_case > 0) {
-                $this->productService->updateEstimatedLandedCost($product);
+                // so, we're here because something means we need to recalculate estimated
+                // landed costs.... but what if we're saving because estimated landed cost
+                // has been updated? Well, we don't want to recurse...
+                if (!$product->isDirty('est_landed_cost_gbp')) {
+                    $this->productService->updateEstimatedLandedCost($product);
+                }
             }
         }
 
         if($product->isDirty('est_landed_cost_gbp')) {
+            /** @var ProductPricing $pricing */
             $pricing = ProductPricing::query()
                 ->where('product_id', $product->id)
                 ->whereNull('superseded_at')

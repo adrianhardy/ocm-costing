@@ -6,10 +6,14 @@ use App\Events\ShippingCostSettingChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\SerializeLengthAwarePaginator;
 use App\Models\Currency;
+use App\Models\DailyPricing;
+use App\Models\Product;
+use App\Services\PricingService;
 use App\Transformers\CurrencyTransformer;
 use App\Transformers\FactoryTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\PaginatedResourceResponse;
+use Illuminate\Support\Facades\DB;
 
 class CurrencyController extends Controller
 {
@@ -25,12 +29,40 @@ class CurrencyController extends Controller
         ));
     }
 
-    public function update(Request $request, Currency $currency)
+    /**
+     * @param Request $request
+     * @param Currency $currency
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function update(Request $request, Currency $currency, PricingService $pricingService)
     {
-        $currency->setCurrencyFxRateAttribute($request->input('currency_fx_rate'));
+        $this->validate($request, [
+            'currency_fx_rate' => 'required|numeric|min:0',
+            'pricing_fx_rate' => 'sometimes|nullable|numeric'
+        ]);
+
+        $currency->currency_fx_rate = $request->input('currency_fx_rate');
+
+        // to undo/change the pricing_fx_rate, you need to send in the empty string.
+        // if we get null, we'll assume that the person didn't mean to change it.
+        if ($request->input('pricing_fx_rate') == '') {
+            $currency->pricing_fx_to_gbp = null;
+        } elseif ($request->input('pricing_fx_rate')) {
+            $currency->pricing_fx_rate = $request->input('pricing_fx_rate');
+        }
+
+        DB::beginTransaction();
         $currency->save();
-        event(new ShippingCostSettingChanged());
-        return response()->json();
+
+        set_time_limit(60 * 30); // 30 minutes should be enough
+
+        if ($currency->wasChanged(['currency_fx_rate'])) {
+            event(new ShippingCostSettingChanged());
+        }
+        DB::commit();
+
+        return response()->json(fractal($currency->fresh(), new CurrencyTransformer()));
     }
 
     public function store(Request $request)

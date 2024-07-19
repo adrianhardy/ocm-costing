@@ -124,7 +124,12 @@
                         <b-icon-circle-fill variant="danger" v-else></b-icon-circle-fill>
                     </span>
                 </template>
-
+                <template #cell(product.primary_sku)="data">
+                    <span v-b-tooltip.top.hover="data.value">{{ data.value }}</span>
+                </template>
+                <template #cell(product.name)="data">
+                    <span v-b-tooltip.top.hover="data.value">{{ data.value }}</span>
+                </template>
                 <template #cell(local_profit)="data">
                     <div v-if="data.value">
                             {{ getLocalProfitCurrencySymbol(data.item.country) }} {{data.item.local_profit.toFixed(2)}}
@@ -191,24 +196,24 @@ export default {
                     key: 'product.article_number',
                     label: 'Item #',
                     tdClass: 'align-middle',
-                    thClass: 'align-middle',
+                    thClass: 'align-middle w-10',
                     sortable: true
                 }, {
                     key: 'product.primary_sku',
                     label: 'SKU',
-                    tdClass: 'align-middle w-5',
-                    thClass: 'align-middle',
+                    tdClass: 'align-middle td-truncate',
+                    thClass: 'align-middle w-10',
                     sortable: true
                 }, {
                     key: 'product.primary_asin',
                     label: 'ASIN',
-                    tdClass: 'align-middle w-5',
+                    tdClass: 'align-middle w-10',
                     thClass: 'align-middle',
                     sortable: true
                 }, {
                     key: 'product.name',
                     label: 'Description',
-                    tdClass: 'align-middle w-25',
+                    tdClass: 'align-middle w-25 td-truncate',
                     thClass: 'align-middle',
                     sortable: true
                 }, {

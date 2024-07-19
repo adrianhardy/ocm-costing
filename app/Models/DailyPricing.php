@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Domain\ProductPricingViabilityChecker;
 use App\Models\Base\DailyPricing as BaseDailyPricing;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @property-read Carbon $last_checked_at
@@ -86,11 +89,13 @@ class DailyPricing extends BaseDailyPricing
 
     public function getLocalProfitAttribute()
     {
-        if(!$this->profit){
+        if(!$this->profit) {
             return null;
         }
 
         // for SE and PL, return GBP - GBP is considered "local"
+        // So normally, $this->profit is expressed in the local currency,
+        // but specifically for PL and SE, we convert it back
         if($this->country->iso_2_code === 'SE' || $this->country->iso_2_code === 'PL') {
             return round($this->profit / $this->country->currency->currency_fx_rate, 2);
         }
@@ -142,8 +147,8 @@ class DailyPricing extends BaseDailyPricing
             throw new \RuntimeException("Cannot calculate profit without unit_price_gbp, current_landed_cost_per_unit_gbp, est_landed_cost_gbp");
         }
 
-        if ($this->country->currency->currency_fx_rate != '1.00') {
-            $localUnitCost = $localUnitCost * $this->country->currency->currency_fx_rate;
+        if ($this->country->currency->current_fx_rate != '1.00') {
+            $localUnitCost = $localUnitCost * $this->country->currency->current_fx_rate;
         }
 
         // $costOfSale = round($localUnitCost + $fbaFee + $commission + $vat + $shippingCost, 2);
@@ -155,5 +160,74 @@ class DailyPricing extends BaseDailyPricing
         if ($this->profit <= 0) {
             $this->margin = 0;
         }
+    }
+
+    /**
+     * Specifically, we do not save the changes here because DailyPricingController
+     * wants to have the viability as a "preview"
+     *
+     * @return void
+     */
+    public function updateViability()
+    {
+
+        $prefix = "[" . class_basename(__METHOD__) . "][Product {$this->product_id}]";
+        Log::channel('pricing')->debug(
+            $prefix .
+            " Now using fx rate {$this->country->currency->current_fx_rate}, instead of old" .
+            " rate which would've been {$this->country->currency->currency_fx_rate}"
+        );
+
+        $viability = new ProductPricingViabilityChecker();
+        $this->recalculteProfitAndMargin();
+        $gbpProfit = round($this->profit / $this->country->currency->current_fx_rate, 2);
+
+        $unitPriceGbp = $this->product->unit_price_gbp;
+
+        // as of 12/Jul/2024, we're using the HIGHEST EVER product cost.
+        // we need to filter that by this pricing's country.
+        $highestUnitPriceGbp = $this->product
+            ->product_pricings_product()
+            ->whereHas('product_pricing_countries', function($query) {
+                $query->where('id', $this->country->id);
+            })
+            ->orderBy('unit_price_gbp', 'DESC')
+            ->first();
+
+        $this->is_viable = $viability->isViable(
+            $gbpProfit,
+            max($highestUnitPriceGbp, $unitPriceGbp),
+            $this->product->custom_minimum_profit
+        );
+    }
+
+
+    /**
+     * Only look at the latest, most recent submissions to daily pricing
+     * @param $query
+     * @return mixed
+     */
+    public function scopeWhereLatestSubmission($query)
+    {
+        $subQuery = DB::table('daily_pricing AS dp')
+            ->addSelect(DB::raw('MAX(dp.id) as id'))
+            ->addSelect('dp.product_id')
+            ->addSelect('dp.country_id')
+            // for debugging:
+            // ->addSelect(DB::raw('MAX(submitted_at) as submitted_at'))
+            // ->addSelect(DB::raw('GROUP_CONCAT(id)'))
+            // ->addSelect(DB::raw('GROUP_CONCAT(submitted_at)'))
+            ->whereNotNull('dp.submitted_at')
+            ->groupBy('dp.country_id')
+            ->groupBy('dp.product_id')
+            ->orderByRaw('MAX(submitted_at) DESC');
+
+        return $query->joinSub(
+            $subQuery,
+            'latest_daily_pricing',
+            'latest_daily_pricing.id',
+            '=',
+            'daily_pricing.id'
+        );
     }
 }
