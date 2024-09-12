@@ -109,6 +109,9 @@ class TransformPickingListFileCommand extends Command
                 $row['unit_price'] = trim(str_replace('USD', '', $row['unit_price']));
                 $row['sub_total'] = trim(str_replace('USD', '', $row['sub_total']));
 
+                // 12SEP24
+                // Latest magical change in Excel Parsing '$ ' appears before unit_price
+                $row['unit_price'] = trim(str_replace('$', '', $row['unit_price']));
 
                 $validator = Validator::make($row, [
                     'unit_price' => 'required|numeric|min:0',
