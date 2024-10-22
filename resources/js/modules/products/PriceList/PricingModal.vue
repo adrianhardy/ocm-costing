@@ -504,7 +504,7 @@ export default {
             this.update()
         },
         update() {
-            this.$http.put(`/api/pricing/${this.value.id}`, {...this.value, pricing_notes: this.notes}, {
+            return this.$http.put(`/api/pricing/${this.value.id}`, {...this.value, pricing_notes: this.notes}, {
                 params: {
                     include: `product,product.media,sales_order_line,countries`
                 }
@@ -513,23 +513,57 @@ export default {
                 this.$emit('updated', {submitted: this.value.submitted, approved: this.value.approved});
                 this.value = response.data;
             }).catch(error => {
-                this.$handleExceptionResponse(error, true)
-            })
+                this.$handleExceptionResponse(error, true);
+                throw error;
+            });
         },
-        open(line, copiedPricing = null) {
+        /**
+         * Open the product, (but don't show the modal)
+         * then paste the pricing, hit save, then we'll resolve
+         * the promise.
+         * @param product
+         * @param operations
+         * @param copiedPricing
+         * @returns {Promise<unknown>}
+         */
+        async headlessPaste(product, operations, copiedPricing) {
+            const modal = this;
+            return new Promise(async (resolve) => {
+                try {
+                    modal.value = null;
+                    modal.copiedPricing = null;
+                    await this.open(product, copiedPricing, true);
+                    operations.paste?modal.pastePricing():false;
+                    operations.submit?modal.value.submitted = true:false;
+                    operations.approve?modal.value.approved = true:false;
+                    if (operations.approve || operations.submit || operations.paste) {
+                        await modal.update();
+                        await new Promise(r => setTimeout(r, 250));
+                    }
+                    resolve(true);
+                } catch (error) {
+                    console.warn("Failed headless paste because of %o", error);
+                    throw error;
+                }
+            });
+        },
+        open(line, copiedPricing = null, hideModal = false) {
             this.value = line;
             this.copiedPricing = copiedPricing;
-            this.$http.get(`/api/pricing/${this.value.id}`, {
+            return this.$http.get(`/api/pricing/${this.value.id}`, {
                 params: {
                     include: `product,product.media,sales_order_line,countries`
                 }
             }).then(response => {
                 this.value = response.data
-                this.$refs['modal'].show();
+                if (!hideModal) {
+                    this.$refs['modal'].show();
+                }
             }).catch(error => {
                 console.log(error);
-                this.$handleExceptionResponse(error, true)
-            })
+                this.$handleExceptionResponse(error, true);
+                throw error;
+            });
         },
         items(ctx) {
             return this.$paginatedFetch(
