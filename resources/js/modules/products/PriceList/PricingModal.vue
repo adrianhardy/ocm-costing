@@ -172,6 +172,7 @@
                                             vat-field="vat_rate"
                                             :fx-rate="1"
                                             @copy-sf-price="copySfPrice()"
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                     </div>
                                     <div class="col-12 col-md-3" v-for="country in euroCountries">
@@ -381,7 +382,8 @@ export default {
         isChina: {
             type: Boolean,
             default: false
-        }
+        },
+        amazonDigitalTaxPc: Number
     },
     created() {
         this.$on('updated', e => {
