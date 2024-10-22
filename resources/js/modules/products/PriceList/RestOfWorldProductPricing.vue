@@ -168,13 +168,13 @@ export default {
             return value.toFixed(2);
         },
         fbaDigitalTaxOnReferralFeeValue() {
-            return (this.fbaReferralFeeValue * (2.0 / 100)).toFixed(2);
+            return (this.fbaReferralFeeValue * (this.amazonDigitalTaxPc / 100)).toFixed(2);
         },
         fbaDigitalTaxOnFbaFeeValue() {
-            return (this.value[this.feeField] * (2.0 / 100)).toFixed(2);
+            return (this.value[this.feeField] * (this.amazonDigitalTaxPc / 100)).toFixed(2);
         },
         sfDigitalTaxOnReferralFeeValue() {
-            return (this.sfReferralFeeValue * (2.0 / 100)).toFixed(2);
+            return (this.sfReferralFeeValue * (this.amazonDigitalTaxPc / 100)).toFixed(2);
         },
         currencySymbol() {
             return getSymbolFromCurrency(this.currency);
