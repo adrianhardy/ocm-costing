@@ -115,6 +115,7 @@
             @updated="updatePricing"
             @copy="copyPricing($event)"
             :is-china="isChina"
+            :amazon-digital-tax-pc="amazonDigitalTaxPc"
         />
     </div>
 </template>
@@ -137,7 +138,8 @@ export default {
         isChina: {
             type: Boolean,
             default: false
-        }
+        },
+        amazonDigitalTaxPc: Number
     },
     components: {
         TableHeader,

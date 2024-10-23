@@ -172,6 +172,7 @@
                                             vat-field="vat_rate"
                                             :fx-rate="1"
                                             @copy-sf-price="copySfPrice()"
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                     </div>
                                     <div class="col-12 col-md-3" v-for="country in euroCountries">
@@ -187,6 +188,7 @@
                                             price-field="unit_fba_price"
                                             vat-field="vat_rate"
                                             :fx-rate="value.current_eur_fx_rate"
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                         <div v-else>
                                             <b-form-group :label="country.iso_2_code" label-size="sm" class="mb-2">
@@ -197,7 +199,7 @@
 
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-2">
                                 <div class="col-12 col-md-6">
                                     <div v-if="value.product">
                                         <h5>Pricing Notes</h5>
@@ -265,6 +267,7 @@
                                             vat-field="vat_rate"
                                             fx-field="current_gbp_fx_rate"
                                             eu-pricing
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                     </div>
                                 </div>
@@ -307,6 +310,7 @@
                                             price-field="unit_fba_price"
                                             vat-field="vat_rate"
                                             fx-field="current_gbp_fx_rate"
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                     </div>
                                 </div>
@@ -381,7 +385,8 @@ export default {
         isChina: {
             type: Boolean,
             default: false
-        }
+        },
+        amazonDigitalTaxPc: Number
     },
     created() {
         this.$on('updated', e => {
@@ -484,20 +489,34 @@ export default {
             })
         },
         copySfPrice() {
-            const euPrice = (this.value['unit_sf_uk_price'] / this.value['eur_fx_rate']).toFixed(2);
-            this.value['unit_sf_fr_price'] = euPrice;
-            this.value['unit_sf_es_price'] = euPrice;
-            this.value['unit_sf_it_price'] = euPrice;
-            this.value['unit_sf_de_price'] = euPrice;
-            this.value['unit_sf_nl_price'] = euPrice;
 
-            this.value['unit_sf_se_price'] = (this.value['unit_sf_uk_price'] / this.value['sek_fx_rate']).toFixed(2);
-            this.value['unit_sf_pl_price'] = (this.value['unit_sf_uk_price'] / this.value['pln_fx_rate']).toFixed(2);
-            this.value['unit_sf_au_price'] = (this.value['unit_sf_uk_price'] / this.value['aud_fx_rate']).toFixed(2);
-            this.value['unit_sf_mx_price'] = (this.value['unit_sf_uk_price'] / this.value['mxn_fx_rate']).toFixed(2);
-            this.value['unit_sf_us_price'] = (this.value['unit_sf_uk_price'] / this.value['usd_fx_rate']).toFixed(2);
-            this.value['unit_sf_ca_price'] = (this.value['unit_sf_uk_price'] / this.value['cad_fx_rate']).toFixed(2);
+            const gbpPrice = this.value.countries.gb.unit_sf_price;
+            const euPrice = (gbpPrice * this.value.current_eur_fx_rate).toFixed(2);
 
+            _.each(this.nonEuroEuCountries, country => {
+                if (!this.value?.countries[country.iso_2_code.toLowerCase()]) {
+                    return;
+                }
+                const fx = this.value.countries[country.iso_2_code.toLowerCase()].current_gbp_fx_rate;
+                const rowPrice = (gbpPrice * fx).toFixed(2);
+                this.value['countries'][country.iso_2_code.toLowerCase()]['unit_sf_price'] = rowPrice;
+            });
+
+            _.each(this.euroCountries, country => {
+                if (!this.value?.countries[country.iso_2_code.toLowerCase()]) {
+                    return;
+                }
+                this.value['countries'][country.iso_2_code.toLowerCase()]['unit_sf_price'] = euPrice;
+            });
+
+            _.each(this.rowCountries, country => {
+                if (!this.value?.countries[country.iso_2_code.toLowerCase()]) {
+                    return;
+                }
+                const fx = this.value.countries[country.iso_2_code.toLowerCase()].current_gbp_fx_rate;
+                const nonEurPrice = (gbpPrice * fx).toFixed(2);
+                this.value['countries'][country.iso_2_code.toLowerCase()]['unit_sf_price'] = nonEurPrice;
+            });
         },
         save(event) {
             event.preventDefault();
