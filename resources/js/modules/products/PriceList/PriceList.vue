@@ -20,6 +20,7 @@
                                 </b-input-group-append>
                             </template>
                         </search-input>
+                        <b-button class="ml-2" variant="primary" @click="openMultiDialog()">Multi</b-button>
                         <b-button class="ml-2" variant="primary" @click="exportSelected()">Export</b-button>
                     </slot>
                 </table-header>
@@ -117,6 +118,14 @@
             :is-china="isChina"
             :amazon-digital-tax-pc="amazonDigitalTaxPc"
         />
+        <multi-product-paste-modal
+            :is-approver="isApprover"
+            :selected-products="selectedForExport"
+            :copied-pricing="copiedPricing"
+            ref="multi-paste-modal"
+            :pricing-modal="$refs['pricing-modal']"
+            @updated="$refs.table.refresh()"
+        />
     </div>
 </template>
 
@@ -125,6 +134,7 @@
 import PricingModal from "./PricingModal";
 import SearchInput from "../../../components/common/SearchInput";
 import TableHeader from "../../../components/table/TableHeader";
+import MultiProductPasteModal from "./MultiProductPasteModal.vue";
 
 export default {
     name: "PriceList",
@@ -142,6 +152,7 @@ export default {
         amazonDigitalTaxPc: Number
     },
     components: {
+        MultiProductPasteModal,
         TableHeader,
         SearchInput,
         'pricing-modal': PricingModal
@@ -172,6 +183,18 @@ export default {
         selectedRows() {
             return this.items.filter(item => item.selected)
         },
+        openMultiDialog() {
+            if (this.selectedForExport.length < 1) {
+                this.$bvModal.msgBoxOk(
+                    "You must select some products first", {
+                        title: 'Product export'
+                    }
+                );
+                return;
+            }
+            this.$refs['multi-paste-modal'].open();
+        },
+
         exportSelected() {
             if (this.selectedForExport.length < 1) {
                 this.$bvModal.msgBoxOk(
