@@ -172,6 +172,7 @@
                                             vat-field="vat_rate"
                                             :fx-rate="1"
                                             @copy-sf-price="copySfPrice()"
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                     </div>
                                     <div class="col-12 col-md-3" v-for="country in euroCountries">
@@ -187,6 +188,7 @@
                                             price-field="unit_fba_price"
                                             vat-field="vat_rate"
                                             :fx-rate="value.current_eur_fx_rate"
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                         <div v-else>
                                             <b-form-group :label="country.iso_2_code" label-size="sm" class="mb-2">
@@ -197,7 +199,7 @@
 
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-2">
                                 <div class="col-12 col-md-6">
                                     <div v-if="value.product">
                                         <h5>Pricing Notes</h5>
@@ -265,6 +267,7 @@
                                             vat-field="vat_rate"
                                             fx-field="current_gbp_fx_rate"
                                             eu-pricing
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                     </div>
                                 </div>
@@ -307,6 +310,7 @@
                                             price-field="unit_fba_price"
                                             vat-field="vat_rate"
                                             fx-field="current_gbp_fx_rate"
+                                            :amazon-digital-tax-pc="amazonDigitalTaxPc"
                                         />
                                     </div>
                                 </div>
@@ -381,7 +385,8 @@ export default {
         isChina: {
             type: Boolean,
             default: false
-        }
+        },
+        amazonDigitalTaxPc: Number
     },
     created() {
         this.$on('updated', e => {
@@ -484,27 +489,41 @@ export default {
             })
         },
         copySfPrice() {
-            const euPrice = (this.value['unit_sf_uk_price'] / this.value['eur_fx_rate']).toFixed(2);
-            this.value['unit_sf_fr_price'] = euPrice;
-            this.value['unit_sf_es_price'] = euPrice;
-            this.value['unit_sf_it_price'] = euPrice;
-            this.value['unit_sf_de_price'] = euPrice;
-            this.value['unit_sf_nl_price'] = euPrice;
 
-            this.value['unit_sf_se_price'] = (this.value['unit_sf_uk_price'] / this.value['sek_fx_rate']).toFixed(2);
-            this.value['unit_sf_pl_price'] = (this.value['unit_sf_uk_price'] / this.value['pln_fx_rate']).toFixed(2);
-            this.value['unit_sf_au_price'] = (this.value['unit_sf_uk_price'] / this.value['aud_fx_rate']).toFixed(2);
-            this.value['unit_sf_mx_price'] = (this.value['unit_sf_uk_price'] / this.value['mxn_fx_rate']).toFixed(2);
-            this.value['unit_sf_us_price'] = (this.value['unit_sf_uk_price'] / this.value['usd_fx_rate']).toFixed(2);
-            this.value['unit_sf_ca_price'] = (this.value['unit_sf_uk_price'] / this.value['cad_fx_rate']).toFixed(2);
+            const gbpPrice = this.value.countries.gb.unit_sf_price;
+            const euPrice = (gbpPrice * this.value.current_eur_fx_rate).toFixed(2);
 
+            _.each(this.nonEuroEuCountries, country => {
+                if (!this.value?.countries[country.iso_2_code.toLowerCase()]) {
+                    return;
+                }
+                const fx = this.value.countries[country.iso_2_code.toLowerCase()].current_gbp_fx_rate;
+                const rowPrice = (gbpPrice * fx).toFixed(2);
+                this.value['countries'][country.iso_2_code.toLowerCase()]['unit_sf_price'] = rowPrice;
+            });
+
+            _.each(this.euroCountries, country => {
+                if (!this.value?.countries[country.iso_2_code.toLowerCase()]) {
+                    return;
+                }
+                this.value['countries'][country.iso_2_code.toLowerCase()]['unit_sf_price'] = euPrice;
+            });
+
+            _.each(this.rowCountries, country => {
+                if (!this.value?.countries[country.iso_2_code.toLowerCase()]) {
+                    return;
+                }
+                const fx = this.value.countries[country.iso_2_code.toLowerCase()].current_gbp_fx_rate;
+                const nonEurPrice = (gbpPrice * fx).toFixed(2);
+                this.value['countries'][country.iso_2_code.toLowerCase()]['unit_sf_price'] = nonEurPrice;
+            });
         },
         save(event) {
             event.preventDefault();
             this.update()
         },
         update() {
-            this.$http.put(`/api/pricing/${this.value.id}`, {...this.value, pricing_notes: this.notes}, {
+            return this.$http.put(`/api/pricing/${this.value.id}`, {...this.value, pricing_notes: this.notes}, {
                 params: {
                     include: `product,product.media,sales_order_line,countries`
                 }
@@ -513,23 +532,57 @@ export default {
                 this.$emit('updated', {submitted: this.value.submitted, approved: this.value.approved});
                 this.value = response.data;
             }).catch(error => {
-                this.$handleExceptionResponse(error, true)
-            })
+                this.$handleExceptionResponse(error, true);
+                throw error;
+            });
         },
-        open(line, copiedPricing = null) {
+        /**
+         * Open the product, (but don't show the modal)
+         * then paste the pricing, hit save, then we'll resolve
+         * the promise.
+         * @param product
+         * @param operations
+         * @param copiedPricing
+         * @returns {Promise<unknown>}
+         */
+        async headlessPaste(product, operations, copiedPricing) {
+            const modal = this;
+            return new Promise(async (resolve) => {
+                try {
+                    modal.value = null;
+                    modal.copiedPricing = null;
+                    await this.open(product, copiedPricing, true);
+                    operations.paste?modal.pastePricing():false;
+                    operations.submit?modal.value.submitted = true:false;
+                    operations.approve?modal.value.approved = true:false;
+                    if (operations.approve || operations.submit || operations.paste) {
+                        await modal.update();
+                        await new Promise(r => setTimeout(r, 250));
+                    }
+                    resolve(true);
+                } catch (error) {
+                    console.warn("Failed headless paste because of %o", error);
+                    throw error;
+                }
+            });
+        },
+        open(line, copiedPricing = null, hideModal = false) {
             this.value = line;
             this.copiedPricing = copiedPricing;
-            this.$http.get(`/api/pricing/${this.value.id}`, {
+            return this.$http.get(`/api/pricing/${this.value.id}`, {
                 params: {
                     include: `product,product.media,sales_order_line,countries`
                 }
             }).then(response => {
                 this.value = response.data
-                this.$refs['modal'].show();
+                if (!hideModal) {
+                    this.$refs['modal'].show();
+                }
             }).catch(error => {
                 console.log(error);
-                this.$handleExceptionResponse(error, true)
-            })
+                this.$handleExceptionResponse(error, true);
+                throw error;
+            });
         },
         items(ctx) {
             return this.$paginatedFetch(

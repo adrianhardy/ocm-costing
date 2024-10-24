@@ -7,6 +7,7 @@
         :row-countries='{!! json_encode($row_countries, JSON_HEX_QUOT|JSON_HEX_APOS) !!}'
         :non-euro-eu-countries='{!! json_encode($non_euro_eu_countries, JSON_HEX_QUOT|JSON_HEX_APOS) !!}'
         :uk='{!! json_encode($uk, JSON_HEX_QUOT|JSON_HEX_APOS) !!}'
+        :amazon-digital-tax-pc='{!! json_encode(floatval(setting('amazon_digital_tax_pc', 0))) !!}'
         @can('pricing_approve')
         is-approver
         @endcan

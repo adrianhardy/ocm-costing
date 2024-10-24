@@ -45,6 +45,7 @@ return [
         'shipping_cost_per_cubic_foot' => 6.50,
         'default_commission_rate_pc' => 4.0,
         'default_import_duty_pc' => 4.7,
-        'default_marketplace_commission_pc' => 15.0
+        'default_marketplace_commission_pc' => 15.0,
+        'amazon_digital_tax_pc' => 0
     ]
 ];

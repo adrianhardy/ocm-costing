@@ -41,7 +41,10 @@ export default {
         quickPrice: {
             type: Boolean,
             default: false,
-        }
+        },
+        amzDigitalTaxOnFbaFee: [Number, String],
+        amzDigitalTaxOnFbaReferralFee: [Number, String],
+        amzDigitalTaxOnSfReferralFee: [Number, String]
     },
     computed: {
         sfProfit() {
@@ -56,12 +59,14 @@ export default {
                 ["fx rate", this.fxRate],
                 [" - sf VAT", this.sfVat],
                 [" - referral fee CUR", this.sfReferralFee]
+                [" - digital tax on referral fee CUR", this.amzDigitalTaxOnSfReferralFee]
             ]);
 
             const profit = (this.sfPrice -
                 (this.landedCostPerUnitGbp * this.fxRate) -
                 this.sfVat -
-                this.sfReferralFee
+                this.sfReferralFee -
+                this.amzDigitalTaxOnSfReferralFee
             );
             return (profit / (this.presentProfitInGbp?this.fxRate:1)).toFixed(2);
         },
@@ -89,6 +94,8 @@ export default {
                 ["fx rate", this.fxRate],
                 [" - fba VAT", this.fbaVat],
                 [" - referral fee", this.fbaReferralFee],
+                [" - digital tax on referral fee", this.amzDigitalTaxOnFbaReferralFee],
+                [" - digital tax on fba fee", this.amzDigitalTaxOnFbaFee],
                 [" - fba shipping", this.fbaShipping],
                 ["fee CUR", this.fee],
             ]);
@@ -97,6 +104,8 @@ export default {
                 (this.landedCostPerUnitGbp * this.fxRate) -
                 this.fbaVat -
                 this.fbaReferralFee -
+                this.amzDigitalTaxOnFbaReferralFee -
+                this.amzDigitalTaxOnFbaFee -
                 this.fbaShipping -
                 this.fee;
 

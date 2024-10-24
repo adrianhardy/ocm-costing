@@ -135,6 +135,10 @@ class DailyPricing extends BaseDailyPricing
         $fbaFee         = $this->fba_fee;
         $localUnitCost  = $this->product->unit_price_gbp;
 
+        $fbaDigitalTax = $fbaFee * (floatval(setting('amazon_digital_tax_pc', 0)) / 100);
+        $fbaDigitalTax += $commission * (floatval(setting('amazon_digital_tax_pc', 0)) / 100);
+        $fbaDigitalTax = round($fbaDigitalTax, 2);
+
         if ($localUnitCost === null) {
             $localUnitCost = $this->product->current_landed_cost_per_unit_gbp;
         }
@@ -155,7 +159,15 @@ class DailyPricing extends BaseDailyPricing
         // CC: 4th December 2023:
         // The correct formula should be;
         // Price to sell for - vat - commision - fba fee - cost price (in local currency)
-        $this->profit = round($this->suggested_price - $vat - $commission - $fbaFee - $localUnitCost - $shippingCost, 2);
+        // Since 22/Oct/24 - take fbaDigitalTax off to when determining profit
+        $this->profit = round(
+            $this->suggested_price -
+            $vat -
+            $commission -
+            $fbaFee -
+            $localUnitCost -
+            $shippingCost -
+            $fbaDigitalTax, 2);
         $this->margin = round( $this->profit / $this->suggested_price, 4) * 100;
         if ($this->profit <= 0) {
             $this->margin = 0;
