@@ -168,7 +168,9 @@ class DailyPricing extends BaseDailyPricing
             $localUnitCost -
             $shippingCost -
             $fbaDigitalTax, 2);
-        $this->margin = round( $this->profit / $this->suggested_price, 4) * 100;
+
+        $this->margin = round( $this->profit / $localUnitCost, 4) * 100;
+
         if ($this->profit <= 0) {
             $this->margin = 0;
         }
