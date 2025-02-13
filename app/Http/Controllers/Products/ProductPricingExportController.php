@@ -346,7 +346,7 @@ class ProductPricingExportController extends Controller
             }
         }
 
-        $row[] = number_format($price->unit_fba_fee, 2, '.', '');
+        $row[] = number_format($price->unit_fba_fee??0, 2, '.', '');
         return $row;
     }
 
