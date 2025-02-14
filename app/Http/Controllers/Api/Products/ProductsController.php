@@ -266,7 +266,7 @@ class ProductsController extends Controller
             if ($request->input('product_ids')) {
                 $productIds = explode(',', $request->input('product_ids'));
                 if (count(array_filter($productIds)) > 0) {
-                    $paginator->whereIn('id', array_filter($productIds));
+                    $paginator = $paginator->whereIn('id', array_filter($productIds));
                 }
             }
 

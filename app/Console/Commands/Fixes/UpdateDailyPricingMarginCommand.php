@@ -46,7 +46,12 @@ class UpdateDailyPricingMarginCommand extends Command
                 foreach ($pricings as $dp) {
                     $was = $dp->margin;
                     $dp->timestamps = false;
-                    $dp->recalculteProfitAndMargin();
+                    try {
+                        $dp->recalculteProfitAndMargin();
+                    } catch (\RuntimeException $ex) {
+                        // nothing we can do if we can't recalc profit
+                        continue;
+                    }
                     $now = $dp->margin;
                     $this->comment("{$dp->product->item_number} profit {$dp->profit}, margin was $was, now $now");
                     if (!$this->option('pretend')) {
