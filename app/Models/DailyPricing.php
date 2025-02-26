@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
  * @property-read Carbon $last_checked_at
  * @property-read Carbon $last_approved_at
  * @property-read DailyPricing[] $pricing_history
+ * @property-read float $profit_gbp
  *
  * Class DailyPricing
  * @package App\Models
@@ -84,6 +85,11 @@ class DailyPricing extends BaseDailyPricing
         }
 
 	    return $this->product->current_product_pricing->unit_price_gbp;
+    }
+
+    public function getProfitGbpAttribute()
+    {
+        return round($this->profit / $this->country->currency->currency_fx_rate, 2);
     }
 
 

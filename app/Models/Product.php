@@ -256,4 +256,19 @@ class Product extends BaseProduct implements HasMedia
         return $this->unit_price_gbp;
     }
 
+    /**
+     * @param Country $country
+     * @return float
+     */
+    public function getHighestEverUnitCostGbp(Country $country)
+    {
+        /** @var ProductPricing $highestUnitPriceGbp */
+        $highestUnitPriceGbp = $this
+            ->product_pricings_product()
+            ->orderBy('unit_price_gbp', 'DESC')
+            ->first();
+
+        return $highestUnitPriceGbp?$highestUnitPriceGbp->unit_price_gbp:0.0;
+    }
+
 }

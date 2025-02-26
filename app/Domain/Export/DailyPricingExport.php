@@ -28,7 +28,9 @@ class DailyPricingExport
         'submitted_at',
         'submitter.name',
         'local_profit',
+        'profit_gbp',
         'product.final_cost_gbp',
+        // 'product.highest_ever_unit_cost_gbp',
         'product.daily_pricing_notes'
     );
 
@@ -66,9 +68,23 @@ class DailyPricingExport
     public function buildExport()
     {
         try {
+            /** @var DailyPricing $pricing */
             foreach ($this->dailyPricings as $pricing) {
                 $exportItem = [];
                 foreach ($this->columns as $column) {
+                    // Adding this in to daily pricing export b/c it's a
+                    // "Hidden rule" that's impacting decisions - viability
+                    // is based on the highest ever unit cost, so display it
+                    if ($column === 'product.highest_ever_unit_cost_gbp') {
+                        try {
+                            $exportItem[] = $pricing
+                                ->product
+                                ->getHighestEverUnitCostGbp($pricing->country);
+                        } catch (\Throwable $ex) {
+                            $exportItem[] = $ex->getMessage();
+                        }
+                        continue;
+                    }
                     $exportItem[] = $this->extractProperty($pricing, $column);
                 }
                 $this->exportLines[] = $exportItem;
