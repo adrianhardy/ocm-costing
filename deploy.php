@@ -7,7 +7,7 @@ require 'recipe/rsync.php';
 // Project name
 set('application', 'orchardcrowncosting');
 set('use_atomic_symlink', true);
-set('writable_use_sudo', true);
+set('writable_use_sudo', false);
 set('rsync',[
     'exclude'      => [
         'yarn.lock',
@@ -61,27 +61,18 @@ add('shared_dirs', []);
 // Writable dirs by web server
 add('writable_dirs', []);
 
-
-// Hosts
-host('staging')
-    ->set('branch', 'master')
-    ->user('deploy')
-    ->hostname('coststaging.orchardcrownmall.co.uk')
-    ->set('bin/php', '/usr/bin/php74')
-    ->set('rsync_src', __DIR__)
-    ->set('deploy_path', '/home/orchardcrownmall.co.uk/costing/staging');
-
-
 host('live')
     ->set('branch', 'master')
-    ->user('deploy')
-    ->hostname('coststaging.orchardcrownmall.co.uk')
-    ->set('bin/php', '/usr/bin/php74')
+    ->user('great-lederberg_1h250g29tgvi')
+    ->hostname('costing.orchardcrownmall.co.uk')
     ->set('rsync_src', __DIR__)
-    ->set('deploy_path', '/home/orchardcrownmall.co.uk/costing/live');
+    ->set('bin/php', '/opt/plesk/php/7.4/bin/php')
+    ->set('bin/composer', '/opt/plesk/php/7.4/bin/php /usr/local/psa/var/modules/composer/composer.phar')
+    ->set('deploy_path', '/var/www/vhosts/costing.orchardcrownmall.co.uk/costinglive.orchardcrownmall.co.uk');
 
 task('deploy', [
     'deploy:info',
+    'deploy:custom_prep',
     'deploy:prepare',
     'deploy:lock',
     'deploy:release',
@@ -97,6 +88,21 @@ task('deploy', [
     'deploy:unlock',
     'cleanup',
 ]);
+
+// Plesk sometimes creates the real directories current/public if they don't exist
+// which means deployer can't deploy...
+task('deploy:custom_prep', function(){
+    $fakeDirectory = test('[ ! -L {{deploy_path}}/current ] && [ -d {{deploy_path}}/current ]');
+    if ($fakeDirectory) {
+        if (test('[ -f {{deploy_path}}/current/public/index.html ]')) {
+            run ("rm {{deploy_path}}/current/public/index.html");
+        }
+        if (test('[ -d {{deploy_path}}/current/public ]')) {
+            run("rmdir {{deploy_path}}/current/public");
+        }
+        run ("rmdir {{deploy_path}}/current");
+    }
+});
 
 // [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
