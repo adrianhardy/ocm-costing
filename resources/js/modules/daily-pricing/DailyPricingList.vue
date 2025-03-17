@@ -96,7 +96,7 @@
                     </b-popover>
                 </template>
                 <template #cell(product.name)="data">
-                    <div>{{ data.value }}</div>
+                    <div v-b-tooltip.top.hover="data.value">{{ data.value }}</div>
                     <div class="small" v-if="data.item.product.daily_pricing_notes && data.item.product.daily_pricing_notes.length > 0">
                         <span v-b-tooltip.bottom.hover.dh2000 :title="data.item.product.daily_pricing_notes">
                             <b-icon-info-circle-fill  />
@@ -125,9 +125,6 @@
                     </span>
                 </template>
                 <template #cell(product.primary_sku)="data">
-                    <span v-b-tooltip.top.hover="data.value">{{ data.value }}</span>
-                </template>
-                <template #cell(product.name)="data">
                     <span v-b-tooltip.top.hover="data.value">{{ data.value }}</span>
                 </template>
                 <template #cell(local_profit)="data">

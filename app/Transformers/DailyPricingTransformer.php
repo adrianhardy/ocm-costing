@@ -15,7 +15,7 @@ class DailyPricingTransformer extends TransformerAbstract
     protected $defaultIncludes = [
         //
     ];
-    
+
     /**
      * List of resources possible to include
      *
@@ -61,7 +61,7 @@ class DailyPricingTransformer extends TransformerAbstract
         return $this->null();
     }
 
-    
+
     /**
      * A Fractal transformer.
      *
@@ -78,7 +78,8 @@ class DailyPricingTransformer extends TransformerAbstract
             'is_viable',
             'margin',
             'profit',
-            'local_profit'
+            'local_profit',
+            'daily_pricing_notes'
         ]);
     }
 }
